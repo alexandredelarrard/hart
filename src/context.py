@@ -11,7 +11,7 @@ from omegaconf import DictConfig, OmegaConf
 from src.utils.config import read_config
 from src.utils.seed import set_seed
 
-class Context(Object):
+class Context:
 
     def __init__(self, config : DictConfig, use_cache : bool, save : bool):
 
@@ -56,7 +56,7 @@ class Context(Object):
 def get_config_context(config_path : str, use_cache : bool, save : bool):
 
     try:
-        config = read_config(path=config_path)
+        config = read_config(path="./configs")
         dictConfig(OmegaConf.to_container(config.logging))
         set_seed(config)
     except FileNotFoundError:

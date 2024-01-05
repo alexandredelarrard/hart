@@ -1,5 +1,5 @@
 logging:
-  versionversion: 1
+  version: 1
   disable_existing_loggers: False
 
   formatters:
@@ -14,9 +14,10 @@ logging:
 
   handlers:
       console:
-          class: logging.StreamHandler #src.utils.logging_handler.ColorHandler
+          class: src.utils.logging_handler.ColorHandler
           level: DEBUG
           formatter: console
+          
           stream: ext://sys.stdout
           colors:
             debug: magenta
@@ -26,28 +27,27 @@ logging:
             critical : red
 
       file_handler:
-          class: logging.FileHandler #src.utils.logging_handler.MakeFileHandler
+          class: src.utils.logging_handler.MakeFileHandler
           level: DEBUG
           formatter: file
           filename: ./.log/output.log
           encoding: utf8
-          mode: a
 
-  loggers:
-      development:
-          level: DEBUG
-          handlers: [console]
-          propagate: no
+#   loggers:
+#       development:
+#           level: DEBUG
+#           handlers: [console]
+#           propagate: no
 
-      staging:
-          level: INFO
-          handlers: [console, file_handler]
-          propagate: no
+#       staging:
+#           level: INFO
+#           handlers: [console, file_handler]
+#           propagate: no
 
-      production:
-          level: WARNING
-          handlers: [file_handler]
-          propagate: no
+#       production:
+#           level: WARNING
+#           handlers: [file_handler]
+#           propagate: no
 
   root:
       level: INFO

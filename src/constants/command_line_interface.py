@@ -6,7 +6,7 @@ from src.utils.cli_helper import (
 
 CONFIG_ARGS = ("--config", "-c", "config_path")
 CONFIG_KWARGS = {
-    "default" : "config/",
+    "default" : "./configs",
     "show_default" : True,
     "help": (
         "The path to the configuration folder for the run. "

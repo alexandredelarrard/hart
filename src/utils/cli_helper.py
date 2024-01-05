@@ -8,13 +8,15 @@ from click import ParamType
 from src.constants.io import DATE_FORMAT
 
 
-class SpecialHelpOrder(click.group):
+class SpecialHelpOrder(click.Group):
+
     def __init__(self, *args, **kwargs):
         self.help_priorities = {}
         super(SpecialHelpOrder, self).__init__(*args, **kwargs)
 
     def get_help(self, ctx):
         self.list_commands = self.list_commands_for_help
+        print(self.list_commands)
         return super(SpecialHelpOrder, self).get_help(ctx)
     
     def list_commands_for_help(self, ctx):

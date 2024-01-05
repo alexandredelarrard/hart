@@ -1,5 +1,4 @@
 import os
-import random
 import time
 from queue import Queue
 from threading import Thread
@@ -12,7 +11,7 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
-class Crawling(Step):
+class StepCrawling(Step):
     
     def __init__(self, 
                  context : Context,

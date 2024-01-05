@@ -17,7 +17,7 @@ class Step:
         self._log : logging.Logger = logging.getLogger(__name__)
         self._config = config 
         self._context = context
-        self.name = self.get_name() 
+        self._name = self.get_name() 
 
         self._log.info(f"starting step {self}")
 
