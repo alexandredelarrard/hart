@@ -1,0 +1,4 @@
+# holds all general parameters 
+
+seed : 18
+random_state : 1234
