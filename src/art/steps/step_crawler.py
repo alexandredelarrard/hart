@@ -1,9 +1,12 @@
 import os
 import time
+import random
+from typing import List
 from queue import Queue
 from threading import Thread
 from omegaconf import DictConfig
 
+from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -16,20 +19,31 @@ class StepCrawling(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig,
-                 webpage_url : str, 
                  threads : int):
 
         super().__init__(context=context, config=config)
         
-        self.webpage_url=webpage_url
         self.threads = threads
 
         self.missed_urls = []
         self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue()}
 
     @timing
-    def run(self):
-        self._log.info("Here is your first CLI on your own crawling stuff")
+    def run(self, liste_urls : List, function_crawling):
+
+        # initialize the drivers 
+        self.initialize_queue_drivers()
+
+        # initalize the urls queue
+        self.initialize_queue_urls(liste_urls)
+
+        # start the crawl
+        self.start_threads_and_queues(function_crawling)
+
+        t0 = time.time()
+        self.queues["urls"].join()
+        print('*** Done in {0}'.format(time.time() - t0))
+        self.close_queue_drivers()
 
 
     def initialize_driver_firefox(self, proxy=True, prefs=False):
@@ -75,43 +89,33 @@ class StepCrawling(Step):
         driver.delete_all_cookies()
         driver.set_page_load_timeout(300) 
 
-        if self.use_proxy:
-            print(f"New driver = {self.proxies[self.current_proxy_index]['COUNTRY']}")
-            self.current_proxy_index = (self.current_proxy_index +1)%len(self.proxies)
-
         return driver
     
     
-    def initialize_driver_chrome(self, proxy=True, prefs=True):
+    def initialize_driver_chrome(self, prefs=True):
         """
         Initialize the web driver with chrome driver as principal driver chromedriver.exe, headless means no open web page. But seems slower than firefox driver  
         parameters are here to not load images and keep the default css --> make page loading faster
         """
-
-        if len(self.proxies)>0:
-            PROXY =  self.proxies[self.current_proxy_index]["ID"]
-        else:
-            print("NO PROXY AVAILABLE!! ")
-            self.use_proxy = False
         
         options = Options()
         if prefs:
             prefs = {
-                    "profile.managed_default_content_settings.images":2,
+                    # "profile.managed_default_content_settings.images":2,
                     'disk-cache-size': 8000,
                      "profile.default_content_setting_values.notifications":2,
                      "profile.managed_default_content_settings.stylesheets":2,
                     #  "profile.managed_default_content_settings.cookies":2,
                     #  "profile.managed_default_content_settings.javascript":2,
                      "profile.managed_default_content_settings.plugins":2,
-                     "profile.managed_default_content_settings.popups":2,
+                    #  "profile.managed_default_content_settings.popups":2,
                      "profile.managed_default_content_settings.geolocation":2,
                      "profile.managed_default_content_settings.media_stream":2,
                     }
             
             options.add_experimental_option("prefs", prefs)
             # options.add_argument("--headless") # Runs Chrome in headless mode.
-            # options.add_argument("--incognito")
+            options.add_argument("--incognito")
             options.add_argument('--no-sandbox') # Bypass OS security model
             options.add_argument('--disable-gpu')  # applicable to windows os only
             # options.add_argument('start-maximized') 
@@ -120,19 +124,9 @@ class StepCrawling(Step):
         options.add_argument("--disable-extensions")
         options.add_argument("--enable-javascript")
 
-        if self.use_proxy:
-            options.add_argument('--proxy-server=%s' % PROXY)
-            self.current_proxy_index = (self.current_proxy_index +1)%len(self.proxies)
-
-        service_args =["--verbose", "--log-path={0}".format(os.environ["DIR_PATH"] + "/crawling/chrome.log")]
-
-        driver = webdriver.Chrome(chrome_options=options, service_args=service_args)
+        driver = webdriver.Chrome(options=options)
         driver.delete_all_cookies()
         driver.set_page_load_timeout(300) 
-
-        if self.use_proxy:
-            print(f"New driver = {self.proxies[self.current_proxy_index]['COUNTRY']}")
-            self.current_proxy_index = (self.current_proxy_index +1)%len(self.proxies)
 
         return driver
 
@@ -140,30 +134,23 @@ class StepCrawling(Step):
     def delete_driver(self, driver):
         driver.close()
 
-    
     def restart_driver(self, driver):
 
         try:
             self.delete_driver(driver)
         except Exception:
-            print("ALREADY DELETED")
+            self._log.info("ALREADY DELETED")
             pass
 
-        if self.current_proxy_index == len(self.proxies):
-            self.proxies = self.get_proxies()
-            self.current_proxy_index = 0
-
         driver = self.initialize_driver_chrome()
-        print(f"DRIVER {self.current_proxy_index}")
 
         return driver
 
     
     def initialize_queue_drivers(self):
-        print(self.cores)
-        for i in range(self.cores):
+        for _ in range(self.threads):
              self.queues["drivers"].put(self.initialize_driver_chrome())
-        print(f"DRIVER QUEUE INITIALIZED WITH {self.cores} drivers {self.current_proxy_index}")
+        self._log.info(f"DRIVER QUEUE INITIALIZED WITH {self.threads} drivers")
     
     def initialize_queue_urls(self, urls=[]):
         for url in urls:
@@ -176,9 +163,10 @@ class StepCrawling(Step):
             driver.close()
 
     
-    def start_threads_and_queues(self, function, sub_loc=""):
-        for i in range(self.cores):
-            t = Thread(target= self.queue_calls, args=(function, self.queues, sub_loc, ))
+    def start_threads_and_queues(self, function):
+
+        for _ in range(self.threads):
+            t = Thread(target= self.queue_calls, args=(function, self.queues, self._config, ))
             t.daemon = True
             t.start()
 
@@ -186,7 +174,7 @@ class StepCrawling(Step):
     def get_url(self, driver, url):
 
         try:
-            time.sleep(random.uniform(3,5))
+            time.sleep(random.uniform(0.5,1))
             driver.get(url)
 
         except Exception:
@@ -195,7 +183,7 @@ class StepCrawling(Step):
         return driver
 
 
-    def queue_calls(self, function, queues, sub_loc):
+    def queue_calls(self, function, queues, *args):
         
         queue_url = queues["urls"]
         missed_urls = []
@@ -207,16 +195,18 @@ class StepCrawling(Step):
 
             try:
                 driver = self.get_url(driver, url)
-                time.sleep(1)    
+                time.sleep(random.uniform(1,4))   
                 
-                driver, information = function(driver, sub_loc)
+                driver, information = function(driver, *args)
 
-                if information == "ERROR":
+                if information != "":
                     missed_urls.append(url)
+                    self._log.warning(f"CANNOT CRAWL {url} : \n {information}")
 
                 queues["drivers"].put(driver)
                 queue_url.task_done()
-                print(f"CRAWLED URL {url}")
+
+                self._log.info(f"[OOF {queue_url.qsize()}] CRAWLED URL {url}")
             
             except Exception as e:
                 print(url, e)

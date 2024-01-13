@@ -1,2 +1,21 @@
 crawling:
-    webpage_url : https://drouot.com/
+    met:
+        webpage_url : https://www.metmuseum.org
+        url_path : ./data/openaccess/MetObjects.csv
+        save_picture_path : ./data/openaccess/pictures
+        save_data_path : ./data/openaccess/
+        settings : 
+            logging : False
+            browser : chrome 
+            nodes : 1
+            retry : 1
+    drouot: 
+        webpage_url : https://www.gazette-drouot.com/recherche/lot/
+        url_path : ./data/drouot/infos/*
+        save_picture_path : ./data/drouot/pictures
+        save_data_path : ./data/drouot/infos
+        settings : 
+            logging : True
+            browser : chrome 
+            nodes : 1
+            retry : 1

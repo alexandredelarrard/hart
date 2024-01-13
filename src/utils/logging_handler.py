@@ -44,7 +44,7 @@ class MakeFileHandler(logging.FileHandler):
     def __init__(self, filename:str, encoding=None):
         filepath = Path(filename)
         filepath.parent.mkdir(parents=True, exist_ok=True)
-        version = time.strftime("%Y-%m-%d_%H%M%S")
+        version = time.strftime("%Y-%m-%d_%H")
 
         versioned_filename = filepath.parent / (filepath.stem + f"_{version}" + filepath.suffix)
         logging.FileHandler.__init__(

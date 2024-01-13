@@ -5,13 +5,18 @@ from src.constants.command_line_interface import (
     CONFIG_KWARGS,
     WEBPAGE_ARG,
     WEBPAGE_KWARG,
+    OBJECT_ARGS,
+    OBJECT_KWARGS,
     CRAWL_THREADS_ARG, 
     CRAWL_THREADS_KWARG
 )
 
 from src.context import get_config_context
 from src.utils.cli_helper import SpecialHelpOrder
-from src.art.steps.step_crawler import StepCrawling
+from src.art.steps.step_crawler_met import StepCrawlingMet
+from src.art.steps.step_crawler_drouot import StepCrawlingDrouot
+
+from omegaconf import DictConfig, OmegaConf
 
 
 @click.group(cls=SpecialHelpOrder)
@@ -22,16 +27,40 @@ def cli():
 
 
 @cli.command(
-    help="Crawling",
+    help="Crawling MET",
     help_priority=2,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*WEBPAGE_ARG, **WEBPAGE_KWARG)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling(
-    config_path, webpage_url : str, threads : int
+def step_crawling_met(
+    config_path, threads : int 
 ):
+    
     config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingMet(config=config, context=context, threads=threads)
 
-    crawl = StepCrawling(config, context, webpage_url, threads)
-    crawl.run()
+    # get crawling_function 
+    crawl.run(crawl.get_urls(config), crawl.crawling_function)
+
+    #python -m src art step-crawling -t 1
+
+
+@cli.command(
+    help="Crawling DROUOT",
+    help_priority=3,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+def step_crawling_met(
+    config_path, threads : int, object : str 
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingDrouot(config=config, context=context, threads=threads, object=object)
+
+    # get crawling_function 
+    crawl.run(crawl.get_urls(config), crawl.crawling_function)
+
+    #python -m src art step-crawling -t 1
+    #

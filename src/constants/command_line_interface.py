@@ -36,3 +36,15 @@ CRAWL_THREADS_KWARG = {
         "The number of threads to run in parallel to crawl infos"
     )
 }
+
+
+OBJECT_ARGS=("--object", "-obj", "object")
+OBJECT_KWARGS= {
+    "type" : str, 
+    "default" : "meuble",
+    "required" : True,
+    "show_default" : True,
+    "help": (
+        "Object to crawl from drouot portal"
+    )
+}
