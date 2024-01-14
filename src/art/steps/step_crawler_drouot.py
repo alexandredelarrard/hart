@@ -1,6 +1,7 @@
 import os
 import urllib
 import re
+import glob
 from omegaconf import DictConfig
 
 import pandas as pd 
@@ -21,16 +22,31 @@ class StepCrawlingDrouot(StepCrawling):
                  object : str):
 
         super().__init__(context=context, config=config, threads=threads)
-        self.object = object
+        self.object = object.replace(" ", "_")
         self.seller = "drouot"        
-        self.root_url = self._config.crawling[self.seller].webpage_url + f"{object}?query={object}&type=past"
+        self.root_url = self._config.crawling[self.seller].webpage_url + f"{object}?query={object}&type=result"
 
         #TODO : a déduire directement de la page
-        self.pages = {'meuble' : 1285, 
-                      'argenterie' : 25000}
+        self.pages = {'meuble' : 1285, #64 000 picts  all -> ok
+                      "tableau" : 4287, #260 000 picts all
+                      "sac_a_main": 98, # seulement ceux avec encheres -> ok
+                      "argenterie": 25000,
+                      "table" : 2255, 
+                      "fauteuil" : 976, # seulement ceux avec encheres -> ok
+                      "lampe" : 1241,# seulement ceux avec encheres -> todo
+                      "vase" : 3113, #-> todo
+                      "arme" : 2778} 
+                      # TABLE CHAISE FAUTEUIL ARME LAMPE VASE BUFFET CONSOLE GUERIDON MIROIR
 
     def get_urls(self):
         liste_urls = [self.root_url + f"&page={x}" for x in range(1,self.pages[self.object]+1)]
+        files_already_done = glob.glob(self._config.crawling[self.seller].save_data_path + "/*.csv")
+        files_already_done = [self.root_url + "&page=" + x.split("_")[-1].replace(".csv","") 
+                                                for x in files_already_done if self.object in x]
+
+        liste_urls = list(set(liste_urls) - set(files_already_done))
+        self._log.info(f"ALREADY CRAWLED {len(files_already_done)} REMAINING {len(liste_urls)}")
+
         return liste_urls
     
     
@@ -79,7 +95,7 @@ class StepCrawlingDrouot(StepCrawling):
     def get_picture_url(self, lot, driver, counter=0):
         
         try:
-            time.sleep(0.2)
+            time.sleep(0.3)
             style_tagname_pict = lot.find_element(By.CLASS_NAME, "imgLot").get_attribute("style")
             url_picture = re.findall(r'\((.*?)\)', style_tagname_pict)[-1].replace("\"", "")
             picture_id = url_picture.split("path=")[1].replace("/", "_")
@@ -88,7 +104,7 @@ class StepCrawlingDrouot(StepCrawling):
         
         except Exception as e:
             if counter <3:
-                driver.execute_script("window.scrollTo(0, window.scrollY + 200);")
+                driver.execute_script("window.scrollTo(0, window.scrollY + 220);")
                 time.sleep(0.5)
                 self.get_picture_url(lot, driver, counter+1)
             else:
@@ -118,7 +134,7 @@ class StepCrawlingDrouot(StepCrawling):
         # save pict
         for i, lot in tqdm.tqdm(enumerate(liste_lots)):
             driver.execute_script("window.scrollTo(0, window.scrollY + 200);")
-            time.sleep(0.8)
+            time.sleep(0.3)
             
             try:
                 driver_desc = lot.find_element(By.CLASS_NAME, "descriptionLot")
@@ -137,7 +153,6 @@ class StepCrawlingDrouot(StepCrawling):
                 # save pictures & infos
                 if not os.path.isfile(image_path + f"/{picture_id}.jpg"):
                     if "https" in url_picture:
-                        time.sleep(0.3)
                         urllib.request.urlretrieve(url_picture, image_path + f"/{picture_id}.jpg")
 
                 list_infos.append([lot_number, picture_id, infos, vente, url_picture, url_deep_details])
@@ -145,10 +160,11 @@ class StepCrawlingDrouot(StepCrawling):
             except Exception as e:
                 message = e 
 
-        df_infos = pd.DataFrame(list_infos, columns= ["NUMBER_LOT", "PICTURE_ID", "INFOS", "SALE", "URL_PICTURE", "URL_FULL_DETAILS"])
+        df_infos = pd.DataFrame(list_infos, columns= ["NUMBER_LOT", "PICTURE_ID", "INFOS", 
+                                                      "SALE", "URL_PICTURE", "URL_FULL_DETAILS"])
         df_infos.to_csv(infos_path + f"/{self.object}_page_{page_nbr}.csv", index=False, sep=";")
 
-        time.sleep(7)
+        time.sleep(2)
         
         return driver, message
 

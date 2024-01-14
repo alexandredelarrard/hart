@@ -8,6 +8,8 @@ if __name__ == "__main__":
 
     crawl = StepCrawlingDrouot(context=context, config=config, threads=1, object='meuble')
 
+    l = crawl.get_urls()
+
     # driver = crawl.initialize_driver_chrome()
     # driver.get(crawl.root_url + "&page=1")
     # driver = crawl.check_loggedin(driver)

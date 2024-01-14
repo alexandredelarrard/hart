@@ -52,7 +52,7 @@ def step_crawling_met(
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_met(
+def step_crawling_drouot(
     config_path, threads : int, object : str 
 ):
     
@@ -60,7 +60,6 @@ def step_crawling_met(
     crawl = StepCrawlingDrouot(config=config, context=context, threads=threads, object=object)
 
     # get crawling_function 
-    crawl.run(crawl.get_urls(config), crawl.crawling_function)
+    crawl.run(crawl.get_urls(), crawl.crawling_function)
 
-    #python -m src art step-crawling -t 1
-    #
+    #python -m src art step-crawling-drouot -obj meuble -t 1
