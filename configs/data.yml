@@ -1,0 +1,11 @@
+flat_file:
+  insee:
+    carreaux_200m: 
+      met : ./data/carreaux/200m/carreaux_200m_met.csv
+      mart : ./data/carreaux/200m/carreaux_200m_mart.csv
+      reun : ./data/carreaux/200m/carreaux_200m_reun.csv
+    carreaux_1km: 
+      met : ./data/carreaux/km/carreaux_1km_met.csv
+      mart : ./data/carreaux/km/carreaux_1km_mart.csv
+      reun : ./data/carreaux/km/carreaux_1km_reun.csv
+    communes_encodage: ./data/carreaux/communes2020.csv

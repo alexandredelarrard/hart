@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from src.context import Context
 from src.art.steps.step_crawler import StepCrawling
 
-class StepCrawlingDrouot(StepCrawling):
+class StepCrawlingChristies(StepCrawling):
     
     def __init__(self, 
                  context : Context,
@@ -23,20 +23,11 @@ class StepCrawlingDrouot(StepCrawling):
 
         super().__init__(context=context, config=config, threads=threads)
         self.object = object.replace(" ", "_")
-        self.seller = "drouot"        
-        self.root_url = self._config.crawling[self.seller].webpage_url + f"{object}?query={object}&type=result"
+        self.seller = "christies"        
+        self.root_url = self._config.crawling[self.seller].webpage_url + f"entry={object}&sortby=date&tab=sold_lots"
 
         #TODO : a déduire directement de la page
-        self.pages = {#'meuble' : 1285, #64 000 picts  all -> ok
-                      #"tableau" : 4288, #260 000 picts all -> ok
-                      #"sac_a_main": 98, # seulement ceux avec encheres -> ok
-                      #"argenterie": 9469, # seulement ceux avec encheres ->ok
-                      #"table" : 2255, # seulement ceux avec encheres -> ok
-                      #"fauteuil" : 976, # seulement ceux avec encheres -> ok
-                      "lampe" : 3794,#  TODO
-                      #"vase" : 3113, #-> seulement ceux avec encheres -> ok
-                      "arme" : 2778} 
-                      # TABLE CHAISE FAUTEUIL ARME LAMPE VASE BUFFET CONSOLE GUERIDON MIROIR
+        self.pages = {} 
 
     def get_urls(self):
         liste_urls = [self.root_url + f"&page={x}" for x in range(1,self.pages[self.object]+1)]
@@ -49,39 +40,6 @@ class StepCrawlingDrouot(StepCrawling):
 
         return liste_urls
     
-    
-    def check_loggedin(self, driver, counter=0):
-
-        mdp = os.environ[f"{self.seller.upper()}_MDP"]
-        email = os.environ[f"{self.seller.upper()}_EMAIL"]
-
-        header= driver.find_element(By.TAG_NAME, "header")
-
-        if "Abonnez-vous" in header.text:
-            time.sleep(3)
-            loggin_tool = header.find_element(By.CLASS_NAME, "menuLinkConnection")
-            loggin_tool.click()
-            time.sleep(2)
-
-            driver.find_element(By.ID, "authenticate-email").send_keys(email)
-            time.sleep(2)
-            driver.find_element(By.ID, "password").send_keys(mdp)
-            time.sleep(1)
-
-            driver.find_element(By.ID, "menuLoginButton0").click()
-            time.sleep(3)
-
-            header= driver.find_element(By.TAG_NAME, "header")
-            if "Le Magazine" in header.text:
-                return driver
-            else:
-                if counter < 2:
-                    self.check_loggedin(driver, counter+1)
-                else: 
-                    raise Exception("CANNOT LOG IN TO DROUOT")
-
-        else:
-            return driver
         
     def get_page_number(self, driver):
         # get page number
@@ -91,6 +49,7 @@ class StepCrawlingDrouot(StepCrawling):
             page_nbr = driver.current_url.split("page=")[1]
 
         return page_nbr
+    
     
     def get_picture_url(self, lot, driver, counter=0):
         
@@ -114,9 +73,6 @@ class StepCrawlingDrouot(StepCrawling):
 
 
     def crawling_function(self, driver, config):
-
-        # log in if necessary
-        driver = self.check_loggedin(driver)
 
         page_nbr = self.get_page_number(driver)
 

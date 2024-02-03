@@ -5,7 +5,6 @@ crawling:
         save_picture_path : ./data/openaccess/pictures
         save_data_path : ./data/openaccess/
         settings : 
-            logging : False
             browser : chrome 
             nodes : 1
             retry : 1
@@ -15,7 +14,15 @@ crawling:
         save_picture_path : ./data/drouot/pictures
         save_data_path : ./data/drouot/infos
         settings : 
-            logging : True
             browser : chrome 
             nodes : 1
-            retry : 1
+            retry : 1   
+    chrystys: 
+        webpage_url : https://www.christies.com/en/search?
+        url_path : ./data/chrystys/infos/*
+        save_picture_path : ./data/chrystys/pictures
+        save_data_path : ./data/chrystys/infos
+        settings : 
+            browser : chrome 
+            nodes : 1
+            retry : 1   
