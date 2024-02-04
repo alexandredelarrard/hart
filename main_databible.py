@@ -1,5 +1,5 @@
 from src.context import get_config_context
-from src.databible.steps.step_carreaux import StepConsolidateInsee
+from src.databible.steps.step_data_load import StepDataLoad
 
 if __name__ == "__main__":
     """
@@ -20,6 +20,5 @@ if __name__ == "__main__":
 
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
-    StepConsolidateInsee(config, context, granularit="200m")
-
-  
+    self = StepDataLoad(config, context)
+    data_dict = self.run()
