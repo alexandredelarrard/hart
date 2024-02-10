@@ -4,12 +4,33 @@ from io import StringIO
 import sys 
 from logging.config import dictConfig 
 from pathlib import Path 
+from sqlalchemy import create_engine
 
 from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig, OmegaConf
 
 from src.utils.config import read_config
 from src.utils.seed import set_seed
+
+
+class DBeaver: 
+
+    def __init__(self, config):
+
+        self.config=config
+
+        self.server = self.config["server"]
+        self.user = os.environ["DATABASE_USERNAME"]
+        self.pwd = os.environ["DATABASE_PWD"]
+        self.port = self.server["port"]
+        self.host = self.server["host"]
+        self.database = self.server["database"]
+        self.connexion_string = f"postgresql+psycopg2://{self.user}:{self.pwd}@{self.host}:{self.port}/{self.database}"
+
+    def init_db(self):
+        connection = create_engine(self.connexion_string)
+        return connection
+    
 
 class Context:
 
@@ -35,6 +56,10 @@ class Context:
 
         self._use_cache = use_cache
         self._save = save
+
+        # connection 
+        db = DBeaver(config)
+        self.db_con = db.init_db()
 
     @property
     def config(self) -> DictConfig:

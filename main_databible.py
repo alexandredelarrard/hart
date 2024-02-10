@@ -1,5 +1,8 @@
 from src.context import get_config_context
+
 from src.databible.steps.step_data_load import StepDataLoad
+from src.databible.steps.step_data_clean import StepDataClean
+from src.databible.steps.step_data_consolidate import StepDataConsolidate
 
 if __name__ == "__main__":
     """
@@ -20,5 +23,9 @@ if __name__ == "__main__":
 
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
-    self = StepDataLoad(config, context)
-    data_dict = self.run()
+    # load data
+    dataload = StepDataLoad(config, context)
+    data_dict = dataload.run()
+
+    self = StepDataClean(config, context)    
+    # data_dict = stepclean.run()

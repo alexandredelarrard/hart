@@ -1,0 +1,4 @@
+server:
+  database: postgres
+  host: localhost #container of the database
+  port: 5432
