@@ -1,14 +1,14 @@
 import os
 import time
 import random
-from typing import List
+from typing import List, Dict
 from omegaconf import DictConfig
 import pandas as pd
 
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-from src.utils.utils_dataframe import homogenize_columns
+from src.utils.utils_dataframe import homogenize_columns, transform_types
 
 class StepDataLoad(Step):
     
@@ -26,7 +26,7 @@ class StepDataLoad(Step):
         data_dict = self.load_datas()
 
         # clean datas 
-        data_dict = self.pre_clean_data(data_dict)
+        # data_dict = self.pre_clean_data(data_dict)
 
         return data_dict
 
@@ -39,22 +39,45 @@ class StepDataLoad(Step):
         for granularity, data_name in self._config.flat_file.insee.items():
             data_dict[granularity] = {}
             
-            for data_name, values in self._config.flat_file.insee[granularity].items():
-                data_dict[granularity][data_name] = self.load_data(values.path, values.sep)
+            for data_name, data_config in self._config.flat_file.insee[granularity].items():
+                data_dict[granularity][data_name] = self.load_data(data_config=data_config,
+                                                                   names=self._config.naming[granularity][data_name],
+                                                                   dtypes=self._config.dtypes[granularity][data_name])
 
-                if "table_name" not in values.keys():
-                    values.table_name = "_".join([granularity.upper(), data_name.upper()])
+                if "table_name" not in data_config.keys():
+                    data_config.table_name = "_".join([granularity.upper(), data_name.upper()])
 
-                if values.table_name not in self._sql_table_names:
-                    data_dict[granularity][data_name].to_sql(values.table_name, 
-                                                             con=self._context.db_con)
+                if data_config.table_name not in self._tables_in_sql:
+                    self.write_sql_data(dataframe=data_dict[granularity][data_name],
+                                        table_name=data_config.table_name)
 
         return data_dict
 
 
-    def load_data(self, data_path, sep):
-        df = pd.read_csv(data_path, sep=sep, on_bad_lines='warn')
-        df.columns = homogenize_columns(df.columns)
+    def load_data(self, data_config, 
+                        names : List  = None, 
+                        dtypes : Dict = None):
+
+        kwargs = {}
+        if "na_values" in data_config.keys():
+            kwargs["na_values"] = data_config.na_values
+
+        if dtypes:
+            kwargs["dtype"] = dict(dtypes)
+ 
+        try:
+            df = pd.read_csv(data_config.path, 
+                            sep=data_config.sep, 
+                            on_bad_lines='warn', 
+                            header=0,
+                            **kwargs)
+            df.columns = homogenize_columns(list(names.values()))
+
+        except Exception as e:
+            raise Exception(f"Could not read data {data_config['table_name']}", e)
+        
+        self._log.info(f"Read csv file {data_config.table_name} done")
+        
         return df
 
 

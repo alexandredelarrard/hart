@@ -1,0 +1,497 @@
+naming:
+  carreaux_200m:  # https://www.insee.fr/fr/statistiques/7655475?sommaire=7655515
+    met : 
+      idcar_200m: ID_CARREAU
+      idcar_1km: IDCAR_1KM
+      idcar_nat: IDCAR_NAT
+      i_est_200: I_EST_200
+      i_est_1km: I_EST_1KM
+      lcog_geo: LCOG_GEO
+      ind: NBR_INDIVIDUS
+      men: NBR_MENAGE
+      men_pauv: NBR_MENAGE_PAUVRE
+      men_1ind: NBR_MENAGE_PAUVRE_1_PERS
+      men_5ind: NBR_MENAGE_PAUVRE_5_PERS
+      men_prop: NBR_MENAGE_PROPRIETAIRE
+      men_fmp: NBR_MENAGE_MONOPARENTAL
+      ind_snv: NIVEAU_VIE_WINSOR
+      men_surf: SURFACE_LOGEMENT_CARREAU
+      men_coll: NBR_MENAGE_APPART
+      men_mais: NBR_MENAGE_MAISON
+      log_av45:  NBR_LOG_PRE_1945
+      log_45_70: NBR_LOG_PRE_45_69
+      log_70_90: NBR_LOG_PRE_70_89
+      log_ap90: NBR_LOG_POST_90
+      log_inc: NBR_LOG_DATE_CONSTR_INCONNU
+      log_soc: NBR_LOG_SOCIAL
+      ind_0_3: NBR_INDIV_0_3
+      ind_4_5: NBR_INDIV_4_5
+      ind_6_10: NBR_INDIV_6_10
+      ind_11_17: NBR_INDIV_11_17
+      ind_18_24: NBR_INDIV_18_24
+      ind_25_39: NBR_INDIV_25_39
+      ind_40_54: NBR_INDIV_40_54
+      ind_55_64: NBR_INDIV_55_64
+      ind_65_79: NBR_INDIV_65_79
+      ind_80p: NBR_INDIV_80_PLUS
+      ind_inc: NBR_INDIV_AGE_INCONNU
+    mart : 
+      idcar_200m: ID_CARREAU
+      idcar_1km: IDCAR_1KM
+      idcar_nat: IDCAR_NAT
+      i_est_200: I_EST_200
+      i_est_1km: I_EST_1KM
+      lcog_geo: LCOG_GEO
+      ind: NBR_INDIVIDUS
+      men: NBR_MENAGE
+      men_pauv: NBR_MENAGE_PAUVRE
+      men_1ind: NBR_MENAGE_PAUVRE_1_PERS
+      men_5ind: NBR_MENAGE_PAUVRE_5_PERS
+      men_prop: NBR_MENAGE_PROPRIETAIRE
+      men_fmp: NBR_MENAGE_MONOPARENTAL
+      ind_snv: NIVEAU_VIE_WINSOR
+      men_surf: SURFACE_LOGEMENT_CARREAU
+      men_coll: NBR_MENAGE_APPART
+      men_mais: NBR_MENAGE_MAISON
+      log_av45:  NBR_LOG_PRE_1945
+      log_45_70: NBR_LOG_PRE_45_69
+      log_70_90: NBR_LOG_PRE_70_89
+      log_ap90: NBR_LOG_POST_90
+      log_inc: NBR_LOG_DATE_CONSTR_INCONNU
+      log_soc: NBR_LOG_SOCIAL
+      ind_0_3: NBR_INDIV_0_3
+      ind_4_5: NBR_INDIV_4_5
+      ind_6_10: NBR_INDIV_6_10
+      ind_11_17: NBR_INDIV_11_17
+      ind_18_24: NBR_INDIV_18_24
+      ind_25_39: NBR_INDIV_25_39
+      ind_40_54: NBR_INDIV_40_54
+      ind_55_64: NBR_INDIV_55_64
+      ind_65_79: NBR_INDIV_65_79
+      ind_80p: NBR_INDIV_80_PLUS
+      ind_inc: NBR_INDIV_AGE_INCONNU
+    reun : 
+      idcar_200m: ID_CARREAU
+      idcar_1km: IDCAR_1KM
+      idcar_nat: IDCAR_NAT
+      i_est_200: I_EST_200
+      i_est_1km: I_EST_1KM
+      lcog_geo: LCOG_GEO
+      ind: NBR_INDIVIDUS
+      men: NBR_MENAGE
+      men_pauv: NBR_MENAGE_PAUVRE
+      men_1ind: NBR_MENAGE_PAUVRE_1_PERS
+      men_5ind: NBR_MENAGE_PAUVRE_5_PERS
+      men_prop: NBR_MENAGE_PROPRIETAIRE
+      men_fmp: NBR_MENAGE_MONOPARENTAL
+      ind_snv: NIVEAU_VIE_WINSOR
+      men_surf: SURFACE_LOGEMENT_CARREAU
+      men_coll: NBR_MENAGE_APPART
+      men_mais: NBR_MENAGE_MAISON
+      log_av45:  NBR_LOG_PRE_1945
+      log_45_70: NBR_LOG_PRE_45_69
+      log_70_90: NBR_LOG_PRE_70_89
+      log_ap90: NBR_LOG_POST_90
+      log_inc: NBR_LOG_DATE_CONSTR_INCONNU
+      log_soc: NBR_LOG_SOCIAL
+      ind_0_3: NBR_INDIV_0_3
+      ind_4_5: NBR_INDIV_4_5
+      ind_6_10: NBR_INDIV_6_10
+      ind_11_17: NBR_INDIV_11_17
+      ind_18_24: NBR_INDIV_18_24
+      ind_25_39: NBR_INDIV_25_39
+      ind_40_54: NBR_INDIV_40_54
+      ind_55_64: NBR_INDIV_55_64
+      ind_65_79: NBR_INDIV_65_79
+      ind_80p: NBR_INDIV_80_PLUS
+      ind_inc: NBR_INDIV_AGE_INCONNU
+  carreaux_1km: 
+    met : 
+      idcar_1km: IDCAR_1KM
+      i_est_1km: I_EST_1KM
+      lcog_geo: LCOG_GEO
+      ind: NBR_INDIVIDUS
+      men: NBR_MENAGE
+      men_pauv: NBR_MENAGE_PAUVRE
+      men_1ind: NBR_MENAGE_PAUVRE_1_PERS
+      men_5ind: NBR_MENAGE_PAUVRE_5_PERS
+      men_prop: NBR_MENAGE_PROPRIETAIRE
+      men_fmp: NBR_MENAGE_MONOPARENTAL
+      ind_snv: NIVEAU_VIE_WINSOR
+      men_surf: SURFACE_LOGEMENT_CARREAU
+      men_coll: NBR_MENAGE_APPART
+      men_mais: NBR_MENAGE_MAISON
+      log_av45:  NBR_LOG_PRE_1945
+      log_45_70: NBR_LOG_PRE_45_69
+      log_70_90: NBR_LOG_PRE_70_89
+      log_ap90: NBR_LOG_POST_90
+      log_inc: NBR_LOG_DATE_CONSTR_INCONNU
+      log_soc: NBR_LOG_SOCIAL
+      ind_0_3: NBR_INDIV_0_3
+      ind_4_5: NBR_INDIV_4_5
+      ind_6_10: NBR_INDIV_6_10
+      ind_11_17: NBR_INDIV_11_17
+      ind_18_24: NBR_INDIV_18_24
+      ind_25_39: NBR_INDIV_25_39
+      ind_40_54: NBR_INDIV_40_54
+      ind_55_64: NBR_INDIV_55_64
+      ind_65_79: NBR_INDIV_65_79
+      ind_80p: NBR_INDIV_80_PLUS
+      ind_inc: NBR_INDIV_AGE_INCONNU
+    mart : 
+      idcar_1km: IDCAR_1KM
+      i_est_1km: I_EST_1KM
+      lcog_geo: LCOG_GEO
+      ind: NBR_INDIVIDUS
+      men: NBR_MENAGE
+      men_pauv: NBR_MENAGE_PAUVRE
+      men_1ind: NBR_MENAGE_PAUVRE_1_PERS
+      men_5ind: NBR_MENAGE_PAUVRE_5_PERS
+      men_prop: NBR_MENAGE_PROPRIETAIRE
+      men_fmp: NBR_MENAGE_MONOPARENTAL
+      ind_snv: NIVEAU_VIE_WINSOR
+      men_surf: SURFACE_LOGEMENT_CARREAU
+      men_coll: NBR_MENAGE_APPART
+      men_mais: NBR_MENAGE_MAISON
+      log_av45:  NBR_LOG_PRE_1945
+      log_45_70: NBR_LOG_PRE_45_69
+      log_70_90: NBR_LOG_PRE_70_89
+      log_ap90: NBR_LOG_POST_90
+      log_inc: NBR_LOG_DATE_CONSTR_INCONNU
+      log_soc: NBR_LOG_SOCIAL
+      ind_0_3: NBR_INDIV_0_3
+      ind_4_5: NBR_INDIV_4_5
+      ind_6_10: NBR_INDIV_6_10
+      ind_11_17: NBR_INDIV_11_17
+      ind_18_24: NBR_INDIV_18_24
+      ind_25_39: NBR_INDIV_25_39
+      ind_40_54: NBR_INDIV_40_54
+      ind_55_64: NBR_INDIV_55_64
+      ind_65_79: NBR_INDIV_65_79
+      ind_80p: NBR_INDIV_80_PLUS
+      ind_inc: NBR_INDIV_AGE_INCONNU
+    reun : 
+      idcar_1km: IDCAR_1KM
+      i_est_1km: I_EST_1KM
+      lcog_geo: LCOG_GEO
+      ind: NBR_INDIVIDUS
+      men: NBR_MENAGE
+      men_pauv: NBR_MENAGE_PAUVRE
+      men_1ind: NBR_MENAGE_PAUVRE_1_PERS
+      men_5ind: NBR_MENAGE_PAUVRE_5_PERS
+      men_prop: NBR_MENAGE_PROPRIETAIRE
+      men_fmp: NBR_MENAGE_MONOPARENTAL
+      ind_snv: NIVEAU_VIE_WINSOR
+      men_surf: SURFACE_LOGEMENT_CARREAU
+      men_coll: NBR_MENAGE_APPART
+      men_mais: NBR_MENAGE_MAISON
+      log_av45:  NBR_LOG_PRE_1945
+      log_45_70: NBR_LOG_PRE_45_69
+      log_70_90: NBR_LOG_PRE_70_89
+      log_ap90: NBR_LOG_POST_90
+      log_inc: NBR_LOG_DATE_CONSTR_INCONNU
+      log_soc: NBR_LOG_SOCIAL
+      ind_0_3: NBR_INDIV_0_3
+      ind_4_5: NBR_INDIV_4_5
+      ind_6_10: NBR_INDIV_6_10
+      ind_11_17: NBR_INDIV_11_17
+      ind_18_24: NBR_INDIV_18_24
+      ind_25_39: NBR_INDIV_25_39
+      ind_40_54: NBR_INDIV_40_54
+      ind_55_64: NBR_INDIV_55_64
+      ind_65_79: NBR_INDIV_65_79
+      ind_80p: NBR_INDIV_80_PLUS
+      ind_inc: NBR_INDIV_AGE_INCONNU
+  commune: #https://statistiques-locales.insee.fr/#view=map1&c=indicator
+    communes_encodage_2020: 
+      typecom: TYPE_COMMUNE
+      com: ID_COMMUNE
+      reg: ID_REGION
+      dep: ID_DEPARTEMENT
+      arr: ID_ARRONDISSEMENT
+      tncc: TYPE_NOM_EN_CLAIR
+      ncc: NOM_COMMUNE
+      nccenr: NOM_COMMUNE_ENR
+      libelle: NOM_COMMUNE_ORIGINE
+      can: ID_CANTON
+      comparent: ID_COMMUNE_PARENTE
+    communes_encodage_2023: 
+      TYPECOM: TYPE_COMMUNE
+      COM: ID_COMMUNE
+      REG: ID_REGION
+      DEP: ID_DEPARTEMENT
+      CTCD : ID_COLLECTIVITE_TERRITORIALE
+      ARR: ID_ARRONDISSEMENT
+      TNCC: TYPE_NOM_EN_CLAIR
+      NCC: NOM_COMMUNE
+      NCCENR: NOM_COMMUNE_ENR
+      LIBELLE: NOM_COMMUNE_ORIGINE
+      CAN: ID_CANTON
+      COMPARENT: ID_COMMUNE_PARENTE
+    deces: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Nombre de décès domiciliés 2022: NBR_DECES_2022
+      Évolution des décès domiciliés entre 2019 et 2022: DELTA_NBR_DECES_2019_2022
+    elections: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Taux de procurations en 2022: TAUX_PROCURATION_2022
+      Nombre de mandants en 2022: NBR_MANDATS_2022
+      Électeurs inscrits sur liste principale 2022: ELECTEURS_SUR_LISTE_2022
+    emploi: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Part des employés dans le nb d’emplois au LT 2020: TAUX_EMPLOYES_2020
+      Part des ouvriers dans le nb d’emplois au LT 2020: TAUX_OUVRIERS_2020
+      Part des emplois sal. dans le nb d’emplois au LT 2020: TAUX_SALARIES_2020
+      Part des emplois non sal. dans le nb d’emplois au LT 2020: TAUX_NON_SALARIES_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020: NBR_FEMME_15_64_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.1: NBR_FEMME_15_24_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.2: NBR_FEMME_25_54_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.3: NBR_FEMME_55_64_2020
+      Nb d'emplois au lieu de travail (LT) 2020: NBR_EMPLOI
+      Part des agriculteurs expl. dans le nb d’emplois au LT 2020: TAUX_AGRICULTEURS_2020
+      Part des artisans, commerçants, chefs d’ent. dans le nb d’emplois au LT 2020: TAUX_ARTISAN_COMMERCE_2020
+      Part des cadres et prof. intellectuelles sup. dans le nb d’emplois au LT 2020: TAUX_CADRE_INTELLECT_2020
+      Part des prof. intermédiaires dans le nb d’emplois au LT 2020: TAUX_PROF_INTER_2020
+      Taux d'activité par tranche d'âge 2020: TAUX_ACTIVITE_15_24
+      Taux d'activité par tranche d'âge 2020.1: TAUX_ACTIVITE_25_54
+      Taux d'activité par tranche d'âge 2020.2: TAUX_ACTIVITE_55_64
+      Taux d'activité des femmes par tranche d'âge 2020: TAUX_ACTIVITE_FEMME_15_24
+      Taux d'activité des femmes par tranche d'âge 2020.1: TAUX_ACTIVITE_FEMME_25_54
+      Taux d'activité des femmes par tranche d'âge 2020.2: TAUX_ACTIVITE_FEMME_55_64
+      Taux activité des hommes par tranche d'âge 2020: TAUX_ACTIVITE_HOMME_15_24
+      Taux activité des hommes par tranche d'âge 2020.1: TAUX_ACTIVITE_HOMME_25_54
+      Taux activité des hommes par tranche d'âge 2020.2: TAUX_ACTIVITE_HOMME_55_64
+    entreprise_creation: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Unités légales (en nombre) 2021: NBR_ENTREP_TOTAL_2021
+      Unités légales dans industrie manufacturière, industries extractives et autres (en nombre) 2021: NBR_ENTREP_INDUSTRIE_MANUFACTURE_2021
+      Unités légales dans construction (en nombre) 2021: NBR_ENTREP_CONSTRUCTION_2021
+      Unités légales dans commerce de gros & détail, transports, hébergemnt & restauration (en nombre) 2021: NBR_ENTREP_RESTO_TRANSPORT_COMMERCE_2021
+      Unités légales dans information et communication (en nombre) 2021: NBR_ENTREP_COMMUNICATION_2021
+      Unités légales dans activités financières et d'assurance (en nombre) 2021: NBR_ENTREP_BANQUE_ASSURANCE_2021
+      Unités légales dans activités immobilières (en nombre) 2021: NBR_ENTREP_IMMOBILIER_2021
+      Unités légales dans act. spécial., scient. & techn. & act. de svices admin. & soutien (en nombre) 2021: NBR_ENTREP_SERVICES_TECHNIQUE_2021
+      Unités légales dans administration publ., enseignemnt, santé humaine & action sociale (en nombre) 2021: NBR_ENTREP_SOCIAL_SANTE_PROF_2021
+      Unités légales dans autres activités de services (en nombre) 2021: NBR_ENTREP_AUTRE_SERVICES_2021
+      Unités légales en 5 secteurs (en nombre) 2021 - Nombre d'entreprises dans l'industrie: NBR_ENTREP_TOP_5_INDUSTRIE_2021
+      Unités légales en 5 secteurs (en nombre) 2021 - Nombre d'entreprises dans la construction: NBR_ENTREP_TOP_5_CONSTRUCTION_2021
+      Unités légales en 5 secteurs (en nombre) 2021 - Nombre d'entreprises dans le commerce, le transport, l'hébergement et la restauration: NBR_ENTREP_TOP_5_RESTO_TRANSPORT_COMMERCE_2021
+      Unités légales en 5 secteurs (en nombre) 2021 - Nombre d'entreprises dans l'administration publique, l'enseignement, la santé humaine et l'action sociale: NBR_ENTREP_TOP_5_SOCIAL_SANTE_PROF_2021
+      Unités légales en 5 secteurs (en nombre) 2021 - Nombre d'entreprises dans les autres services: NBR_ENTREP_TOP_5_AUTRE_SERVICES_2021
+      Créations d'entreprises (en nombre) 2022: NBR_CREATION_ENTREPRISE_2022
+      Part construction dans les créations d'ent. 2022: TAUX_CREA_ENTREP_CONSTRUCTION_2022
+      Part industrie dans les créations d'ent. 2022: TAUX_CREA_ENTREP_INDUSTRIE_2022
+      Part commerce de gros & détail, transports, hébergemnt & restauration dans les créations d'ent. 2022: TAUX_CREA_ENTREP_RESTO_TRANSPORT_COMMERCE_2022
+      Part information et communication dans les créations d'ent. 2022: TAUX_CREA_ENTREP_COMMUNICATION_2022
+      Part activités financières et d'assurance dans les créations d'ent. 2022: TAUX_CREA_ENTREP_BANQUE_ASSURANCE_2022
+      Part activités immobilières dans les créations d'ent. 2022: TAUX_CREA_ENTREP_IMMOBILIER_2022
+      Part act. spécial., scient. & techn. & act. de svices admin. & soutien dans les créations d'entreprise 2022: TAUX_CREA_ENTREP_SERVICES_TECHNIQUE_2022
+      Part administration publ., enseignement, santé humaine & action sociale dans les créations d'ent. 2022: TAUX_CREA_ENTREP_SOCIAL_SANTE_PROF_2022
+      Part autres activités de services dans les créations d'ent. 2022: TAUX_CREA_ENTREP_AUTRE_SERVICES_2022
+    entreprise_caracteristiques: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Nb étab. actifs employeurs au 31/12 2021: NBR_ENTREP_ACTIF_2021
+      Part étab. sans salarié dans les étab. actifs employeurs au 31/12 2021: TAUX_ENTREP_SANS_SALARIE_2021
+      Part étab. de 1 à 9 salariés dans les étab. actifs employeurs au 31/12 2021 : TAUX_ENTREP_1_9_SALARIE_2021
+      Part étab. de 10 salariés ou plus dans les étab. actifs employeurs au 31/12 2021: TAUX_ENTREP_10_PLUS_SALARIE_2021
+      Nb postes des étab. actifs employeurs au 31/12 2021 : NBR_POSTE_2021
+      Part postes de l'agriculture, sylviculture, pêche dans les étab. actifs au 31/12 2021: TAUX_POSTES_AGRICULTURE_2021
+      Part postes de l'industrie dans les étab. actifs au 31/12 2021: TAUX_POSTES_INDUSTRIE_2021
+      Part postes de la construction dans les étab. actifs au 31/12 2021: TAUX_POSTES_CONSTRUCTION_2021
+      Part postes du commerce, transport et services marchands dans les étab. actifs au 31/12 2021: TAUX_POSTES_RESTO_TRANSPORT_COMMERCE_2021
+      Part postes de l'admin. publique, enseignement, santé et action sociale dans les étab. actifs au 31/12 2021: TAUX_POSTES_SOCIAL_SANTE_PROF_2021
+    logements: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Part des résidences principales (hors studio de 1 personne) suroccupées 2020: TAUX_LOG_PRINCIPAL_SUROCCUPE_2020
+      Logements 2020: NBR_LOG_2020
+      Résidences principales 2020: NBR_LOG_PRINCIPAL_2020
+      Part des rés. principales dans le total des logements 2020: TAUX_LOG_PRINCIPAL_2020
+      Part des rés. secondaires (y compris les logements occasionnels) dans le total des logements 2020: TAUX_LOG_SECONDAIRE_2020
+      Part des logements vacants dans le total des logements 2020: TAUX_LOG_VACANT_2020
+      Part des appartements dans le total des logements 2020: TAUX_LOG_APPART_2020
+      Part des maisons dans le total des logements 2020: TAUX_LOG_MAISON_2020
+      Part des propriétaires dans les rés. principales 2020: TAUX_PROPRIO_LOG_PRINCIPAL_2020
+      Part des locataires dans les rés. principales 2020: TAUX_LOCATAIRE_LOG_PRINCIPAL_2020
+      Rés. principales HLM louées vides 2020: NBR_HLM_LOUES_VIDE_2020
+      Part des locataires HLM dans les rés. principales 2020: TAUX_LOCATAIRE_HLM_LOG_PRINCIPAL_2020
+      Part des rés. principales construites avant 1946 2020: TAUX_LOG_PRINCIPAL_CONSTRUIT_PRE_1946_EN_2020
+    menages: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Part des familles monoparentales 2020: TAUX_FAMILLE_MONOPARENT_2020
+      Nb de familles 2020:  NBR_FAMILLE_2020
+      Nb de familles monoparentales 2020: NBR_FAMILLE_MONOPARENT_2020
+      Nb de ménages d'une personne 2020: NBR_MENAGE_1PERS_2020
+      Nb de ménages 2020: NBR_MENAGE_2020
+      Population des ménages 2020: NBR_TOTAL_PERS_MENAGE_2020
+      Nb de pers. de 15 ans ou + 2020: NBR_PERS_MENAGE_15_PLUS_2020
+      Part des ménages d'une pers. 2020: TAUX_MENAGE_1PERS_2020
+      Part des familles sans enf. de - de 25 ans 2020: TAUX_FAMILLE_ENFANT_PLUS_25ANS_2020
+      Part des familles avec 1 enf. de - de 25 ans 2020: TAUX_FAMILLE_1_ENFANT_MOINS_25ANS_2020
+      Part des familles avec 2 enf. de - de 25 ans 2020: TAUX_FAMILLE_2_ENFANT_MOINS_25ANS_2020
+      Part des familles avec 3 enf. ou plus de - de 25 ans 2020: TAUX_FAMILLE_3_PLUS_ENFANT_MOINS_25ANS_2020
+      Part des pers. de 15 ans ou + célibataires 2020: TAUX_CELIBATAIRE_2020
+      Part des pers. de 15 ans ou + en concubinage ou union libre 2020: TAUX_CONCUBINAGE_2020
+      Part des pers. de 15 ans ou + divorcées 2020: TAUX_DIVORCE_2020
+      Part des personnes de 15 ans ou + mariées 2020: TAUX_MARIE_2020
+      Part des personnes de 15 ans ou + pacsées 2020: TAUX_PACSE_2020
+      Part des pers. de 15 ans ou + veufs 2020: TAUX_VEUF_2020
+      Taille moyenne des ménages 2020: TAILLE_MOYENNE_MENAGE_2020
+    naissance: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Nombre de naissances domiciliées 2022: NBR_NAISSANCE_2022
+    populations_csp: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Période du pic relatif de population: PERIODE_PIC_RELATIF_POP
+      Densité de population (historique depuis 1876) 2020: DENSITE_POP
+      Population municipale 2021: POP_2021
+      Population municipale (historique depuis 1876) 2020: POP_2020
+      Évol. annuelle moy. de la population 2014-2020: EVOLUTION_PERCENT_POP_2014_2020
+      Évol. annuelle moy. de la population 2015 - 2021 (en %) 2021: EVOLUTION_PERCENT_POP_2015_2021
+      Évol. annuelle moy. de la pop. due au solde naturel 2014-2020: EVOLUTION_PERCENT_POP_SOLDE_NATUREL_2014_2020
+      Évol. annuelle moy. de la pop. due au solde apparent entrées/sorties 2014-2020: EVOLUTION_PERCENT_POP_IMMI_EMI_GRATION_2014_2020
+      Période du pic simple de population: PERIODE_PIC_SIMPLE_POP
+      Part des pers. âgées de - 15 ans 2020 : TAUX_POP_MOINS_15_2020
+      Nb de pers. âgées de - de 25 ans 2020: NBR_POP_MOINS_25_2020
+      Part des pers. âgées de - de 25 ans 2020: TAUX_POP_MOINS_25_2020
+      Nb de pers. âgées de 25 à 64 ans 2020: NBR_POP_25_64_2020
+      Part des pers. âgées de 25 à 64 ans 2020: TAUX_POP_25_64_2020
+      Nb de pers. âgées de 65 ans ou + 2020: NBR_POP_PLUS_65_2020
+      Part des pers. âgées de 65 ans ou + 2020: TAUX_POP_PLUS_65_2020
+      Nb de pers. âgées  de 75 ans ou plus 2020: NBR_POP_PLUS_75_2020
+      Part des pers. âgées de 75 ans ou + 2020: TAUX_POP_PLUS_75_2020
+      Nb de pers. âgées de 80 ans ou + 2020: NBR_POP_PLUS_80_2020
+      Part des pers. âgées de 80 ans ou + 2020: TAUX_POP_PLUS_80_2020
+      Indice de vieillissement 2020: INDICE_VIELLISSEMENT_2020
+      Population de 15 ans ou + selon la CSP 2020: NBR_POP_15_PLUS_2020
+      Population de 15 ans ou + selon la CSP 2020.1: NBR_POP_15_PLUS_AGRICULTEUR_2020
+      Population de 15 ans ou + selon la CSP 2020.2: NBR_POP_15_PLUS_ARTISAN_COMMERCE_2020
+      Population de 15 ans ou + selon la CSP 2020.3: NBR_POP_15_PLUS_CADRE_INTELECT_2020
+      Population de 15 ans ou + selon la CSP 2020.4: NBR_POP_15_PLUS_PROF_INTERMEDIAIRE_2020
+      Population de 15 ans ou + selon la CSP 2020.5: NBR_POP_15_PLUS_EMPLOYE_2020
+      Population de 15 ans ou + selon la CSP 2020.6 : NBR_POP_15_PLUS_OUVRIER_2020
+      Population de 15 ans ou + selon la CSP 2020.7: NBR_POP_15_PLUS_RETRAITE_2020
+      Population de 15 ans ou + selon la CSP 2020.8: NBR_POP_15_PLUS_AUTRE_2020
+    scolarisation: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Part des diplômés d'un BAC+5 ou plus dans la pop. non scolarisée de 15 ans ou + 2020 : TAUX_BAC_PLUS_5_2020
+      Nb de pers. non scolarisées de 15 ans ou + 2020: NBR_NON_SCOLARISE_2020
+      Part des non ou peu diplômés dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_SANS_DIPLOME_2020
+      Part des pers., dont le diplôme le plus élevé est le bepc ou le brevet, dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_BEPC_2020
+      Part des pers., dont le diplôme le plus élevé est un CAP ou un BEP, dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_CAP_BEP_2020
+      Part des pers., dont le diplôme le plus élevé est le bac, dans la pop. non scolarisée de 15 ans ou + 2020 : TAUX_BAC_2020
+      Part des diplômés d'un BAC+2 dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_BAC_PLUS_2_2020
+      Part des diplômés d'un BAC+3  ou BAC+4 dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_BAC_PLUS_4_2020
+    securite: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Coups et blessures volontaires (en nombre) 2022: NBR_COUP_BLESSURE_VOLONTAIRE_2022
+      Coups et blessures volontaires (taux) 2022: TAUX_COUP_BLESSURE_VOLONTAIRE_2022
+      Coups et blessures volontaires dans le cadre familial (en nombre) 2022: NBR_COUP_BLESSURE_VOLONTAIRE_FAMILLE_2022
+      Coups et blessures volontaires dans le cadre familial (taux) 2022: TAUX_COUP_BLESSURE_VOLONTAIRE_FAMILLE_2022
+      Coups et blessures volontaires hors cadre familial (en nombre) 2022: NBR_COUP_BLESSURE_VOLONTAIRE_HORS_FAMILLE_2022
+      Coups et blessures volontaires hors cadre familial (taux) 2022: TAUX_COUP_BLESSURE_VOLONTAIRE_HORS_FAMILLE_2022
+      Violences sexuelles (en nombre) 2022 : NBR_VIOLENCE_SEXE_2022
+      Violences sexuelles (taux) 2022: TAUX_VIOLENCE_SEXE_2022
+      Vols violents avec armes (en nombre) 2022: NBR_VOL_VIOLENT_AVEC_ARME_2022
+      Vols sans violence contre des personnes (taux) 2022: TAUX_VOL_NON_VIOLENT_2022
+      Vols sans violence contre des personnes (en nombre) 2022: NBR_VOL_NON_VIOLENT_2022
+      Vols violents sans arme (taux) 2022: TAUX_VOL_VIOLENT_SANS_ARME_2022
+      Vols violents sans arme (en nombre) 2022: NBR_VOL_VIOLENT_SANS_ARME_2022
+      Vols violents avec armes (taux) 2022: TAUX_VOL_VIOLENT_AVEC_ARME_2022
+      Cambriolages de logement (en nombre) 2022: NBR_CAMBRIOLAGE_2022
+      Cambriolages de logement (taux) 2022: TAUX_CAMBRIOLAGE_2022
+      Vols de véhicules (en nombre) 2022: NBR_VOL_VEHICULE_2022
+      Vols de véhicules (taux) 2022: TAUX_VOL_VEHICULE_2022
+      Vols dans les véhicules (en nombre) 2022: NBR_VOL_DANS_VEHICULE_2022
+      Vols dans les véhicules (taux) 2022: TAUX_VOL_DANS_VEHICULE_2022
+      Vols d'accessoires sur véhicules (en nombre) 2022: NBR_VOL_ACCESSOIRE_VEHICULE_2022
+      Vols d'accessoires sur véhicules (taux) 2022: TAUX_VOL_ACCESSOIRE_VEHICULE_2022
+      Destructions et dégradations volontaires (en nombre) 2022: NBR_DEGRADATION_VOLONTAIRE_2022
+      Destructions et dégradations volontaires (taux) 2022: TAUX_DEGRADATION_VOLONTAIRE_2022
+      Usage de stupéfiants (nombre) 2022: NBR_USAGE_STUPEFIANTS_2022
+      Usage de stupéfiants (taux) 2022: TAUX_USAGE_STUPEFIANTS_2022
+      Trafic de stupéfiants (nombre) 2022: NBR_TRAFIC_STUPEFIANTS_2022
+    tourisme: 
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Nb d'hôtels 2023: NBR_HOTEL_2023
+      Nb de chambres dans les hôtels 2023: NBR_CHAMBRE_HOTEL_2023
+      Nb de chambres d'hôtel par étoile 2023 - Non classés ou 1 étoile (économique): NBR_CHAMBRE_HOTEL_0_1_ETOILE_2023
+      Nb de chambres d'hôtel par étoile 2023 - 2 ou 3 étoiles (milieu de gamme): NBR_CHAMBRE_HOTEL_2_3_ETOILE_2023
+      Nb de chambres d'hôtel par étoile 2023 - 4 ou 5 étoiles (haut de gamme): NBR_CHAMBRE_HOTEL_4_5_ETOILE_2023
+      Nb de terrains de camping 2023: NBR_TERRAIN_CAMPING_2023
+      Nb d'emplacements de camping 2023: NBR_EMPLACEMENTS_CAMPING_2023
+      Nb d'emplacements de camping par étoile 2023 - Non classés ou 1 étoile (économique): NBR_EMPLACEMENTS_CAMPING_0_1_ETOILE_2023
+      Nb d'emplacements de camping par étoile 2023 - 2 ou 3 étoiles (milieu de gamme): NBR_EMPLACEMENTS_CAMPING_2_3_ETOILE_2023
+      Nb d'emplacements de camping par étoile 2023 - 4 ou 5 étoiles (haut de gamme): NBR_EMPLACEMENTS_CAMPING_4_5_ETOILE_2023
+      Nb d'autres hébergements collectifs de tourisme 2023: NBR_AUTRE_HEBERGEMENT_TOURISME_2023
+  departement:
+    chomage:  
+      Code: ID_DEPARTEMENT
+      Libellé : NOM_DEPARTEMENT
+      Taux de chômage annuel moyen des femmes 2022: TAUX_CHOMAGE_FEMME_2022
+      Taux de chômage annuel moyen des hommes 2022: TAUX_CHOMAGE_HOMME_2022
+      Taux de chômage annuel moyen des 15 à 24 ans 2022: TAUX_CHOMAGE_15_24_2022
+      Taux de chômage annuel moyen des 25 à 49 ans 2022: TAUX_CHOMAGE_25_49_2022
+      Taux de chômage annuel moyen des 50 ans ou plus 2022: TAUX_CHOMAGE_50_PLUS_2022
+  zone_emploi:
+    chomage: 
+      Code: ID_ZONE_EMPLOI
+      Libellé : NOM_ZONE_EMPLOI
+      Taux de chômage trimestriel 2023-T3: TAUX_CHOMAGE_T3_2023
+      Taux de chômage annuel moyen 2022: TAUX_CHOMAGE_2023
+    pauvrete: 
+      Code: ID_ZONE_EMPLOI
+      Libellé : NOM_ZONE_EMPLOI
+      Taux de pauvreté 2021: TAUX_PAUVRETE_2021
+      Taux de pauvreté - moins de 30 ans 2021: TAUX_PAUVRETE_MOINS_30_2021
+      Taux de pauvreté - 30 ans à 39 ans 2021: TAUX_PAUVRETE_30_39_2021
+      Taux de pauvreté - 40 ans à 49 ans 2021: TAUX_PAUVRETE_40_49_2021
+      Taux de pauvreté - 50 ans à 59 ans 2021: TAUX_PAUVRETE_50_59_2021
+      Taux de pauvreté - 60 ans à 74 ans 2021: TAUX_PAUVRETE_60_74_2021
+      Taux de pauvreté - 75 ans ou plus 2021: TAUX_PAUVRETE_75_PLUS_2021
+      Taux de pauvreté - locataires 2021: TAUX_PAUVRETE_LOCATAIRES_2021
+    pouvoir_achat: 
+      Code: ID_ZONE_EMPLOI
+      Libellé : NOM_ZONE_EMPLOI
+      Nb de ménages fiscaux 2021: NBR_MENAGE_FISCAUX_2021
+      Part des ménages fiscaux imposés 2021: TAUX_MENAGE_FICAUX_IMPOSE_2021
+      Médiane du niveau de vie 2021: MEDIAN_NIVEAU_VIE_2021
+      Part des revenus d'activité dans le rev. disp. 2021: TAUX_REVENU_ACTIVITE_DANS_REVENU_TOTAL_2021
+      Part des salaires et traitements hors chômage dans le rev. disp. 2021: TAUX_SALAIRE_DANS_REVENU_TOTAL_2021
+      Part des indemnités de chômage dans le rev. disp. 2021: TAUX_REVENU_CHOMAGE_DANS_REVENU_TOTAL_2021
+      Part des revenus des activités non salariées dans le rev. disp. 2021: TAUX_REVENU_INDEPENDANT_DANS_REVENU_TOTAL_2021
+      Part des pensions, retraites et rentes dans le rev. disp. 2021: TAUX_REVENU_RENTE_RETRAITE_DANS_REVENU_TOTAL_2021
+      Part des revenus du patrimoine et autres dans le rev. disp. 2021: TAUX_REVENU_PATRIMOINE_DANS_REVENU_TOTAL_2021
+      Part des prestations sociales dans le rev. disp. 2021: TAUX_PRESTA_SOCIALE_DANS_REVENU_TOTAL_2021
+      Part des prestations familiales dans le rev. disp. 2021: TAUX_PRESTA_FAMILIAL_DANS_REVENU_TOTAL_2021
+      Part des minima sociaux dans le rev. disp. 2021: TAUX_REVENU_MINIMA_SOCIAUX_DANS_REVENU_TOTAL_2021
+      Part des prestations logement dans le rev. disp. 2021: TAUX_PRESTA_LOG_DANS_REVENU_TOTAL_2021
+      Part des impôts dans le rev. disp. 2021: TAUX_IMPOT_DANS_REVENU_TOTAL_2021
+      1er décile du niv. de vie 2021: NIVEAU_VIE_1_DECILE
+      9e décile du niv. de vie 2021: NIVEAU_VIE_9_DECILE
+      Rapport interdécile du niveau de vie (9e déc./1er déc.) 2021: RATIO_NIVEAU_VIE_9_1_DECILE
+    salaires: 
+      Code: ID_ZONE_EMPLOI
+      Libellé : NOM_ZONE_EMPLOI
+      Salaire net horaire moyen 2021: SALAIRE_HORAIRE_NET_2021
+      Salaire net hor. moy. des 18 à 25 ans 2021: SALAIRE_HORAIRE_NET_18_25_2021
+      Salaire net hor. moy. des 26 à 50 ans 2021: SALAIRE_HORAIRE_NET_26_50_2021
+      Salaire net hor. moy. des 51 ans ou + 2021: SALAIRE_HORAIRE_NET_51_PLUS_2021
+      Salaire net hor. moy. des femmes 2021: SALAIRE_HORAIRE_NET_FEMME_2021
+      Salaire net hor. moy. des hommes 2021: SALAIRE_HORAIRE_NET_HOMME_2021
+      Salaire net hor. moy. des cadres, prof. intellectuelles sup. et chefs d'entreprises salariés 2021: SALAIRE_HORAIRE_NET_CADRE_INTELLECT_2021
+      Salaire net hor. moy. des prof. intermédiaires 2021 : SALAIRE_HORAIRE_NET_PROF_INTERMEDIAIRE_2021
+      Salaire net hor. moy. des employés 2021: SALAIRE_HORAIRE_NET_EMPLOYES_2021
+      Salaire net hor. moy. des ouvriers 2021: SALAIRE_HORAIRE_NET_OUVRIERS _2021
+

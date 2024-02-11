@@ -27,11 +27,11 @@ flat_file:
         sep : ","
         table_name: CARREAUX_1KM_REUNION
     commune: #https://statistiques-locales.insee.fr/#view=map1&c=indicator
-      communes_encodage_2020: 
-        path: ./data/insee/commune/communes2020.csv # https://www.insee.fr/fr/information/4316069
+      communes_encodage_2020: # https://www.insee.fr/fr/information/4316069
+        path: ./data/insee/commune/communes2020.csv 
         sep : ","
         table_name: COMMUNE_ENCODAGE_2020
-      communes_encodage_2023: 
+      communes_encodage_2023:  # https://www.insee.fr/fr/information/6800675
         path: ./data/insee/commune/v_commune_2023.csv 
         sep : ","
         table_name: COMMUNE_ENCODAGE_2023
@@ -39,30 +39,51 @@ flat_file:
         path: ./data/insee/commune/deces_communes.csv
         sep : ";" 
         table_name: COMMUNE_DECES
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       elections: 
         path: ./data/insee/commune/elections_communes.csv
         sep : ";" 
         table_name: COMMUNE_ELECTIONS
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       emploi: 
         path: ./data/insee/commune/emploi_par_age_sexe_communes.csv 
         sep : ";" 
         table_name: COMMUNE_EMPLOIS
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       entreprise_creation: 
         path: ./data/insee/commune/entreprise_creations_commune.csv 
         sep : ";" 
         table_name: COMMUNE_ENTREPRISE_CREATION
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       entreprise_caracteristiques: 
         path: ./data/insee/commune/entreprises_caracteristiques_commune.csv 
         sep : ";" 
         table_name: COMMUNE_ENTREPRISE_CARACT
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       logements: 
         path: ./data/insee/commune/logements_commune.csv 
         sep : ";" 
         table_name: COMMUNE_LOGEMENTS
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       menages: 
         path: ./data/insee/commune/menages_communes.csv 
         sep : ";"
         table_name: COMMUNE_MENAGES
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       naissance: 
         path: ./data/insee/commune/naissance_communes.csv 
         sep : ";" 
@@ -71,38 +92,65 @@ flat_file:
         path: ./data/insee/commune/population_csp_communes.csv 
         sep : ";" 
         table_name: COMMUNE_POPULATION_CSP
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       scolarisation: 
         path: ./data/insee/commune/scolarisation_communes.csv 
         sep : ";" 
         table_name: COMMUNE_ETUDES
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       securite: 
         path: ./data/insee/commune/securite_vols_commune.csv 
         sep : ";" 
         table_name: COMMUNE_SECURITE
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       tourisme: 
         path: ./data/insee/commune/tourisme_commune_2023.csv
         sep : ";"
         table_name: COMMUNE_TOURISME
-    deparetment:
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
+    departement:
       chomage:  
         path: ./data/insee/departement/chomage_departement.csv
         sep : ";" 
         table_name: DEPARTEMENT_CHOMAGE
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
     zone_emploi:
       chomage: 
         path: ./data/insee/zone_emploi/chomage_zone_emploi.csv
         sep : ";" 
         table_name: ZONE_EMPLOI_CHOMAGE
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       pauvrete: 
         path: ./data/insee/zone_emploi/pauvrete_zone_emploi.csv
         sep : ";" 
         table_name: ZONE_EMPLOI_PAUVRETE
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       pouvoir_achat: 
         path: ./data/insee/zone_emploi/pouvoir_achat_zone_emploi.csv
         sep : ";" 
         table_name: ZONE_EMPLOI_POUVOIR_ACHAT
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
       salaires: 
         path: ./data/insee/zone_emploi/salaires_zone_emploi.csv
         sep : ";" 
         table_name: ZONE_EMPLOI_SALAIRES
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
 
