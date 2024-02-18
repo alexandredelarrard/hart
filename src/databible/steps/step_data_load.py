@@ -1,6 +1,3 @@
-import os
-import time
-import random
 from typing import List, Dict
 from omegaconf import DictConfig
 import pandas as pd
@@ -18,15 +15,11 @@ class StepDataLoad(Step):
 
         super().__init__(context=context, config=config)
 
-
     @timing
     def run(self):
 
         # initialize the drivers 
         data_dict = self.load_datas()
-
-        # clean datas 
-        data_dict = self.pre_clean_data(data_dict)
 
         return data_dict
 
@@ -34,23 +27,24 @@ class StepDataLoad(Step):
     @timing
     def load_datas(self):
 
-        data_dict= {}
+        cleaning_methods = [method for method in dir(StepDataLoad) if "cleaning" in method]
 
         for granularity, data_name in self._config.flat_file.insee.items():
-            data_dict[granularity] = {}
             
             for data_name, data_config in self._config.flat_file.insee[granularity].items():
-                data_dict[granularity][data_name] = self.load_data(data_config=data_config,
-                                                                   names=self._config.naming[granularity][data_name],
-                                                                   dtypes=self._config.dtypes[granularity][data_name])
+                dataframe = self.load_data(data_config=data_config,
+                                        names=self._config.naming[granularity][data_name],
+                                        dtypes=self._config.dtypes[granularity][data_name])
+
+                if f"cleaning_{granularity}_{data_name}" in cleaning_methods:
+                    self._log.info(f"cleaning during loading of table {data_name}")
+                    dataframe = eval(f"self.cleaning_{granularity}_{data_name}")(dataframe)
 
                 if "table_name" not in data_config.keys():
                     data_config.table_name = "_".join([granularity.upper(), data_name.upper()])
 
-                self.write_sql_data(dataframe=data_dict[granularity][data_name],
+                self.write_sql_data(dataframe=dataframe,
                                     table_name=data_config.table_name)
-
-        return data_dict
 
 
     def load_data(self, data_config, 
@@ -81,29 +75,44 @@ class StepDataLoad(Step):
 
 
     @timing
-    def pre_clean_data(self, data_dict):
-
-        cleaning_methods = [method for method in dir(StepDataLoad) if "cleaning"  in method]
-    
-        for methode in cleaning_methods:
-            data_dict = eval(f"self.{methode}")(data_dict)
-
-        return data_dict
-
-    @timing
-    def cleaning_commune_code_geo(self, data_dict):
-        data_dict["commune"]["communes_encodage_2020"] = data_dict["commune"]["communes_encodage_2020"].drop_duplicates("COM")
-        return data_dict
-
-    @timing
-    def cleaning_carreaux_200m(self, data_dict):
-
-        df = data_dict["carreaux_200m"]["met"].copy()
-        
+    def cleaning_carreaux_200m_met(self, df):
         # split insee code to have carreaux per insee code 
         df["LCOG_GEO"] = df["LCOG_GEO"].apply(lambda x : [str(x)[i:i+5] for i in range(0, len(str(x)), 5) ])
         df = df.explode("LCOG_GEO")
+        return df
+    
+    @timing
+    def cleaning_carreaux_200m_reun(self, df):
+        # split insee code to have carreaux per insee code 
+        df["LCOG_GEO"] = df["LCOG_GEO"].apply(lambda x : [str(x)[i:i+5] for i in range(0, len(str(x)), 5) ])
+        df = df.explode("LCOG_GEO")
+        return df
 
-        data_dict["carreaux_200m"]["met"] = df
+    @timing
+    def cleaning_carreaux_200m_mart(self, df):
+        # split insee code to have carreaux per insee code 
+        df["LCOG_GEO"] = df["LCOG_GEO"].apply(lambda x : [str(x)[i:i+5] for i in range(0, len(str(x)), 5) ])
+        df = df.explode("LCOG_GEO")
+        return df
 
-        return data_dict
+    @timing
+    def cleaning_carreaux_1km_met(self, df):
+        # split insee code to have carreaux per insee code 
+        df["LCOG_GEO"] = df["LCOG_GEO"].apply(lambda x : [str(x)[i:i+5] for i in range(0, len(str(x)), 5) ])
+        df = df.explode("LCOG_GEO")
+        return df
+    
+    @timing
+    def cleaning_carreaux_1km_reun(self, df):
+        # split insee code to have carreaux per insee code 
+        df["LCOG_GEO"] = df["LCOG_GEO"].apply(lambda x : [str(x)[i:i+5] for i in range(0, len(str(x)), 5) ])
+        df = df.explode("LCOG_GEO")
+        return df
+    
+    @timing
+    def cleaning_carreaux_1km_mart(self, df):
+        # split insee code to have carreaux per insee code 
+        df["LCOG_GEO"] = df["LCOG_GEO"].apply(lambda x : [str(x)[i:i+5] for i in range(0, len(str(x)), 5) ])
+        df = df.explode("LCOG_GEO")
+        return df
+
