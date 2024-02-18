@@ -26,7 +26,7 @@ class StepDataLoad(Step):
         data_dict = self.load_datas()
 
         # clean datas 
-        # data_dict = self.pre_clean_data(data_dict)
+        data_dict = self.pre_clean_data(data_dict)
 
         return data_dict
 
@@ -47,9 +47,8 @@ class StepDataLoad(Step):
                 if "table_name" not in data_config.keys():
                     data_config.table_name = "_".join([granularity.upper(), data_name.upper()])
 
-                if data_config.table_name not in self._tables_in_sql:
-                    self.write_sql_data(dataframe=data_dict[granularity][data_name],
-                                        table_name=data_config.table_name)
+                self.write_sql_data(dataframe=data_dict[granularity][data_name],
+                                    table_name=data_config.table_name)
 
         return data_dict
 

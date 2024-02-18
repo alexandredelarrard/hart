@@ -27,5 +27,8 @@ if __name__ == "__main__":
     dataload = StepDataLoad(config, context)
     data_dict = dataload.run()
 
-    self = StepDataClean(config, context)    
+    self = StepDataConsolidate(config, context)    
+    self.run()
+
+    # stepclean = StepDataClean(config, context)    
     # data_dict = stepclean.run()

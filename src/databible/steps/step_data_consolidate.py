@@ -20,4 +20,62 @@ class StepDataConsolidate(Step):
     @timing
     def run(self):
 
-        return 
+        # consolidate granularities 
+        df_communes = self.consolidate_communes()
+        df_departements = self.consolidate_departements()
+        df_zone_emploi = self.consolidate_zone_emploi()
+
+        # save new tables
+        self.write_sql_data(df_communes, table_name="CONSOLIDATE_COMMUNE")
+        self.write_sql_data(df_departements, table_name="CONSOLIDATE_DEPARTEMENTS")
+        self.write_sql_data(df_zone_emploi, table_name="CONSOLIDATE_ZONE_EMPLOI")
+
+    def consolidate_communes(self):
+        # TODO: check les communes entre 2020 et 2023 qui changent. 
+        # Gérer les MVs de région & co
+
+        df_root = self.read_sql_data("COMMUNE_ENCODAGE_2020")
+        df_root = df_root[["ID_COMMUNE", "ID_REGION", "ID_DEPARTEMENT", "ID_ARRONDISSEMENT",
+                           "ID_CANTON", "ID_COMMUNE_PARENTE", "NOM_COMMUNE"]].drop_duplicates("ID_COMMUNE")
+        
+        commune_tables = [x for x in self._tables_in_sql if "CLEAN" not in x \
+                          and "CONSOLIDATE" not in x and "COMMUNE" in x and \
+                          "ENCODAGE" not in x]
+
+        assert(len(commune_tables) == 12)
+
+        for table_name in commune_tables:
+            df_table = self.read_sql_data(table_name)
+            df_root = df_root.merge(df_table.drop(["index", "NOM_COMMUNE_ORIGINE"], axis=1), on="ID_COMMUNE",
+                                how="left", validate="1:1")
+
+        df_root = df_root.loc[df_root["NBR_DECES_2022"].notnull()]
+
+        return df_root
+    
+    def consolidate_departements(self):
+        # TODO: more data at dep level
+
+        df_dep = self.read_sql_data("DEPARTEMENT_CHOMAGE")
+        df_dep = df_dep.drop(["index"], axis=1)
+
+        return df_dep
+    
+    def consolidate_zone_emploi(self):
+        # TODO: more data at zone emploi level
+
+        df_ze = self.read_sql_data("ZONE_EMPLOI_CHOMAGE")
+        df_ze = df_ze.drop(["index"], axis=1)
+
+        zone_emploi_tables = [x for x in self._tables_in_sql if "CLEAN" not in x \
+                          and "CONSOLIDATE" not in x and "ZONE_EMPLOI" in x and
+                          "CHOMAGE" not in x]
+
+        assert(len(zone_emploi_tables) == 3)
+
+        for table_name in zone_emploi_tables:
+            df_table = self.read_sql_data(table_name)
+            df_ze = df_ze.merge(df_table.drop(["index", "NOM_ZONE_EMPLOI"], axis=1), on="ID_ZONE_EMPLOI",
+                                how="left", validate="1:1")
+
+        return df_ze

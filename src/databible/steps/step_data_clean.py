@@ -33,44 +33,32 @@ class StepDataClean(Step):
             if methode in cleaning_methods:
                 df = self.read_sql_data(data_name)
                 df = eval(f"self.{methode}")(df)
-
-                self.write_sql_data(df, table_name="CLEAN_" + data_name)
+                self.write_sql_data(df, table_name=data_name)
     
-    # dict_keys(['communes_encodage_2020', 'communes_encodage_2023', 'deces', 'elections', 'emploi', 'entreprise_creation', 'entreprise_caracteristiques', 'logements', 'menages', 'naissance', 'populations_csp', 'scolarisation', 'securite', 'tourisme'])
-
     @timing
     def commune_emplois_cleaning(self, df):
 
         # split dataframe
-        df_zipcode_activity  = df[['CODE', 'LIBELLE',
-                                   "NBR_EMPLOIS_2020",
-                                   "TAUX_SALARIES_DS_EMPLOI_2020",
-                                   "TAUX_OURVIERS_DS_EMPLOI_2020",
-                                   "TAUX_EMPOYES_DS_EMPLOI_2020",
-                                   "TAUX_AGRICULTEURS_DS_EMPLOI_2020",
-                                   "TAUX_ARTISANS_COMMERCANTS_DS_EMPLOI_2020",
-                                   "TAUX_PROF_INTERMEDIAIRE_DS_EMPLOI_2020",
-                                   "TAUX_CADRES_INTEL_SUP_DS_EMPLOI_2020"]]
-        
-        df_zipcode_activity["CSP"] = df_zipcode_activity[["TAUX_OURVIERS_DS_EMPLOI_2020",
-                                                        "TAUX_EMPOYES_DS_EMPLOI_2020",
-                                                        "TAUX_AGRICULTEURS_DS_EMPLOI_2020",
-                                                        "TAUX_ARTISANS_COMMERCANTS_DS_EMPLOI_2020",
-                                                        "TAUX_PROF_INTERMEDIAIRE_DS_EMPLOI_2020",
-                                                        "TAUX_CADRES_INTEL_SUP_DS_EMPLOI_2020"]].idxmax(axis=1)
-        df_zipcode_activity["CSP"] =  df_zipcode_activity["CSP"].map({"TAUX_OURVIERS_DS_EMPLOI_2020" : "ouvrier",
-                                                                      "TAUX_EMPOYES_DS_EMPLOI_2020" : "employe",
-                                                                    "TAUX_AGRICULTEURS_DS_EMPLOI_2020": "agriculteur",
-                                                                    "TAUX_ARTISANS_COMMERCANTS_DS_EMPLOI_2020":"artisan_commercant",
-                                                                    "TAUX_PROF_INTERMEDIAIRE_DS_EMPLOI_2020":"prof_intermediaire",
-                                                                    "TAUX_CADRES_INTEL_SUP_DS_EMPLOI_2020":"cadre"})
+        df["CSP"] = df[["TAUX_OUVRIERS_2020",
+                        "TAUX_EMPLOYES_2020",
+                        "TAUX_AGRICULTEURS_2020",
+                        "TAUX_ARTISAN_COMMERCE_2020",
+                        "TAUX_PROF_INTER_2020",
+                        "TAUX_CADRE_INTELLECT_2020"]].idxmax(axis=1).map({
+                            "TAUX_OUVRIERS_2020" : "ouvrier",
+                            "TAUX_EMPLOYES_2020" : "employe",
+                            "TAUX_AGRICULTEURS_2020": "agriculteur",
+                            "TAUX_ARTISAN_COMMERCE_2020":"artisan_commercant",
+                            "TAUX_PROF_INTER_2020":"prof_intermediaire",
+                            "TAUX_CADRE_INTELLECT_2020":"cadre"})
 
         # activity per age, zipcode gender
-        df_activity = df[['CODE', 'LIBELLE',
-                        'NBR_EMPLOIS_2020',
-                        'NBR_FEMMES_15_24_2020',
-                        'NBR_FEMMES_25_54_2020',
-                        'NBR_FEMMES_55_64_2020',
+        df_activity = df[['ID_COMMUNE', 
+                        'NOM_COMMUNE_ORIGINE',
+                        'NBR_EMPLOI',
+                        'NBR_FEMME_15_24_2020',
+                        'NBR_FEMME_25_54_2020',
+                        'NBR_FEMME_55_64_2020',
                         'TAUX_ACTIVITE_15_24',
                         'TAUX_ACTIVITE_25_54',
                         'TAUX_ACTIVITE_55_64',
@@ -82,5 +70,6 @@ class StepDataClean(Step):
                         'TAUX_ACTIVITE_HOMME_55_64']]
             
         return df
+    
     
 
