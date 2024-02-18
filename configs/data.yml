@@ -116,6 +116,21 @@ flat_file:
         na_values:
           - 'N/A - résultat non disponible'
           - 'N/A - division par 0'
+      mapping_zone_emploi_code_commune:
+        path: ./data/insee/commune/mapping_zone_emploi_code_commune.csv
+        sep : ";"
+        table_name: COMMUNE_MAPPING_ZONE_EMPLOI
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
+      ratios_hommes:
+        path: ./data/insee/commune/commune_ratio_hommes_2020.csv
+        sep : ";"
+        table_name: COMMUNE_RATIO_HOMMES
+        na_values:
+          - 'N/A - résultat non disponible'
+          - 'N/A - division par 0'
+      # TODO : https://www.observatoire-des-territoires.gouv.fr/nombre-dhommes
     departement:
       chomage:  
         path: ./data/insee/departement/chomage_departement.csv

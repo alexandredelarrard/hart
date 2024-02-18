@@ -31,10 +31,10 @@ class StepDataConsolidate(Step):
         self.write_sql_data(df_zone_emploi, table_name="CONSOLIDATE_ZONE_EMPLOI")
 
         df_carreaux_200m = self.consolidate_carreaux_200m()
-        self.write_sql_data(df_carreaux_200m, table_name="CONSOLIDATE_CARREAUX_200m")
+        self.write_sql_data(df_carreaux_200m, table_name="CONSOLIDATE_CARREAUX_200M")
 
         df_carreaux_1km = self.consolidate_carreaux_1km()
-        self.write_sql_data(df_carreaux_1km, table_name="CONSOLIDATE_CARREAUX_1km")
+        self.write_sql_data(df_carreaux_1km, table_name="CONSOLIDATE_CARREAUX_1KM")
 
     @timing
     def consolidate_communes(self):
@@ -49,7 +49,7 @@ class StepDataConsolidate(Step):
                           and "CONSOLIDATE" not in x and "COMMUNE" in x and \
                           "ENCODAGE" not in x]
 
-        assert(len(commune_tables) == 12)
+        assert(len(commune_tables) == 14)
 
         for table_name in commune_tables:
             df_table = self.read_sql_data(table_name)
@@ -74,7 +74,7 @@ class StepDataConsolidate(Step):
 
         zone_emploi_tables = [x for x in self._tables_in_sql if "CLEAN" not in x \
                           and "CONSOLIDATE" not in x and "ZONE_EMPLOI" in x and
-                          "CHOMAGE" not in x]
+                          "CHOMAGE" not in x and "COMMUNE_" not in x]
 
         assert(len(zone_emploi_tables) == 3)
 

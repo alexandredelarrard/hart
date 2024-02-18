@@ -21,9 +21,9 @@ class SqlHelper:
         except Exception as e:
             raise Exception(f"table name does not exist in SQL : {table_name}", "")
         
-    # def alter_table(self,table_name, column_name, column_type):
-    #     pd.read_sql(f"ALTER TABLE \"{table_name}\" ADD COLUMN \
-    #                                  {column_name} {column_type}")
+    def alter_table(self,table_name, column_name, column_type):
+        pd.read_sql(f"ALTER TABLE \"{table_name}\" ADD COLUMN \
+                                     {column_name} {column_type}")
         
     def get_table_rows_count(self, table_name):
         return pd.read_sql(f"SELECT COUNT(*) FROM \"{table_name}\"", 
@@ -33,9 +33,9 @@ class SqlHelper:
         return pd.read_sql(f"SELECT * FROM information_schema.columns WHERE table_name = '{table_name}'", 
                            con=self._context.db_con).shape[0]
     
-    # def drop_table(self, table_name):
-    #     with self._context.db_con.connect() as conn:
-    #         conn.execute(text(f"DROP TABLE \"{table_name}\""))
+    def drop_table(self, table_name):
+        with self._context.db_con.connect() as conn:
+            conn.execute(text(f"DROP TABLE \"{table_name}\""))
     
     def write_to_sql(self, dataframe, table_name, if_exists="append"):
         dataframe.to_sql(table_name, con=self._context.db_con, if_exists=if_exists, chunksize = 50000, index=False)
@@ -46,11 +46,11 @@ class SqlHelper:
             col_count = self.get_table_cols_count(table_name)
             row_count = self.get_table_rows_count(table_name)
 
-            if col_count > dataframe.shape[1] :
+            if dataframe.shape[1] != col_count :
                 self._log.info(f"{table_name} - WILL BE DELETED TO ADD {col_count - dataframe.shape[1]} new columns")
                 self.write_to_sql(dataframe, table_name, if_exists="replace")
                 self._log.info(f"WRITTEN INTO SQL : {table_name}")
-            elif row_count > dataframe.shape[0] :
+            elif dataframe.shape[0] > row_count :
                 self._log.info(f"INSERT {row_count - dataframe.shape[0]} NEW OBSERVATIONS TO {table_name}")
                 self.write_to_sql(dataframe, table_name)
                 self._log.info(f"WRITTEN INTO SQL : {table_name}")

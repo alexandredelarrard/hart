@@ -242,28 +242,39 @@ naming:
     emploi: 
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
+      Nb d'emplois au lieu de travail (LT) 2020: NBR_EMPLOI
       Part des employés dans le nb d’emplois au LT 2020: TAUX_EMPLOYES_2020
       Part des ouvriers dans le nb d’emplois au LT 2020: TAUX_OUVRIERS_2020
       Part des emplois sal. dans le nb d’emplois au LT 2020: TAUX_SALARIES_2020
       Part des emplois non sal. dans le nb d’emplois au LT 2020: TAUX_NON_SALARIES_2020
-      Nb de femmes de 15 à 64 ans par tranche d'âge 2020: NBR_FEMME_15_64_2020
-      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.1: NBR_FEMME_15_24_2020
-      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.2: NBR_FEMME_25_54_2020
-      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.3: NBR_FEMME_55_64_2020
-      Nb d'emplois au lieu de travail (LT) 2020: NBR_EMPLOI
       Part des agriculteurs expl. dans le nb d’emplois au LT 2020: TAUX_AGRICULTEURS_2020
       Part des artisans, commerçants, chefs d’ent. dans le nb d’emplois au LT 2020: TAUX_ARTISAN_COMMERCE_2020
       Part des cadres et prof. intellectuelles sup. dans le nb d’emplois au LT 2020: TAUX_CADRE_INTELLECT_2020
       Part des prof. intermédiaires dans le nb d’emplois au LT 2020: TAUX_PROF_INTER_2020
-      Taux d'activité par tranche d'âge 2020: TAUX_ACTIVITE_15_24
-      Taux d'activité par tranche d'âge 2020.1: TAUX_ACTIVITE_25_54
-      Taux d'activité par tranche d'âge 2020.2: TAUX_ACTIVITE_55_64
-      Taux d'activité des femmes par tranche d'âge 2020: TAUX_ACTIVITE_FEMME_15_24
-      Taux d'activité des femmes par tranche d'âge 2020.1: TAUX_ACTIVITE_FEMME_25_54
-      Taux d'activité des femmes par tranche d'âge 2020.2: TAUX_ACTIVITE_FEMME_55_64
-      Taux activité des hommes par tranche d'âge 2020: TAUX_ACTIVITE_HOMME_15_24
-      Taux activité des hommes par tranche d'âge 2020.1: TAUX_ACTIVITE_HOMME_25_54
-      Taux activité des hommes par tranche d'âge 2020.2: TAUX_ACTIVITE_HOMME_55_64
+      Nb de pers. de 15-64 ans par tranche d'âge 2020: NBR_PERS_15_64
+      Nb de pers. de 15-64 ans par tranche d'âge 2020.1: NBR_PERS_15_24
+      Nb de pers. de 15-64 ans par tranche d'âge 2020.2: NBR_PERS_25_54
+      Nb de pers. de 15-64 ans par tranche d'âge 2020.3: NBR_PERS_55_64
+      Taux d'activité par tranche d'âge 2020: TAUX_ACTIVITE_15_64
+      Taux d'activité par tranche d'âge 2020.1: TAUX_ACTIVITE_15_24
+      Taux d'activité par tranche d'âge 2020.2: TAUX_ACTIVITE_25_54
+      Taux d'activité par tranche d'âge 2020.3: TAUX_ACTIVITE_55_64
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020: NBR_FEMME_15_64_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.1: NBR_FEMME_15_24_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.2: NBR_FEMME_25_54_2020
+      Nb de femmes de 15 à 64 ans par tranche d'âge 2020.3: NBR_FEMME_55_64_2020
+      Taux d'activité des femmes par tranche d'âge 2020: TAUX_ACTIVITE_FEMME_15_64
+      Taux d'activité des femmes par tranche d'âge 2020.1: TAUX_ACTIVITE_FEMME_15_24
+      Taux d'activité des femmes par tranche d'âge 2020.2: TAUX_ACTIVITE_FEMME_25_54
+      Taux d'activité des femmes par tranche d'âge 2020.3: TAUX_ACTIVITE_FEMME_55_64
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020: NBR_HOMME_15_64_2020
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020.1: NBR_HOMME_15_24_2020
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020.2: NBR_HOMME_25_54_2020
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020.3: NBR_HOMME_55_64_2020
+      Taux activité des hommes par tranche d'âge 2020: TAUX_ACTIVITE_HOMME_15_64
+      Taux activité des hommes par tranche d'âge 2020.1: TAUX_ACTIVITE_HOMME_15_24
+      Taux activité des hommes par tranche d'âge 2020.2: TAUX_ACTIVITE_HOMME_25_54
+      Taux activité des hommes par tranche d'âge 2020.3: TAUX_ACTIVITE_HOMME_55_64
     entreprise_creation: 
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
@@ -347,6 +358,12 @@ naming:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Nombre de naissances domiciliées 2022: NBR_NAISSANCE_2022
+    mapping_zone_emploi_code_commune:
+      Code: ID_COMMUNE
+      Libellé : NOM_COMMUNE_ORIGINE
+      Grille communale de densité: ID_GRILLE_COMMUNALE
+      Unité urbaine 2020: UNITE_URBAINE_2020
+      Zones d'emploi 2020: ZONE_EMPLOI_2020
     populations_csp: 
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
@@ -435,6 +452,11 @@ naming:
       Nb d'emplacements de camping par étoile 2023 - 2 ou 3 étoiles (milieu de gamme): NBR_EMPLACEMENTS_CAMPING_2_3_ETOILE_2023
       Nb d'emplacements de camping par étoile 2023 - 4 ou 5 étoiles (haut de gamme): NBR_EMPLACEMENTS_CAMPING_4_5_ETOILE_2023
       Nb d'autres hébergements collectifs de tourisme 2023: NBR_AUTRE_HEBERGEMENT_TOURISME_2023
+    ratios_hommes:
+      codgeo: ID_COMMUNE
+      libgeo: NOM_COMMUNE_ORIGINE
+      an: ANNEE
+      poptot_h: NBR_HOMMES_2020
   departement:
     chomage:  
       Code: ID_DEPARTEMENT

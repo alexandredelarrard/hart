@@ -246,10 +246,18 @@ dtypes:
       Part des ouvriers dans le nb d’emplois au LT 2020: float
       Part des emplois sal. dans le nb d’emplois au LT 2020: float
       Part des emplois non sal. dans le nb d’emplois au LT 2020: float
+      Nb de pers. de 15-64 ans par tranche d'âge 2020: float
+      Nb de pers. de 15-64 ans par tranche d'âge 2020.1: float
+      Nb de pers. de 15-64 ans par tranche d'âge 2020.2: float
+      Nb de pers. de 15-64 ans par tranche d'âge 2020.3: float
       Nb de femmes de 15 à 64 ans par tranche d'âge 2020: float
       Nb de femmes de 15 à 64 ans par tranche d'âge 2020.1: float
       Nb de femmes de 15 à 64 ans par tranche d'âge 2020.2: float
       Nb de femmes de 15 à 64 ans par tranche d'âge 2020.3: float
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020: float
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020.1: float
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020.2: float
+      Nb d'hommes de 15 à 64 ans par tranche d'âge 2020.3: float
       Nb d'emplois au lieu de travail (LT) 2020: float
       Part des agriculteurs expl. dans le nb d’emplois au LT 2020: float
       Part des artisans, commerçants, chefs d’ent. dans le nb d’emplois au LT 2020: float
@@ -258,12 +266,15 @@ dtypes:
       Taux d'activité par tranche d'âge 2020: float
       Taux d'activité par tranche d'âge 2020.1: float
       Taux d'activité par tranche d'âge 2020.2: float
+      Taux d'activité par tranche d'âge 2020.3: float
       Taux d'activité des femmes par tranche d'âge 2020: float
       Taux d'activité des femmes par tranche d'âge 2020.1: float
       Taux d'activité des femmes par tranche d'âge 2020.2: float
+      Taux d'activité des femmes par tranche d'âge 2020.3: float
       Taux activité des hommes par tranche d'âge 2020: float
       Taux activité des hommes par tranche d'âge 2020.1: float
       Taux activité des hommes par tranche d'âge 2020.2: float
+      Taux activité des hommes par tranche d'âge 2020.3: float
     entreprise_creation: 
       Code: str
       Libellé : str
@@ -347,6 +358,12 @@ dtypes:
       Code: str
       Libellé : str
       Nombre de naissances domiciliées 2022: float
+    mapping_zone_emploi_code_commune:
+      Code: str
+      Libellé : str
+      Grille communale de densité: str
+      Unité urbaine 2020: str
+      Zones d'emploi 2020: str
     populations_csp: 
       Code: str
       Libellé : str
@@ -435,6 +452,11 @@ dtypes:
       Nb d'emplacements de camping par étoile 2023 - 2 ou 3 étoiles (milieu de gamme): float
       Nb d'emplacements de camping par étoile 2023 - 4 ou 5 étoiles (haut de gamme): float
       Nb d'autres hébergements collectifs de tourisme 2023: float
+    ratios_hommes:
+      codgeo: str
+      libgeo: str
+      an: int
+      poptot_h: float
   departement:
     chomage:  
       Code: str
