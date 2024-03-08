@@ -64,21 +64,39 @@ class StepDataClean(Step):
         df = df.merge(population, on="ID_COMMUNE", how="left", validate="1:1")
 
         # statut familial
-        gender_age = df[["ID_COMMUNE", "POP_2020", "NBR_FEMME_15_24_2020", "NBR_FEMME_25_54_2020", "NBR_FEMME_55_64_2020",
+        gender_age = df[["ID_COMMUNE", "POP_2020", "NBR_HOMMES_2020",
+                         "NBR_FEMME_15_24_2020", "NBR_FEMME_25_54_2020", "NBR_FEMME_55_64_2020",
                        "NBR_HOMME_15_24_2020", "NBR_HOMME_25_54_2020", "NBR_HOMME_55_64_2020",
                        "TAUX_POP_65_74", "TAUX_POP_75_79", "TAUX_POP_PLUS_80_2020", "TAUX_POP_MOINS_15_2020"]]
+        gender_age["TAUX_HOMME_POP"] = gender_age["NBR_HOMMES_2020"] / gender_age["POP_2020"]
         gender_age["TAUX_HOMME_POP_15_24"] = gender_age["NBR_HOMME_15_24_2020"] / gender_age[["NBR_HOMME_15_24_2020", "NBR_FEMME_15_24_2020"]].sum(axis=1)
         gender_age["TAUX_HOMME_POP_25_54"] = gender_age["NBR_HOMME_25_54_2020"] / gender_age[["NBR_HOMME_55_64_2020", "NBR_FEMME_25_54_2020"]].sum(axis=1)
         gender_age["TAUX_HOMME_POP_55_64"] = gender_age["NBR_HOMME_55_64_2020"] / gender_age[["NBR_HOMME_55_64_2020", "NBR_FEMME_55_64_2020"]].sum(axis=1)
-        gender_age["TAUX_HOMME_POP_MOINS_15"] = gender_age["TAUX_HOMME_POP_15_24"]
-
+        gender_age["NBR_HOMME_MOINS_15_2020"] = (gender_age["NBR_HOMME_15_24_2020"]*3/2).round(0)
+        gender_age["TAUX_HOMME_POP_15_MOINS"] = gender_age["NBR_HOMME_MOINS_15_2020"]/(gender_age["POP_2020"]*gender_age["TAUX_POP_MOINS_15_2020"]/100)
+        gender_age["TAUX_HOMME_POP_65_PLUS"] = (gender_age["NBR_HOMMES_2020"] - gender_age[["NBR_HOMME_15_24_2020", 
+                                                                                           "NBR_HOMME_25_54_2020", 
+                                                                                           "NBR_HOMME_55_64_2020"]].sum(axis=1)).clip(0, None) / gender_age["NBR_HOMMES_2020"]
+        
         # TODO: approximate + 65 
-        gender_age = gender_age[["ID_COMMUNE", "TAUX_HOMME_POP_MOINS_15", "TAUX_HOMME_POP_15_24", "TAUX_HOMME_POP_25_54", 
-                                 "TAUX_HOMME_POP_55_64"]]
+        gender_age = gender_age[["ID_COMMUNE", "TAUX_HOMME_POP_15_MOINS", "TAUX_HOMME_POP_15_24", "TAUX_HOMME_POP_25_54", 
+                                 "TAUX_HOMME_POP_55_64", "TAUX_HOMME_POP_65_PLUS"]]
         df = df.merge(gender_age, on="ID_COMMUNE", how="left", validate="1:1")
 
-        # 
-    
+        # CSP
+        df["CSP"] = df[["TAUX_OUVRIERS_2020",
+                        "TAUX_EMPLOYES_2020",
+                        "TAUX_AGRICULTEURS_2020",
+                        "TAUX_ARTISAN_COMMERCE_2020",
+                        "TAUX_PROF_INTER_2020",
+                        "TAUX_CADRE_INTELLECT_2020"]].idxmax(axis=1).map({
+                            "TAUX_OUVRIERS_2020" : "ouvrier",
+                            "TAUX_EMPLOYES_2020" : "employe",
+                            "TAUX_AGRICULTEURS_2020": "agriculteur",
+                            "TAUX_ARTISAN_COMMERCE_2020":"artisan_commercant",
+                            "TAUX_PROF_INTER_2020":"prof_intermediaire",
+                            "TAUX_CADRE_INTELLECT_2020":"cadre"})
+
 
         return df
     
@@ -105,24 +123,8 @@ class StepDataClean(Step):
                             "TAUX_PROF_INTER_2020":"prof_intermediaire",
                             "TAUX_CADRE_INTELLECT_2020":"cadre"})
 
-        # activity per age, zipcode gender
-        df_activity = df[['ID_COMMUNE', 
-                        'NOM_COMMUNE_ORIGINE',
-                        'NBR_EMPLOI',
-                        'NBR_FEMME_15_24_2020',
-                        'NBR_FEMME_25_54_2020',
-                        'NBR_FEMME_55_64_2020',
-                        'TAUX_ACTIVITE_15_24',
-                        'TAUX_ACTIVITE_25_54',
-                        'TAUX_ACTIVITE_55_64',
-                        'TAUX_ACTIVITE_FEMME_15_24',
-                        'TAUX_ACTIVITE_FEMME_25_54',
-                        'TAUX_ACTIVITE_FEMME_55_64',
-                        'TAUX_ACTIVITE_HOMME_15_24',
-                        'TAUX_ACTIVITE_HOMME_25_54',
-                        'TAUX_ACTIVITE_HOMME_55_64']]
-            
         return df
     
     
 
+    
