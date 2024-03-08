@@ -41,10 +41,13 @@ class SqlHelper:
         dataframe.to_sql(table_name, con=self._context.db_con, if_exists=if_exists, chunksize = 50000, index=False)
     
     @timing
-    def write_sql_data(self, dataframe, table_name):
+    def write_sql_data(self, dataframe, table_name, if_exists=None):
         if table_name in self.db_tables:
             col_count = self.get_table_cols_count(table_name)
             row_count = self.get_table_rows_count(table_name)
+
+            if if_exists:
+                self.write_to_sql(dataframe, table_name, if_exists=if_exists)
 
             if dataframe.shape[1] != col_count :
                 self._log.info(f"{table_name} - WILL BE DELETED TO ADD {col_count - dataframe.shape[1]} new columns")

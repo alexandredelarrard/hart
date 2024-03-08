@@ -10,7 +10,8 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
-from src.datacrawl.constants.variables import currencies
+from src.constants.variables import currencies, category, materiau
+from src.utils.utils_dataframe import remove_accents, remove_punctuation
 
 from omegaconf import DictConfig
 
@@ -32,9 +33,11 @@ class StepTextClean(Step):
         df = self.extract_estimates(df, df_infos)
         df = self.extract_currency(df)
         df = self.extract_sale_infos(df)
+        df = self.extract_descriptions(df)
 
         self.write_sql_data(dataframe=df,
-                            table_name="DROUOT_202401")
+                            table_name="DROUOT_202401",
+                            if_exists="replace")
 
     @timing
     def read_crawled_csvs(self):
@@ -53,8 +56,10 @@ class StepTextClean(Step):
 
         return df
     
-
+    @timing
     def extract_infos(self, df):
+
+        df = df.drop_duplicates("INFOS")
 
         # INFOS 4 slides 
         df["INFOS"] = df["INFOS"].str.split("\n")
@@ -69,7 +74,7 @@ class StepTextClean(Step):
 
         return df, df_infos
     
-
+    @timing
     def extract_currency(self, df):
 
         df["CURRENCY_RESULTS"] = df["BRUT_RESULT"].apply(lambda x : re.findall(currencies, x)[0] if 
@@ -82,7 +87,7 @@ class StepTextClean(Step):
 
         return df
 
-
+    @timing
     def extract_estimates(self, df, df_infos):
 
         # extract selling price and estimation
@@ -102,6 +107,7 @@ class StepTextClean(Step):
 
         return df
     
+    @timing
     def extract_sale_infos(self, df):
 
         # date, place, maison
@@ -112,8 +118,22 @@ class StepTextClean(Step):
 
         return df
     
+    
+    @timing
     def extract_descriptions(self, df):
 
-        df["CLEAN_TEXT"] = df["DESCRIPTION"].apply(lambda x : x.lower().strip())
-        df["CLEAN_TEXT"] = 
+        def get_element_in_list(x, liste):
+            x = remove_accents(remove_punctuation(x))
+            for a in liste:
+                if a in x:
+                    return a
+            return x
+        
+        clean_category = [remove_accents(remove_punctuation(a)) for a in category]
+        clean_materiau = [remove_accents(remove_punctuation(a)) for a in materiau]
 
+        df["CLEAN_TEXT"] = df["DESCRIPTION"].apply(lambda x : x.lower().strip())
+        df["CATEGORY"] = df["CLEAN_TEXT"].apply(lambda x: get_element_in_list(x, clean_category)) 
+        df["MATERIAU"] = df["CLEAN_TEXT"].apply(lambda x: get_element_in_list(x, clean_materiau)) 
+
+        return df
