@@ -13,59 +13,52 @@ from sentence_transformers import SentenceTransformer
 from omegaconf import DictConfig
 
 
-class StepTextEmbedding(Step):
+class StepEmbedding(Step):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 model : str = None,
-                 method_dim_reduction : str = None):
+                 database_name : str = None):
 
         super().__init__(context=context, config=config)
-        self.method_dim_reduction = method_dim_reduction
 
-        if model == None:
-            self.model = SentenceTransformer('intfloat/multilingual-e5-large-instruct',
-                        prompts={
-                            "clustering": "Identifie le type d'objet d'art auquel se réfère la description suivante: ",
-                          },
-                          device="cuda")
-        
-    @timing
-    def run(self, input_texts):
-        embeddings = self.get_embeddings(input_texts)
+        self.prompt = {}
+        for k, v in self._config.embedding[database_name].prompt.items():
+            self.prompt[k] = v
 
-        if self.method_dim_reduction:
-            embeddings = self.embedding_reduction(embeddings)
+        self.params = self._config.embedding[database_name].dim_reduc.params
+        self.model = SentenceTransformer(self._config.embedding[database_name].model,
+                                        prompts=self.prompt,
+                                        device=self._config.embedding[database_name].device)
 
-        return embeddings
+    def get_embeddings(self, input_texts : List, prompt_name):
+        if prompt_name not in self.prompt.keys():
+            raise Exception(f"prompt name is not part of possible prompts from config which are : \n \
+                            {self.prompt.keys()}")
 
-    def get_embeddings(self, input_texts : List):
         return self.model.encode(input_texts, 
                                 #  convert_to_tensor=True, 
                                  normalize_embeddings=True,
-                                 prompt_name="clustering")
+                                 prompt_name=prompt_name)
     
     def get_similarities(self, embeddings):
         return (embeddings @ embeddings.T) * 100
     
-    def embedding_reduction(self, embeddings : np.array) -> np.array:
-
-        # embedding 
-        self._log.info("BERT EMBEDDING")
+    def embedding_reduction(self, embeddings : np.array, 
+                            method_dim_reduction : str) -> np.array:
 
         # PCA : reduce embeddings dim 
-        if self.method_dim_reduction == "pca":
+        if method_dim_reduction == "pca":
             self._log.info("PCA")
             new_embeddings = self.reduce_embeddings_pca(embeddings)
 
         # UMAP : reduce dimmension based on kullback lieber distance 
-        elif self.method_dim_reduction == "umap":    
+        elif method_dim_reduction == "umap":    
             self._log.info("UMAP EMBEDDING")
             new_embeddings = self.reduce_embeddings_umap(embeddings)
 
         # UMAP : reduce dimmension based on kullback lieber distance 
-        elif self.method_dim_reduction == "umap":    
+        elif method_dim_reduction == "tsne":    
             self._log.info("TSNE EMBEDDING")
             new_embeddings = self.reduce_embeddings_tsne(embeddings)
         

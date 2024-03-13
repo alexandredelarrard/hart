@@ -24,10 +24,16 @@ class StepTextClean(Step):
                  seller : str = "drouot"):
 
         super().__init__(context=context, config=config)
+
         self.seller = seller
+        try:
+            self.sql_table_name = self._config.embedding_history[seller].origine_table_name
+        except Exception as e:
+            self._log.error(f"SELLER not found in config embedding_history : {self.seller} \ {e}")
         
     @timing
     def run(self):
+
         df = self.read_crawled_csvs()
         df, df_infos = self.extract_infos(df)
         df = self.extract_estimates(df, df_infos)
@@ -36,7 +42,7 @@ class StepTextClean(Step):
         df = self.extract_descriptions(df)
 
         self.write_sql_data(dataframe=df,
-                            table_name="DROUOT_202401",
+                            table_name=self.sql_table_name,
                             if_exists="replace")
         
         return df

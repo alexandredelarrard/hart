@@ -1,0 +1,26 @@
+embedding:
+  drouot:
+    origine_table_name: DROUOT_202401
+    
+    embedding_table_name: DROUOT_EMBEDDINGS
+    model: 'intfloat/multilingual-e5-large-instruct'
+    device: cuda
+    prompt_name : clustering
+    prompt:
+      clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
+    
+    dim_reduc:
+      params:
+        umap_n_neighbors : 15
+        umap_n_components : 15
+
+    clustering:
+      params:
+        verbose: 0 #0 or 1 if 1 then plot clusters on projected embeddings
+        min_cluster_size: 10 # minimal number of obs for hdbscan clustering
+        n_words_cluster: 10 # number of words to caracterize the cluster
+        min_samples : 5 # The number of samples in a neighbourhood for a point to be considered a core point.
+        
+      
+
+

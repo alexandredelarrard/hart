@@ -87,6 +87,18 @@ class TopicClustering(object):
         cah_clusters = model.labels_
 
         return cah_clusters
+    
+
+    def plot_clusters(self, df):
+
+        # Visualize clusters
+        fig, ax = plt.subplots(figsize=(15, 15))
+        outliers = df.loc[df.labels == -1]
+        clustered = df.loc[df.labels != -1]
+        plt.scatter(outliers.x, outliers.y, color='#696464', s=0.2)
+        plt.scatter(clustered.x, clustered.y, c=clustered.labels, s=0.2, cmap='hsv_r')
+        plt.colorbar()
+        plt.show()
 
 
     def c_tf_idf(self, documents : List[str], m : int, ngram_range : tuple):
