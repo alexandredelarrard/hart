@@ -48,3 +48,25 @@ OBJECT_KWARGS= {
         "Object to crawl from drouot portal"
     )
 }
+
+DATABASE_NAME_ARGS=("--house_art", "-ah", "database_name")
+DATABASE_NAME_KWARGS= {
+    "type" : str, 
+    "default" : "drouot",
+    "required" : True,
+    "show_default" : True,
+    "help": (
+        "house of the dabase drouot, christies, etc."
+    )
+}
+
+TEXT_VECTOR_ARGS=("--text_vector", "-tv", "vector")
+TEXT_VECTOR_KWARGS= {
+    "type" : str, 
+    "default" : "DESCRIPTION",
+    "required" : True,
+    "show_default" : True,
+    "help": (
+        "feature from the database to embed and query from"
+    )
+}

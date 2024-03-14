@@ -10,7 +10,7 @@ if __name__ == "__main__":
     # crawl = StepCrawlingDrouot(context=context, config=config, threads=4, object='chaise')
     # crawl.run(crawl.get_urls(), crawl.crawling_function)
 
-    # self = StepTextClean(context=context, config=config)
+    # self = StepTextClean(context=context, config=config, seller="drouot")
     # df = self.run()
 
     self = StepTextClustering(context=context, config=config)

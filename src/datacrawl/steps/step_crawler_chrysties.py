@@ -11,7 +11,7 @@ import time
 from selenium.webdriver.common.by import By
 
 from src.context import Context
-from src.art.steps.step_crawler import StepCrawling
+from src.datacrawl.steps.step_crawler import StepCrawling
 
 class StepCrawlingChristies(StepCrawling):
     

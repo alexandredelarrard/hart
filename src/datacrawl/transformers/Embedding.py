@@ -9,6 +9,7 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
+from chromadb.utils import embedding_functions
 
 from omegaconf import DictConfig
 
@@ -30,6 +31,10 @@ class StepEmbedding(Step):
         self.model = SentenceTransformer(self._config.embedding[database_name].model,
                                         prompts=self.prompt,
                                         device=self._config.embedding[database_name].device)
+        
+        self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
+                        model_name=self._config.embedding[database_name].model,
+                        device=self._config.embedding[database_name].device)
 
     def get_embeddings(self, input_texts : List, prompt_name):
         if prompt_name not in self.prompt.keys():
@@ -38,7 +43,7 @@ class StepEmbedding(Step):
 
         return self.model.encode(input_texts, 
                                 #  convert_to_tensor=True, 
-                                 normalize_embeddings=True,
+                                 normalize_embeddings=False,
                                  prompt_name=prompt_name)
     
     def get_similarities(self, embeddings):

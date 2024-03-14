@@ -27,7 +27,7 @@ class StepTextClean(Step):
 
         self.seller = seller
         try:
-            self.sql_table_name = self._config.embedding_history[seller].origine_table_name
+            self.sql_table_name = self._config.embedding[seller].origine_table_name
         except Exception as e:
             self._log.error(f"SELLER not found in config embedding_history : {self.seller} \ {e}")
         
@@ -35,10 +35,10 @@ class StepTextClean(Step):
     def run(self):
 
         df = self.read_crawled_csvs()
-        df, df_infos = self.extract_infos(df)
-        df = self.extract_estimates(df, df_infos)
-        df = self.extract_currency(df)
         df = self.extract_sale_infos(df)
+        df = self.extract_infos(df)
+        df = self.extract_estimates(df)
+        df = self.extract_currency(df)
         df = self.extract_descriptions(df)
 
         self.write_sql_data(dataframe=df,
@@ -59,7 +59,10 @@ class StepTextClean(Step):
             df_file["KEYWORD"] = file.split("\\")[1].split("_")[0]
             liste_dfs.append(df_file)
 
-        df = pd.concat(liste_dfs, axis=0, ignore_index=True)
+        df = pd.concat(liste_dfs, 
+                       axis=0, 
+                       ignore_index=True)
+
         self._log.info(f"RECORDINGS : {df.shape[0]}")
 
         return df
@@ -67,14 +70,18 @@ class StepTextClean(Step):
     @timing
     def extract_infos(self, df):
 
-        df = df.drop_duplicates("INFOS")
-
         # INFOS 4 slides 
         df["INFOS"] = df["INFOS"].str.split("\n")
         df_infos =  pd.DataFrame(df["INFOS"].tolist(), index=df.index)
         df["LOT_ID"] = df_infos[0].str.replace("Lot n° ","").str.zfill(4)
         df["DESCRIPTION"] = df_infos[2]
         df["RESULTS"] = df_infos[3]
+
+        # drop duplicated infos / estimates 
+        df["PICTURE_ID"] = np.where(df["PICTURE_ID"].isnull(), 
+                                    "MISSING" + "_" + df["LOT_ID"] + "_" + df["DATE"], 
+                                    df["PICTURE_ID"])
+        df = df.drop_duplicates("PICTURE_ID")
 
         # remove those without price 
         df = df.loc[df["RESULTS"].notnull()].reset_index(drop=True)
@@ -123,6 +130,16 @@ class StepTextClean(Step):
                                 np.nan, df[col])
             df[col] = df[col].astype(float)
 
+        # keep only those with available estimates or result 
+        df["FINAL_RESULT"] = np.where(df["FINAL_RESULT"].isnull(), 
+                                      df[["MIN_ESTIMATION", "MAX_ESTIMATION"]].mean(axis=1), 
+                                      df["FINAL_RESULT"])
+
+        for col in ["MIN_ESTIMATION", "MAX_ESTIMATION"]:
+            df[col] = np.where(df[col].isnull(), df["FINAL_RESULT"], df[col])
+
+        df = df.loc[df["FINAL_RESULT"].notnull()].reset_index(drop=True)
+
         return df
     
 
@@ -134,9 +151,10 @@ class StepTextClean(Step):
         df["DATE"] = pd.to_datetime(sale[0], format="%A %d %b %Y - %H:%M")
         df["HOUR"] = df["DATE"].dt.hour
         df["DATE"] = df["DATE"].dt.round("D")
-        df["DATE_MONTH"] = df["DATE"].dt.to_period('M')
         df["PLACE"] = sale[1]
         df["HOUSE"] = sale[2]
+
+        df["DATE"] = df["DATE"].dt.strftime("%Y-%m-%d")
 
         return df
     
@@ -157,5 +175,11 @@ class StepTextClean(Step):
         df["CLEAN_TEXT"] = df["DESCRIPTION"].apply(lambda x : remove_punctuation(remove_accents(x.lower())))
         df["CATEGORY"] = df["CLEAN_TEXT"].apply(lambda x: get_element_in_list(x, clean_category)) 
         df["MATERIAU"] = df["CLEAN_TEXT"].apply(lambda x: get_element_in_list(x, clean_materiau)) 
+
+        # clean mvs
+        df["ID"] = df["PICTURE_ID"].apply(lambda x : x.replace(".jpg", ""))
+        df = df.drop(["INFOS", "SALE", "URL_PICTURE", "CLEAN_TEXT", "RESULTS"], axis=1)
+        
+        df["HOUSE"].fillna("MISSING_HOUSE", inplace=True)
 
         return df
