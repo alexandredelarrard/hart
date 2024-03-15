@@ -217,3 +217,7 @@ class StepCrawling(Step):
                 queues["drivers"].put(driver)
 
             self.missed_urls = missed_urls
+
+
+    def save_infos(self, df, path):
+        df.to_csv(path, index=False, sep=";")

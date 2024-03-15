@@ -11,7 +11,7 @@ import time
 from selenium.webdriver.common.by import By
 
 from src.context import Context
-from src.datacrawl.steps.step_crawler import StepCrawling
+from src.datacrawl.transformers.Crawler import StepCrawling
 
 class StepCrawlingDrouot(StepCrawling):
     
@@ -39,6 +39,7 @@ class StepCrawlingDrouot(StepCrawling):
                       # TABLE CHAISE FAUTEUIL ARME LAMPE VASE BUFFET CONSOLE GUERIDON MIROIR
 
     def get_urls(self):
+        
         liste_urls = [self.root_url + f"&page={x}" for x in range(1,self.pages[self.object]+1)]
         files_already_done = glob.glob(self._config.crawling[self.seller].save_data_path + "/*.csv")
         files_already_done = [self.root_url + "&page=" + x.split("_")[-1].replace(".csv","") 
@@ -162,8 +163,7 @@ class StepCrawlingDrouot(StepCrawling):
 
         df_infos = pd.DataFrame(list_infos, columns= ["NUMBER_LOT", "PICTURE_ID", "INFOS", 
                                                       "SALE", "URL_PICTURE", "URL_FULL_DETAILS"])
-        df_infos.to_csv(infos_path + f"/{self.object}_page_{page_nbr}.csv", index=False, sep=";")
-
+        self.save_infos(df_infos, path=infos_path + f"/{self.object}_page_{page_nbr}.csv")
         time.sleep(2)
         
         return driver, message

@@ -16,12 +16,14 @@ class StepPictureClustering(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 database_name : str = "drouot"):
+                 database_name : str = "drouot",
+                 vector : str = "DESCRIPTION"):
 
         super().__init__(context=context, config=config)
 
         self.n_top_results=20
         self.database_name = database_name
+        self.vector= vector
 
         self.params = self._config.embedding[database_name].clustering.params
         self.sql_table_name = self._config.embedding[database_name].origine_table_name

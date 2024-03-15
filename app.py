@@ -14,13 +14,20 @@ def main():
 
     ui.instatiate_session(st)
     widget_ui = ui.get_sidebar(st)
-    displays = st.empty()
 
     if widget_ui["button"]:
-        text_results = st.session_state["clustering"].query_collection(widget_ui["query_text"])
-        # picture_results = step_picture_cluster.query_collection(widget_ui["picture_paths"])
+        picture_results= None
+        text_results=None
 
-        ui.get_display(st, text_results)
+        if widget_ui["query_text"]:
+            st.write(widget_ui["query_text"])
+            text_results = st.session_state["text_clustering"].query_collection(widget_ui["query_text"])
+
+        if widget_ui["picture_paths"]:
+            st.write(widget_ui["picture_paths"])
+            picture_results = st.session_state["picture_clustering"].query_collection("/".join([st.session_state['picture_path'], widget_ui['picture_paths'].name]))
+
+        ui.get_display(st, text_results, picture_results)
 
 if __name__ == "__main__":
     main()

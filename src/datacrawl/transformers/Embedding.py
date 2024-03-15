@@ -60,7 +60,7 @@ class StepEmbedding(Step):
             raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
 
 
-    def get_text_embeddings(self, input_texts : List, prompt_name):
+    def get_text_embeddings(self, input_texts : List, prompt_name : str):
         if prompt_name not in self.prompt.keys():
             raise Exception(f"prompt name is not part of possible prompts from config which are : \n \
                             {self.prompt.keys()}")
@@ -74,7 +74,7 @@ class StepEmbedding(Step):
         
         steps = len(images) // self.batch_size 
 
-        for i in tqdm(range(steps)):
+        for i in tqdm(range(steps+1)):
             sub_images= images[i*self.batch_size:(i+1)*self.batch_size]
             pils_images = self.read_images(sub_images)
             extract = self.get_picture_embeddings(pils_images).numpy()

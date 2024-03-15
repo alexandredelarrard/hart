@@ -6,7 +6,7 @@ import pandas as pd
 from selenium.webdriver.common.by import By
 
 from src.context import Context
-from src.datacrawl.steps.step_crawler import StepCrawling
+from src.datacrawl.transformers.Crawler import StepCrawling
 
 class StepCrawlingMet(StepCrawling):
     
