@@ -5,11 +5,18 @@ import umap.umap_ as umap
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
+from tqdm import tqdm
+import PIL
+from PIL import Image
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
 from chromadb.utils import embedding_functions
+from transformers import AutoImageProcessor, Swinv2Model, AutoFeatureExtractor
+
+import torch 
+import torchvision.transforms as T
 
 from omegaconf import DictConfig
 
@@ -19,24 +26,41 @@ class StepEmbedding(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 database_name : str = None):
+                 database_name : str = None,
+                 type : str = "text"):
 
         super().__init__(context=context, config=config)
-
-        self.prompt = {}
-        for k, v in self._config.embedding[database_name].prompt.items():
-            self.prompt[k] = v
-
         self.params = self._config.embedding[database_name].dim_reduc.params
-        self.model = SentenceTransformer(self._config.embedding[database_name].model,
-                                        prompts=self.prompt,
-                                        device=self._config.embedding[database_name].device)
-        
-        self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
-                        model_name=self._config.embedding[database_name].model,
-                        device=self._config.embedding[database_name].device)
+        self.root_path = self._config.crawling[database_name].save_picture_path
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def get_embeddings(self, input_texts : List, prompt_name):
+        if type == "text":
+            self.prompt = {}
+            for k, v in self._config.embedding[database_name].text.prompt.items():
+                self.prompt[k] = v
+
+            self.model = SentenceTransformer(self._config.embedding[database_name].text.model,
+                                            prompts=self.prompt,
+                                            device=self._config.embedding[database_name].device)
+            
+            # self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
+            #                 model_name=self._config.embedding[database_name].model,
+            #                 device=self._config.embedding[database_name].device)
+            
+        elif type=="picture":
+            self.batch_size = self._config.embedding[database_name].picture.batch_size
+
+            model_ckpt = self._config.embedding[database_name].picture.model
+            self.processor = AutoImageProcessor.from_pretrained(model_ckpt)
+            self.extractor = AutoFeatureExtractor.from_pretrained(model_ckpt)
+            self.model = Swinv2Model.from_pretrained(model_ckpt)
+            self.model.to(self.device)
+        
+        else:
+            raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
+
+
+    def get_text_embeddings(self, input_texts : List, prompt_name):
         if prompt_name not in self.prompt.keys():
             raise Exception(f"prompt name is not part of possible prompts from config which are : \n \
                             {self.prompt.keys()}")
@@ -45,6 +69,66 @@ class StepEmbedding(Step):
                                 #  convert_to_tensor=True, 
                                  normalize_embeddings=False,
                                  prompt_name=prompt_name)
+    
+    def get_batched_picture_embeddings(self, images : List[str]):
+        
+        steps = len(images) // self.batch_size 
+
+        for i in tqdm(range(steps)):
+            sub_images= images[i*self.batch_size:(i+1)*self.batch_size]
+            pils_images = self.read_images(sub_images)
+            extract = self.get_picture_embeddings(pils_images).numpy()
+
+            if i == 0:
+                candidate_subset_emb = extract
+            else:
+                candidate_subset_emb = np.concatenate((candidate_subset_emb, extract))
+
+        return candidate_subset_emb
+            
+
+    def get_picture_embeddings(self, images : List[PIL.Image]):
+
+        # `transformation_chain` is a compostion of preprocessing
+        # transformations we apply to the input images to prepare them
+        # for the model.
+
+        # normalize picture
+        transformation_chain = T.Compose(
+            [
+                # We first resize the input image to 256x256 and then we take center crop.
+                T.Resize(int((256 / 224) * self.extractor.size["height"])),
+                T.CenterCrop(self.extractor.size["height"]),
+                T.ToTensor(),
+                T.Normalize(mean=self.extractor.image_mean, std=self.extractor.image_std),
+            ]
+        )
+        
+        image_batch_transformed = torch.stack(
+            [transformation_chain(image) for image in images]
+        )
+
+        new_batch = {"pixel_values": image_batch_transformed.to(self.model.device)}
+        with torch.no_grad():
+            embeddings = self.model(**new_batch).last_hidden_state[:, 0].cpu()
+
+        return embeddings
+    
+    def read_images(self, images : List[str]):
+
+        pils_images= []
+        for image in images:
+            if isinstance(image, str):
+                try:
+                    pils_images.append(Image.open(image))
+                except Exception:
+                    self._log.error(f"No picture avaiable for {image} path. FILL with picture MISSING.jpg")
+                    pils_images.append(Image.open(self.root_path + "/MISSING.jpg.jpg"))
+
+            else:
+                raise Exception("Images must be passed as string path to \
+                                the file for read to embed them")
+        return pils_images
     
     def get_similarities(self, embeddings):
         return (embeddings @ embeddings.T) * 100

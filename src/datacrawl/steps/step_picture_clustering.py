@@ -1,4 +1,4 @@
-from typing import Dict
+import glob
 import pandas as pd 
 from typing import List
 
@@ -11,40 +11,36 @@ from src.datacrawl.transformers.Embedding import StepEmbedding
 from omegaconf import DictConfig
 
 
-class StepTextClustering(Step):
+class StepPictureClustering(Step):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 database_name : str = "drouot",
-                 vector : str = "DESCRIPTION"):
+                 database_name : str = "drouot"):
 
         super().__init__(context=context, config=config)
 
         self.n_top_results=20
-        self.vector = vector
         self.database_name = database_name
 
         self.params = self._config.embedding[database_name].clustering.params
-        self.prompt_name = self._config.embedding[database_name].text.prompt_name
         self.sql_table_name = self._config.embedding[database_name].origine_table_name
 
         self.step_cluster = TopicClustering(params=self.params)
         self.step_embedding = StepEmbedding(context=context, config=config, 
                                             database_name=database_name,
-                                            type="text")
+                                            type="picture")
         
         self.collection = self._context.chroma_db.get_or_create_collection(
-                                    name = self.database_name,
+                                    name="PICTURE_" + self.database_name,
                                     metadata={"hnsw:space": "cosine"})
         
     @timing
     def run(self):
 
         df_desc = self.get_data()
-
-        embeddings = self.step_embedding.get_text_embeddings(df_desc[self.vector],
-                                                        prompt_name=self.prompt_name)
+        liste_pictures_path = self.get_pictures_path(df_desc)
+        embeddings = self.step_embedding.get_batched_picture_embeddings(liste_pictures_path)
         
         reduced_embedding = self.step_embedding.embedding_reduction(embeddings, 
                                                                     method_dim_reduction="umap")
@@ -59,10 +55,15 @@ class StepTextClustering(Step):
 
         self.save_collection(df_desc, embeddings)
 
-
     def get_data(self):
         return pd.read_sql(f"SELECT * FROM \"{self.sql_table_name}\" ", #LIMIT 50000
                            con=self._context.db_con)
+    
+    def get_pictures_path(self, df_desc):
+        root_path = self._config.crawling[self.database_name].save_picture_path
+        return df_desc["PICTURE_ID"].apply(lambda x : root_path + f"/{x}.jpg" if 
+                                               "MISSING" not in x else 
+                                               root_path + f"/MISSING.jpg.jpg").tolist()
     
     @timing
     def save_collection(self, df_desc, embeddings):
@@ -81,16 +82,15 @@ class StepTextClustering(Step):
             )
     
     @timing
-    def query_collection(self, query_text):
+    def query_collection(self, path_picture : str):
 
-        if isinstance(query_text, str):
-            query_text = [query_text]
+        if isinstance(path_picture, str):
+            path_picture = [path_picture]
 
-        elif isinstance(query_text, List):
-            query_text = query_text
+        elif isinstance(path_picture, List):
+            path_picture = path_picture
 
-        query_embedded = self.step_embedding.get_text_embeddings(query_text, 
-                                                prompt_name=self.prompt_name)
+        query_embedded = self.step_embedding.get_batched_picture_embeddings(path_picture)
 
         return self.collection.query(query_embeddings=query_embedded,
                                      n_results=self.n_top_results)

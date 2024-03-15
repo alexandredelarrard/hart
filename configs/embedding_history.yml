@@ -1,14 +1,18 @@
 embedding:
   drouot:
     origine_table_name: DROUOT_202401
-    
-    embedding_table_name: DROUOT_EMBEDDINGS
-    model: 'intfloat/multilingual-e5-large-instruct'
     device: cuda
-    prompt_name : clustering
-    prompt:
-      clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
     
+    text:
+      model: 'intfloat/multilingual-e5-large-instruct'
+      prompt_name : clustering
+      prompt:
+        clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
+      
+    picture:
+      model: 'microsoft/swinv2-tiny-patch4-window8-256'
+      batch_size : 156
+
     dim_reduc:
       params:
         umap_n_neighbors : 15
