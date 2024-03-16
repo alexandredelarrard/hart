@@ -17,12 +17,13 @@ crawling:
             browser : chrome 
             nodes : 1
             retry : 1   
-    chrystys: 
-        webpage_url : https://www.christies.com/en/search?
-        auctions_url : https://www.christies.com/en/results?language=en #&month=3&year=2024
-        url_path : ./data/chrystys/infos/*
-        save_picture_path : ./data/chrystys/pictures
-        save_data_path : ./data/chrystys/infos
+    christies: 
+        webpage_url : https://www.christies.com/en/auction/
+        auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
+        url_path : ./data/christies/infos/*
+        save_picture_path : ./data/christies/pictures
+        save_data_path : ./data/christies/infos
+        save_data_path_auctions: ./data/christies/auctions
         settings : 
             browser : chrome 
             nodes : 1

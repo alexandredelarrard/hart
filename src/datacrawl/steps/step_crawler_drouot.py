@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
+from src.utils.utils_crawler import keep_files_to_do
 
 class StepCrawlingDrouot(StepCrawling):
     
@@ -41,12 +42,12 @@ class StepCrawlingDrouot(StepCrawling):
     def get_urls(self):
         
         liste_urls = [self.root_url + f"&page={x}" for x in range(1,self.pages[self.object]+1)]
+        
         files_already_done = glob.glob(self._config.crawling[self.seller].save_data_path + "/*.csv")
         files_already_done = [self.root_url + "&page=" + x.split("_")[-1].replace(".csv","") 
                                                 for x in files_already_done if self.object in x]
 
-        liste_urls = list(set(liste_urls) - set(files_already_done))
-        self._log.info(f"ALREADY CRAWLED {len(files_already_done)} REMAINING {len(liste_urls)}")
+        liste_urls = keep_files_to_do(liste_urls, files_already_done)
 
         return liste_urls
     
@@ -118,7 +119,6 @@ class StepCrawlingDrouot(StepCrawling):
 
         # log in if necessary
         driver = self.check_loggedin(driver)
-
         page_nbr = self.get_page_number(driver)
 
         # crawl infos 

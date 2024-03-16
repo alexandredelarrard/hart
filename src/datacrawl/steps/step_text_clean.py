@@ -12,6 +12,7 @@ from src.utils.timing import timing
 
 from src.constants.variables import currencies, category, materiau
 from src.utils.utils_dataframe import remove_accents, remove_punctuation
+from src.utils.utils_crawler import read_crawled_csvs
 
 from omegaconf import DictConfig
 
@@ -34,7 +35,9 @@ class StepTextClean(Step):
     @timing
     def run(self):
 
-        df = self.read_crawled_csvs()
+        files_path = self._config.crawling[self.seller].save_data_path
+
+        df = read_crawled_csvs(path= files_path)
         df = self.extract_sale_infos(df)
         df = self.extract_infos(df)
         df = self.extract_estimates(df)
@@ -47,25 +50,6 @@ class StepTextClean(Step):
         
         return df
 
-    @timing
-    def read_crawled_csvs(self):
-
-        # read all csvs
-        files = glob(self._config.crawling[self.seller].save_data_path + "/*.csv")
-        
-        liste_dfs = []
-        for file in tqdm(files): 
-            df_file = pd.read_csv(file, sep=";")
-            df_file["KEYWORD"] = file.split("\\")[1].split("_")[0]
-            liste_dfs.append(df_file)
-
-        df = pd.concat(liste_dfs, 
-                       axis=0, 
-                       ignore_index=True)
-
-        self._log.info(f"RECORDINGS : {df.shape[0]}")
-
-        return df
     
     @timing
     def extract_infos(self, df):
