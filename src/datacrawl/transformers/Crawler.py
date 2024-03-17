@@ -1,6 +1,7 @@
 import os
 import time
 import random
+import logging
 
 from typing import List
 from queue import Queue
@@ -196,7 +197,7 @@ class StepCrawling(Step):
 
             try:
                 driver = self.get_url(driver, url)
-                time.sleep(random.uniform(1,4))   
+                time.sleep(random.uniform(0.1, 0.4))   
                 
                 driver, information = function(driver, *args)
 
@@ -210,8 +211,8 @@ class StepCrawling(Step):
                 self._log.info(f"[OOF {queue_url.qsize()}] CRAWLED URL {url}")
             
             except Exception as e:
-                print(url, e)
-                # driver = self.restart_driver(driver)
+                logging.error(url, e)
+                driver = self.restart_driver(driver)
                 
                 missed_urls.append(url)
                 queue_url.task_done()
@@ -222,3 +223,34 @@ class StepCrawling(Step):
 
     def save_infos(self, df, path):
         df.to_csv(path, index=False, sep=";")
+
+    def scrowl_driver(self, driver, Y):
+        driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")
+
+    def get_element_infos(self, element, attribute, attribute_desc, type="text"):
+        try: 
+            if type == "text":
+                return element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc).text
+            else:
+                return element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc).get_attribute(type)
+        except Exception:
+            return ""
+        
+    def click_element(self, element, attribute, attribute_desc):
+        try: 
+            element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc).click()
+        except Exception:
+            pass
+        
+    def send_keys_element(self, element, attribute, attribute_desc, key):
+        try: 
+            if key:
+                element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc).send_keys(key)
+        except Exception:
+            pass
+
+    def get_elements(self, element, attribute, attribute_desc) -> List:
+        try:
+            return element.find_elements(eval(f"By.{attribute.upper()}"), attribute_desc)
+        except Exception:
+            return []

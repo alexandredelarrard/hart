@@ -70,3 +70,14 @@ TEXT_VECTOR_KWARGS= {
         "feature from the database to embed and query from"
     )
 }
+
+NBR_AUCTION_PAGES_ARGS=("--nbr_pages_auctions", "-nbau", "nbr_auction_pages")
+NBR_AUCTION_PAGES_KWARGS= {
+    "type" : int, 
+    "default" : 2566, # all pages up to 17/03/2024
+    "required" : True,
+    "show_default" : True,
+    "help": (
+        "number of auction pages referenced in drouot website"
+    )
+}

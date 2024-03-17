@@ -3,8 +3,6 @@ import click
 from src.constants.command_line_interface import (
     CONFIG_ARGS,
     CONFIG_KWARGS,
-    WEBPAGE_ARG,
-    WEBPAGE_KWARG,
     OBJECT_ARGS,
     OBJECT_KWARGS,
     CRAWL_THREADS_ARG, 
@@ -12,14 +10,18 @@ from src.constants.command_line_interface import (
     DATABASE_NAME_ARGS,
     DATABASE_NAME_KWARGS,
     TEXT_VECTOR_ARGS,
-    TEXT_VECTOR_KWARGS
+    TEXT_VECTOR_KWARGS,
+    NBR_AUCTION_PAGES_ARGS,
+    NBR_AUCTION_PAGES_KWARGS
 )
 
 from src.context import get_config_context
 from src.utils.cli_helper import SpecialHelpOrder
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
-from src.datacrawl.steps.step_crawler_drouot import StepCrawlingDrouot 
-from src.datacrawl.steps.step_crawler_christies import StepCrawlingChristies
+from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItems 
+from src.datacrawl.steps.step_crawler_christies_items import StepCrawlingChristiesItems
+from src.datacrawl.steps.step_crawler_drouot_auctions import StepCrawlingDrouotAuctions 
+from src.datacrawl.steps.step_crawler_christies_auctions import StepCrawlingChristiesAuctions
 from src.datacrawl.steps.step_text_clustering import StepTextClustering
 
 
@@ -56,17 +58,39 @@ def step_crawling_met(
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_drouot(
+def step_crawling_drouot_items(
     config_path, threads : int, object : str 
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingDrouot(config=config, context=context, threads=threads, object=object)
+    crawl = StepCrawlingDrouotItems(config=config, context=context, 
+                                    threads=threads, object=object)
 
     # get crawling_function 
     crawl.run(crawl.get_urls(), crawl.crawling_function)
 
-    #python -m src datacrawl step-crawling-drouot -obj meuble -t 1
+    #python -m src datacrawl step-crawling-drouot-items -obj meuble -t 1
+
+@cli.command(
+    help="Crawling DROUOT",
+    help_priority=3,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+@click.option(*NBR_AUCTION_PAGES_ARGS, **NBR_AUCTION_PAGES_KWARGS)
+def step_crawling_drouot_auctions(
+    config_path, threads : int, nbr_auction_pages : int 
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingDrouotAuctions(config=config, context=context, 
+                                       threads=threads, 
+                                       nbr_auction_pages=nbr_auction_pages)
+
+    # get crawling_function 
+    crawl.run(crawl.get_auctions_urls_to_wrawl(), crawl.crawling_list_auctions_function)
+
+    #python -m src datacrawl step-crawling-drouot-auctions -t 1
 
 
 @cli.command(
@@ -75,13 +99,13 @@ def step_crawling_drouot(
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_chrysties(
+def step_crawling_chrysties_auctions(
     config_path, threads : int
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingChristies(config=config, context=context, 
-                                  threads=threads)
+    crawl = StepCrawlingChristiesAuctions(config=config, context=context, 
+                                            threads=threads)
 
     # get crawling_function 
     crawl.run(crawl.get_auctions_urls_to_wrawl(), 
@@ -100,8 +124,8 @@ def step_crawling_chrysties_items(
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingChristies(config=config, context=context, 
-                                  threads=threads)
+    crawl = StepCrawlingChristiesItems(config=config, context=context, 
+                                        threads=threads)
 
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)

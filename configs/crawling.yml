@@ -10,9 +10,11 @@ crawling:
             retry : 1
     drouot: 
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
+        auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?
         url_path : ./data/drouot/infos/*
         save_picture_path : ./data/drouot/pictures
         save_data_path : ./data/drouot/infos
+        save_data_path_auctions: ./data/drouot/auctions
         settings : 
             browser : chrome 
             nodes : 1
