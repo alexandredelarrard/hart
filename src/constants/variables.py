@@ -1,4 +1,4 @@
-currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN'
+currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD'
 
 category = ["lithographie", "estampe", "serigraphie",
             "montre", "cuillere", "sculpture",

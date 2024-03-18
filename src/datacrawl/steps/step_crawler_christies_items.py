@@ -30,12 +30,14 @@ class StepCrawlingChristiesItems(StepCrawling):
     # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
 
-        full_display = "?loadall=true"
+        full_display = "/?loadall=true"
 
         df = read_crawled_csvs(path=self.auctions_data_path)
         to_crawl = df["URL_AUCTION"].tolist()
+        to_crawl = [x[:-1] if x[-1] == "/" else x for x in to_crawl]
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
-                                                      url_path=self.root_url)
+                                                      url_path=self.root_url,
+                                                      to_replace=('&page=2&sortby=lotnumber',''))
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         
         return [x + full_display for x in liste_urls]
@@ -57,7 +59,10 @@ class StepCrawlingChristiesItems(StepCrawling):
         # crawl infos 
         crawl_conf = config.crawling[self.seller]
         infos_path = crawl_conf.save_data_path
-        query = os.path.basename(driver.current_url.replace("/?loadall=true",""))
+        try:
+            query = os.path.basename(driver.current_url.replace("/?loadall=true",""))
+        except Exception:
+            query = driver.current_url.replace(self.root_url, "")
         image_path = crawl_conf.save_picture_path
         message = ""
 
@@ -102,11 +107,3 @@ class StepCrawlingChristiesItems(StepCrawling):
         self.save_infos(df_infos, path=infos_path + f"/{query}.csv")
 
         return driver, message
-    
-    
-
-
-
-    
-
-

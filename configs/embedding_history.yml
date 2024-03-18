@@ -24,6 +24,16 @@ embedding:
         min_cluster_size: 10 # minimal number of obs for hdbscan clustering
         n_words_cluster: 10 # number of words to caracterize the cluster
         min_samples : 5 # The number of samples in a neighbourhood for a point to be considered a core point.
+
+  christies:
+    origine_table_name: CHRISTIES_202403
+    device: cuda
+
+    text:
+      model: 'intfloat/multilingual-e5-large-instruct'
+      prompt_name : clustering
+      prompt:
+        clustering: "Identify the type of art object which refers to the following description: "
         
       
 

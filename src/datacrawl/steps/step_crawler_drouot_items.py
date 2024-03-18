@@ -23,6 +23,7 @@ class StepCrawlingDrouotItems(StepCrawling):
                  object : str = ""):
 
         super().__init__(context=context, config=config, threads=threads)
+
         self.seller = "drouot"     
         self.object = object   
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
@@ -31,10 +32,10 @@ class StepCrawlingDrouotItems(StepCrawling):
 
     def get_urls(self) -> List[str]:
         
-        full_display = "?loadall=true"
+        full_display = ""
 
         df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = df["URL_AUCTION"].tolist()
+        to_crawl = df.loc[df["URL_AUCTION"] != "MISSING_URL_AUCTION", "URL_AUCTION"].tolist()
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
                                                       url_path=self.root_url)
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
@@ -72,10 +73,12 @@ class StepCrawlingDrouotItems(StepCrawling):
         
     def get_page_number(self, driver):
         # get page number
-        try:
-            page_nbr = re.search('&page=([0-9]*)', driver.current_url).group(1)
-        except Exception:
-            page_nbr = driver.current_url.split("page=")[1]
+        page_nbr = self.get_element_infos(driver, "CLASS_NAME", "fontRadikalBold")
+
+        if len(page_nbr) != 0:
+            page_nbr = int(page_nbr) // 50 + 1
+        else:
+            page_nbr = 0
 
         return page_nbr
     
@@ -83,55 +86,52 @@ class StepCrawlingDrouotItems(StepCrawling):
         
         try:
             time.sleep(0.15)
-            style_tagname_pict = self.get_element_infos(lot, "CLASS_NAME", "imgLot", "style")
-            url_picture = re.findall(r'\((.*?)\)', style_tagname_pict)[-1].replace("\"", "")
-            picture_id = url_picture.split("path=")[1].replace("/", "_")
+            style_tagname_pict = self.get_value_of_css_element(lot, "CLASS_NAME", 
+                                                               "imgLot", 
+                                                               "background-image")
+            url_picture = re.findall(r'\((.*?)\)', style_tagname_pict)[-1]
             
-            return picture_id, url_picture
+            return eval(str(url_picture))
         
         except Exception as e:
-            if counter <3:
-                driver.execute_script("window.scrollTo(0, window.scrollY + 120);")
+            if counter < 3:
+                self.scrowl_driver(driver, 120)
                 time.sleep(0.3)
                 self.get_picture_url(lot, driver, counter+1)
             else:
                 raise Exception(e)
         
-        return "", ""
+        return ""
+    
+    def crawl_info_per_page(self, driver, list_infos, image_path):
 
-
-    def crawling_function(self, driver, config):
-
-        # log in if necessary
-        driver = self.check_loggedin(driver)
-        page_nbr = self.get_page_number(driver)
-
-        # crawl infos 
-        crawl_conf = config.crawling[self.seller]
-        image_path = crawl_conf.save_picture_path
-        infos_path = crawl_conf.save_data_path
-        message = ""
-
-        list_infos = []
-        time.sleep(1)
-        
         liste_lots = self.get_elements(driver, "CLASS_NAME", "Lot")
+        time.sleep(1)
+        message = ""
 
         # save pict
         for lot in tqdm.tqdm(liste_lots):
 
             self.scrowl_driver(driver, Y=200)
-            time.sleep(0.1)
             lot_info = {} 
             
             try:
                 # infos vente
-                lot_info["INFOS"] = self.get_element_infos(lot, "CLASS_NAME", "descriptionLot")
-                lot_info["NUMBER_LOT"] = lot_info["INFOS"].split("\n")[0].replace("Lot n° ", "")
-                lot_info["SALE"] = self.get_element_infos(lot, "CLASS_NAME",  "infoVenteLot")
-                lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "TAG_NAME", "a", type="href")
-                lot_info["PICTURE_ID"], lot_info["URL_PICTURE"] = self.get_picture_url(lot, driver)
+                lot_info["DATE"] = self.get_element_infos(driver, "CLASS_NAME", "capitalize-fl")
+                lot_info["TYPE"] = self.get_element_infos(driver, "CLASS_NAME", "typeOnline")
+                lot_info["NOM_VENTE"] = self.get_element_infos(driver, "CLASS_NAME", "nomVente")
+                lot_info["PLACE"] = self.get_element_infos(driver, "CLASS_NAME", "lieuVente")
+                lot_info["HOUSE"] = self.get_element_infos(driver, "CLASS_NAME", "etudeVente")
 
+                lot_info["NUMBER_LOT"] = self.get_element_infos(lot, "CLASS_NAME", "lotNumListe").replace("Lot n° ", "").strip()
+                lot_info["TITLE"] = self.get_element_infos(lot, "CLASS_NAME", "lotArtisteListe")
+                lot_info["RESULTAT"] = self.get_element_infos(lot, "CLASS_NAME",  "lotResulatListe")
+                lot_info["ESTIMATION"] = self.get_element_infos(lot, "CLASS_NAME", "lotEstimationListe")
+                lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "TAG_NAME", "a", type="href")
+                lot_info["URL_PICTURE"] = self.get_picture_url(lot, driver)
+                lot_info["PICTURE_ID"] = os.path.basename(lot_info["URL_PICTURE"])
+                lot_info["INFOS"] = self.get_element_infos(lot, "CLASS_NAME", "lotDescriptionListe")
+               
                 # save pictures & infos
                 save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
 
@@ -140,8 +140,31 @@ class StepCrawlingDrouotItems(StepCrawling):
             except Exception as e:
                 message = e 
 
+        return message, list_infos
+
+
+    def crawling_function(self, driver, config):
+
+        # log in if necessary
+        driver = self.check_loggedin(driver)
+        page_nbr = self.get_page_number(driver)
+        url = driver.current_url.split("?controller=")[0]
+        query = os.path.basename(url)
+
+        # crawl infos 
+        crawl_conf = config.crawling[self.seller]
+        image_path = crawl_conf.save_picture_path
+        infos_path = crawl_conf.save_data_path
+        
+        list_infos = []
+        message, list_infos = self.crawl_info_per_page(driver, list_infos, image_path)
+
+        if page_nbr >= 2:
+            for new_url in [url + f"?page={x}" for x in range(2, page_nbr+1)]:
+                self.get_url(driver, new_url)
+                message, list_infos = self.crawl_info_per_page(driver, list_infos, image_path)
+
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=infos_path + f"/{self.object}_page_{page_nbr}.csv")
-        time.sleep(2)
+        self.save_infos(df_infos, path=infos_path + f"/{query}.csv")
         
         return driver, message

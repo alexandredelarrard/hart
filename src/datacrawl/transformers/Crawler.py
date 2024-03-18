@@ -44,7 +44,8 @@ class StepCrawling(Step):
 
         t0 = time.time()
         self.queues["urls"].join()
-        print('*** Done in {0}'.format(time.time() - t0))
+        self._log.info('*** Done in {0}'.format(time.time() - t0))
+
         self.close_queue_drivers()
 
 
@@ -160,6 +161,7 @@ class StepCrawling(Step):
         
 
     def close_queue_drivers(self):
+
         for i in range(self.queues["drivers"].qsize()):
             driver = self.queues["drivers"].get()
             driver.close()
@@ -212,7 +214,7 @@ class StepCrawling(Step):
             
             except Exception as e:
                 logging.error(url, e)
-                driver = self.restart_driver(driver)
+                # driver = self.restart_driver(driver)
                 
                 missed_urls.append(url)
                 queue_url.task_done()
@@ -248,6 +250,13 @@ class StepCrawling(Step):
                 element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc).send_keys(key)
         except Exception:
             pass
+
+    def get_value_of_css_element(self, element, attribute, attribute_desc, key):
+        try: 
+            if key:
+               return element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc).value_of_css_property(key)
+        except Exception:
+                return ""
 
     def get_elements(self, element, attribute, attribute_desc) -> List:
         try:

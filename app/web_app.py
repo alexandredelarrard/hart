@@ -65,7 +65,7 @@ def display_text_results(tab1, text_results):
         col2.write(doc['URL_FULL_DETAILS'])
 
         if "MISSING" not in doc['PICTURE_ID']:
-            col1.image(rf"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
+            col1.image(rf"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
 
 
 
@@ -95,8 +95,7 @@ def display_picture_results(tab2, picture_results):
         col2.write(doc['URL_FULL_DETAILS'])
 
         if "MISSING" not in doc['PICTURE_ID']:
-            col1.image(rf"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
-
+            col1.image(rf"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
 
 
 def instatiate_session(st):
@@ -111,8 +110,6 @@ def instatiate_session(st):
 
     if "picture_path" not in st.session_state:
         config, context = get_config_context('./configs', use_cache = False, save=False)
-        st.session_state['picture_path'] = config.crawling.drouot.save_picture_path
+        st.session_state['picture_path'] = r"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures_old"#config.crawling.drouot.save_picture_path
     
     return st
-
-# Montre a gousset du 19eme plaqué or, en bon état de marche

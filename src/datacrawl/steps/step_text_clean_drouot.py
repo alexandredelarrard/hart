@@ -1,13 +1,11 @@
 import pandas as pd 
-from tqdm import tqdm
 import numpy as np
 import re
-from glob import glob 
 import locale
 locale.setlocale(locale.LC_ALL, 'fr_FR')
 
+from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.context import Context
-from src.utils.step import Step
 from src.utils.timing import timing
 
 from src.constants.variables import currencies, category, materiau
@@ -17,7 +15,7 @@ from src.utils.utils_crawler import read_crawled_csvs
 from omegaconf import DictConfig
 
 
-class StepTextClean(Step):
+class StepTextCleanDrouot(TextCleaner):
     
     def __init__(self, 
                  context : Context,
@@ -75,10 +73,8 @@ class StepTextClean(Step):
     @timing
     def extract_currency(self, df):
 
-        df["CURRENCY_RESULTS"] = df["BRUT_RESULT"].apply(lambda x : re.findall(currencies, x)[0] if 
-                                             len(re.findall(currencies, x)) > 0 else x)
-        df["CURRENCY_ESIMATES"] = df["BRUT_ESTIMATE"].apply(lambda x : re.findall(currencies, x)[0] if 
-                                             len(re.findall(currencies, x)) > 0 else x)
+        df["CURRENCY_RESULTS"] = self.get_currency_from_text(df["BRUT_RESULT"])
+        df["CURRENCY_ESIMATES"] = self.get_currency_from_text(df["BRUT_ESTIMATE"])
         
         df["CURRENCY"] = np.where(~df["CURRENCY_ESIMATES"].isin(["Estimation : Manquante"]), df["CURRENCY_ESIMATES"],
                                   df["CURRENCY_RESULTS"])
@@ -96,12 +92,11 @@ class StepTextClean(Step):
         df.loc[index_estimation, "BRUT_ESTIMATE"] = df.loc[index_estimation, "BRUT_RESULT"].tolist()
         df.loc[index_estimation, "BRUT_RESULT"] = "0"
 
-        df["FINAL_RESULT"] = df["BRUT_RESULT"].apply(lambda x : re.findall(r"\d+", x.replace(" ",""))[0] if len(re.findall(r"\d+", x)) >0 else x)
+        df["FINAL_RESULT"] = self.get_estimate(df["BRUT_RESULT"], min_max="min")
+        
         df["BRUT_ESTIMATE"].fillna("Estimation : Manquante", inplace=True)
-        df["MIN_ESTIMATION"] = df["BRUT_ESTIMATE"].apply(lambda x : re.findall(r"\d+", str(x).replace(" ",""))[0] 
-                                                   if len(re.findall(r"\d+", x)) > 0 else x)
-        df["MAX_ESTIMATION"] = df["BRUT_ESTIMATE"].apply(lambda x : re.findall(r"\d+", str(x).replace(" ",""))[1] 
-                                                   if len(re.findall(r"\d+", str(x).replace(" ",""))) == 2 else x)
+        df["MIN_ESTIMATION"] = self.get_estimate(df["BRUT_ESTIMATE"], min_max="min")
+        df["MAX_ESTIMATION"] = self.get_estimate(df["BRUT_ESTIMATE"], min_max="max")
         df["MAX_ESTIMATION"] = np.where(df["MAX_ESTIMATION"].apply(lambda x: str(x).isdigit()), 
                                         df["MAX_ESTIMATION"], 
                                         df["MIN_ESTIMATION"])

@@ -69,7 +69,7 @@ def step_crawling_drouot_items(
     # get crawling_function 
     crawl.run(crawl.get_urls(), crawl.crawling_function)
 
-    #python -m src datacrawl step-crawling-drouot-items -obj meuble -t 1
+    #python -m src datacrawl step-crawling-drouot-items -t 1
 
 @cli.command(
     help="Crawling DROUOT",
