@@ -22,6 +22,8 @@ from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItem
 from src.datacrawl.steps.step_crawler_christies_items import StepCrawlingChristiesItems
 from src.datacrawl.steps.step_crawler_drouot_auctions import StepCrawlingDrouotAuctions 
 from src.datacrawl.steps.step_crawler_christies_auctions import StepCrawlingChristiesAuctions
+from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
+from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
 from src.datacrawl.steps.step_text_clustering import StepTextClustering
 
 
@@ -52,27 +54,7 @@ def step_crawling_met(
 
 
 @cli.command(
-    help="Crawling DROUOT",
-    help_priority=3,
-)
-@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
-@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_drouot_items(
-    config_path, threads : int, object : str 
-):
-    
-    config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingDrouotItems(config=config, context=context, 
-                                    threads=threads, object=object)
-
-    # get crawling_function 
-    crawl.run(crawl.get_urls(), crawl.crawling_function)
-
-    #python -m src datacrawl step-crawling-drouot-items -t 1
-
-@cli.command(
-    help="Crawling DROUOT",
+    help="Crawling DROUOT AUCTIONS",
     help_priority=3,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
@@ -92,9 +74,28 @@ def step_crawling_drouot_auctions(
 
     #python -m src datacrawl step-crawling-drouot-auctions -t 1
 
+@cli.command(
+    help="Crawling SOTHEBYS AUCTIONS",
+    help_priority=3,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+@click.option(*NBR_AUCTION_PAGES_ARGS, **NBR_AUCTION_PAGES_KWARGS)
+def step_crawling_sothebys_auctions(
+    config_path, threads : int, nbr_auction_pages : int 
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingSothebysAuctions(config=config, context=context, 
+                                       threads=threads)
+
+    # get crawling_function 
+    crawl.run(crawl.get_auctions_urls_to_wrawl(), crawl.crawling_list_auctions_function)
+
+    #python -m src datacrawl step-crawling-sothebys-auctions -t 1
 
 @cli.command(
-    help="Crawling Chrysties",
+    help="Crawling Chrysties Auctions",
     help_priority=3,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
@@ -110,7 +111,28 @@ def step_crawling_chrysties_auctions(
     # get crawling_function 
     crawl.run(crawl.get_auctions_urls_to_wrawl(), 
               crawl.crawling_list_auctions_function)
-    #python -m src datacrawl step-crawling-chrysties -t 1
+    #python -m src datacrawl step-crawling-chrysties-auctions -t 1
+
+
+@cli.command(
+    help="Crawling DROUOT ITEMS",
+    help_priority=3,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+def step_crawling_drouot_items(
+    config_path, threads : int, object : str 
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingDrouotItems(config=config, context=context, 
+                                    threads=threads, object=object)
+
+    # get crawling_function 
+    crawl.run(crawl.get_urls(), crawl.crawling_function)
+
+    #python -m src datacrawl step-crawling-drouot-items -t 1
 
 
 @cli.command(
@@ -130,6 +152,24 @@ def step_crawling_chrysties_items(
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)
     #python -m src datacrawl step-crawling-chrysties-items -t 1
+
+@cli.command(
+    help="Crawling Chrysties",
+    help_priority=3,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+def step_crawling_sothebys_items(
+    config_path, threads : int
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingSothebysItems(config=config, context=context, 
+                                        threads=threads)
+
+    # get crawling_function 
+    crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)
+    #python -m src datacrawl step-crawling-sothebys-items -t 1
 
 
 @cli.command(

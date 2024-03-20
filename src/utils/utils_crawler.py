@@ -44,7 +44,7 @@ def get_files_already_done(file_path, url_path, to_replace=()):
 
 def keep_files_to_do(to_crawl, already_crawled):
     liste_urls = list(set(to_crawl) - set(already_crawled))
-    logging.info(f"ALREADY CRAWLED {len(already_crawled)} REMAINING {len(liste_urls)}")
+    logging.info(f"ALREADY CRAWLED {len(already_crawled)} REMAINING {len(liste_urls)} / {len(to_crawl)}")
     return liste_urls
 
 def save_picture_crawled(url_picture, image_path, picture_id):

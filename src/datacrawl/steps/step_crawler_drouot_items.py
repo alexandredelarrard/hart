@@ -29,15 +29,17 @@ class StepCrawlingDrouotItems(StepCrawling):
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url = self._config.crawling[self.seller].webpage_url
+        self.url_crawled = self._config.crawling[self.seller].url_crawled
 
     def get_urls(self) -> List[str]:
         
         full_display = ""
 
         df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = df.loc[df["URL_AUCTION"] != "MISSING_URL_AUCTION", "URL_AUCTION"].tolist()
+        to_crawl = df.loc[df["URL_AUCTION"] != "MISSING_URL_AUCTION", 
+                          "URL_AUCTION"].drop_duplicates().tolist()
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
-                                                      url_path=self.root_url)
+                                                url_path=self.url_crawled)
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         
         return [x + full_display for x in liste_urls]
@@ -85,12 +87,10 @@ class StepCrawlingDrouotItems(StepCrawling):
     def get_picture_url(self, lot, driver, counter=0):
         
         try:
-            time.sleep(0.15)
             style_tagname_pict = self.get_value_of_css_element(lot, "CLASS_NAME", 
                                                                "imgLot", 
                                                                "background-image")
             url_picture = re.findall(r'\((.*?)\)', style_tagname_pict)[-1]
-            
             return eval(str(url_picture))
         
         except Exception as e:
@@ -106,7 +106,7 @@ class StepCrawlingDrouotItems(StepCrawling):
     def crawl_info_per_page(self, driver, list_infos, image_path):
 
         liste_lots = self.get_elements(driver, "CLASS_NAME", "Lot")
-        time.sleep(1)
+        time.sleep(0.35)
         message = ""
 
         # save pict

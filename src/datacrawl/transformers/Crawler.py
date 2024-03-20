@@ -263,3 +263,9 @@ class StepCrawling(Step):
             return element.find_elements(eval(f"By.{attribute.upper()}"), attribute_desc)
         except Exception:
             return []
+        
+    def get_solo_element(self, element, attribute, attribute_desc) -> List:
+        try:
+            return element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc)
+        except Exception:
+            return []

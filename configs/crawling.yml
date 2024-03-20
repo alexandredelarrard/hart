@@ -11,6 +11,7 @@ crawling:
     drouot: 
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
         auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?
+        url_crawled : https://www.gazette-drouot.com/ventes-aux-encheres/
         url_path : ./data/drouot/infos/*
         save_picture_path : ./data/drouot/pictures
         save_data_path : ./data/drouot/infos
@@ -26,6 +27,19 @@ crawling:
         save_picture_path : ./data/christies/pictures
         save_data_path : ./data/christies/infos
         save_data_path_auctions: ./data/christies/auctions
+        settings : 
+            browser : chrome 
+            nodes : 1
+            retry : 1   
+    sothebys: 
+        webpage_url : https://www.sothebys.com/en/buy/auction
+        auctions_url : https://www.sothebys.com/en/results? #6581
+        url_crawled :  https://rmsothebys.com/en/home/auction-results/
+        url_path : ./data/sothebys/infos/*
+        save_picture_path : ./data/sothebys/pictures
+        save_data_path : ./data/sothebys/infos
+        save_data_path_auctions: ./data/sothebys/auctions
+        oldest_year : 2007
         settings : 
             browser : chrome 
             nodes : 1

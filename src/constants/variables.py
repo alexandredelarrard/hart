@@ -38,3 +38,15 @@ materiau = ["bois", "bronze", "métal argenté",  "papier",
             "ceramique", "porcelaine", "cuivre","saphir", "rubis",
             "soierie",  "toile", "faïence","pierre", "argent",
             "diamant", "verre"]
+ 
+classes = ["monnnaie", "tableau", "gravure", "vin", "photographie", "lithographie", "timbale", "vase", 
+           "vêtement", "skateboard", "montre", "bague", "collier", "boucle d'oreille", "bracelet",
+           "pendentif", "diamant", "livre", "tapis", "autographe", "moteur", "voiture", "sac à main",
+           "luminaire", "lit", "table", "chaise", "fauteuil", "canapé", "guéridon", "table basse",
+           "table de chevet", "armoire", "comode", "garde meuble", "vaisselier", "arme blanche", "arme à feu",
+           "canne", "coupe", "verre", "pendulle", "bougeoir", "coffret", "pince", "seau à champagne",
+           "panière", "pelle", "service à thé ou café", "aquarelle", "portrait", "huile sur toile", "huile sur panneau", 
+           "acrylique", "candelabre", "broderie", "tapisserie", "bibelot", "robe", "tabatière", "bonbonnière",
+           "sculpture", "instrument de musique", "miroir", "console", "icône", "documents", "canne", 
+           "salière", "huilier ou vinaigrier", "médaille", "masque", "antiquité", "applique", "affiche",
+           "figurine", "assiette", "plat ou plateau"]

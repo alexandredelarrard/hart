@@ -43,10 +43,6 @@ class StepEmbedding(Step):
                                             prompts=self.prompt,
                                             device=self._config.embedding[database_name].device)
             
-            # self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
-            #                 model_name=self._config.embedding[database_name].model,
-            #                 device=self._config.embedding[database_name].device)
-            
         elif type=="picture":
             self.batch_size = self._config.embedding[database_name].picture.batch_size
 
