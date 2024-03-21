@@ -1,0 +1,9 @@
+cleaning:
+  full_data_auction_houses : ALL_ITEMS_202403
+  drouot : 
+    origine_table_name: DROUOT_202403
+  christies : 
+    origine_table_name: CHRISTIES_202403
+  sothebys : 
+    origine_table_name: SOTHEBYS_202403
+

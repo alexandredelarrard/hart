@@ -23,8 +23,14 @@ if __name__ == "__main__":
     # self.run(self.get_auctions_urls_to_wrawl(), self.crawling_list_auctions_function)
     # self.run(self.get_list_items_to_crawl(), self.crawling_list_items_function)
 
-    # self = StepTextCleanDrouot(context=context, config=config, seller="drouot")
+    # self = StepTextCleanDrouot(context=context, config=config)
     # df = self.run()
+
+    # self = StepTextCleanChristies(context=context, config=config)
+    # embed = self.run()    
+
+    # self = StepTextCleanSothebys(context=context, config=config)
+    # embed = self.run()
 
     # self = StepTextClustering(context=context, config=config)
     # embed = self.run()
@@ -32,5 +38,4 @@ if __name__ == "__main__":
     # self = StepPictureClustering(context=context, config=config)
     # embed = self.run()
 
-    # self = StepTextCleanChristies(context=context, config=config)
-    # embed = self.run()
+    

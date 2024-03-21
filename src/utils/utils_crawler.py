@@ -41,8 +41,11 @@ def read_crawled_pickles(path : str):
         try:
             with open(file, "rb") as f:
                 df_file = pickle.load(f)
-            df_file["FILE"] = os.path.basename(file)
-            liste_dfs.append(df_file)
+            if isinstance(df_file, dict):
+                df_file["FILE"] = os.path.basename(file)
+                liste_dfs.append(df_file)
+            elif isinstance(df_file, list):
+                liste_dfs += df_file
         except Exception:
             not_read.append(file)
 

@@ -11,7 +11,9 @@ from src.context import Context
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
 
-from src.utils.utils_crawler import read_crawled_csvs
+from src.utils.utils_dataframe import remove_punctuation
+from src.utils.utils_crawler import (read_crawled_csvs,
+                                     encode_file_name)
 
 from omegaconf import DictConfig
 
@@ -30,9 +32,9 @@ class StepTextCleanChristies(TextCleaner):
         self.webpage_url = self._config.crawling[self.seller].webpage_url
         
         try:
-            self.sql_table_name = self._config.embedding[self.seller].origine_table_name
+            self.sql_table_name = self._config.cleaning[self.seller].origine_table_name
         except Exception as e:
-            self._log.error(f"SELLER not found in config embedding_history : {self.seller} \ {e}")
+            raise Exception(f"SELLER not found in config embedding_history : {self.seller} - {e}")
         
     @timing
     def run(self):
@@ -44,6 +46,16 @@ class StepTextCleanChristies(TextCleaner):
         # # CLEAN ITEMS
         df = read_crawled_csvs(path= self.info_path)
         df = self.clean_items_per_auction(df)
+        df = self.extract_estimates(df)
+        df = self.extract_currency(df)
+        df = self.clean_estimations(df, ["This lot has been withdrawn from auction", 
+                                        "Estimate on request", 
+                                        "Estimate unknown",
+                                        "Price realised", 
+                                        "Price Realised"])
+        df = self.extract_infos(df)
+        df = self.remove_missing_values(df)
+        df = self.remove_features(df)
 
         # CLEAN DETAILED ITEM DATA
         # TODO:
@@ -67,10 +79,13 @@ class StepTextCleanChristies(TextCleaner):
         # URL auction clean
         df_auctions["URL_AUCTION"] = list(map(lambda x: x[:-1] if x[-1] == "/" else x,  df_auctions["URL_AUCTION"].tolist()))
         df_auctions["URL_AUCTION"] = list(map(lambda x: os.path.basename(x),  df_auctions["URL_AUCTION"].tolist()))
+        df_auctions["ID_AUCTION"] = df_auctions["URL_AUCTION"].apply(lambda x : str(x).split("-")[-1])
+        df_auctions["CLEAN_TITLE"] = df_auctions["TITLE"].apply(lambda x : remove_punctuation(str(x).lower()).strip().replace(" ", "-"))
 
         # LOCALISATION
         df_auctions["LOCALISATION"] = list(map(lambda x: str(x).replace("EVENT LOCATION\n", ""),  df_auctions["LOCALISATION"].tolist()))
         df_auctions["DATE"] = pd.to_datetime(df_auctions["FILE"], format = "month=%m&year=%Y.csv")
+        df_auctions["DATE"] = df_auctions["DATE"].dt.strftime("%Y-%m-%d")
     
         return df_auctions
 
@@ -79,7 +94,28 @@ class StepTextCleanChristies(TextCleaner):
 
         df["FILE"] = df["FILE"].str.replace(".csv","")
         df["LOT"] = df["LOT"].str.replace("LOT ","")
+        df["ID_AUCTION"] = df["FILE"].apply(lambda x : str(x).split("&")[0].split("-")[-1])
+        df["CLEAN_TITLE"] = df["FILE"].apply(lambda x : "-".join(str(x).split("-")[:-1]))
+
+        df["PICTURE_ID"] = np.where(df["PICTURE_ID"].isin(["non_NoImag.jpg", "MISSING.jpg", 
+                                                           "wine-lots.jpg", "allowedcountries_h.jpg"]), 
+                                    np.nan, df["PICTURE_ID"])
+
+        df["ID"] = df["URL_FULL_DETAILS"].apply(lambda x : encode_file_name(str(x)))
+        df["ORIGIN"] = self.seller
+
+        return df
+
+    @timing
+    def extract_estimates(self, df):
         df["RESULT"] =  self.get_estimate(df["RESULT"], min_max="min")
+        df["MIN_ESTIMATION"] = self.get_estimate(df["SALE"], min_max="min")
+        df["MAX_ESTIMATION"] = self.get_estimate(df["SALE"], min_max="max")
+        df["FINAL_RESULT"] = self.get_estimate(df["RESULT"], min_max="min")
+        return df 
+    
+    @timing
+    def extract_currency(self, df):
         df["RESULT_CURRENCY"] = self.get_currency_from_text(df["RESULT"])
         df["ESTIMATE_CURRENCY"] = self.get_currency_from_text(df["SALE"])
 
@@ -87,25 +123,7 @@ class StepTextCleanChristies(TextCleaner):
                                                                 "Estimate on request", 
                                                                 "Estimate unknown"]), np.nan,
                                   df["ESTIMATE_CURRENCY"]) # ~2000 missing
-
-        df["MIN_ESTIMATION"] = self.get_estimate(df["SALE"], min_max="min")
-        df["MAX_ESTIMATION"] = self.get_estimate(df["SALE"], min_max="max")
-        df["FINAL_RESULT"] = self.get_estimate(df["RESULT"], min_max="min")
-
-        for col in ["FINAL_RESULT", "MIN_ESTIMATION", "MAX_ESTIMATION"]:
-            df[col] = np.where(df[col].isin(["This lot has been withdrawn from auction", 
-                                            "Estimate on request", 
-                                            "Estimate unknown"]), 
-                                np.nan, df[col])
-            df[col] = df[col].astype(float)
-        
-        df["FINAL_RESULT"] = np.where(df["FINAL_RESULT"].isnull(), 
-                                      df[["MIN_ESTIMATION", "MAX_ESTIMATION"]].mean(axis=1), 
-                                      df["FINAL_RESULT"])
-
-        df = df.loc[df["FINAL_RESULT"].notnull()].reset_index(drop=True)
-    
-        return df 
+        return df
     
     @timing
     def extract_infos(self, df):
@@ -119,8 +137,13 @@ class StepTextCleanChristies(TextCleaner):
             df[col] = np.where(df[col].isin(["1 ^,,^^,,^", "Estimate", "Sans titre", "Untitled",
                                             "2 ^,,^^,,^", "3 ^,,^^,,^", "1 ^,,^", "6 ^,,^", "4 ^,,^",
                                             "5 ^,,^"]), np.nan, df[col])
-
+        
         return df
     
     def concatenate_infos(self, df, df_auctions):
-        return df.merge(df_auctions, left_on='FILE', right_on="URL_AUCTION", suffixes=("", "_AUCTION"))
+        return df.merge(df_auctions, how="left", left_on='FILE', right_on="URL_AUCTION", suffixes=("", "_AUCTION"))
+    
+    def remove_features(self, df):
+        df = df.drop(["INFOS", "SALE", "RESULT", 
+                      'RESULT_CURRENCY', 'ESTIMATE_CURRENCY'], axis=1)
+        return df
