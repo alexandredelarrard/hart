@@ -2,17 +2,12 @@ from datetime import datetime
 import os 
 from omegaconf import DictConfig
 
-import pandas as pd 
-import tqdm
-import time
-import pickle
-import hashlib
-
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (read_crawled_csvs, 
                                     read_crawled_pickles,
-                                    keep_files_to_do)
+                                    keep_files_to_do,
+                                    encode_file_name)
 
 class StepCrawlingDetailed(StepCrawling):
     
@@ -42,18 +37,15 @@ class StepCrawlingDetailed(StepCrawling):
             already_crawled = df_crawled["URL"].tolist()
         else:
             already_crawled = []
-            
+
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         return liste_urls
     
-    def crawling_details_function(self, driver, config):
+    def crawling_details_function(self, driver):
 
         # crawl detail of one url  
         url = driver.current_url
-        try:
-            query = hashlib.sha256(str.encode(os.path.basename(url))).hexdigest()
-        except Exception:
-            query = url.replace(self.root_url, "")
+        query = encode_file_name(url)
         message = ""
 
         infos = {"URL" : url}

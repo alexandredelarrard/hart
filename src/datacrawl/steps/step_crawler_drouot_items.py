@@ -12,7 +12,8 @@ from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (read_crawled_csvs,
                                      save_picture_crawled,
                                      get_files_already_done,
-                                    keep_files_to_do)
+                                    keep_files_to_do,
+                                    encode_file_name)
 
 class StepCrawlingDrouotItems(StepCrawling):
     
@@ -29,6 +30,7 @@ class StepCrawlingDrouotItems(StepCrawling):
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url = self._config.crawling[self.seller].webpage_url
+        self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.url_crawled = self._config.crawling[self.seller].url_crawled
 
     def get_urls(self) -> List[str]:
@@ -103,7 +105,7 @@ class StepCrawlingDrouotItems(StepCrawling):
         
         return ""
     
-    def crawl_info_per_page(self, driver, list_infos, image_path):
+    def crawl_info_per_page(self, driver, list_infos):
 
         liste_lots = self.get_elements(driver, "CLASS_NAME", "Lot")
         time.sleep(0.35)
@@ -129,11 +131,11 @@ class StepCrawlingDrouotItems(StepCrawling):
                 lot_info["ESTIMATION"] = self.get_element_infos(lot, "CLASS_NAME", "lotEstimationListe")
                 lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "TAG_NAME", "a", type="href")
                 lot_info["URL_PICTURE"] = self.get_picture_url(lot, driver)
-                lot_info["PICTURE_ID"] = os.path.basename(lot_info["URL_PICTURE"])
+                lot_info["PICTURE_ID"] = encode_file_name(os.path.basename(lot_info["URL_PICTURE"]))
                 lot_info["INFOS"] = self.get_element_infos(lot, "CLASS_NAME", "lotDescriptionListe")
                
                 # save pictures & infos
-                save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
+                save_picture_crawled(lot_info["URL_PICTURE"], self.save_picture_path, lot_info["PICTURE_ID"])
 
                 list_infos.append(lot_info)
             
@@ -143,28 +145,24 @@ class StepCrawlingDrouotItems(StepCrawling):
         return message, list_infos
 
 
-    def crawling_function(self, driver, config):
+    def crawling_function(self, driver):
 
         # log in if necessary
         driver = self.check_loggedin(driver)
         page_nbr = self.get_page_number(driver)
         url = driver.current_url.split("?controller=")[0]
-        query = os.path.basename(url)
+        query = encode_file_name(os.path.basename(url))
 
         # crawl infos 
-        crawl_conf = config.crawling[self.seller]
-        image_path = crawl_conf.save_picture_path
-        infos_path = crawl_conf.save_data_path
-        
         list_infos = []
-        message, list_infos = self.crawl_info_per_page(driver, list_infos, image_path)
+        message, list_infos = self.crawl_info_per_page(driver, list_infos)
 
         if page_nbr >= 2:
             for new_url in [url + f"?page={x}" for x in range(2, page_nbr+1)]:
                 self.get_url(driver, new_url)
-                message, list_infos = self.crawl_info_per_page(driver, list_infos, image_path)
+                message, list_infos = self.crawl_info_per_page(driver, list_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=infos_path + f"/{query}.csv")
+        self.save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
         
         return driver, message

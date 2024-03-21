@@ -34,12 +34,10 @@ class StepCrawlingDrouotAuctions(StepCrawling):
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         return liste_urls
 
-    def crawling_list_auctions_function(self, driver, config):
+    def crawling_list_auctions_function(self, driver):
 
         # crawl infos 
-        crawl_conf = config.crawling[self.seller]
-        auctions_infos_path = crawl_conf.save_data_path_auctions
-        query = driver.current_url.replace(crawl_conf.auctions_url, "")
+        query = driver.current_url.replace(self.root_url_auctions, "")
         message = ""
 
         list_infos = []
@@ -72,6 +70,6 @@ class StepCrawlingDrouotAuctions(StepCrawling):
                 message = e 
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=auctions_infos_path + f"/{query}.csv")
+        self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
         return driver, message

@@ -77,11 +77,9 @@ class StepCrawlingSothebysAuctions(StepCrawling):
 
         return liste_lots
 
-    def crawling_list_auctions_function(self, driver, config):
+    def crawling_list_auctions_function(self, driver):
 
         # crawl infos 
-        crawl_conf = config.crawling[self.seller]
-        auctions_infos_path = crawl_conf.save_data_path_auctions
         query = os.path.basename(driver.current_url.replace("results?", "").replace("%2F", "-"))
         message = ""
 
@@ -112,6 +110,6 @@ class StepCrawlingSothebysAuctions(StepCrawling):
                 message = e 
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=auctions_infos_path + f"/{query}.csv")
+        self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
         return driver, message

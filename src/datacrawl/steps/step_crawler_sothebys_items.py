@@ -13,7 +13,8 @@ from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (read_crawled_csvs, 
                                     get_files_already_done, 
                                     keep_files_to_do,
-                                    save_picture_crawled)
+                                    save_picture_crawled,
+                                    encode_file_name)
 
 class StepCrawlingSothebysItems(StepCrawling):
     
@@ -29,6 +30,7 @@ class StepCrawlingSothebysItems(StepCrawling):
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url = self._config.crawling[self.seller].webpage_url
         self.url_crawled = self._config.crawling[self.seller].url_crawled
+        self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.today = datetime.today()
     
     # second crawling step  to get list of pieces per auction 
@@ -85,21 +87,17 @@ class StepCrawlingSothebysItems(StepCrawling):
                 lot_info["RESULT"] = self.get_element_infos(lot, "CLASS_NAME", "estimate")
 
             # PICTURE 
-            try:
-                lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").replace("extra_small", "small")
-                lot_info["PICTURE_ID"] = hashlib.sha256(str.encode(os.path.basename(lot_info["URL_PICTURE"]))).hexdigest()
+            lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").replace("extra_small", "small")
+            lot_info["PICTURE_ID"] = encode_file_name(os.path.basename(lot_info["URL_PICTURE"]))
 
-                # save pictures & infos
-                save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
-                time.sleep(0.1)
-                
-            except Exception:
-                lot_info["URL_PICTURE"] = ""
-                lot_info["PICTURE_ID"] = "MISSING.jpg"
+            # save pictures & infos
+            save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
+            time.sleep(0.1)
             
             list_infos.append(lot_info)
             
         return message, list_infos
+    
     
     def get_number_pages(self, driver, type = "auctions"):
         
@@ -116,16 +114,10 @@ class StepCrawlingSothebysItems(StepCrawling):
             else:
                 "true"
 
-    def crawling_list_items_function(self, driver, config):
+    def crawling_list_items_function(self, driver):
 
         # crawl infos 
-        crawl_conf = config.crawling[self.seller]
-        infos_path = crawl_conf.save_data_path
-        try:
-            query = os.path.basename(driver.current_url).replace(".html", "")
-        except Exception:
-            query = driver.current_url.replace(self.root_url, "")
-        image_path = crawl_conf.save_picture_path
+        query = encode_file_name(os.path.basename(driver.current_url))
         url = driver.current_url
         
         message = ""
@@ -139,12 +131,12 @@ class StepCrawlingSothebysItems(StepCrawling):
                 if "/en/auctions/" in url:
                     
                     pages = self.get_number_pages(driver, type="auctions")
-                    message, new_infos = self.get_sothebys_url_infos(driver, image_path=image_path)
+                    message, new_infos = self.get_sothebys_url_infos(driver, image_path=self.save_picture_path)
                     list_infos = list_infos + new_infos
 
                     for new_url in [url + f"?p={x}" for x in range(2, pages+1)]:
                         self.get_url(driver, new_url)
-                        message, new_infos = self.get_sothebys_url_infos(driver, image_path=image_path)
+                        message, new_infos = self.get_sothebys_url_infos(driver, image_path=self.save_picture_path)
                         list_infos = list_infos + new_infos
 
                 if "/en/buy/" in url:
@@ -153,7 +145,7 @@ class StepCrawlingSothebysItems(StepCrawling):
                     
                     while next_button_call != "true":
                         page_counter +=1
-                        message, new_infos = self.get_sothebys_url_infos(driver, image_path=image_path)
+                        message, new_infos = self.get_sothebys_url_infos(driver, image_path=self.save_picture_path)
                         list_infos = list_infos + new_infos
                         time.sleep(1)
 
@@ -170,6 +162,6 @@ class StepCrawlingSothebysItems(StepCrawling):
             self._log.warning(f"PAGE {url} DOES NOT EXIST {error}")
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=infos_path + f"/{query}.csv")
+        self.save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
 
         return driver, message

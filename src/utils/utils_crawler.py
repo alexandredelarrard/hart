@@ -6,6 +6,7 @@ from tqdm import tqdm
 import urllib
 import pickle
 import logging
+import hashlib
 
 def read_crawled_csvs(path : str):
 
@@ -51,6 +52,10 @@ def read_crawled_pickles(path : str):
     logging.info(f"Missing reads of files : {len(not_read)}")
 
     return df
+
+
+def encode_file_name(file):
+    return hashlib.sha256(str.encode(file)).hexdigest()
 
 
 def get_files_already_done(file_path, url_path, to_replace=()):

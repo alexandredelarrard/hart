@@ -11,7 +11,9 @@ from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (read_crawled_csvs, 
                                     get_files_already_done, 
                                     keep_files_to_do,
-                                    save_picture_crawled)
+                                    save_picture_crawled,
+                                    encode_file_name
+                                    )
 
 class StepCrawlingChristiesItems(StepCrawling):
     
@@ -25,6 +27,7 @@ class StepCrawlingChristiesItems(StepCrawling):
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url = self._config.crawling[self.seller].webpage_url
+        self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.today = datetime.today()
     
     # second crawling step  to get list of pieces per auction 
@@ -54,16 +57,10 @@ class StepCrawlingChristiesItems(StepCrawling):
         except Exception:
             pass
     
-    def crawling_list_items_function(self, driver, config):
+    def crawling_list_items_function(self, driver):
 
         # crawl infos 
-        crawl_conf = config.crawling[self.seller]
-        infos_path = crawl_conf.save_data_path
-        try:
-            query = os.path.basename(driver.current_url.replace("/?loadall=true",""))
-        except Exception:
-            query = driver.current_url.replace(self.root_url, "")
-        image_path = crawl_conf.save_picture_path
+        query = encode_file_name(os.path.basename(driver.current_url.replace("/?loadall=true","")))
         message = ""
 
         list_infos = []
@@ -87,16 +84,11 @@ class StepCrawlingChristiesItems(StepCrawling):
                 lot_info["RESULT"] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__dynamic-price")
                 
                 # PICTURE 
-                try:
-                    lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").split("?")[0]
-                    lot_info["PICTURE_ID"] = os.path.basename(lot_info["URL_PICTURE"])
+                lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").split("?")[0]
+                lot_info["PICTURE_ID"] = encode_file_name(os.path.basename(lot_info["URL_PICTURE"]))
 
-                    # save pictures & infos
-                    save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
-
-                except Exception:
-                    lot_info["URL_PICTURE"] = ""
-                    lot_info["PICTURE_ID"] = "MISSING.jpg"
+                # save pictures & infos
+                save_picture_crawled(lot_info["URL_PICTURE"], self.save_picture_path, lot_info["PICTURE_ID"])
                 
                 list_infos.append(lot_info)
             
@@ -104,6 +96,6 @@ class StepCrawlingChristiesItems(StepCrawling):
                 message = e 
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=infos_path + f"/{query}.csv")
+        self.save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
 
         return driver, message

@@ -165,7 +165,7 @@ class StepCrawling(Step):
     def start_threads_and_queues(self, function):
 
         for _ in range(self.threads):
-            t = Thread(target= self.queue_calls, args=(function, self.queues, self._config, ))
+            t = Thread(target= self.queue_calls, args=(function, self.queues, )) # self.configs no longer used
             t.daemon = True
             t.start()
 
