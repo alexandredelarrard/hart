@@ -6,6 +6,7 @@ import pandas as pd
 import tqdm
 import re
 import time
+import hashlib
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
@@ -37,16 +38,17 @@ class StepCrawlingSothebysItems(StepCrawling):
         to_crawl = df.loc[(df["URL_AUCTION"] != "MISSING_URL_AUCTION")&(
                             df["URL_AUCTION"].notnull()), 
                           "URL_AUCTION"].drop_duplicates().tolist()
+        to_crawl = [x for x in to_crawl if "rmsothebys" not in x and "/en/buy/" not in x]
+
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
-                                                      url_path=self.root_url)
+                                                    url_path='')
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
 
         # weird webpage format regarding F1
-        # TODO: include the F1 webpage formating from sothebys
-        liste_urls = [x for x in liste_urls if "rmsothebys" not in x]
-        
-        return [self.url_crawled + os.path.basename(x) if "/en" not in x
-                 else x for x in liste_urls]
+        # TODO: include the F1 webpage formating from sothebys*
+        # TODO : pages with /en/buy
+         
+        return liste_urls
     
     def get_sothebys_url_infos(self, driver, image_path):
 
@@ -85,11 +87,12 @@ class StepCrawlingSothebysItems(StepCrawling):
             # PICTURE 
             try:
                 lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").replace("extra_small", "small")
-                lot_info["PICTURE_ID"] = os.path.basename(lot_info["URL_PICTURE"].split("/primary")[0])
+                lot_info["PICTURE_ID"] = hashlib.sha256(str.encode(os.path.basename(lot_info["URL_PICTURE"]))).hexdigest()
 
                 # save pictures & infos
                 save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
-
+                time.sleep(0.1)
+                
             except Exception:
                 lot_info["URL_PICTURE"] = ""
                 lot_info["PICTURE_ID"] = "MISSING.jpg"

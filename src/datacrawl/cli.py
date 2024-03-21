@@ -12,7 +12,11 @@ from src.constants.command_line_interface import (
     TEXT_VECTOR_ARGS,
     TEXT_VECTOR_KWARGS,
     NBR_AUCTION_PAGES_ARGS,
-    NBR_AUCTION_PAGES_KWARGS
+    NBR_AUCTION_PAGES_KWARGS,
+    TEXT_ONLY_ARGS,
+    TEXT_ONLY_KWARGS,
+    SELLER_ARGS,
+    SELLER_KWARGS
 )
 
 from src.context import get_config_context
@@ -25,6 +29,7 @@ from src.datacrawl.steps.step_crawler_christies_auctions import StepCrawlingChri
 from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
 from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
 from src.datacrawl.steps.step_text_clustering import StepTextClustering
+from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
 
 
 @click.group(cls=SpecialHelpOrder)
@@ -169,7 +174,27 @@ def step_crawling_sothebys_items(
 
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)
-    #python -m src datacrawl step-crawling-sothebys-items -t 1
+    #python -m src datacrawl step-crawling-sothebys-items -t 1 
+
+@cli.command(
+    help="Crawling detail of url",
+    help_priority=3,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*SELLER_ARGS, **SELLER_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+def step_crawling_detailed(
+    config_path, threads : int, seller : str 
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingDetailed(config=config, context=context, 
+                                    threads=threads, seller=seller)
+
+    # get crawling_function 
+    crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
+
+    # python -m src datacrawl step-crawling-detailed -t 1 -s christies 
 
 
 @cli.command(
@@ -191,6 +216,3 @@ def step_embed_art_house(
     # embeddings and saving for queries 
     step_cluster.run()
     #python -m src art step-embed-art-house -tv DESCRIPTION -ah drouot
-
-    
-

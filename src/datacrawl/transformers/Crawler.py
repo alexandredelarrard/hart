@@ -2,6 +2,7 @@ import os
 import time
 import random
 import logging
+import pickle
 
 from typing import List
 from queue import Queue
@@ -21,11 +22,13 @@ class StepCrawling(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig,
-                 threads : int):
+                 threads : int, 
+                 text_only : bool = False):
 
         super().__init__(context=context, config=config)
         
         self.threads = threads
+        self.text_only = text_only
 
         self.missed_urls = []
         self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue()}
@@ -49,79 +52,71 @@ class StepCrawling(Step):
         self.close_queue_drivers()
 
 
-    def initialize_driver_firefox(self, proxy=True, prefs=False):
+    def initialize_driver_firefox(self):
         """
         Initialize the web driver with Firefox driver as principal driver geckodriver
         parameters are here to not load images and keep the default css --> make page loading faster
         """
 
-        if len(self.proxies)>0:
-            PROXY =  self.proxies[self.current_proxy_index]["ID"]
-        else:
-            print("NO PROXY AVAILABLE!! ")
-            self.use_proxy = False
-
         firefox_profile = webdriver.FirefoxProfile()
 
-        if prefs:
-            firefox_profile.set_preference('permissions.default.stylesheet', 2)
+        firefox_profile.set_preference('permissions.default.stylesheet', 2)
+        firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
+        firefox_profile.set_preference('disk-cache-size', 8000)
+        firefox_profile.set_preference("http.response.timeout", 300)
+        firefox_profile.set_preference("dom.disable_open_during_load", True)
+
+        if self.text_only:
             firefox_profile.set_preference('permissions.default.image', 2)
-            firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-            firefox_profile.set_preference('disk-cache-size', 8000)
-            firefox_profile.set_preference("http.response.timeout", 300)
-            firefox_profile.set_preference("dom.disable_open_during_load", True)
 
-        if self.use_proxy:
-            firefox_profile.set_preference("network.proxy.type", 1)
-            firefox_profile.set_preference("network.proxy.http", PROXY.split(":")[0])
-            firefox_profile.set_preference("network.proxy.http_port", PROXY.split(":")[1])
-            self.current_proxy_index = (self.current_proxy_index +1)%len(self.proxies)
+        firefox_profile.set_preference("network.proxy.type", 1)
+        self.current_proxy_index = (self.current_proxy_index +1)%len(self.proxies)
 
-                        
-            firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
-            firefox_capabilities['marionette'] = True
+        firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
+        firefox_capabilities['marionette'] = True
 
-            firefox_capabilities['proxy'] = {
-                "proxyType": "MANUAL",
-                "httpProxy": PROXY,
-                "ftpProxy": PROXY,
-                "sslProxy": PROXY
-            }
-
-        driver = webdriver.Firefox(capabilities=firefox_capabilities, log_path= os.environ["DIR_PATH"] + "/crawling/geckodriver.log") 
+        driver = webdriver.Firefox(capabilities=firefox_capabilities)
+        # log_path= os.environ["DIR_PATH"] + "/crawling/geckodriver.log" 
         driver.delete_all_cookies()
         driver.set_page_load_timeout(300) 
 
         return driver
     
     
-    def initialize_driver_chrome(self, prefs=True):
+    def initialize_driver_chrome(self):
         """
         Initialize the web driver with chrome driver as principal driver chromedriver.exe, headless means no open web page. But seems slower than firefox driver  
         parameters are here to not load images and keep the default css --> make page loading faster
         """
         
         options = Options()
-        if prefs:
-            prefs = {
-                    # "profile.managed_default_content_settings.images":2,
-                    'disk-cache-size': 8000,
-                     "profile.default_content_setting_values.notifications":2,
-                     "profile.managed_default_content_settings.stylesheets":2,
-                    #  "profile.managed_default_content_settings.cookies":2,
-                    #  "profile.managed_default_content_settings.javascript":2,
-                     "profile.managed_default_content_settings.plugins":2,
-                    #  "profile.managed_default_content_settings.popups":2,
-                     "profile.managed_default_content_settings.geolocation":2,
-                     "profile.managed_default_content_settings.media_stream":2,
-                    }
+
+        prefs = {
+                'disk-cache-size': 8000,
+                "profile.default_content_setting_values.notifications":2,
+                "profile.managed_default_content_settings.stylesheets":2,
+                "profile.managed_default_content_settings.cookies" : 2,
+                "profile.managed_default_content_settings.plugins":2,
+                "profile.managed_default_content_settings.geolocation":2,
+                "profile.managed_default_content_settings.media_stream":2,
+                }
+        
+        if self.text_only:
+            prefs["profile.managed_default_content_settings.cookies"] = 2
+            prefs["profile.managed_default_content_settings.javascript"] = 2
+            prefs["profile.managed_default_content_settings.images"] = 2
+            prefs["profile.managed_default_content_settings.css"] = 2
+            prefs["profile.managed_default_content_settings.popups"] = 2
             
-            options.add_experimental_option("prefs", prefs)
+        options.add_experimental_option("prefs", prefs)
+
+        # if self.text_only:
             # options.add_argument("--headless") # Runs Chrome in headless mode.
-            options.add_argument("--incognito")
-            options.add_argument('--no-sandbox') # Bypass OS security model
-            options.add_argument('--disable-gpu')  # applicable to windows os only
-            # options.add_argument('start-maximized') 
+        
+        options.add_argument("--incognito")
+        options.add_argument('--no-sandbox') # Bypass OS security model
+        options.add_argument('--disable-gpu')  # applicable to windows os only
+        # options.add_argument('start-maximized') 
 
         options.add_argument('disable-infobars')
         options.add_argument("--disable-extensions")
@@ -178,9 +173,7 @@ class StepCrawling(Step):
     def get_url(self, driver, url):
 
         try:
-            time.sleep(random.uniform(0.5,1))
             driver.get(url)
-
         except Exception:
             pass
         
@@ -199,8 +192,6 @@ class StepCrawling(Step):
 
             try:
                 driver = self.get_url(driver, url)
-                time.sleep(random.uniform(0.1, 0.4))   
-                
                 driver, information = function(driver, *args)
 
                 if information != "":
@@ -214,8 +205,6 @@ class StepCrawling(Step):
             
             except Exception as e:
                 logging.error(url, e)
-                # driver = self.restart_driver(driver)
-                
                 missed_urls.append(url)
                 queue_url.task_done()
                 queues["drivers"].put(driver)
@@ -224,7 +213,14 @@ class StepCrawling(Step):
 
 
     def save_infos(self, df, path):
-        df.to_csv(path, index=False, sep=";")
+
+        if ".csv" in path:
+            df.to_csv(path, index=False, sep=";")
+        elif ".txt" in path or ".pickle" in path:
+            with open(path, "wb") as f:
+                pickle.dump(df, f)
+        else:
+            self._log.error("Extensions handled for saving files are .TXT / .PICKLE or .CSV only. Please try again")
 
     def scrowl_driver(self, driver, Y):
         driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")

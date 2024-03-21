@@ -81,3 +81,27 @@ NBR_AUCTION_PAGES_KWARGS= {
         "number of auction pages referenced in drouot website"
     )
 }
+
+
+TEXT_ONLY_ARGS=("--text-only", "-te", "text_only")
+TEXT_ONLY_KWARGS= {
+    "type" : bool, 
+    "default" : False, 
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "if we want to initialize the webdriver without loading javascript / images etc. for fast crawling"
+    )
+}
+
+
+SELLER_ARGS=("--seller", "-s", "seller")
+SELLER_KWARGS= {
+    "type" : str, 
+    "default" : "christies", 
+    "required" : True,
+    "show_default" : True,
+    "help": (
+        "seller, either drouot, christies or sothebys"
+    )
+}

@@ -16,10 +16,22 @@ crawling:
         save_picture_path : ./data/drouot/pictures
         save_data_path : ./data/drouot/infos
         save_data_path_auctions: ./data/drouot/auctions
+        save_data_path_details: ./data/drouot/details
         settings : 
             browser : chrome 
             nodes : 1
             retry : 1   
+        detailed : 
+            queries : 
+                ARTIST:
+                    by_type : CLASS_NAME
+                    value_css : info_tps-prix-online
+                TITLE:
+                    by_type : CLASS_NAME
+                    value_css : litzt600
+                DETAIL:
+                    by_type : CLASS_NAME
+                    value_css : descriptionLineWrap
     christies: 
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
@@ -27,10 +39,22 @@ crawling:
         save_picture_path : ./data/christies/pictures
         save_data_path : ./data/christies/infos
         save_data_path_auctions: ./data/christies/auctions
+        save_data_path_details: ./data/christies/details
         settings : 
             browser : chrome 
             nodes : 1
             retry : 1   
+        detailed : 
+            queries : 
+                ARTIST:
+                    by_type : CLASS_NAME
+                    value_css : chr-lot-header__artist-name
+                TITLE:
+                    by_type : CLASS_NAME
+                    value_css : chr-lot-header__title
+                DETAIL:
+                    by_type : CLASS_NAME
+                    value_css : chr-lot-section__accordion--text
     sothebys: 
         webpage_url : https://www.sothebys.com/en/buy/auction
         auctions_url : https://www.sothebys.com/en/results? #6581
@@ -39,8 +63,26 @@ crawling:
         save_picture_path : ./data/sothebys/pictures
         save_data_path : ./data/sothebys/infos
         save_data_path_auctions: ./data/sothebys/auctions
+        save_data_path_details: ./data/sothebys/details
         oldest_year : 2007
         settings : 
             browser : chrome 
             nodes : 1
-            retry : 1   
+            retry : 1 
+        detailed : 
+            queries : 
+                ARTIST:
+                    by_type : CLASS_NAME
+                    value_css : LotPage-artistName
+                TITLE:
+                    by_type : CLASS_NAME
+                    value_css : LotPage-pieceTitle
+                DETAIL:
+                    by_type : CLASS_NAME
+                    value_css : LotPage-lotDetails  
+                CONDITION:
+                    by_type : CLASS_NAME
+                    value_css : LotPage-lotDescription
+                NOTE_CATALOGUE :
+                    by_type: CLASS_NAME
+                    value_css : LotPage-lotDescription 

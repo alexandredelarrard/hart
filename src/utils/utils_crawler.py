@@ -4,9 +4,10 @@ from glob import glob
 import os 
 from tqdm import tqdm
 import urllib
+import pickle
 import logging
 
-def read_crawled_csvs(path):
+def read_crawled_csvs(path : str):
 
     # read all csvs
     files = glob(path + "/*.csv")
@@ -21,14 +22,36 @@ def read_crawled_csvs(path):
         except Exception:
             not_read.append(file)
 
-    df = pd.concat(liste_dfs, 
-                    axis=0, 
-                    ignore_index=True)
+    df = pd.concat(liste_dfs, axis=0, ignore_index=True)
+    logging.info(f"RECORDINGS : {df.shape[0]}")
+    logging.info(f"Missing reads of files : {len(not_read)}")
+
+    return df
+
+
+def read_crawled_pickles(path : str):
+
+    # read all csvs
+    files = glob(path + "/*.pickle")
+    not_read = []
+    
+    liste_dfs = []
+    for file in tqdm(files): 
+        try:
+            with open(file, "rb") as f:
+                df_file = pickle.load(f)
+            df_file["FILE"] = os.path.basename(file)
+            liste_dfs.append(df_file)
+        except Exception:
+            not_read.append(file)
+
+    df = pd.DataFrame(liste_dfs)
 
     logging.info(f"RECORDINGS : {df.shape[0]}")
     logging.info(f"Missing reads of files : {len(not_read)}")
 
     return df
+
 
 def get_files_already_done(file_path, url_path, to_replace=()):
     files_already_done = glob(file_path + "/*.csv")
@@ -53,5 +76,6 @@ def save_picture_crawled(url_picture, image_path, picture_id):
         if not os.path.isfile(image_path + f"/{picture_id}.jpg"):
             if "https" in url_picture:
                 urllib.request.urlretrieve(url_picture, image_path + f"/{picture_id}.jpg")
-    except Exception:
+    except Exception as e:
+        logging.error(f"SAVING PICTURE FAILED : {e}")
         pass
