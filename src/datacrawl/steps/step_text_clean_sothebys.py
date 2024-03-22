@@ -39,9 +39,11 @@ class StepTextCleanSothebys(TextCleaner):
         df = read_crawled_csvs(path= self.infos_data_path)
         df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.extract_hour_infos(df)
+        df = self.clean_id_picture(df)
         df = self.clean_items_per_auction(df)
         df = self.extract_estimates(df)
         df = self.extract_currency(df)
+        df = self.add_complementary_variables(df, self.seller)
         df = self.clean_estimations(df, [])
         df = self.remove_missing_values(df)
         df = self.remove_features(df)
@@ -65,7 +67,7 @@ class StepTextCleanSothebys(TextCleaner):
         return df
     
     @timing
-    def clean_items_per_auction(self, df, limite=100):
+    def clean_items_per_auction(self, df):
         
         df[self.name.item_description] = df[self.name.item_infos]
         df[self.name.item_file] = df[self.name.item_file].str.replace(".csv","")
@@ -74,16 +76,6 @@ class StepTextCleanSothebys(TextCleaner):
         #error of url full detail need to be corrected 
         df[self.name.url_full_detail] = df[[self.name.url_full_detail, self.name.lot]].apply(lambda x : 
                     re.sub("lot.(\\d+)+", f"lot.{x[self.name.lot]}", str(x[self.name.url_full_detail])), axis=1)
-
-        liste_pictures_missing = df[self.name.id_picture].value_counts().loc[
-            df[self.name.id_picture].value_counts() > limite].index
-        self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} \
-                       picts having more than {limite} picts")
-        
-        df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
-                                    np.nan, df[self.name.id_picture])
-        df[self.name.id_item] = df[self.name.url_full_detail].apply(lambda x : encode_file_name(str(x)))
-        df[self.name.seller] = self.seller
 
         # because sothebys crawling creates duplicates 
         df = df.drop_duplicates([self.name.url_full_detail]).reset_index(drop=True)

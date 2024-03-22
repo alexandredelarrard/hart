@@ -33,6 +33,9 @@ class StepCrawlingDrouotItems(StepCrawling):
         self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.url_crawled = self._config.crawling[self.seller].url_crawled
 
+        # TODO: handle pdfs downloading and extraction ... Low prio
+        # TODO : missing 1M pictures /3.3M items
+
     def get_urls(self) -> List[str]:
         
         full_display = ""

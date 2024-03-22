@@ -47,18 +47,20 @@ class SqlHelper:
             row_count = self.get_table_rows_count(table_name)
 
             if if_exists:
+                self._log.info(f"TABLE EXISTS AND WILL BE REPLACED INTO SQL : {table_name} ......")
                 self.write_to_sql(dataframe, table_name, if_exists=if_exists)
-
-            if dataframe.shape[1] != col_count :
-                self._log.info(f"{table_name} - WILL BE DELETED TO ADD {col_count - dataframe.shape[1]} new columns")
-                self.write_to_sql(dataframe, table_name, if_exists="replace")
-                self._log.info(f"WRITTEN INTO SQL : {table_name}")
-            elif dataframe.shape[0] > row_count :
-                self._log.info(f"INSERT {row_count - dataframe.shape[0]} NEW OBSERVATIONS TO {table_name}")
-                self.write_to_sql(dataframe, table_name)
                 self._log.info(f"WRITTEN INTO SQL : {table_name}")
             else:
-                self._log.info(f"DATA {table_name} IS ALREADY UP TO DATE")
+                if dataframe.shape[1] != col_count :
+                    self._log.info(f"{table_name} - WILL BE DELETED TO ADD {col_count - dataframe.shape[1]} new columns")
+                    self.write_to_sql(dataframe, table_name, if_exists="replace")
+                    self._log.info(f"WRITTEN INTO SQL : {table_name}")
+                elif dataframe.shape[0] > row_count :
+                    self._log.info(f"INSERT {row_count - dataframe.shape[0]} NEW OBSERVATIONS TO {table_name}")
+                    self.write_to_sql(dataframe, table_name)
+                    self._log.info(f"WRITTEN INTO SQL : {table_name}")
+                else:
+                    self._log.info(f"DATA {table_name} IS ALREADY UP TO DATE")
         else:
             self._log.info(f"WRITTING INTO SQL : {table_name} ......")
             self.write_to_sql(dataframe, table_name)

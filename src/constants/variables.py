@@ -46,19 +46,22 @@ class Naming:
                         "RESULT" : self.brut_result,
                         "RESULTAT" : self.brut_result,
                         "ESTIMATE" : self.brut_estimate,
+                        "ESTIMATION" : self.brut_estimate,
                         "PICTURE_ID" : self.id_picture,
+                        "NOM_VENTE" : self.auction_title,
+                        "TYPE" : self.type_sale,
+                        "NUMBER_LOT" : self.lot,
                         "ID" : self.id_item,
                         "DATE" : self.date,
                         "HOUR" : self.hour}
     
     def dict_rename_auctions(self):
         return {**self.root_dict, **{"TITLE" : self.auction_title,
-                                        "INFOS" : self.auction_infos,
-                                        "FILE" : self.auction_file}}
+                                    "INFOS" : self.auction_infos,
+                                    "FILE" : self.auction_file}}
 
     def dict_rename_items(self):
         return {**self.root_dict, **{"TITLE" : self.item_title,
-                                    "NOM_VENTE" : self.auction_title,
                                     "SALE" : self.brut_estimate,
                                     "INFOS" :self.item_infos,
                                     "FILE" : self.item_file, 

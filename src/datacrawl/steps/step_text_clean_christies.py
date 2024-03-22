@@ -3,15 +3,12 @@ import numpy as np
 import os 
 import tqdm
 import time
-import locale
-locale.setlocale(locale.LC_ALL, 'fr_FR')
 
 from src.context import Context
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
 
 from src.utils.utils_crawler import (read_crawled_csvs,
-                                     encode_file_name,
                                      read_pickle)
 
 from omegaconf import DictConfig
@@ -52,8 +49,10 @@ class StepTextCleanChristies(TextCleaner):
         df = read_crawled_csvs(path= self.info_path)
         df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.clean_items_per_auction(df)
+        df = self.clean_id_picture(df) # 33% no pict
         df = self.extract_estimates(df)
         df = self.extract_currency(df)
+        df = self.add_complementary_variables(df, self.seller)
         df = self.clean_estimations(df, ["This lot has been withdrawn from auction", 
                                         "Estimate on request", 
                                         "Estimate unknown",
@@ -109,18 +108,10 @@ class StepTextCleanChristies(TextCleaner):
         df[self.name.id_auction] = df[self.name.item_file].apply(lambda x : str(x).split("&")[0].split("-")[-1])
         df[self.name.item_file] = df[self.name.item_file].apply(lambda x : str(x).split("&")[0])
 
-        df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(["non_NoImag.jpg", "MISSING.jpg", 
-                                                           "wine-lots.jpg", "allowedcountries_h.jpg"]), 
-                                    np.nan, df[self.name.id_picture])
-
-        df[self.name.id_item] = df[self.name.url_full_detail].apply(lambda x : encode_file_name(str(x)))
-        df[self.name.seller] = self.seller
-
         return df
 
     @timing
     def extract_estimates(self, df):
-        df[self.name.brut_result] = self.get_estimate(df[self.name.brut_result], min_max="min")
         df[self.name.min_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="min")
         df[self.name.max_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="max")
         df[self.name.item_result] = self.get_estimate(df[self.name.brut_result], min_max="min")
@@ -144,16 +135,19 @@ class StepTextCleanChristies(TextCleaner):
         df[self.name.item_description] = sale[2]
 
         for col in [self.name.item_title, self.name.item_description]:
-            df[col] = np.where(df[col].isin(["1 ^,,^^,,^", "Estimate", "Sans titre", "Untitled",
+            df[col] = np.where(df[col].str.lower().isin(["1 ^,,^^,,^", "estimate", "sans titre", "untitled",
                                             "2 ^,,^^,,^", "3 ^,,^^,,^", "1 ^,,^", "6 ^,,^", "4 ^,,^",
                                             "5 ^,,^"]), np.nan, df[col])
         
         return df
     
+    @timing
     def concatenate_infos(self, df, df_auctions):
         return df.merge(df_auctions, how="left", on=self.name.id_auction, 
                         validate="m:1", suffixes=("", "_AUCTION"))
     
+    @timing
     def remove_features(self, df):
-        df = df.drop([self.name.item_infos, self.name.brut_estimate, self.name.brut_result], axis=1)
+        df = df.drop([self.name.item_infos, self.name.brut_estimate, 
+                        self.name.brut_result], axis=1)
         return df
