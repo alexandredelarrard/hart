@@ -24,7 +24,7 @@ class StepCrawlingDetailed(StepCrawling):
         self.details_data_path = self._config.crawling[self.seller].save_data_path_details
         self.today = datetime.today()
         self.queries = self._config.crawling[self.seller].detailed.queries
-    1 
+    
     # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
 

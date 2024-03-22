@@ -1,5 +1,14 @@
-currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD'
+#for data cleaning
+currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB'
+localisation = "London|New York|Hong Kong|Paris|Geneva|Milan|Amsterdam|Zurich|Toronto|Dubai|Doha|Beijing|Mumbai|Derbyshire|Miami|Palm Beach|Chatsworth|Tel Aviv|Singapore|San Francisco|Monaco"
 
+# for steps 
+sellers = ["sothebys", "drouot", "christies"]
+
+# for crawling & cleaning steps : 
+
+
+#for feature extraction 
 category = ["lithographie", "estampe", "serigraphie",
             "montre", "cuillere", "sculpture",
             "scenes d intérieur","bijoux","boucle d oreille",

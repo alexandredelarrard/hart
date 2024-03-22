@@ -49,6 +49,7 @@ class StepCrawlingSothebysItems(StepCrawling):
         # weird webpage format regarding F1
         # TODO: include the F1 webpage formating from sothebys*
         # TODO : pages with /en/buy
+        # TODO: re extract pictures with src = data:image/svg+xml;base64 = 50%
          
         return liste_urls
     

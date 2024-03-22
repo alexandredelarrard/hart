@@ -1,4 +1,5 @@
 from src.context import get_config_context
+
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
 from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItems
 from src.datacrawl.steps.step_crawler_christies_items import StepCrawlingChristiesItems
@@ -9,12 +10,15 @@ from src.datacrawl.steps.step_text_clean_christies import StepTextCleanChristies
 from src.datacrawl.steps.step_picture_clustering import StepPictureClustering
 from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
 from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
+from src.datacrawl.steps.step_text_clean_sothebys import StepTextCleanSothebys
 
 
 if __name__ == "__main__":
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
-    self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="christies")
+    # self = StepTextCleanSothebys(context=context, config=config)
+    # self.run()
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="christies")
 
     # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
     # crawl.run(crawl.get_urls(), crawl.crawling_function)

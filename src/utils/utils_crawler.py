@@ -29,6 +29,11 @@ def read_crawled_csvs(path : str):
 
     return df
 
+def read_pickle(path : str):
+    with open(path, "rb") as f:
+        df_file = pickle.load(f)
+    return df_file
+
 
 def read_crawled_pickles(path : str):
 
@@ -39,8 +44,7 @@ def read_crawled_pickles(path : str):
     liste_dfs = []
     for file in tqdm(files): 
         try:
-            with open(file, "rb") as f:
-                df_file = pickle.load(f)
+            df_file = read_pickle(file)
             if isinstance(df_file, dict):
                 df_file["FILE"] = os.path.basename(file)
                 liste_dfs.append(df_file)

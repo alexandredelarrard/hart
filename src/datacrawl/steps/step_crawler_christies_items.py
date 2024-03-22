@@ -1,9 +1,9 @@
 from datetime import datetime
 import os 
 from omegaconf import DictConfig
-
 import pandas as pd 
 import tqdm
+import pickle
 import time
 
 from src.context import Context
@@ -12,8 +12,7 @@ from src.utils.utils_crawler import (read_crawled_csvs,
                                     get_files_already_done, 
                                     keep_files_to_do,
                                     save_picture_crawled,
-                                    encode_file_name
-                                    )
+                                    encode_file_name)
 
 class StepCrawlingChristiesItems(StepCrawling):
     
@@ -28,7 +27,11 @@ class StepCrawlingChristiesItems(StepCrawling):
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url = self._config.crawling[self.seller].webpage_url
         self.save_picture_path = self._config.crawling[self.seller].save_picture_path
+        self.correction_urls_auction = self._config.crawling[self.seller].correction_urls_auction
         self.today = datetime.today()
+
+        # TODO: recrawl SSO urls redirected because only first page was 
+        # crawled because missing ?loadall=true after rediction
     
     # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
@@ -44,6 +47,20 @@ class StepCrawlingChristiesItems(StepCrawling):
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         
         return [x + full_display for x in liste_urls]
+    
+    def create_mapping_dynamic_auction_url(self, driver, df_auctions):
+
+        mapping_dynamic_urls = {}
+        sso = df_auctions["SSO"] = df_auctions["URL_AUCTION"].apply(lambda x : "sso?" in x)
+        df_auctions = df_auctions[sso]
+
+        for url in tqdm.tqdm(df_auctions["URL_AUCTION"].tolist()):
+            driver.get(url)
+            time.sleep(0.4)
+            mapping_dynamic_urls[url] = driver.current_url
+        
+        with open(self.correction_urls_auction, "wb") as f:
+            pickle.dump(mapping_dynamic_urls, f)
     
     def handle_signups(self, driver):
 

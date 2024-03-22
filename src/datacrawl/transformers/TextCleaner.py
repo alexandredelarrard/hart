@@ -19,9 +19,9 @@ class TextCleaner(Step):
 
         super().__init__(context=context, config=config)
 
-    def get_currency_from_text(self, variable):
-        return variable.apply(lambda x : re.findall(currencies, str(x))[0] if 
-                                             len(re.findall(currencies, str(x))) > 0 else x)
+    def get_list_element_from_text(self, variable, liste=currencies):
+        return variable.apply(lambda x : re.findall(liste, str(x))[0] if 
+                                             len(re.findall(liste, str(x))) > 0 else np.nan)
 
     def get_estimate(self, variable, min_max : str = "min"):
         if min_max.lower() == "min":
@@ -41,10 +41,14 @@ class TextCleaner(Step):
         important_cols =["FINAL_RESULT", "CURRENCY", "URL_FULL_DETAILS", "INFOS"]
 
         if self.check_cols_exists(important_cols, df.columns):
+            shape_0 = df.shape[0]
             df = df.loc[(df["FINAL_RESULT"].notnull())&(
                         df["CURRENCY"].notnull())&(
                         df["URL_FULL_DETAILS"].notnull())&(
-                        df["INFOS"].notnull())].reset_index(drop=True)
+                        df["INFOS"].notnull())].reset_index(drop=True) 
+            shape_1 = df.shape[0]
+            self._log.info(f"REMOVING {shape_0 - shape_1} \
+                        ({(shape_0-shape_1)*100/shape_0:.2f}%) OBS due to lack of curcial infos")
             return df 
         else:
             missing_cols = set(important_cols) - set(df.columns)

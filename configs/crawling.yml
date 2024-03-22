@@ -1,9 +1,9 @@
 crawling:
     met:
         webpage_url : https://www.metmuseum.org
-        url_path : ./data/openaccess/MetObjects.csv
-        save_picture_path : ./data/openaccess/pictures
-        save_data_path : ./data/openaccess/
+        url_path : ./data/met/infos/MetObjects.csv
+        save_picture_path : ./data/met/pictures
+        save_data_path : ./data/met/
         settings : 
             browser : chrome 
             nodes : 1
@@ -40,6 +40,7 @@ crawling:
         save_data_path : ./data/christies/infos
         save_data_path_auctions: ./data/christies/auctions
         save_data_path_details: ./data/christies/details
+        correction_urls_auction : ./data/christies/auctions/correction_urls_auctions.pickle
         settings : 
             browser : chrome 
             nodes : 1
