@@ -31,10 +31,7 @@ class StepTextCleanChristies(TextCleaner):
         self.items_col_names= self.name.dict_rename_items()
         self.auctions_col_names= self.name.dict_rename_auctions()
         
-        try:
-            self.sql_table_name = self._config.cleaning[self.seller].origine_table_name
-        except Exception as e:
-            raise Exception(f"SELLER not found in config embedding_history : {self.seller} - {e}")
+        self.sql_table_name = self.get_sql_db_name(self.seller)
         
     @timing
     def run(self):

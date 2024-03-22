@@ -79,8 +79,7 @@ currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SG
 localisation = "London|New York|Hong Kong|Paris|Geneva|Milan|Amsterdam|Zurich|Toronto|Dubai|Doha|Beijing|Mumbai|Derbyshire|Miami|Palm Beach|Chatsworth|Tel Aviv|Singapore|San Francisco|Monaco"
 
 # for steps 
-sellers = ["sothebys", "drouot", "christies"]
-
+list_sellers = ["sothebys", "drouot", "christies"]
 
 #for feature extraction 
 category = ["lithographie", "estampe", "serigraphie",

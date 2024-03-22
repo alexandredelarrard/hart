@@ -20,6 +20,12 @@ class TextCleaner(Step):
 
         super().__init__(context=context, config=config)
 
+    def get_sql_db_name(self, seller : str):
+        try:
+            return self._config.cleaning[seller].origine_table_name
+        except Exception as e:
+            raise Exception(f"SELLER not found in config embedding_history : {seller} - {e}")
+
     def get_list_element_from_text(self, variable, liste=currencies):
         return variable.apply(lambda x : re.findall(liste, str(x))[0] if 
                                              len(re.findall(liste, str(x))) > 0 else np.nan)

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import locale
 import re
-locale.setlocale(locale.LC_ALL, 'fr_FR')
+
 
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.context import Context
@@ -21,15 +21,13 @@ class StepTextCleanDrouot(TextCleaner):
                  seller : str = "drouot"):
 
         super().__init__(context=context, config=config)
+        locale.setlocale(locale.LC_ALL, 'fr_FR')
 
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.items_col_names= self.name.dict_rename_items()
 
-        try:
-            self.sql_table_name = self._config.cleaning[self.seller].origine_table_name
-        except Exception as e:
-            raise Exception(f"SELLER not found in config embedding_history : {self.seller} - {e}")
+        self.sql_table_name = self.get_sql_db_name(self.seller)
         
     @timing
     def run(self):
@@ -71,6 +69,17 @@ class StepTextCleanDrouot(TextCleaner):
     @timing
     def clean_items_per_auction(self, df):
         df[self.name.item_description] = df[self.name.item_infos]
+
+        # clean localisation
+        df[self.name.localisation] = np.where(df[self.name.place].isin(["www.drouot.com", 'Drouot Live ONLY - - -', 'Vente Huis Clos -']), "Hotel Drouot - 75009 Paris",
+                                     np.where(df[self.name.place].apply(lambda x: "www.setdart.com" in x), "Arago, 346 - 08009 Barcelone, Espagne",  
+                                     np.where(df[self.name.place]=="'- , Luxembourg'", "XXX - 001 Luxembourg, Luxembourg",
+                                     np.where(df[self.name.place]=='- , Suisse', "XXX - 001 Genève, Suisse",   
+                                     np.where(df[self.name.place]=='- , Royaume-Uni', "XXX - 001 London, Royaume uni",     
+                                            df[self.name.place])))))
+        df[self.name.localisation] = df[self.name.localisation].apply(lambda x: x.split(" - ")[-1].split(",")[0].strip().split(" ")[-1])
+        df[self.name.localisation] = np.where(df[self.name.localisation].isin(['-', '- ,']), np.nan, df[self.name.localisation].str.lower())
+
         return df
 
     @timing

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import locale
 import re
-locale.setlocale(locale.LC_ALL, 'en')
+
 
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.context import Context
@@ -23,15 +23,13 @@ class StepTextCleanSothebys(TextCleaner):
                  seller : str = "sothebys"):
 
         super().__init__(context=context, config=config)
+        locale.setlocale(locale.LC_ALL, 'en')
 
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.items_col_names= self.name.dict_rename_items()
 
-        try:
-            self.sql_table_name = self._config.cleaning[seller].origine_table_name
-        except Exception as e:
-            raise Exception(f"SELLER not found in config embedding_history : {self.seller} - {e}")
+        self.sql_table_name = self.get_sql_db_name(self.seller)
         
     @timing
     def run(self):
