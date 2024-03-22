@@ -53,16 +53,16 @@ class StepCrawlingDrouotAuctions(StepCrawling):
                 links = [x.get_attribute("href") for x in lot.find_elements(By.TAG_NAME, "a")]
                 links = [x for x in links if x and "modal-content" not in x]
                 if len(links) !=0:
-                    lot_info["URL_AUCTION"] = links[0]
+                    lot_info[self.name.url_auction] = links[0]
                 else:
-                    lot_info["URL_AUCTION"] = "MISSING_URL_AUCTION"
+                    lot_info[self.name.url_auction] = "MISSING_URL_AUCTION"
 
                 # get infos 
-                lot_info["TITLE"] = self.get_element_infos(lot, "CLASS_NAME", "nomVente")
-                lot_info["DATE"] = self.get_element_infos(lot, "CLASS_NAME", "capitalize-fl")
-                lot_info["TYPE_SALE"] = self.get_element_infos(lot, "CLASS_NAME", "typeVente-fl")
-                lot_info["PLACE"] = self.get_element_infos(lot, "CLASS_NAME", "lieuVente")
-                lot_info["HOUSE"] = self.get_element_infos(lot, "CLASS_NAME", "etudeVente")
+                lot_info[self.name.auction_title] = self.get_element_infos(lot, "CLASS_NAME", "nomVente")
+                lot_info[self.name.date] = self.get_element_infos(lot, "CLASS_NAME", "capitalize-fl")
+                lot_info[self.name.type_sale] = self.get_element_infos(lot, "CLASS_NAME", "typeVente-fl")
+                lot_info[self.name.place] = self.get_element_infos(lot, "CLASS_NAME", "lieuVente")
+                lot_info[self.name.house] = self.get_element_infos(lot, "CLASS_NAME", "etudeVente")
             
                 list_infos.append(lot_info)
             

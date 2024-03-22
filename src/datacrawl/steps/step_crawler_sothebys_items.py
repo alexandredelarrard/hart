@@ -37,9 +37,13 @@ class StepCrawlingSothebysItems(StepCrawling):
     def get_list_items_to_crawl(self):
 
         df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = df.loc[(df["URL_AUCTION"] != "MISSING_URL_AUCTION")&(
-                            df["URL_AUCTION"].notnull()), 
-                          "URL_AUCTION"].drop_duplicates().tolist()
+        to_crawl = (
+                    df.loc[(self.name.url_auction != "MISSING_URL_AUCTION")&
+                            (df[self.name.url_auction].notnull()), 
+                            self.name.url_auction]
+                            .drop_duplicates()
+                            .tolist()
+                    )
         to_crawl = [x for x in to_crawl if "rmsothebys" not in x and "/en/buy/" not in x]
 
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
@@ -66,33 +70,33 @@ class StepCrawlingSothebysItems(StepCrawling):
         for lot in tqdm.tqdm(liste_lots):
             lot_info = {} 
         
-            lot_info["DATE"] = self.get_element_infos(driver, "CLASS_NAME", "css-1bnt3nz")
-            if lot_info["DATE"] == "":
-                lot_info["DATE"] = self.get_element_infos(driver, "CLASS_NAME", "AuctionsModule-auction-info")
+            lot_info[self.name.date] = self.get_element_infos(driver, "CLASS_NAME", "css-1bnt3nz")
+            if lot_info[self.name.date] == "":
+                lot_info[self.name.date] = self.get_element_infos(driver, "CLASS_NAME", "AuctionsModule-auction-info")
 
             # URL for DETAIL                
-            lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "CLASS_NAME", "css-1ivophs", type="href")
-            if lot_info["URL_FULL_DETAILS"] == "":
-                lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "XPATH", 
+            lot_info[self.name.full_detail] = self.get_element_infos(lot, "CLASS_NAME", "css-1ivophs", type="href")
+            if lot_info[self.name.full_detail] == "":
+                lot_info[self.name.full_detail] = self.get_element_infos(lot, "XPATH", 
                                                                             "//div[@class='image']/a", type="href")
 
             # TITLE
-            lot_info["INFOS"] = lot.text
-            lot_info["TITLE"] = lot_info["INFOS"].split("\n")[0]
-            if lot_info["INFOS"] == "":
-                lot_info["TITLE"] = self.get_element_infos(lot, "CLASS_NAME", "title")
-                lot_info["INFOS"] = self.get_element_infos(lot, "CLASS_NAME", "description")
+            lot_info[self.name.item_infos] = lot.text
+            lot_info[self.name.item_title] = lot_info[self.name.item_infos].split("\n")[0]
+            if lot_info[self.name.item_infos] == "":
+                lot_info[self.name.item_title] = self.get_element_infos(lot, "CLASS_NAME", "title")
+                lot_info[self.name.item_infos] = self.get_element_infos(lot, "CLASS_NAME", "description")
 
-            lot_info["RESULT"] = self.get_element_infos(lot, "TAG_NAME", "span")
-            if lot_info["RESULT"] == "":
-                lot_info["RESULT"] = self.get_element_infos(lot, "CLASS_NAME", "estimate")
+            lot_info[self.name.brut_result] = self.get_element_infos(lot, "TAG_NAME", "span")
+            if lot_info[self.name.brut_result] == "":
+                lot_info[self.name.brut_result] = self.get_element_infos(lot, "CLASS_NAME", "estimate")
 
             # PICTURE 
-            lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").replace("extra_small", "small")
-            lot_info["PICTURE_ID"] = encode_file_name(os.path.basename(lot_info["URL_PICTURE"]))
+            lot_info[self.name.url_picture] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").replace("extra_small", "small")
+            lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
 
             # save pictures & infos
-            save_picture_crawled(lot_info["URL_PICTURE"], image_path, lot_info["PICTURE_ID"])
+            save_picture_crawled(lot_info[self.name.url_picture], image_path, lot_info[self.name.id_picture])
             time.sleep(0.1)
             
             list_infos.append(lot_info)
@@ -100,15 +104,15 @@ class StepCrawlingSothebysItems(StepCrawling):
         return message, list_infos
     
     
-    def get_number_pages(self, driver, type = "auctions"):
+    def get_number_pages(self, driver, type_url = "auctions"):
         
-        if type == "auctions":
+        if type_url == "auctions":
             nbr_lots =self.get_element_infos(driver, "CLASS_NAME", "AuctionsModule-lotsCount")
             if nbr_lots != "":
                 nbr_lots = re.findall("(\\d+)", nbr_lots)[0]
                 return int(nbr_lots) // 12 + 1
         
-        if type == "buy": 
+        if type_url == "buy": 
             next_button_status = self.get_element_infos(driver, "XPATH", "//button[@aria-label='Go to next page.']", "aria-disabled")
             if next_button_status != "":
                 return next_button_status
@@ -131,7 +135,7 @@ class StepCrawlingSothebysItems(StepCrawling):
             if "www.sothebys.com" in url:
                 if "/en/auctions/" in url:
                     
-                    pages = self.get_number_pages(driver, type="auctions")
+                    pages = self.get_number_pages(driver, type_url="auctions")
                     message, new_infos = self.get_sothebys_url_infos(driver, image_path=self.save_picture_path)
                     list_infos = list_infos + new_infos
 
@@ -150,7 +154,7 @@ class StepCrawlingSothebysItems(StepCrawling):
                         list_infos = list_infos + new_infos
                         time.sleep(1)
 
-                        next_button_call = self.get_number_pages(driver, type="buy")
+                        next_button_call = self.get_number_pages(driver, type_url="buy")
                         self.click_element(driver, "XPATH", "//button[@aria-label='Go to next page.']")
                         time.sleep(4)
 

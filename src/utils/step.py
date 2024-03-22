@@ -6,6 +6,7 @@ from omegaconf import DictConfig
 from src.context import Context 
 from src.utils.string import camel_to_snake
 from src.utils.sql_helper import SqlHelper
+from src.constants.variables import Naming
 
 
 class Step(SqlHelper):
@@ -23,6 +24,9 @@ class Step(SqlHelper):
         self._sql_table_names = self.get_table_names()
         self._tables_in_sql = self.get_sql_loaded_tables()
         self._log.info(f"starting step {self}")
+
+        # naming convention 
+        self._name = Naming()
 
     @property
     def name(self):

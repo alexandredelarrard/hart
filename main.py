@@ -16,7 +16,7 @@ from src.datacrawl.steps.step_text_clean_sothebys import StepTextCleanSothebys
 if __name__ == "__main__":
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
-    # self = StepTextCleanSothebys(context=context, config=config)
+    self = StepTextCleanSothebys(context=context, config=config)
     # self.run()
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="christies")
 

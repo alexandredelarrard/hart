@@ -63,7 +63,7 @@ class StepPictureClustering(Step):
     
     def get_pictures_path(self, df_desc):
         root_path = self._config.crawling[self.database_name].save_picture_path
-        return df_desc["PICTURE_ID"].apply(lambda x : root_path + f"/{x}.jpg" if 
+        return df_desc[self.name.picture_id].apply(lambda x : root_path + f"/{x}.jpg" if 
                                                "MISSING" not in x else 
                                                root_path + f"/MISSING.jpg.jpg").tolist()
     

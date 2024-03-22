@@ -83,13 +83,13 @@ class StepCrawlingChristiesAuctions(StepCrawling):
             
             try:
                 # URL for DETAIL                
-                lot_info["URL_AUCTION"] = self.get_element_infos(lot, "CLASS_NAME", 
+                lot_info[self.name.url_auction] = self.get_element_infos(lot, "CLASS_NAME", 
                                                             "chr-event-tile__title", 
                                                             type="href") 
 
                 # TITLE
-                lot_info["TITLE"] = self.get_element_infos(lot, "CLASS_NAME", "chr-event-tile__title")
-                lot_info["LOCALISATION"] = self.get_element_infos(lot, "CLASS_NAME", "chr-label-s")
+                lot_info[self.name.auction_title] = self.get_element_infos(lot, "CLASS_NAME", "chr-event-tile__title")
+                lot_info[self.name.localisation] = self.get_element_infos(lot, "CLASS_NAME", "chr-label-s")
 
                 list_infos.append(lot_info)
             

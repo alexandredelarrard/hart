@@ -95,14 +95,14 @@ class StepCrawlingSothebysAuctions(StepCrawling):
             try:
                 link = self.get_element_infos(lot, "CLASS_NAME", "Card-info-container", "href")
                 if link != "":
-                    lot_info["URL_AUCTION"] = link
+                    lot_info[self.name.url_auction] = link
                 else:
-                    lot_info["URL_AUCTION"] = "MISSING_URL_AUCTION"
+                    lot_info[self.name.url_auction] = "MISSING_URL_AUCTION"
 
                 # get infos 
-                lot_info["TITLE"] = self.get_element_infos(lot, "CLASS_NAME", "Card-title")
-                lot_info["DATE"] = self.get_element_infos(lot, "CLASS_NAME", "Card-details")
-                lot_info["TYPE_SALE"] = self.get_element_infos(lot, "CLASS_NAME", "Card-category")
+                lot_info[self.name.auction_title] = self.get_element_infos(lot, "CLASS_NAME", "Card-title")
+                lot_info[self.name.date] = self.get_element_infos(lot, "CLASS_NAME", "Card-details")
+                lot_info[self.name.type_sale] = self.get_element_infos(lot, "CLASS_NAME", "Card-category")
             
                 list_infos.append(lot_info)
             

@@ -29,12 +29,12 @@ class StepCrawlingDetailed(StepCrawling):
     def get_list_items_to_crawl(self):
 
         df = read_crawled_csvs(path=self.infos_data_path)
-        to_crawl = df.loc[df["URL_FULL_DETAILS"].notnull(), 
-                            "URL_FULL_DETAILS"].drop_duplicates().tolist()
+        to_crawl = df.loc[df[self.name.url_full_detail].notnull(), 
+                            self.name.url_full_detail].drop_duplicates().tolist()
         df_crawled = read_crawled_pickles(path=self.details_data_path)
 
         if df_crawled.shape[0] != 0:
-            already_crawled = df_crawled["URL"].tolist()
+            already_crawled = df_crawled[self.name.url_detail].tolist()
         else:
             already_crawled = []
 
@@ -48,7 +48,7 @@ class StepCrawlingDetailed(StepCrawling):
         query = encode_file_name(url)
         message = ""
 
-        infos = {"URL" : url}
+        infos = {self.name.url_detail : url}
         for step, step_values in self.queries.items(): 
             infos[step] =  self.get_element_infos(driver, 
                                     step_values["by_type"], 

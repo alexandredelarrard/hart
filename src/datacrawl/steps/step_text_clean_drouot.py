@@ -55,61 +55,61 @@ class StepTextCleanDrouot(TextCleaner):
     def extract_hour_infos(self, df):
 
         # date, place, maison
-        df["DATE"] = df["DATE"].apply(lambda x : re.sub(r'\(.*?\)', "", str(x)).strip())
-        df["DATE"] = pd.to_datetime(df["DATE"], format="%A %d %B %Y - %H:%M")
-        df["HOUR"] = df["DATE"].dt.hour
-        df["DATE"] = df["DATE"].dt.round("D")
-        df["DATE"] = df["DATE"].dt.strftime("%Y-%m-%d")
+        df[self.name.date] = df[self.name.date].apply(lambda x : re.sub(r'\(.*?\)', "", str(x)).strip())
+        df[self.name.date] = pd.to_datetime(df[self.name.date], format="%A %d %B %Y - %H:%M")
+        df[self.name.hour] = df[self.name.date].dt.hour
+        df[self.name.date] = df[self.name.date].dt.round("D")
+        df[self.name.date] = df[self.name.date].dt.strftime("%Y-%m-%d")
 
         return df
     
     @timing
     def clean_items_per_auction(self, df):
         
-        df["IS_ONLINE"] = 1*(df["TYPE"] == "Online")
-        df["DESCRIPTION"] = df["INFOS"]
+        df[self.name.type_sale] = 1*(df[self.name.type_sale] == "Online")
+        df[self.name.item_description] = df[self.name.item_infos]
 
-        liste_pictures_missing = df["PICTURE_ID"].value_counts().loc[
-            df["PICTURE_ID"].value_counts() > limite].index
+        liste_pictures_missing = df[self.name.id_picture].value_counts().loc[
+            df[self.name.id_picture].value_counts() > limite].index
         self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} \
                        picts having more than {limite} picts")
         
-        df["PICTURE_ID"] = np.where(df["PICTURE_ID"].isin(list(liste_pictures_missing)), 
-                                    np.nan, df["PICTURE_ID"])
-        df["ID"] = df["URL_FULL_DETAILS"].apply(lambda x : encode_file_name(str(x)))
-        df["ORIGIN"] = self.seller
+        df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
+                                    np.nan, df[self.name.id_picture])
+        df[self.name.item_id] = df[self.name.url_full_detail].apply(lambda x : encode_file_name(str(x)))
+        df[self.name.seller] = self.seller
 
         return df
     
-    @timing
-    def extract_currency(self, df):
-
-        df["CURRENCY_RESULTS"] = self.get_list_element_from_text(df["BRUT_RESULT"])
-        df["CURRENCY_ESIMATES"] = self.get_list_element_from_text(df["BRUT_ESTIMATE"])
-        df["CURRENCY"] = np.where(~df["CURRENCY_ESIMATES"].isin(["Estimation : Manquante"]), 
-                                  df["CURRENCY_ESIMATES"],
-                                  df["CURRENCY_RESULTS"])
-        return df
 
     @timing
     def extract_estimates(self, df):
 
         # extract selling price and estimation
-        df_results = self.get_splitted_infos(df["ESTIMATION"], index=df.index, sep="/")
-        df["BRUT_RESULT"], df["BRUT_ESTIMATE"] = df_results[0], df_results[1]
+        df_results = self.get_splitted_infos(df[self.name.brut_estimate], index=df.index, sep="/")
+        df[self.name.brut_result], df[self.name.brut_estimate] = df_results[0], df_results[1]
 
-        df["FINAL_RESULT"] = self.get_estimate(df["BRUT_RESULT"], min_max="min")
-        df["MIN_ESTIMATION"] = self.get_estimate(df["BRUT_ESTIMATE"], min_max="min")
-        df["MAX_ESTIMATION"] = self.get_estimate(df["BRUT_ESTIMATE"], min_max="max")
-        df["MAX_ESTIMATION"] = np.where(df["MAX_ESTIMATION"].apply(lambda x: str(x).isdigit()), 
-                                        df["MAX_ESTIMATION"], 
-                                        df["MIN_ESTIMATION"])
+        df[self.name.item_result] = self.get_estimate(df[self.name.brut_result], min_max="min")
+        df[self.name.min_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="min")
+        df[self.name.max_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="max")
+        df[self.name.max_estimate] = np.where(df[self.name.max_estimate].apply(lambda x: str(x).isdigit()), 
+                                        df[self.name.max_estimate], 
+                                        df[self.name.min_estimate])
+        return df
+
+    @timing
+    def extract_currency(self, df):
+
+        currency_brut_results = self.get_list_element_from_text(df[self.name.brut_result])
+        currency_brut_estimate = self.get_list_element_from_text(df[self.name.brut_estimate])
+        df[self.name.currency] = np.where(~currency_brut_estimate.isin(["Estimation : Manquante"]), 
+                                            currency_brut_estimate,
+                                            currency_brut_results)
         return df
     
     @timing
-    def remove_features(self, df, limite=50):
-        df = df.drop(["INFOS", "TYPE", "RESULTAT", "ESTIMATION", "BRUT_RESULT", 
-                      "BRUT_ESTIMATE",
-                      'CURRENCY_RESULTS', 'CURRENCY_ESIMATES'], axis=1)
+    def remove_features(self, df):
+        df = df.drop([self.name.item_infos, self.name.type_sale, 
+                      self.name.brut_estimate, self.name.brut_result, self.name.brut_result], axis=1)
         return df
     

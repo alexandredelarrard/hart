@@ -39,7 +39,7 @@ class StepCrawlingChristiesItems(StepCrawling):
         full_display = "/?loadall=true"
 
         df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = df["URL_AUCTION"].tolist()
+        to_crawl = df[self.name.url_auction].tolist()
         to_crawl = [x[:-1] if x[-1] == "/" else x for x in to_crawl]
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
                                                       url_path=self.root_url,
@@ -51,10 +51,10 @@ class StepCrawlingChristiesItems(StepCrawling):
     def create_mapping_dynamic_auction_url(self, driver, df_auctions):
 
         mapping_dynamic_urls = {}
-        sso = df_auctions["SSO"] = df_auctions["URL_AUCTION"].apply(lambda x : "sso?" in x)
+        sso = df_auctions[self.name.url_auction].apply(lambda x : "sso?" in x)
         df_auctions = df_auctions[sso]
 
-        for url in tqdm.tqdm(df_auctions["URL_AUCTION"].tolist()):
+        for url in tqdm.tqdm(df_auctions[self.name.url_auction].tolist()):
             driver.get(url)
             time.sleep(0.4)
             mapping_dynamic_urls[url] = driver.current_url
@@ -92,20 +92,20 @@ class StepCrawlingChristiesItems(StepCrawling):
             
             try:
                 # URL for DETAIL                
-                lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__link", type="href")
-                lot_info["LOT"] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__content-header")
+                lot_info[self.name.url_full_detail] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__link", type="href")
+                lot_info[self.name.lot] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__content-header")
 
                 # TITLE
-                lot_info["INFOS"] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__content")
-                lot_info["SALE"] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__price-value")
-                lot_info["RESULT"] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__dynamic-price")
+                lot_info[self.name.item_infos] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__content")
+                lot_info[self.name.brut_estimate] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__price-value")
+                lot_info[self.name.brut_result] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__dynamic-price")
                 
                 # PICTURE 
-                lot_info["URL_PICTURE"] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").split("?")[0]
-                lot_info["PICTURE_ID"] = encode_file_name(os.path.basename(lot_info["URL_PICTURE"]))
+                lot_info[self.name.url_picture] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").split("?")[0]
+                lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
 
                 # save pictures & infos
-                save_picture_crawled(lot_info["URL_PICTURE"], self.save_picture_path, lot_info["PICTURE_ID"])
+                save_picture_crawled(lot_info[self.name.url_picture], self.save_picture_path, lot_info[self.name.id_picture])
                 
                 list_infos.append(lot_info)
             

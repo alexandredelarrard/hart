@@ -38,14 +38,17 @@ class TextCleaner(Step):
     
     def remove_missing_values(self, df):
 
-        important_cols =["FINAL_RESULT", "CURRENCY", "URL_FULL_DETAILS", "INFOS"]
+        important_cols =[self.name.item_result, 
+                        self.name.currency, 
+                        self.name.url_full_detail, 
+                        self.name.item_infos]
 
         if self.check_cols_exists(important_cols, df.columns):
             shape_0 = df.shape[0]
-            df = df.loc[(df["FINAL_RESULT"].notnull())&(
-                        df["CURRENCY"].notnull())&(
-                        df["URL_FULL_DETAILS"].notnull())&(
-                        df["INFOS"].notnull())].reset_index(drop=True) 
+            df = df.loc[(df[self.name.item_result].notnull())&(
+                        df[self.name.currency].notnull())&(
+                        df[self.name.url_full_detail].notnull())&(
+                        df[self.name.item_infos].notnull())].reset_index(drop=True) 
             shape_1 = df.shape[0]
             self._log.info(f"REMOVING {shape_0 - shape_1} \
                         ({(shape_0-shape_1)*100/shape_0:.2f}%) OBS due to lack of curcial infos")
@@ -54,10 +57,12 @@ class TextCleaner(Step):
             missing_cols = set(important_cols) - set(df.columns)
             raise Exception(f"FOLLOWING COLUMN(S) IS MISSING {missing_cols}")
         
-    
+
     def clean_estimations(self, df : pd.DataFrame, liste_exceptions : List):
 
-        important_cols = ["FINAL_RESULT", "MIN_ESTIMATION", "MAX_ESTIMATION"]
+        important_cols = [self.name.item_result, 
+                        self.name.min_estimate, 
+                        self.name.max_estimate]
 
         if self.check_cols_exists(important_cols, df.columns):
             for col in important_cols:
@@ -65,10 +70,10 @@ class TextCleaner(Step):
                                     np.nan, df[col])
                 df[col] = df[col].astype(float)
             
-            df["FINAL_RESULT_EXISTS"] = 1*(df["FINAL_RESULT"].notnull())
-            df["FINAL_RESULT"] = np.where(df["FINAL_RESULT"].isnull(), 
-                                        df[["MIN_ESTIMATION", "MAX_ESTIMATION"]].mean(axis=1), 
-                                        df["FINAL_RESULT"])
+            df[self.name.is_item_result] = 1*(df[self.name.item_result].notnull())
+            df[self.name.item_result] = np.where(df[self.name.item_result].isnull(), 
+                                        df[[self.name.min_estimate, self.name.max_estimate]].mean(axis=1), 
+                                        df[self.name.item_result])
             return df
         else:
             missing_cols = set(important_cols) - set(df.columns)
@@ -77,4 +82,7 @@ class TextCleaner(Step):
     
     def check_cols_exists(self, cols_a, cols_b):
         return len(set(cols_a).intersection(set(cols_b))) == len(cols_a)
+
+    def renaming_dataframe(self, df, mapping_names):
+        return df.rename(columns=mapping_names)
     

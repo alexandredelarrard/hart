@@ -38,8 +38,8 @@ class StepCrawlingDrouotItems(StepCrawling):
         full_display = ""
 
         df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = df.loc[df["URL_AUCTION"] != "MISSING_URL_AUCTION", 
-                          "URL_AUCTION"].drop_duplicates().tolist()
+        to_crawl = df.loc[df[self.name.url_auction] != "MISSING_URL_AUCTION", 
+                             self.name.url_auction].drop_duplicates().tolist()
         already_crawled = get_files_already_done(file_path=self.infos_data_path, 
                                                 url_path=self.url_crawled)
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
@@ -119,23 +119,23 @@ class StepCrawlingDrouotItems(StepCrawling):
             
             try:
                 # infos vente
-                lot_info["DATE"] = self.get_element_infos(driver, "CLASS_NAME", "capitalize-fl")
-                lot_info["TYPE"] = self.get_element_infos(driver, "CLASS_NAME", "typeOnline")
-                lot_info["NOM_VENTE"] = self.get_element_infos(driver, "CLASS_NAME", "nomVente")
-                lot_info["PLACE"] = self.get_element_infos(driver, "CLASS_NAME", "lieuVente")
-                lot_info["HOUSE"] = self.get_element_infos(driver, "CLASS_NAME", "etudeVente")
+                lot_info[self.name.date] = self.get_element_infos(driver, "CLASS_NAME", "capitalize-fl")
+                lot_info[self.name.type_sale] = self.get_element_infos(driver, "CLASS_NAME", "typeOnline")
+                lot_info[self.name.auction_title] = self.get_element_infos(driver, "CLASS_NAME", "nomVente")
+                lot_info[self.name.place] = self.get_element_infos(driver, "CLASS_NAME", "lieuVente")
+                lot_info[self.name.house] = self.get_element_infos(driver, "CLASS_NAME", "etudeVente")
 
-                lot_info["NUMBER_LOT"] = self.get_element_infos(lot, "CLASS_NAME", "lotNumListe").replace("Lot n° ", "").strip()
-                lot_info["TITLE"] = self.get_element_infos(lot, "CLASS_NAME", "lotArtisteListe")
-                lot_info["RESULTAT"] = self.get_element_infos(lot, "CLASS_NAME",  "lotResulatListe")
-                lot_info["ESTIMATION"] = self.get_element_infos(lot, "CLASS_NAME", "lotEstimationListe")
-                lot_info["URL_FULL_DETAILS"] = self.get_element_infos(lot, "TAG_NAME", "a", type="href")
-                lot_info["URL_PICTURE"] = self.get_picture_url(lot, driver)
-                lot_info["PICTURE_ID"] = encode_file_name(os.path.basename(lot_info["URL_PICTURE"]))
-                lot_info["INFOS"] = self.get_element_infos(lot, "CLASS_NAME", "lotDescriptionListe")
+                lot_info[self.name.lot] = self.get_element_infos(lot, "CLASS_NAME", "lotNumListe").replace("Lot n° ", "").strip()
+                lot_info[self.name.item_title] = self.get_element_infos(lot, "CLASS_NAME", "lotArtisteListe")
+                lot_info[self.name.brut_result] = self.get_element_infos(lot, "CLASS_NAME",  "lotResulatListe")
+                lot_info[self.name.brut_estimate] = self.get_element_infos(lot, "CLASS_NAME", "lotEstimationListe")
+                lot_info[self.name.url_full_detail] = self.get_element_infos(lot, "TAG_NAME", "a", type="href")
+                lot_info[self.name.url_picture] = self.get_picture_url(lot, driver)
+                lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
+                lot_info[self.name.item_infos] = self.get_element_infos(lot, "CLASS_NAME", "lotDescriptionListe")
                
                 # save pictures & infos
-                save_picture_crawled(lot_info["URL_PICTURE"], self.save_picture_path, lot_info["PICTURE_ID"])
+                save_picture_crawled(lot_info[self.name.url_picture], self.save_picture_path, lot_info[self.name.id_picture])
 
                 list_infos.append(lot_info)
             

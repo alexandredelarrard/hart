@@ -26,6 +26,7 @@ class StepTextCleanSothebys(TextCleaner):
 
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
+        self.items_col_names= self.name.dict_rename_items()
 
         try:
             self.sql_table_name = self._config.cleaning[seller].origine_table_name
@@ -36,6 +37,7 @@ class StepTextCleanSothebys(TextCleaner):
     def run(self):
 
         df = read_crawled_csvs(path= self.infos_data_path)
+        df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.extract_hour_infos(df)
         df = self.clean_items_per_auction(df)
         df = self.extract_estimates(df)
@@ -54,57 +56,57 @@ class StepTextCleanSothebys(TextCleaner):
     def extract_hour_infos(self, df):
 
         # date, place, maison
-        df["LOCALISATION"] = self.get_list_element_from_text(df["DATE"], liste=localisation)
+        df[self.name.localisation] = self.get_list_element_from_text(df[self.name.date], liste=localisation)
 
-        df["DATE"] = df["DATE"].apply(lambda x : str(x).split("•")[0].strip())
-        df["DATE"] = pd.to_datetime(df["DATE"], format="%d %B %Y", exact=False)
-        df["DATE"] = df["DATE"].dt.strftime("%Y-%m-%d")
+        df[self.name.date] = df[self.name.date].apply(lambda x : str(x).split("•")[0].strip())
+        df[self.name.date] = pd.to_datetime(df[self.name.date], format="%d %B %Y", exact=False)
+        df[self.name.date] = df[self.name.date].dt.strftime("%Y-%m-%d")
 
         return df
     
     @timing
     def clean_items_per_auction(self, df, limite=100):
         
-        df["DESCRIPTION"] = df["INFOS"]
-        df["FILE"] = df["FILE"].str.replace(".csv","")
-        df["LOT"] = df["DESCRIPTION"].apply(lambda x: x.split(".")[0])
+        df[self.name.item_description] = df[self.name.item_infos]
+        df[self.name.item_file] = df[self.name.item_file].str.replace(".csv","")
+        df[self.name.lot] = df[self.name.item_description].apply(lambda x: x.split(".")[0])
 
         #error of url full detail need to be corrected 
-        df["URL_FULL_DETAILS"] = df[["URL_FULL_DETAILS", "LOT"]].apply(lambda x : 
-                    re.sub("lot.(\\d+)+", f"lot.{x["LOT"]}", str(x["URL_FULL_DETAILS"])), axis=1)
+        df[self.name.url_full_detail] = df[[self.name.url_full_detail, self.name.lot]].apply(lambda x : 
+                    re.sub("lot.(\\d+)+", f"lot.{x[self.name.lot]}", str(x[self.name.url_full_detail])), axis=1)
 
-        liste_pictures_missing = df["PICTURE_ID"].value_counts().loc[
-            df["PICTURE_ID"].value_counts() > limite].index
+        liste_pictures_missing = df[self.name.id_picture].value_counts().loc[
+            df[self.name.id_picture].value_counts() > limite].index
         self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} \
                        picts having more than {limite} picts")
         
-        df["PICTURE_ID"] = np.where(df["PICTURE_ID"].isin(list(liste_pictures_missing)), 
-                                    np.nan, df["PICTURE_ID"])
-        df["ID"] = df["URL_FULL_DETAILS"].apply(lambda x : encode_file_name(str(x)))
-        df["ORIGIN"] = self.seller
+        df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
+                                    np.nan, df[self.name.id_picture])
+        df[self.name.id_item] = df[self.name.url_full_detail].apply(lambda x : encode_file_name(str(x)))
+        df[self.name.seller] = self.seller
 
         # because sothebys crawling creates duplicates 
-        df = df.drop_duplicates(["URL_FULL_DETAILS"]).reset_index(drop=True)
+        df = df.drop_duplicates([self.name.url_full_detail]).reset_index(drop=True)
 
         return df
 
     @timing
     def extract_estimates(self, df):
-        df["MIN_ESTIMATION"] = self.get_estimate(df["RESULT"], min_max="min")
-        df["MAX_ESTIMATION"] = self.get_estimate(df["RESULT"], min_max="max")
-        df["FINAL_RESULT"] = np.nan
+        df[self.name.min_estimate] = self.get_estimate(df[self.name.brut_result], min_max="min")
+        df[self.name.max_estimate] = self.get_estimate(df[self.name.brut_result], min_max="max")
+        df[self.name.item_result] = np.nan
         return df 
 
     @timing
     def extract_currency(self, df):
-        df["CURRENCY"] = self.get_list_element_from_text(df["RESULT"], liste=currencies)
+        df[self.name.currency] = self.get_list_element_from_text(df[self.name.brut_result], liste=currencies)
 
-        df["CURRENCY"] = np.where(df["CURRENCY"].isin(["No reserve", 
+        df[self.name.currency] = np.where(df[self.name.currency].isin(["No reserve", 
                                                 "Estimate Upon Request"]), np.nan,
-                                  df["CURRENCY"]) # ~2000 missing
+                                  df[self.name.currency]) # ~2000 missing
         return df
     
     @timing
     def remove_features(self, df):
-        df = df.drop(["INFOS", "RESULT"], axis=1)
+        df = df.drop([self.name.item_infos, self.name.brut_result], axis=1)
         return df
