@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd 
 from typing import List
 from datetime import datetime
+import re
 
 from src.context import Context
 from src.utils.step import Step
@@ -48,8 +49,11 @@ class StepAgglomerateTextInfos(TextCleaner):
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)
-        df_currencies = self.concatenate_currencies(dict_currencies)
+        df_currencies = self.concatenate_currencies(dict_currencies, 
+                                                min_date=df[self.name.date].min())
         df = self.homogenize_currencies(df, df_currencies)
+
+        df = self.remove_features(df)
 
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
@@ -83,9 +87,8 @@ class StepAgglomerateTextInfos(TextCleaner):
                              self.name.type_sale]]
 
     @timing
-    def concatenate_currencies(self, df, dict_currencies):
+    def concatenate_currencies(self, dict_currencies, min_date="2000-01-01"):
         
-        min_date = df[self.name.date].min()
         date_range = pd.DataFrame(pd.date_range(start=min_date, end=self.today), columns=[self.name.date])
         date_range[self.name.date] = date_range[self.name.date].dt.strftime("%Y-%m-%d")
 
@@ -204,3 +207,7 @@ class StepAgglomerateTextInfos(TextCleaner):
                                             df[self.name.item_title])
         
         return df 
+
+    @timing
+    def remove_features(self, df):
+        return df.drop(["OPEN", "CLOSE"], axis=1)

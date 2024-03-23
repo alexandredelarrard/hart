@@ -15,7 +15,7 @@ from src.datacrawl.steps.step_agglomerate_text_infos import StepAgglomerateTextI
 
 
 if __name__ == "__main__":
-    
+
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
     # self = StepTextCleanSothebys(context=context, config=config)
@@ -45,6 +45,6 @@ if __name__ == "__main__":
     # embed = self.run()
 
     self = StepAgglomerateTextInfos(context=context, config=config)
-    self.run()
+    # self.run()
 
     

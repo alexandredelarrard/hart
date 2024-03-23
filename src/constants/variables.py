@@ -89,7 +89,7 @@ fixed_eur_rate = {"NLG" : 1/2.20371,
                  "MAD" : 0.091} # former currencies before euro
 
 liste_currency_paires = ["USDEUR", "GBPEUR", "CHFEUR", "SEKEUR", "INREUR",
-                        "PLNEUR", "CADEUR", "AEDEUR", "HKDEUR", "SGDEUR"
+                        "PLNEUR", "CADEUR", "AEDEUR", "HKDEUR", "SGDEUR",
                         "MADEUR", "AUDEUR", "CNYEUR", "JPYEUR", "TWDEUR"]
 
 # for steps 

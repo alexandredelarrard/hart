@@ -1,5 +1,6 @@
 import yfinance as yf
 from tqdm import tqdm
+import logging
 
 def extract_currencies(liste_paires):
 
