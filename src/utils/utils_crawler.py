@@ -7,6 +7,7 @@ import urllib
 import pickle
 import logging
 import hashlib
+import json 
 
 def read_crawled_csvs(path : str):
 
@@ -32,6 +33,11 @@ def read_crawled_csvs(path : str):
 def read_pickle(path : str):
     with open(path, "rb") as f:
         df_file = pickle.load(f)
+    return df_file
+
+def read_json(path : str):
+    with open(path, "r") as f:
+        df_file = json.load(f)
     return df_file
 
 

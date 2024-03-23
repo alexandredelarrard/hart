@@ -1,5 +1,6 @@
 cleaning:
   full_data_auction_houses : ALL_ITEMS_202403
+  path_mapping_country: "./data/mapping_country.json"
   drouot : 
     origine_table_name: DROUOT_202403
   christies : 

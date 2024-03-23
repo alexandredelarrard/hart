@@ -30,7 +30,10 @@ class Naming:
         self.is_item_result = "IS_FINAL_RESULT"
 
         self.localisation = "LOCALISATION"
+        self.country = "COUNTRY"
         self.currency = "CURRENCY"
+        self.currency_coef_eur = "CURRENCY_CEOF"
+        
         self.date = "AUCTION_DATE"
         self.hour = "AUCTION_HOUR"
 
@@ -77,6 +80,17 @@ class Naming:
 #for data cleaning
 currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB'
 localisation = "London|New York|Hong Kong|Paris|Geneva|Milan|Amsterdam|Zurich|Toronto|Dubai|Doha|Beijing|Mumbai|Derbyshire|Miami|Palm Beach|Chatsworth|Tel Aviv|Singapore|San Francisco|Monaco"
+
+fixed_eur_rate = {"NLG" : 1/2.20371,
+                 "FRF" : 1/6.55957,
+                 "ITL" : 1/1936.27,
+                 "ESP" : 1/200,
+                 "DEM" : 0.511292,
+                 "MAD" : 0.091} # former currencies before euro
+
+liste_currency_paires = ["USDEUR", "GBPEUR", "CHFEUR", "SEKEUR", "INREUR",
+                        "PLNEUR", "CADEUR", "AEDEUR", "HKDEUR", "SGDEUR"
+                        "MADEUR", "AUDEUR", "CNYEUR", "JPYEUR", "TWDEUR"]
 
 # for steps 
 list_sellers = ["sothebys", "drouot", "christies"]
