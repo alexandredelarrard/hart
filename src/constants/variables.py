@@ -10,6 +10,7 @@ class Naming:
 
         self.auction_title = "AUCTION_TITLE"
         self.item_title = "ITEM_TITLE"
+        self.detailed_title = "DETAILED_TITLE"
 
         self.lot = 'LOT_NUMBER'
         self.type_sale = "TYPE_SALE"

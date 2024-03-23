@@ -14,17 +14,20 @@ def read_crawled_csvs(path : str):
     # read all csvs
     files = glob(path + "/*.csv")
     not_read = []
-    
     liste_dfs = []
+
     for file in tqdm(files): 
         try:
             df_file = pd.read_csv(file, sep=";")
-            df_file["FILE"] = os.path.basename(file)
+            if "FILE" not in df_file.columns:
+                df_file["FILE"] = os.path.basename(file)
+
             liste_dfs.append(df_file)
         except Exception:
             not_read.append(file)
 
     df = pd.concat(liste_dfs, axis=0, ignore_index=True)
+    
     logging.info(f"RECORDINGS : {df.shape[0]}")
     logging.info(f"Missing reads of files : {len(not_read)}")
 

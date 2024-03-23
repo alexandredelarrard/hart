@@ -20,7 +20,8 @@ if __name__ == "__main__":
 
     # self = StepTextCleanSothebys(context=context, config=config)
     # self.run()
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="christies")
+
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="sothebys")
 
     # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
     # crawl.run(crawl.get_urls(), crawl.crawling_function)
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     # self = StepPictureClustering(context=context, config=config)
     # embed = self.run()
 
-    self = StepAgglomerateTextInfos(context=context, config=config)
+    # self = StepAgglomerateTextInfos(context=context, config=config)
     # self.run()
 
     

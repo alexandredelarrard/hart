@@ -9,7 +9,8 @@ from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
 
 from src.utils.utils_crawler import (read_crawled_csvs,
-                                     read_pickle)
+                                     read_pickle,
+                                     read_crawled_pickles)
 
 from omegaconf import DictConfig
 
@@ -27,6 +28,7 @@ class StepTextCleanChristies(TextCleaner):
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.webpage_url = self._config.crawling[self.seller].webpage_url
         self.correction_urls_auction = self._config.crawling[self.seller].correction_urls_auction
+        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
 
         self.items_col_names= self.name.dict_rename_items()
         self.auctions_col_names= self.name.dict_rename_auctions()
@@ -59,7 +61,7 @@ class StepTextCleanChristies(TextCleaner):
         df = self.extract_infos(df)
 
         # CLEAN DETAILED ITEM DATA
-        # TODO:
+        df_detailed = read_crawled_pickles(path=self.details_data_path)
 
         #MERGE ITEM & AUCTIONS
         df = self.concatenate_infos(df, df_auctions)

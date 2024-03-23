@@ -46,13 +46,13 @@ class StepAgglomerateTextInfos(TextCleaner):
         df = self.homogenize_localisation(df)
         df = self.deduce_country(df, mapping_country=mapping_city_country)
         df = self.homogenize_title(df)
+        df = self.homogenize_description(df)
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)
         df_currencies = self.concatenate_currencies(dict_currencies, 
-                                                min_date=df[self.name.date].min())
+                                                    min_date=df[self.name.date].min())
         df = self.homogenize_currencies(df, df_currencies)
-
         df = self.remove_features(df)
 
         self.write_sql_data(dataframe=df,
@@ -205,6 +205,17 @@ class StepAgglomerateTextInfos(TextCleaner):
         df[self.name.item_title] = df[self.name.item_title].apply(lambda x : re.sub("^(\\d+\\. )", '', str(x)))
         df[self.name.item_title] = np.where(df[self.name.item_title] == "None", np.nan, 
                                             df[self.name.item_title])
+        
+        return df 
+
+    @timing
+    def homogenize_description(self, df):
+
+        df[self.name.item_description] = df[self.name.item_description].apply(
+                                        lambda x : str(x).split("\nEstimate")[0])
+        df[self.name.item_description] = df[self.name.item_description].apply(lambda x : re.sub("^(\\d+\\. )", '', str(x)))
+        df[self.name.item_description] = np.where(df[self.name.item_description] == "None", np.nan, 
+                                            df[self.name.item_description])
         
         return df 
 
