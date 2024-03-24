@@ -32,8 +32,15 @@ class StepCrawlingSothebysItems(StepCrawling):
         self.url_crawled = self._config.crawling[self.seller].url_crawled
         self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.today = datetime.today()
+
+        self.liste_elements = self._config.crawling[self.seller].items.liste_elements
+        self.per_element = self._config.crawling[self.seller].items.per_element
+        
+        # weird webpage format regarding F1
+        # TODO: include the F1 webpage formating from sothebys*
+        # TODO : pages with /en/buy
+        # TODO: re extract pictures with src = data:image/svg+xml;base64 = 50%
     
-    # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
 
         df = read_crawled_csvs(path=self.auctions_data_path)
@@ -50,11 +57,6 @@ class StepCrawlingSothebysItems(StepCrawling):
                                                     url_path='')
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
 
-        # weird webpage format regarding F1
-        # TODO: include the F1 webpage formating from sothebys*
-        # TODO : pages with /en/buy
-        # TODO: re extract pictures with src = data:image/svg+xml;base64 = 50%
-         
         return liste_urls
     
     def get_sothebys_url_infos(self, driver, image_path):

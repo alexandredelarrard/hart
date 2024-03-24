@@ -1,12 +1,11 @@
 import pandas as pd 
 import numpy as np
 import os 
-import tqdm
-import time
 
 from src.context import Context
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
+from src.constants.variables import date_format
 
 from src.utils.utils_crawler import (read_crawled_csvs,
                                      read_pickle,
@@ -30,6 +29,7 @@ class StepTextCleanChristies(TextCleaner):
         self.correction_urls_auction = self._config.crawling[self.seller].correction_urls_auction
         self.details_data_path = self._config.crawling[self.seller].save_data_path_details
 
+        self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
         self.auctions_col_names= self.name.dict_rename_auctions()
         
@@ -62,14 +62,18 @@ class StepTextCleanChristies(TextCleaner):
 
         # CLEAN DETAILED ITEM DATA
         df_detailed = read_crawled_pickles(path=self.details_data_path)
-
-        #MERGE ITEM & AUCTIONS
-        df = self.concatenate_infos(df, df_auctions)
-        df = self.remove_features(df)
+        df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
+        df_detailed = self.clean_detail_infos(df_detailed)
 
         # MERGE DETAILED ITEM DATA 
-        # TODO:
+        df = self.concatenate_detail(df, df_detailed)
 
+        #MERGE ITEM & AUCTIONS
+        df = self.concatenate_auctions(df, df_auctions)
+        df = self.remove_features(df, [self.name.item_infos, 
+                                       self.name.brut_estimate, 
+                                        self.name.brut_result])
+    
         # SAVE ITEMS ENRICHED
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
@@ -95,18 +99,16 @@ class StepTextCleanChristies(TextCleaner):
         # LOCALISATION
         df_auctions[self.name.localisation] = list(map(lambda x: str(x).replace("EVENT LOCATION\n", ""),  df_auctions[self.name.localisation].tolist()))
         df_auctions[self.name.date] = pd.to_datetime(df_auctions[self.name.auction_file], format = "month=%m&year=%Y.csv")
-        df_auctions[self.name.date] = df_auctions[self.name.date].dt.strftime("%Y-%m-%d")
+        df_auctions[self.name.date] = df_auctions[self.name.date].dt.strftime(date_format)
     
         return df_auctions
 
     @timing
     def clean_items_per_auction(self, df):
-
         df[self.name.item_file] = df[self.name.item_file].str.replace(".csv","")
         df[self.name.lot] = df[self.name.lot].str.replace("LOT ","")
         df[self.name.id_auction] = df[self.name.item_file].apply(lambda x : str(x).split("&")[0].split("-")[-1])
         df[self.name.item_file] = df[self.name.item_file].apply(lambda x : str(x).split("&")[0])
-
         return df
 
     @timing
@@ -141,12 +143,6 @@ class StepTextCleanChristies(TextCleaner):
         return df
     
     @timing
-    def concatenate_infos(self, df, df_auctions):
+    def concatenate_auctions(self, df, df_auctions):
         return df.merge(df_auctions, how="left", on=self.name.id_auction, 
                         validate="m:1", suffixes=("", "_AUCTION"))
-    
-    @timing
-    def remove_features(self, df):
-        df = df.drop([self.name.item_infos, self.name.brut_estimate, 
-                        self.name.brut_result], axis=1)
-        return df

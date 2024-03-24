@@ -72,11 +72,14 @@ class Naming:
                                     "DESCRIPTION": self.item_description}}
     
     def dict_rename_detail(self):
-        return {**self.root_dict, **{"URL" : self.url_detail,
+        return {**self.root_dict, **{"URL" : self.url_full_detail,
                                     "DETAIL" : self.detailed_description,
                                     "TITLE" : self.item_title,
                                     "DESCRIPTION": self.detailed_description,
                                     "FILE" : self.detail_file}}
+
+# date format 
+date_format = "%Y-%m-%d"
 
 #for data cleaning
 currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB'

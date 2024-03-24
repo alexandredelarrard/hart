@@ -23,7 +23,8 @@ class StepCrawlingDetailed(StepCrawling):
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.details_data_path = self._config.crawling[self.seller].save_data_path_details
         self.today = datetime.today()
-        self.queries = self._config.crawling[self.seller].detailed.queries
+        
+        self.per_element = self._config.crawling[self.seller].detailed.per_element
     
     # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
@@ -49,7 +50,7 @@ class StepCrawlingDetailed(StepCrawling):
         message = ""
 
         infos = {self.name.url_detail : url}
-        for step, step_values in self.queries.items(): 
+        for step, step_values in self.per_element.items(): 
             infos[step] =  self.get_element_infos(driver, 
                                     step_values["by_type"], 
                                     step_values["value_css"])

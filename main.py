@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # self = StepTextCleanChristies(context=context, config=config)
     # embed = self.run()    
 
-    # self = StepTextCleanSothebys(context=context, config=config)
+    self = StepTextCleanSothebys(context=context, config=config)
     # embed = self.run()
 
     # self = StepTextClustering(context=context, config=config)

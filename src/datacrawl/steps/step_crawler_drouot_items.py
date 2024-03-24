@@ -33,6 +33,9 @@ class StepCrawlingDrouotItems(StepCrawling):
         self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.url_crawled = self._config.crawling[self.seller].url_crawled
 
+        self.liste_elements = self._config.crawling[self.seller].items.liste_elements
+        self.per_element = self._config.crawling[self.seller].items.per_element
+
         # TODO: handle pdfs downloading and extraction ... Low prio
         # TODO : missing 1M pictures /3.3M items
 
@@ -110,7 +113,9 @@ class StepCrawlingDrouotItems(StepCrawling):
     
     def crawl_info_per_page(self, driver, list_infos):
 
-        liste_lots = self.get_elements(driver, "CLASS_NAME", "Lot")
+        liste_lots = self.get_elements(driver, 
+                                       self.liste_elements.by_type, 
+                                       self.liste_elements.value_css)
         time.sleep(0.35)
         message = ""
 
@@ -122,24 +127,16 @@ class StepCrawlingDrouotItems(StepCrawling):
             
             try:
                 # infos vente
-                lot_info[self.name.date] = self.get_element_infos(driver, "CLASS_NAME", "capitalize-fl")
-                lot_info[self.name.type_sale] = self.get_element_infos(driver, "CLASS_NAME", "typeOnline")
-                lot_info[self.name.auction_title] = self.get_element_infos(driver, "CLASS_NAME", "nomVente")
-                lot_info[self.name.place] = self.get_element_infos(driver, "CLASS_NAME", "lieuVente")
-                lot_info[self.name.house] = self.get_element_infos(driver, "CLASS_NAME", "etudeVente")
-
-                lot_info[self.name.lot] = self.get_element_infos(lot, "CLASS_NAME", "lotNumListe").replace("Lot n° ", "").strip()
-                lot_info[self.name.item_title] = self.get_element_infos(lot, "CLASS_NAME", "lotArtisteListe")
-                lot_info[self.name.brut_result] = self.get_element_infos(lot, "CLASS_NAME",  "lotResulatListe")
-                lot_info[self.name.brut_estimate] = self.get_element_infos(lot, "CLASS_NAME", "lotEstimationListe")
-                lot_info[self.name.url_full_detail] = self.get_element_infos(lot, "TAG_NAME", "a", type="href")
+                new_info = self.extract_element_infos(lot, self.per_element)
+                lot_info.update(new_info)
+               
                 lot_info[self.name.url_picture] = self.get_picture_url(lot, driver)
                 lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
-                lot_info[self.name.item_infos] = self.get_element_infos(lot, "CLASS_NAME", "lotDescriptionListe")
-               
+                
                 # save pictures & infos
-                save_picture_crawled(lot_info[self.name.url_picture], self.save_picture_path, lot_info[self.name.id_picture])
-
+                save_picture_crawled(lot_info[self.name.url_picture], 
+                                     self.save_picture_path, 
+                                     lot_info[self.name.id_picture])
                 list_infos.append(lot_info)
             
             except Exception as e:

@@ -21,8 +21,70 @@ crawling:
             browser : chrome 
             nodes : 1
             retry : 1   
+        auctions:
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: infosVente
+            per_element:
+                AUCTION_TITLE:
+                    by_type: CLASS_NAME
+                    value_css: nomVente
+                DATE: 
+                    by_type: CLASS_NAME
+                    value_css: capitalize-fl
+                TYPE_SALE:
+                    by_type: CLASS_NAME
+                    value_css: typeVente-fl
+                PLACE:
+                    by_type: CLASS_NAME
+                    value_css: lieuVente
+                HOUSE:
+                    by_type: CLASS_NAME
+                    value_css: etudeVente
+        items:
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: Lot
+            per_element:
+                DATE:
+                    by_type: CLASS_NAME
+                    value_css: capitalize-fl
+                TYPE_SALE:
+                    by_type: CLASS_NAME
+                    value_css: typeOnline
+                AUCTION_TITLE:
+                    by_type: CLASS_NAME
+                    value_css: nomVente
+                PLACE:
+                    by_type: CLASS_NAME
+                    value_css: lieuVente
+                HOUSE:
+                    by_type: CLASS_NAME
+                    value_css: etudeVente
+                LOT_NUMBER:
+                    by_type: CLASS_NAME
+                    value_css: lotNumListe
+                    replace: 
+                        - "Lot n° "
+                        - ""
+                ITEM_TITLE:
+                    by_type: CLASS_NAME
+                    value_css: lotArtisteListe
+                ITEM_INFOS:
+                    by_type: CLASS_NAME
+                    value_css: lotDescriptionListe
+                RESULT:
+                    by_type: CLASS_NAME
+                    value_css: lotResulatListe
+                ESTIMATE:
+                    by_type: CLASS_NAME
+                    value_css: lotEstimationListe
+                URL_FULL_DETAIL:
+                    by_type: TAG_NAME
+                    value_css: a
+                    attribute: href
         detailed : 
-            queries : 
+            per_element : 
                 ARTIST:
                     by_type : CLASS_NAME
                     value_css : info_tps-prix-online
@@ -46,7 +108,7 @@ crawling:
             nodes : 1
             retry : 1   
         detailed : 
-            queries : 
+            per_element : 
                 ARTIST:
                     by_type : CLASS_NAME
                     value_css : chr-lot-header__artist-name
@@ -71,7 +133,7 @@ crawling:
             nodes : 1
             retry : 1 
         detailed : 
-            queries : 
+            per_element : 
                 ARTIST:
                     by_type : CLASS_NAME
                     value_css : LotPage-artistName

@@ -30,6 +30,9 @@ class StepCrawlingChristiesItems(StepCrawling):
         self.correction_urls_auction = self._config.crawling[self.seller].correction_urls_auction
         self.today = datetime.today()
 
+        self.liste_elements = self._config.crawling[self.seller].items.liste_elements
+        self.per_element = self._config.crawling[self.seller].items.per_element
+
         # TODO: recrawl SSO urls redirected because only first page was 
         # crawled because missing ?loadall=true after rediction
     

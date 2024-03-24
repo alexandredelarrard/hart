@@ -6,11 +6,11 @@ from datetime import datetime
 import re
 
 from src.context import Context
-from src.utils.step import Step
 from src.utils.timing import timing
 from src.constants.variables import (list_sellers, 
                                     liste_currency_paires, 
-                                    fixed_eur_rate)
+                                    fixed_eur_rate,
+                                    date_format)
 
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.utils.utils_crawler import read_json
@@ -30,7 +30,7 @@ class StepAgglomerateTextInfos(TextCleaner):
 
         self.sql_table_name = self._config.cleaning.full_data_auction_houses
         self.path_mapping_country = self._config.cleaning.path_mapping_country
-        self.today = datetime.today().strftime("%Y-%m-%d")
+        self.today = datetime.today().strftime(date_format)
         self.table_names = {}
         for seller in list_sellers:
             self.table_names[seller] = self.get_sql_db_name(seller)
@@ -75,7 +75,9 @@ class StepAgglomerateTextInfos(TextCleaner):
                              self.name.date,
                              self.name.hour,
                              self.name.item_title,
+                             self.name.detailed_title,
                              self.name.item_description,
+                             self.name.detailed_description,
                              self.name.min_estimate,
                              self.name.max_estimate,
                              self.name.item_result,

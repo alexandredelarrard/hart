@@ -26,6 +26,10 @@ class StepCrawlingDrouotAuctions(StepCrawling):
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url_auctions = self._config.crawling[self.seller].auctions_url
 
+        self.liste_elements = self._config.crawling[self.seller].auctions.liste_elements
+        self.per_element = self._config.crawling[self.seller].auctions.per_element
+
+
     def get_auctions_urls_to_wrawl(self) -> List[str]:
 
         to_crawl = [self.root_url_auctions + f"page={x}" for x in range(1,self.nbr_auction_pages+1)]
@@ -41,29 +45,26 @@ class StepCrawlingDrouotAuctions(StepCrawling):
         message = ""
 
         list_infos = []
-        liste_lots = self.get_elements(driver, "CLASS_NAME", "infosVente")
+        liste_lots = self.get_elements(driver, 
+                                       self.liste_elements.by_type, 
+                                       self.liste_elements.value_css)
 
         # save pict
         for lot in tqdm.tqdm(liste_lots[1:]):
 
             lot_info = {} 
 
-            # get auction link for futur crawling
             try:
-                links = [x.get_attribute("href") for x in lot.find_elements(By.TAG_NAME, "a")]
+                all_hrefs = self.get_elements(lot, "TAG_NAME", "a")
+                links = [x.get_attribute("href") for x in all_hrefs]
                 links = [x for x in links if x and "modal-content" not in x]
                 if len(links) !=0:
                     lot_info[self.name.url_auction] = links[0]
                 else:
                     lot_info[self.name.url_auction] = "MISSING_URL_AUCTION"
 
-                # get infos 
-                lot_info[self.name.auction_title] = self.get_element_infos(lot, "CLASS_NAME", "nomVente")
-                lot_info[self.name.date] = self.get_element_infos(lot, "CLASS_NAME", "capitalize-fl")
-                lot_info[self.name.type_sale] = self.get_element_infos(lot, "CLASS_NAME", "typeVente-fl")
-                lot_info[self.name.place] = self.get_element_infos(lot, "CLASS_NAME", "lieuVente")
-                lot_info[self.name.house] = self.get_element_infos(lot, "CLASS_NAME", "etudeVente")
-            
+                new_info = self.extract_element_infos(lot, self.per_element)
+                lot_info.update(new_info)
                 list_infos.append(lot_info)
             
             except Exception as e:

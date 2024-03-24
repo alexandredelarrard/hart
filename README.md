@@ -6,7 +6,7 @@ Objectif est de créer un commissaire priseur à partir de l'IA. Ceci aura lieu 
 
 ### Projet 1 : Trend detector - Analytics 
 
-Donner la possibilité d'étudier les évolutions de prix d'artistes & etc. au cours du temps et de la géographie via un dashboard interactif. 
+Donner la possibilité d'étudier les évolutions de prix d'artistes & etc. au cours du temps et de la géographie via un dashboard interactif avec critères de sélection.
 
 ### Projet 2 : Aide à l'estimation pour CP 
 
@@ -23,15 +23,19 @@ Outil qui à partir de plusieurs photos détermine :
 - son prix potentiel
 - les caractéristiques qui ont permis de déduire le prix annoncé
 
-
 ## Cahier des charges : 
 ### Crawling - constitution d'une bdd complete 
 
 1.1. Historique a compléter
-- Sothebys Level 2&3: crawl les /buy (2000 auctions) & les urls de redirection (1000 auctions)
+- Sothebys Level 2: crawl les /buy (2000 auctions) & les urls de redirection (1000 auctions)
 - Sothebys Level 2: crawl les images manquantes (50%)
-- Drouot Level 2 : crawl les pdfs des ventes manquantes + cleaning 
+- Sothebys Level 3: crawl & clean details 
+
+- Drouot Level 2: crawl les pdfs des ventes manquantes + cleaning 
 - Drouot Level 3: crawl infos & cleaning
+- Drouot Level 2: missing 1M pictures /3.3M items - recrawl them
+
+- Christies level 2 & 3: recrawl SSO urls redirected because only first page was crawled because missing ?loadall=true after rediction (10%)
 
 ### Infos extraction 
 
@@ -51,6 +55,7 @@ Extraire les infos suivantes :
 - taille de l'objet / poids de l'objet - seq to seq
 - matériau / type de surface etc. - regex - seq to seq 
 - disponibilité des papiers de possession / identification que c'est un vrai 
+- nombre de piece dans le lot
 
 RAG à développer à partir des embeddings :
 - uniquement text 

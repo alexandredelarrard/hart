@@ -7,10 +7,10 @@ import re
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.context import Context
 from src.utils.timing import timing
-from src.constants.variables import localisation, currencies
+from src.constants.variables import localisation, currencies, date_format
 
 from src.utils.utils_crawler import (read_crawled_csvs,
-                                     encode_file_name)
+                                     read_crawled_pickles)
 
 from omegaconf import DictConfig
 
@@ -27,6 +27,9 @@ class StepTextCleanSothebys(TextCleaner):
 
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
+        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
+        
+        self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
 
         self.sql_table_name = self.get_sql_db_name(self.seller)
@@ -44,7 +47,16 @@ class StepTextCleanSothebys(TextCleaner):
         df = self.add_complementary_variables(df, self.seller)
         df = self.clean_estimations(df, [])
         df = self.remove_missing_values(df)
-        df = self.remove_features(df)
+        df = self.remove_features(df, [self.name.item_infos, 
+                                        self.name.brut_result])
+
+        #merge with items 
+        df_detailed = read_crawled_pickles(path=self.details_data_path)
+        df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
+        df_detailed = self.clean_detail_infos(df_detailed)
+        
+        # MERGE DETAILED ITEM DATA 
+        df = self.concatenate_detail(df, df_detailed)
 
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
@@ -60,7 +72,7 @@ class StepTextCleanSothebys(TextCleaner):
 
         df[self.name.date] = df[self.name.date].apply(lambda x : str(x).split("•")[0].strip())
         df[self.name.date] = pd.to_datetime(df[self.name.date], format="%d %B %Y", exact=False)
-        df[self.name.date] = df[self.name.date].dt.strftime("%Y-%m-%d")
+        df[self.name.date] = df[self.name.date].dt.strftime(date_format)
 
         return df
     
@@ -90,13 +102,9 @@ class StepTextCleanSothebys(TextCleaner):
     @timing
     def extract_currency(self, df):
         df[self.name.currency] = self.get_list_element_from_text(df[self.name.brut_result], liste=currencies)
-
-        df[self.name.currency] = np.where(df[self.name.currency].isin(["No reserve", 
+        df[self.name.currency] = np.where(df[self.name.currency].isin([
+                                                "No reserve", 
                                                 "Estimate Upon Request"]), np.nan,
                                   df[self.name.currency]) # ~2000 missing
         return df
     
-    @timing
-    def remove_features(self, df):
-        df = df.drop([self.name.item_infos, self.name.brut_result], axis=1)
-        return df

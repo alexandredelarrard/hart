@@ -7,8 +7,10 @@ import re
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.context import Context
 from src.utils.timing import timing
+from src.constants.variables import date_format
 
-from src.utils.utils_crawler import read_crawled_csvs
+from src.utils.utils_crawler import (read_crawled_csvs,
+                                    read_crawled_pickles)
 
 from omegaconf import DictConfig
 
@@ -46,7 +48,14 @@ class StepTextCleanDrouot(TextCleaner):
                                         'Estimation : Manquante'])
         df = self.remove_missing_values(df)
         df = self.extract_infos(df)
-        df = self.remove_features(df)
+        df = self.remove_features(df, [self.name.item_infos, 
+                                       self.name.brut_estimate, 
+                                        self.name.brut_result])
+
+        #merge with items 
+        df_detailed = read_crawled_pickles(path=self.details_data_path)
+        df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
+        df_detailed = self.clean_detail_infos(df_detailed)
 
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
@@ -62,7 +71,7 @@ class StepTextCleanDrouot(TextCleaner):
         df[self.name.date] = pd.to_datetime(df[self.name.date], format="%A %d %B %Y - %H:%M")
         df[self.name.hour] = df[self.name.date].dt.hour
         df[self.name.date] = df[self.name.date].dt.round("D")
-        df[self.name.date] = df[self.name.date].dt.strftime("%Y-%m-%d")
+        df[self.name.date] = df[self.name.date].dt.strftime(date_format)
 
         return df
     
@@ -84,7 +93,6 @@ class StepTextCleanDrouot(TextCleaner):
 
     @timing
     def handle_type_of_sale(self, df):
-
         occurence = df[self.name.type_sale].unique()
         if len(occurence) == 2:
             df[self.name.type_sale] = 1*(df[self.name.type_sale] == "Online")
@@ -123,17 +131,12 @@ class StepTextCleanDrouot(TextCleaner):
 
         for col in [self.name.item_title, self.name.item_description]:
             df[col] = np.where(df[col].str.lower().isin(["--> ce lot se trouve au depot", "retrait",
-                                             "lot non venu", ".",
-                                             "aucune désignation", "withdrawn", "pas de lot",
-                                             "no lot", "retiré",
-                                             "pas venu", "40", "lot retiré", "20", "test", 
-                                             "300", "non venu", "--> ce lot se trouve au depôt",
-                                             "hors catalogue", '()']), np.nan, df[col])
+                                                        "lot non venu", ".",
+                                                        "aucune désignation", "withdrawn", "pas de lot",
+                                                        "no lot", "retiré",
+                                                        "pas venu", "40", "lot retiré", "20", "test", 
+                                                        "300", "non venu", "--> ce lot se trouve au depôt",
+                                                        "hors catalogue", '()']), np.nan, df[col])
         
-        return df
-    
-    @timing
-    def remove_features(self, df):
-        df = df.drop([self.name.item_infos, self.name.brut_estimate, self.name.brut_result], axis=1)
         return df
     

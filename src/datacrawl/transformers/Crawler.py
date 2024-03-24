@@ -265,3 +265,28 @@ class StepCrawling(Step):
             return element.find_element(eval(f"By.{attribute.upper()}"), attribute_desc)
         except Exception:
             return []
+        
+    def extract_element_infos(self, driver, config):
+
+        lot_info = {}
+
+        # get infos 
+        for step, step_values in config.items(): 
+            if "attribute" in step_values.keys():
+                info = self.get_element_infos(driver, 
+                                    step_values["by_type"], 
+                                    step_values["value_css"],
+                                    type=step_values["attribute"])
+            else:
+                info =  self.get_element_infos(driver, 
+                                    step_values["by_type"], 
+                                    step_values["value_css"])
+            
+            if "replace" in step_values.keys():
+                info = info.replace(step_values["replace"][0], 
+                                    step_values["replace"][1]).strip()
+
+            lot_info[step] = info
+        
+        return lot_info
+

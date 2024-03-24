@@ -24,6 +24,9 @@ class StepCrawlingChristiesAuctions(StepCrawling):
         self.root_url_auctions = self._config.crawling[self.seller].auctions_url
         self.today = datetime.today()
 
+        self.liste_elements = self._config.crawling[self.seller].auctions.liste_elements
+        self.per_element = self._config.crawling[self.seller].auctions.per_element
+
     # first crawling level # list of auctions in the past to get urls 
     def get_auctions_urls_to_wrawl(self) -> List[str]:
         """

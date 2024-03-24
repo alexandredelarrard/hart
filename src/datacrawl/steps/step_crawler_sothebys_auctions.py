@@ -30,8 +30,9 @@ class StepCrawlingSothebysAuctions(StepCrawling):
         self.oldest_year = self._config.crawling[self.seller].oldest_year
         self.today = datetime.today()
 
-        # https://www.sothebys.com/en/results?from=3%2F1%2F2024&to=3%2F31%2F2024&f0=1709269200000-1711857600000&q=
-        #TODO: up to 2007 - 2004 is off
+        self.liste_elements = self._config.crawling[self.seller].auctions.liste_elements
+        self.per_element = self._config.crawling[self.seller].auctions.per_element
+
 
     def get_auctions_urls_to_wrawl(self) -> List[str]:
         to_crawl = self.urls_to_crawl()

@@ -109,3 +109,25 @@ class TextCleaner(Step):
     def renaming_dataframe(self, df, mapping_names):
         return df.rename(columns=mapping_names)
     
+    @timing
+    def remove_features(self, df, list_features):
+        to_drop = set(list_features).intersection(df.columns)
+        if len(to_drop) == len(list_features):
+            df = df.drop(list_features, axis=1)
+        else:
+            missing = set(list_features) - set(to_drop)
+            self._log.warning(f"CANNOT DROP {missing} : column MISSING")
+            df = df.drop(list(to_drop), axis=1)
+        return df
+    
+    @timing
+    def concatenate_detail(self, df, df_detailed):
+        return df.merge(df_detailed, how="left", on=self.name.url_full_detail, 
+                        validate="1:1", suffixes=("", "_DETAIL"))
+    
+    @timing
+    def clean_detail_infos(self, df_detailed):
+        df_detailed = df_detailed.drop_duplicates([self.name.url_full_detail])
+        return df_detailed
+
+    
