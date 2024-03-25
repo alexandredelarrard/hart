@@ -37,6 +37,15 @@ class StepCrawlingDrouotAuctions(StepCrawling):
                                                 url_path=self.root_url_auctions)
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         return liste_urls
+    
+    def get_url_auctions(self, driver):
+        all_hrefs = self.get_elements(driver, "TAG_NAME", "a")
+        links = [x.get_attribute("href") for x in all_hrefs]
+        links = [x for x in links if x and "modal-content" not in x]
+        if len(links) !=0:
+            return links[0]
+        else:
+            return "MISSING_URL_AUCTION"
 
     def crawling_list_auctions_function(self, driver):
 
@@ -55,14 +64,7 @@ class StepCrawlingDrouotAuctions(StepCrawling):
             lot_info = {} 
 
             try:
-                all_hrefs = self.get_elements(lot, "TAG_NAME", "a")
-                links = [x.get_attribute("href") for x in all_hrefs]
-                links = [x for x in links if x and "modal-content" not in x]
-                if len(links) !=0:
-                    lot_info[self.name.url_auction] = links[0]
-                else:
-                    lot_info[self.name.url_auction] = "MISSING_URL_AUCTION"
-
+                lot_info[self.name.url_auction] = self.get_url_auctions(lot)
                 new_info = self.extract_element_infos(lot, self.per_element)
                 lot_info.update(new_info)
                 list_infos.append(lot_info)

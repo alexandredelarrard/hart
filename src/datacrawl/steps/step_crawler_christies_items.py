@@ -22,6 +22,7 @@ class StepCrawlingChristiesItems(StepCrawling):
                  threads : int):
 
         super().__init__(context=context, config=config, threads=threads)
+        
         self.seller = "christies"        
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
@@ -84,7 +85,9 @@ class StepCrawlingChristiesItems(StepCrawling):
         message = ""
 
         list_infos = []
-        liste_lots = self.get_elements(driver, "CLASS_NAME", 'chr-browse-lot-tile-wrapper') 
+        liste_lots = self.get_elements(driver, 
+                                       self.liste_elements.by_type, 
+                                       self.liste_elements.value_css)
 
         # save pict
         for lot in tqdm.tqdm(liste_lots):
@@ -94,17 +97,10 @@ class StepCrawlingChristiesItems(StepCrawling):
             self.handle_signups(driver)
             
             try:
-                # URL for DETAIL                
-                lot_info[self.name.url_full_detail] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__link", type="href")
-                lot_info[self.name.lot] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__content-header")
+                # infos vente
+                new_info = self.extract_element_infos(lot, self.per_element)
+                lot_info.update(new_info)
 
-                # TITLE
-                lot_info[self.name.item_infos] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__content")
-                lot_info[self.name.brut_estimate] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__price-value")
-                lot_info[self.name.brut_result] = self.get_element_infos(lot, "CLASS_NAME", "chr-lot-tile__dynamic-price")
-                
-                # PICTURE 
-                lot_info[self.name.url_picture] = self.get_element_infos(lot, "TAG_NAME", "img", type="src").split("?")[0]
                 lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
 
                 # save pictures & infos

@@ -24,8 +24,7 @@ class StepCrawlingChristiesAuctions(StepCrawling):
         self.root_url_auctions = self._config.crawling[self.seller].auctions_url
         self.today = datetime.today()
 
-        self.liste_elements = self._config.crawling[self.seller].auctions.liste_elements
-        self.per_element = self._config.crawling[self.seller].auctions.per_element
+        self.crawler_infos = self._config.crawling[self.seller].auctions
 
     # first crawling level # list of auctions in the past to get urls 
     def get_auctions_urls_to_wrawl(self) -> List[str]:
@@ -72,32 +71,7 @@ class StepCrawlingChristiesAuctions(StepCrawling):
         query = driver.current_url.replace(self.root_url_auctions, "")
         message = ""
 
-        list_infos = []
-        liste_lots = self.get_elements(driver, 
-                                       "XPATH", 
-                                       '//ul[@aria-labelledby="calendar-tab-undefined"]/li')
-        
-        # save pict
-        for lot in tqdm.tqdm(liste_lots):
-
-            lot_info = {} 
-            self.scrowl_driver(driver, Y=150)
-            self.handle_signups(driver)
-            
-            try:
-                # URL for DETAIL                
-                lot_info[self.name.url_auction] = self.get_element_infos(lot, "CLASS_NAME", 
-                                                            "chr-event-tile__title", 
-                                                            type="href") 
-
-                # TITLE
-                lot_info[self.name.auction_title] = self.get_element_infos(lot, "CLASS_NAME", "chr-event-tile__title")
-                lot_info[self.name.localisation] = self.get_element_infos(lot, "CLASS_NAME", "chr-label-s")
-
-                list_infos.append(lot_info)
-            
-            except Exception as e:
-                message = e 
+        list_infos = self.crawl_iteratively(driver, self.crawler_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")

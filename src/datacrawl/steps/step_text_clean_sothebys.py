@@ -54,6 +54,8 @@ class StepTextCleanSothebys(TextCleaner):
         df_detailed = read_crawled_pickles(path=self.details_data_path)
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.clean_detail_infos(df_detailed)
+        df_detailed = self.remove_features(df_detailed, ["NOTE_CATALOGUE", 
+                                                         "ARTIST"])
         
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)

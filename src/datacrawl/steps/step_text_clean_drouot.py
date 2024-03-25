@@ -27,6 +27,9 @@ class StepTextCleanDrouot(TextCleaner):
 
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
+        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
+        
+        self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
 
         self.sql_table_name = self.get_sql_db_name(self.seller)
@@ -56,6 +59,9 @@ class StepTextCleanDrouot(TextCleaner):
         df_detailed = read_crawled_pickles(path=self.details_data_path)
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.clean_detail_infos(df_detailed)
+
+        # MERGE DETAILED ITEM DATA 
+        df = self.concatenate_detail(df, df_detailed)
 
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,

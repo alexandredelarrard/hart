@@ -30,8 +30,7 @@ class StepCrawlingSothebysAuctions(StepCrawling):
         self.oldest_year = self._config.crawling[self.seller].oldest_year
         self.today = datetime.today()
 
-        self.liste_elements = self._config.crawling[self.seller].auctions.liste_elements
-        self.per_element = self._config.crawling[self.seller].auctions.per_element
+        self.crawler_infos = self._config.crawling[self.seller].auctions
 
 
     def get_auctions_urls_to_wrawl(self) -> List[str]:
@@ -63,7 +62,9 @@ class StepCrawlingSothebysAuctions(StepCrawling):
 
         liste_lots = []
         counter_pages = 0
-        new_liste_lots = self.get_elements(driver, "CLASS_NAME", "SearchModule-results-item")
+        new_liste_lots = self.get_elements(driver, 
+                                       self.liste_elements.by_type, 
+                                       self.liste_elements.value_css)
 
         while len(liste_lots) != len(new_liste_lots):
             liste_lots = new_liste_lots.copy()
@@ -72,11 +73,12 @@ class StepCrawlingSothebysAuctions(StepCrawling):
             self.scrowl_driver(driver, Y=4000)
             time.sleep(3)
             
-            new_liste_lots = self.get_elements(driver, "CLASS_NAME", "SearchModule-results-item")
+            new_liste_lots = self.get_elements(driver, 
+                                       self.liste_elements.by_type, 
+                                       self.liste_elements.value_css)
 
         self._log.info(f"NBR PAGES  IS = {counter_pages}")
 
-        return liste_lots
 
     def crawling_list_auctions_function(self, driver):
 
@@ -84,31 +86,8 @@ class StepCrawlingSothebysAuctions(StepCrawling):
         query = os.path.basename(driver.current_url.replace("results?", "").replace("%2F", "-"))
         message = ""
 
-        list_infos = []
-        liste_lots = self.load_all_page(driver)
-        
-        # save pict
-        for lot in tqdm.tqdm(liste_lots):
-
-            lot_info = {} 
-
-            # get auction link for futur crawling
-            try:
-                link = self.get_element_infos(lot, "CLASS_NAME", "Card-info-container", "href")
-                if link != "":
-                    lot_info[self.name.url_auction] = link
-                else:
-                    lot_info[self.name.url_auction] = "MISSING_URL_AUCTION"
-
-                # get infos 
-                lot_info[self.name.auction_title] = self.get_element_infos(lot, "CLASS_NAME", "Card-title")
-                lot_info[self.name.date] = self.get_element_infos(lot, "CLASS_NAME", "Card-details")
-                lot_info[self.name.type_sale] = self.get_element_infos(lot, "CLASS_NAME", "Card-category")
-            
-                list_infos.append(lot_info)
-            
-            except Exception as e:
-                message = e 
+        self.load_all_page(driver)
+        list_infos = self.crawl_iteratively(driver, self.crawler_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")

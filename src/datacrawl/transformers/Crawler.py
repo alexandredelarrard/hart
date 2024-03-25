@@ -1,10 +1,10 @@
 import os
 import time
-import random
+import tqdm
 import logging
 import pickle
 
-from typing import List
+from typing import List, Dict
 from queue import Queue
 from threading import Thread
 from omegaconf import DictConfig
@@ -285,8 +285,41 @@ class StepCrawling(Step):
             if "replace" in step_values.keys():
                 info = info.replace(step_values["replace"][0], 
                                     step_values["replace"][1]).strip()
+            
+            if "split" in step_values.keys():
+                info = info.split(step_values["split"]["character"])
+
+                if step_values["replace"]["id_split"]:
+                    info = info[step_values["split"]["id_split"]]
 
             lot_info[step] = info
         
         return lot_info
+    
 
+    def crawl_iteratively(self, driver, 
+                          config : Dict):
+
+        list_infos = []
+        liste_lots = self.get_elements(driver, 
+                                       config.liste_elements.by_type, 
+                                       config.liste_elements.value_css)
+        # save pict
+        for lot in tqdm.tqdm(liste_lots):
+
+            lot_info = {} 
+            
+            try:
+                if "functions" in config.keys():
+                    for function in config.functions:
+                        eval(function)
+
+                new_info = self.extract_element_infos(lot, config.per_element)
+                lot_info.update(new_info)
+                
+                list_infos.append(lot_info)
+            
+            except Exception as e:
+                message = e 
+
+        return message, list_infos

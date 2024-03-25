@@ -106,7 +106,52 @@ crawling:
         settings : 
             browser : chrome 
             nodes : 1
-            retry : 1   
+            retry : 1 
+        auctions:
+            functions:
+                - 'self.scrowl_driver(driver, Y=150)'
+                - 'self.handle_signups(driver)'
+            liste_elements : 
+                by_type: XPATH
+                value_css: '//ul[@aria-labelledby="calendar-tab-undefined"]/li'
+            per_element:
+                URL_AUCTION:
+                    by_type : CLASS_NAME
+                    value_css : chr-event-tile__title
+                AUCTION_TITLE:
+                    by_type : CLASS_NAME
+                    value_css : chr-event-tile__title
+                LOCALISATION:
+                    by_type : CLASS_NAME
+                    value_css : chr-label-s
+        items:
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: chr-browse-lot-tile-wrapper
+            per_element:
+                URL_FULL_DETAIL:
+                    by_type: CLASS_NAME
+                    value_css: chr-lot-tile__link
+                    attribute: href
+                LOT:
+                    by_type: CLASS_NAME
+                    value_css: chr-lot-tile__content-header
+                ITEM_INFOS:
+                    by_type: CLASS_NAME
+                    value_css: chr-lot-tile__content
+                ESTIMATE:
+                    by_type: CLASS_NAME
+                    value_css: chr-lot-tile__price-value
+                RESULT:
+                    by_type: CLASS_NAME
+                    value_css: chr-lot-tile__dynamic-price
+                URL_PICTURE:
+                    by_type: TAG_NAME
+                    value_css: img
+                    attribute: src
+                    split:
+                        character: "?"
+                        id_split: 0
         detailed : 
             per_element : 
                 ARTIST:
@@ -132,6 +177,75 @@ crawling:
             browser : chrome 
             nodes : 1
             retry : 1 
+        auctions:
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: SearchModule-results-item
+            per_element:
+                URL_AUCTION:
+                    by_type : CLASS_NAME
+                    value_css : Card-info-container
+                    attribute: href
+                AUCTION_TITLE:
+                    by_type : CLASS_NAME
+                    value_css : Card-title
+                DATE:
+                    by_type : CLASS_NAME
+                    value_css : Card-details
+                TYPE_SALE:
+                    by_type : CLASS_NAME
+                    value_css : Card-category
+        items:
+            buy_url:
+                liste_elements : 
+                    by_type: XPATH
+                    value_css: //div[@aria-label='List of lots']/div/div
+                per_element:
+                    DATE:
+                        by_type : CLASS_NAME
+                        value_css : css-1bnt3nz
+                    URL_FULL_DETAIL:
+                        by_type: CLASS_NAME
+                        value_css: css-1ivophs
+                        attribute: href
+                    BRUT_RESULT:
+                        by_type: TAG_NAME
+                        value_css: span
+                    URL_PICTURE:
+                        by_type: TAG_NAME
+                        value_css: img
+                        attribute: src
+                        replace:
+                            - "extra_small"
+                            - "small"
+            auctions_url:
+                liste_elements : 
+                    by_type: CLASS_NAME
+                    value_css: AuctionsModule-results-item
+                per_element:
+                    DATE:
+                        by_type : CLASS_NAME
+                        value_css : AuctionsModule-auction-info
+                    URL_FULL_DETAIL:
+                        by_type: XPATH
+                        value_css: //div[@class='image']/a
+                        attribute: href
+                    ITEM_TITLE:
+                        by_type: CLASS_NAME
+                        value_css: title
+                    ITEM_INFOS:
+                        by_type: CLASS_NAME
+                        value_css: description
+                    BRUT_RESULT:
+                        by_type: CLASS_NAME
+                        value_css: estimate
+                    URL_PICTURE:
+                        by_type: TAG_NAME
+                        value_css: img
+                        attribute: src
+                        replace:
+                            - "extra_small"
+                            - "small"
         detailed : 
             per_element : 
                 ARTIST:
