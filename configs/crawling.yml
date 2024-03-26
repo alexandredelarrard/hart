@@ -83,17 +83,25 @@ crawling:
                     by_type: TAG_NAME
                     value_css: a
                     attribute: href
+                URL_PICTURE:
+                    by_type: CLASS_NAME
+                    value_css: imgLot
+                    value_of_css_element: background-image
         detailed : 
             per_element : 
-                ARTIST:
-                    by_type : CLASS_NAME
-                    value_css : info_tps-prix-online
                 TITLE:
                     by_type : CLASS_NAME
-                    value_css : litzt600
+                    value_css : lotArtisteFiche
                 DETAIL:
-                    by_type : CLASS_NAME
-                    value_css : descriptionLineWrap
+                    by_type : XPATH
+                    value_css : //div[@class='lotDescriptionFiche']/h2
+                PICTURES_URL:
+                    liste_elements : 
+                        by_type: CLASS_NAME
+                        value_css: thumbPreview
+                    per_element : 
+                        value_of_css_element: background
+
     christies: 
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
@@ -125,6 +133,9 @@ crawling:
                     by_type : CLASS_NAME
                     value_css : chr-label-s
         items:
+            functions:
+                - 'self.scrowl_driver(driver, Y=150)'
+                - 'self.handle_signups(driver)'
             liste_elements : 
                 by_type: CLASS_NAME
                 value_css: chr-browse-lot-tile-wrapper
@@ -218,6 +229,7 @@ crawling:
                         replace:
                             - "extra_small"
                             - "small"
+                    ITEM_INFOS: text
             auctions_url:
                 liste_elements : 
                     by_type: CLASS_NAME

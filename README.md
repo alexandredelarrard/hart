@@ -29,7 +29,6 @@ Outil qui à partir de plusieurs photos détermine :
 1.1. Historique a compléter
 - Sothebys Level 2: crawl les /buy (2000 auctions) & les urls de redirection (1000 auctions)
 - Sothebys Level 2: crawl les images manquantes (50%)
-- Sothebys Level 3: crawl & clean details 
 
 - Drouot Level 2: crawl les pdfs des ventes manquantes + cleaning 
 - Drouot Level 3: crawl infos & cleaning

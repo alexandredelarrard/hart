@@ -3,7 +3,6 @@ import os
 from omegaconf import DictConfig
 
 import pandas as pd 
-import tqdm
 import re
 import time
 
@@ -12,7 +11,6 @@ from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (read_crawled_csvs, 
                                     get_files_already_done, 
                                     keep_files_to_do,
-                                    save_picture_crawled,
                                     encode_file_name)
 
 class StepCrawlingSothebysItems(StepCrawling):
@@ -29,13 +27,11 @@ class StepCrawlingSothebysItems(StepCrawling):
         self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.root_url = self._config.crawling[self.seller].webpage_url
         self.url_crawled = self._config.crawling[self.seller].url_crawled
-        self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.today = datetime.today()
 
-        self.liste_elements = self._config.crawling[self.seller].items.liste_elements
-        self.per_element_buy = self._config.crawling[self.seller].items.buy_url.per_element
-        self.per_element_auctions = self._config.crawling[self.seller].items.auctions_url.per_element
-        
+        self.crawler_infos_auction_url = self._config.crawling[self.seller].items.auctions_url
+        self.crawler_infos_buy_url = self._config.crawling[self.seller].items.buy_url
+
         # weird webpage format regarding F1
         # TODO: include the F1 webpage formating from sothebys*
         # TODO : pages with /en/buy
@@ -53,67 +49,13 @@ class StepCrawlingSothebysItems(StepCrawling):
                     )
         to_crawl = [x for x in to_crawl if "rmsothebys" not in x and "/en/buy/" not in x]
 
-        already_crawled = get_files_already_done(file_path=self.infos_data_path, 
-                                                    url_path='')
+        # ALREADY DONE
+        df_infos = read_crawled_csvs(path=self.infos_data_path)
+        already_crawled = get_files_already_done(df=df_infos, 
+                                                url_path='')
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
 
         return liste_urls
-    
-    def get_sothebys_buy_url_infos(self, driver, image_path):
-
-        list_infos = []
-        message = ""
-
-        liste_lots = self.get_elements(driver, 
-                                       self.liste_elements.by_type, 
-                                       self.liste_elements.value_css)
-        time.sleep(0.35)
-        
-        # save pict
-        for lot in tqdm.tqdm(liste_lots):
-            lot_info = {} 
-        
-            new_info = self.extract_element_infos(lot, self.per_element_buy)
-            lot_info.update(new_info)
-            
-            lot_info[self.name.item_infos] = lot.text
-            lot_info[self.name.item_title] = lot_info[self.name.item_infos].split("\n")[0]
-            lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
-
-            # save pictures & infos
-            save_picture_crawled(lot_info[self.name.url_picture], image_path, lot_info[self.name.id_picture])
-            time.sleep(0.1)
-            
-            list_infos.append(lot_info)
-            
-        return message, list_infos
-    
-    def get_sothebys_auctions_url_infos(self, driver, image_path):
-
-        list_infos = []
-        message = ""
-
-        liste_lots = self.get_elements(driver, 
-                                       self.liste_elements.by_type, 
-                                       self.liste_elements.value_css)
-
-        # save pict
-        for lot in tqdm.tqdm(liste_lots):
-            lot_info = {} 
-        
-            new_info = self.extract_element_infos(lot, self.per_element_auctions)
-            lot_info.update(new_info)
-
-            lot_info[self.name.id_picture] = encode_file_name(os.path.basename(lot_info[self.name.url_picture]))
-
-            # save pictures & infos
-            save_picture_crawled(lot_info[self.name.url_picture], image_path, lot_info[self.name.id_picture])
-            time.sleep(0.1)
-            
-            list_infos.append(lot_info)
-            
-        return message, list_infos
-    
     
     def get_number_pages_auctions(self, driver):
         
@@ -139,8 +81,6 @@ class StepCrawlingSothebysItems(StepCrawling):
         # crawl infos 
         query = encode_file_name(os.path.basename(driver.current_url))
         url = driver.current_url
-        
-        message = ""
         list_infos = []
 
         # check if pages exists : 
@@ -151,14 +91,10 @@ class StepCrawlingSothebysItems(StepCrawling):
                 if "/en/auctions/" in url:
                     
                     pages = self.get_number_pages_auctions(driver)
-                    message, new_infos = self.get_sothebys_auctions_url_infos(driver, 
-                                                                              image_path=self.save_picture_path)
-                    list_infos = list_infos + new_infos
-
-                    for new_url in [url + f"?p={x}" for x in range(2, pages+1)]:
-                        self.get_url(driver, new_url)
-                        message, new_infos = self.get_sothebys_auctions_url_infos(driver, 
-                                                                                  image_path=self.save_picture_path)
+                    for i, new_url in enumerate([url + f"?p={x}" for x in range(1, pages+1)]):
+                        if i != 1:
+                            self.get_url(driver, new_url)
+                        new_infos = self.crawl_iteratively(driver, self.crawler_infos_auction_url)
                         list_infos = list_infos + new_infos
 
                 if "/en/buy/" in url:
@@ -167,8 +103,7 @@ class StepCrawlingSothebysItems(StepCrawling):
                     
                     while next_button_call != "true":
                         page_counter +=1
-                        message, new_infos = self.get_sothebys_buy_url_infos(driver, 
-                                                                             image_path=self.save_picture_path)
+                        new_infos = self.crawl_iteratively(driver, self.crawler_infos_buy_url)
                         list_infos = list_infos + new_infos
                         time.sleep(1)
 
@@ -187,4 +122,4 @@ class StepCrawlingSothebysItems(StepCrawling):
         df_infos = pd.DataFrame().from_dict(list_infos)
         self.save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
 
-        return driver, message
+        return driver, list_infos

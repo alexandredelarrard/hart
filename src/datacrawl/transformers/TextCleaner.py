@@ -46,20 +46,20 @@ class TextCleaner(Step):
     @timing
     def remove_missing_values(self, df):
 
-        important_cols =[self.name.item_result, 
-                        self.name.currency, 
-                        self.name.url_full_detail, 
+        important_cols =[self.name.url_full_detail, 
                         self.name.item_infos]
 
         if self.check_cols_exists(important_cols, df.columns):
             shape_0 = df.shape[0]
-            df = df.loc[(df[self.name.item_result].notnull())&(
-                        df[self.name.currency].notnull())&(
-                        df[self.name.url_full_detail].notnull())&(
+            df = df.loc[(df[self.name.url_full_detail].notnull())&(
                         df[self.name.item_infos].notnull())].reset_index(drop=True) 
             shape_1 = df.shape[0]
             self._log.info(f"REMOVING {shape_0 - shape_1} \
                         ({(shape_0-shape_1)*100/shape_0:.2f}%) OBS due to lack of curcial infos")
+            
+            # drop duplicates url full detail 
+            df = df.drop_duplicates(self.name.url_full_detail)
+            
             return df 
         else:
             missing_cols = set(important_cols) - set(df.columns)
@@ -127,6 +127,8 @@ class TextCleaner(Step):
     
     @timing
     def clean_detail_infos(self, df_detailed):
+        df_detailed[self.name.detailed_description] = np.where(df_detailed[self.name.detailed_description].isin(["", " "]), np.nan,
+                                                               df_detailed[self.name.detailed_description])
         df_detailed = df_detailed.drop_duplicates([self.name.url_full_detail])
         return df_detailed
 

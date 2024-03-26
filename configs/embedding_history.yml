@@ -1,7 +1,20 @@
 embedding:
+  all:
+    origine_table_name: ALL_ITEMS_202403
+    device: cuda
+    vector : TOTAL_DESCRIPTION
+    
+    text:
+      model: 'intfloat/multilingual-e5-large-instruct'
+      prompt_name : clustering
+      prompt:
+        clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
+      
+
   drouot:
     origine_table_name: DROUOT_202401
     device: cuda
+    vector : DETAIL_DESCRIPTION
     
     text:
       model: 'intfloat/multilingual-e5-large-instruct'
@@ -28,6 +41,7 @@ embedding:
   christies:
     origine_table_name: CHRISTIES_202403
     device: cuda
+    vector : DETAIL_DESCRIPTION
 
     text:
       model: 'intfloat/multilingual-e5-large-instruct'

@@ -17,14 +17,16 @@ class StepTextClustering(Step):
                  context : Context,
                  config : DictConfig, 
                  database_name : str = "drouot",
-                 vector : str = "DESCRIPTION"):
+                 save_embeddings : bool = False):
 
         super().__init__(context=context, config=config)
 
-        self.n_top_results=20
-        self.vector = vector
+        self.n_top_results = 20
+        
         self.database_name = database_name
+        self.save_embeddings = save_embeddings
 
+        self.vector = self._config.embedding[database_name].vector
         self.params = self._config.embedding[database_name].clustering.params
         self.prompt_name = self._config.embedding[database_name].text.prompt_name
         self.sql_table_name = self._config.embedding[database_name].origine_table_name
@@ -33,8 +35,8 @@ class StepTextClustering(Step):
         self.step_embedding = StepEmbedding(context=context, config=config, 
                                             database_name=database_name,
                                             type="text")
-        
-        self.collection = self._context.chroma_db.get_or_create_collection(
+        if self.save_embeddings:
+            self.collection = self._context.chroma_db.get_or_create_collection(
                                     name = self.database_name,
                                     metadata={"hnsw:space": "cosine"})
         
@@ -43,21 +45,24 @@ class StepTextClustering(Step):
 
         df_desc = self.get_data()
 
-        embeddings = self.step_embedding.get_text_embeddings(df_desc[self.vector],
+        self.embeddings = self.step_embedding.get_text_embeddings(df_desc[self.vector],
                                                         prompt_name=self.prompt_name)
         
-        reduced_embedding = self.step_embedding.embedding_reduction(embeddings, 
+        self.reduced_embedding = self.step_embedding.embedding_reduction(self.embeddings, 
                                                                     method_dim_reduction="umap")
 
-        df_desc["labels"] = self.step_cluster.hdbscan_clustering(reduced_embedding)
+        df_desc["labels"] = self.step_cluster.hdbscan_clustering(self.reduced_embedding)
 
         if self.params["verbose"] ==1:
-            plot_reduced_embedding = self.step_embedding.embedding_reduction(embeddings, 
-                                                                        method_dim_reduction="tsne")
+            plot_reduced_embedding = self.step_embedding.embedding_reduction(self.embeddings, 
+                                                                             method_dim_reduction="tsne")
             df_desc["x"], df_desc["y"] = zip(*plot_reduced_embedding)
             self.step_cluster.plot_clusters(df_desc)
 
-        self.save_collection(df_desc, embeddings)
+        if self.save_embeddings:
+            self.save_collection(df_desc, self.embeddings)
+
+        return df_desc
 
 
     def get_data(self):

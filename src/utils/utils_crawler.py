@@ -33,17 +33,6 @@ def read_crawled_csvs(path : str):
 
     return df
 
-def read_pickle(path : str):
-    with open(path, "rb") as f:
-        df_file = pickle.load(f)
-    return df_file
-
-def read_json(path : str):
-    with open(path, "r") as f:
-        df_file = json.load(f)
-    return df_file
-
-
 def read_crawled_pickles(path : str):
 
     # read all csvs
@@ -69,22 +58,30 @@ def read_crawled_pickles(path : str):
 
     return df
 
+def read_pickle(path : str):
+    with open(path, "rb") as f:
+        df_file = pickle.load(f)
+    return df_file
+
+def read_json(path : str):
+    with open(path, "r") as f:
+        df_file = json.load(f)
+    return df_file
+
+
+def save_pickle_file(df, path):
+    with open(path, "wb") as f:
+        pickle.dump(df, f)
 
 def encode_file_name(file):
     return hashlib.sha256(str.encode(file)).hexdigest()
 
 
-def get_files_already_done(file_path, url_path, to_replace=()):
-    files_already_done = glob(file_path + "/*.csv")
+def get_files_already_done(df, url_path, to_replace=()):
     if not to_replace:
-        files_already_done = [url_path + os.path.basename(x).replace(".csv","")
-                                                for x in files_already_done]
+        return df["FILE"].apply(lambda x: url_path + x.replace(".csv",""))
     else:
-        files_already_done = [url_path + os.path.basename(x).replace(".csv","")\
-                                                .replace(to_replace[0], to_replace[1])
-                                                for x in files_already_done]
-
-    return files_already_done
+        return df["FILE"].apply(lambda x: url_path + x.replace(".csv","").replace(to_replace[0], to_replace[1]))
 
 def keep_files_to_do(to_crawl, already_crawled):
     liste_urls = list(set(to_crawl) - set(already_crawled))

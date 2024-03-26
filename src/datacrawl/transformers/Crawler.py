@@ -3,6 +3,7 @@ import time
 import tqdm
 import logging
 import pickle
+from datetime import datetime
 
 from typing import List, Dict
 from queue import Queue
@@ -17,18 +18,25 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
+from src.utils.utils_crawler import encode_file_name
+
 class StepCrawling(Step):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig,
                  threads : int, 
-                 text_only : bool = False):
+                 text_only : bool = False,
+                 save_in_queue : bool = False,
+                 save_queue_size_step : int = 100):
 
         super().__init__(context=context, config=config)
         
         self.threads = threads
         self.text_only = text_only
+        self.save_in_queue = save_in_queue
+        self.save_queue_size_step = save_queue_size_step
+        self.save_queue_path = "./data"
 
         self.missed_urls = []
         self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue()}
@@ -194,9 +202,14 @@ class StepCrawling(Step):
                 driver = self.get_url(driver, url)
                 driver, information = function(driver, *args)
 
-                if information != "":
-                    missed_urls.append(url)
-                    self._log.warning(f"CANNOT CRAWL {url} : \n {information}")
+                if self.save_in_queue:
+                    queues["results"].put(information)
+
+                    if queues["results"].qsize() == self.save_queue_size_step:
+                        file_name = encode_file_name(url)
+                        self.save_queue_to_file(queues["results"], 
+                                                path=self.save_queue_path +
+                                                f"/{file_name}.pickle")
 
                 queues["drivers"].put(driver)
                 queue_url.task_done()
@@ -211,7 +224,18 @@ class StepCrawling(Step):
 
             self.missed_urls = missed_urls
 
+            if queue_url.qsize() == 0:
+                file_name = encode_file_name(url)
+                self.save_queue_to_file(queues["results"], 
+                                        path=self.save_queue_path +
+                                        f"/{file_name}.pickle")
 
+    def save_queue_to_file(self, queue, path):
+        infos = []
+        while queue.qsize() !=0:
+            infos.append(queue.get())
+        self.save_infos(infos, path)
+        
     def save_infos(self, df, path):
 
         if ".csv" in path:
@@ -266,19 +290,30 @@ class StepCrawling(Step):
         except Exception:
             return []
         
-    def extract_element_infos(self, driver, config):
+    def get_info_from_step_value(self, driver, step_values):
 
-        lot_info = {}
-
-        # get infos 
-        for step, step_values in config.items(): 
+        if "by_type" not in step_values.keys():
             if "attribute" in step_values.keys():
+                info = driver.get_attribute(step_values["attribute"])
+            elif "value_of_css_element" in step_values.keys():
+                info = driver.value_of_css_property(step_values["value_of_css_element"])
+            else:
+                info = driver.text
+                
+        else:
+            if "value_of_css_element" in step_values.keys():
+                info = self.get_value_of_css_element(driver, 
+                                    step_values["by_type"], 
+                                    step_values["value_css"],
+                                    key=step_values["value_of_css_element"])
+                
+            elif "attribute" in step_values.keys():
                 info = self.get_element_infos(driver, 
                                     step_values["by_type"], 
                                     step_values["value_css"],
                                     type=step_values["attribute"])
             else:
-                info =  self.get_element_infos(driver, 
+                info = self.get_element_infos(driver, 
                                     step_values["by_type"], 
                                     step_values["value_css"])
             
@@ -292,7 +327,16 @@ class StepCrawling(Step):
                 if step_values["replace"]["id_split"]:
                     info = info[step_values["split"]["id_split"]]
 
-            lot_info[step] = info
+        return info
+    
+    
+    def extract_element_infos(self, driver, config):
+
+        lot_info = {}
+
+        # get infos 
+        for step, step_values in config.items(): 
+            lot_info[step] = self.get_info_from_step_value(driver, step_values)
         
         return lot_info
     
@@ -320,6 +364,6 @@ class StepCrawling(Step):
                 list_infos.append(lot_info)
             
             except Exception as e:
-                message = e 
+                self._log.warning(f"ERROR happened for URL {driver.current_url} - {e}")
 
-        return message, list_infos
+        return list_infos

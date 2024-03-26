@@ -51,8 +51,6 @@ class StepCrawlingDrouotAuctions(StepCrawling):
 
         # crawl infos 
         query = driver.current_url.replace(self.root_url_auctions, "")
-        message = ""
-
         list_infos = []
         liste_lots = self.get_elements(driver, 
                                        self.liste_elements.by_type, 
@@ -60,7 +58,6 @@ class StepCrawlingDrouotAuctions(StepCrawling):
 
         # save pict
         for lot in tqdm.tqdm(liste_lots[1:]):
-
             lot_info = {} 
 
             try:
@@ -70,9 +67,9 @@ class StepCrawlingDrouotAuctions(StepCrawling):
                 list_infos.append(lot_info)
             
             except Exception as e:
-                message = e 
+                self._log.warning(f"ERROR happened for URL {driver.current_url} - {e}")
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
-        return driver, message
+        return driver, list_infos

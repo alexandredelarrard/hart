@@ -9,14 +9,16 @@ from src.constants.command_line_interface import (
     CRAWL_THREADS_KWARG,
     DATABASE_NAME_ARGS,
     DATABASE_NAME_KWARGS,
-    TEXT_VECTOR_ARGS,
-    TEXT_VECTOR_KWARGS,
     NBR_AUCTION_PAGES_ARGS,
     NBR_AUCTION_PAGES_KWARGS,
     TEXT_ONLY_ARGS,
     TEXT_ONLY_KWARGS,
     SELLER_ARGS,
-    SELLER_KWARGS
+    SELLER_KWARGS,
+    QUEUE_SIZE_ARGS,
+    QUEUE_SIZE_KWARGS,
+    SAVE_EMBEDDINGS_ARGS,
+    SAVE_EMBEDDINGS_KWARGS
 )
 
 from src.context import get_config_context
@@ -142,7 +144,7 @@ def step_crawling_drouot_items(
 
 @cli.command(
     help="Crawling Chrysties",
-    help_priority=3,
+    help_priority=4,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
@@ -160,7 +162,7 @@ def step_crawling_chrysties_items(
 
 @cli.command(
     help="Crawling Chrysties",
-    help_priority=3,
+    help_priority=5,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
@@ -176,43 +178,47 @@ def step_crawling_sothebys_items(
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)
     #python -m src datacrawl step-crawling-sothebys-items -t 1 
 
+
 @cli.command(
     help="Crawling detail of url",
-    help_priority=3,
+    help_priority=6,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+@click.option(*QUEUE_SIZE_ARGS, **QUEUE_SIZE_KWARGS)
+@click.option(*TEXT_ONLY_ARGS, **TEXT_ONLY_KWARGS)
 def step_crawling_detailed(
-    config_path, threads : int, seller : str 
+    config_path, threads : int, seller : str, save_queue_size : int, text_only : bool
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     crawl = StepCrawlingDetailed(config=config, context=context, 
-                                    threads=threads, seller=seller)
+                                threads=threads, seller=seller, 
+                                save_queue_size=save_queue_size,
+                                text_only=text_only)
 
-    # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-
-    # python -m src datacrawl step-crawling-detailed -t 1 -s christies 
+    # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 -to True
 
 
 @cli.command(
     help="embedding db of art house into chroma db embeddings",
-    help_priority=4,
+    help_priority=10,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*DATABASE_NAME_ARGS, **DATABASE_NAME_KWARGS)
-@click.option(*TEXT_VECTOR_ARGS, **TEXT_VECTOR_KWARGS)
+@click.option(*SAVE_EMBEDDINGS_ARGS, **SAVE_EMBEDDINGS_KWARGS)
 def step_embed_art_house(
-    config_path, database_name : str, vector : str 
+    config_path, database_name : str, save_embeddings : bool 
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     step_cluster = StepTextClustering(config=config, context=context, 
                                       database_name=database_name,
-                                      vector=vector)
+                                      save_embeddings=save_embeddings)
 
     # embeddings and saving for queries 
     step_cluster.run()
+    
     #python -m src art step-embed-art-house -tv DESCRIPTION -ah drouot

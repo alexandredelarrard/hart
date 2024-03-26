@@ -83,10 +83,10 @@ NBR_AUCTION_PAGES_KWARGS= {
 }
 
 
-TEXT_ONLY_ARGS=("--text-only", "-te", "text_only")
+TEXT_ONLY_ARGS=("--text-only", "-to", "text_only")
 TEXT_ONLY_KWARGS= {
     "type" : bool, 
-    "default" : False, 
+    "default" : True, 
     "required" : False,
     "show_default" : True,
     "help": (
@@ -103,5 +103,27 @@ SELLER_KWARGS= {
     "show_default" : True,
     "help": (
         "seller, either drouot, christies or sothebys"
+    )
+}
+
+QUEUE_SIZE_ARGS=("--save-queue-size", "-sqs", "save_queue_size")
+QUEUE_SIZE_KWARGS= {
+    "type" : int, 
+    "default" : 500, 
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "when save from queue, size of number of elements in queue so trigger save"
+    )
+}
+
+SAVE_EMBEDDINGS_ARGS=("--save-embeddings", "-semb", "save_embeddings")
+SAVE_EMBEDDINGS_KWARGS={
+    "type" : bool, 
+    "default" : True, 
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "save embeddings or not into a chroma db for futur similarity calculation"
     )
 }

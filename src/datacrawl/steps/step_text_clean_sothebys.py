@@ -84,6 +84,7 @@ class StepTextCleanSothebys(TextCleaner):
         df[self.name.item_description] = df[self.name.item_infos]
         df[self.name.item_file] = df[self.name.item_file].str.replace(".csv","")
         df[self.name.lot] = df[self.name.item_description].apply(lambda x: x.split(".")[0].replace("No reserve\n", ""))
+        df[self.name.item_title] = df[self.name.item_infos].split("\n")[0]
 
         #error of url full detail need to be corrected 
         df[self.name.url_full_detail] = df[[self.name.url_full_detail, self.name.lot]].apply(lambda x : 

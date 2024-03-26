@@ -84,7 +84,6 @@ class StepCrawlingSothebysAuctions(StepCrawling):
 
         # crawl infos 
         query = os.path.basename(driver.current_url.replace("results?", "").replace("%2F", "-"))
-        message = ""
 
         self.load_all_page(driver)
         list_infos = self.crawl_iteratively(driver, self.crawler_infos)
@@ -92,4 +91,4 @@ class StepCrawlingSothebysAuctions(StepCrawling):
         df_infos = pd.DataFrame().from_dict(list_infos)
         self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
-        return driver, message
+        return driver, list_infos

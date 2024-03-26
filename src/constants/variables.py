@@ -5,12 +5,14 @@ class Naming:
         self.seller = "SELLER"
         self.auction_infos = "AUCTION_INFOS"
         self.item_infos = "ITEM_INFOS"
+
         self.item_description = "ITEM_DESCRIPTION"
         self.detailed_description = "DETAIL_DESCRIPTION"
+        self.total_description = "TOTAL_DESCRIPTION"
 
         self.auction_title = "AUCTION_TITLE"
         self.item_title = "ITEM_TITLE"
-        self.detailed_title = "DETAILED_TITLE"
+        self.detailed_title = "ITEM_TITLE_DETAIL"
 
         self.lot = 'LOT_NUMBER'
         self.type_sale = "TYPE_SALE"
@@ -73,6 +75,7 @@ class Naming:
     
     def dict_rename_detail(self):
         return {**self.root_dict, **{"URL" : self.url_full_detail,
+                                    "URL_DETAIL" : self.url_full_detail,
                                     "DETAIL" : self.detailed_description,
                                     "TITLE" : self.item_title,
                                     "DESCRIPTION": self.detailed_description,

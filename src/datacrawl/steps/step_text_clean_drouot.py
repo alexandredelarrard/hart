@@ -106,7 +106,6 @@ class StepTextCleanDrouot(TextCleaner):
             raise Exception(f"DROUOT DATAPREP for {self.name.type_sale} expects 2 single occurence, {occurence} found")
         return df
 
-
     @timing
     def extract_estimates(self, df):
 

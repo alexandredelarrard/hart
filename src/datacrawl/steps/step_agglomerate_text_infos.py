@@ -53,11 +53,13 @@ class StepAgglomerateTextInfos(TextCleaner):
         df_currencies = self.concatenate_currencies(dict_currencies, 
                                                     min_date=df[self.name.date].min())
         df = self.homogenize_currencies(df, df_currencies)
-        df = self.remove_features(df)
+        df = self.remove_features(df, ["OPEN", "CLOSE"])
 
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
                             if_exists="replace")
+        
+        return df
 
 
     @timing
@@ -71,22 +73,22 @@ class StepAgglomerateTextInfos(TextCleaner):
     @timing
     def keep_relevant_features(self, final_df):
         return final_df[[self.name.id_item,
-                             self.name.lot, 
-                             self.name.date,
-                             self.name.hour,
-                             self.name.item_title,
-                             self.name.detailed_title,
-                             self.name.item_description,
-                             self.name.detailed_description,
-                             self.name.min_estimate,
-                             self.name.max_estimate,
-                             self.name.item_result,
-                             self.name.is_item_result,
-                             self.name.currency,
-                             self.name.id_picture,
-                             self.name.localisation,
-                             self.name.seller,
-                             self.name.type_sale]]
+                        self.name.lot, 
+                        self.name.date,
+                        self.name.hour,
+                        self.name.item_title,
+                        self.name.detailed_title,
+                        self.name.item_description,
+                        self.name.detailed_description,
+                        self.name.min_estimate,
+                        self.name.max_estimate,
+                        self.name.item_result,
+                        self.name.is_item_result,
+                        self.name.currency,
+                        self.name.id_picture,
+                        self.name.localisation,
+                        self.name.seller,
+                        self.name.type_sale]]
 
     @timing
     def concatenate_currencies(self, dict_currencies, min_date="2000-01-01"):
@@ -207,6 +209,8 @@ class StepAgglomerateTextInfos(TextCleaner):
         df[self.name.item_title] = df[self.name.item_title].apply(lambda x : re.sub("^(\\d+\\. )", '', str(x)))
         df[self.name.item_title] = np.where(df[self.name.item_title] == "None", np.nan, 
                                             df[self.name.item_title])
+        df[self.name.detailed_title] = np.where(df[self.name.detailed_title].isin(["None","", "nan"]), np.nan, 
+                                            df[self.name.detailed_title])
         
         return df 
 
@@ -219,8 +223,18 @@ class StepAgglomerateTextInfos(TextCleaner):
         df[self.name.item_description] = np.where(df[self.name.item_description] == "None", np.nan, 
                                             df[self.name.item_description])
         
+        # detailed description cleaning 
+        for col in [self.name.item_description, self.name.detailed_description]:
+            df[col] = np.where(df[col].isin([
+                                    '', '1 ^,,^^,,^','2 ^,,^^,,^','1 ^"^^"^',
+                                    '1 ^,,^', '3 ^,,^^,,^','6 ^,,^','2 ^,,^',
+                                    '3 ^,,^','5 ^,,^^,,^', '4 ^,,^^,,^',
+                                    '4 ^,,^', 'size 52.', '1 ^,,^^,,^ per dozen',
+                                    '10 ^,,^^,,^', 'Non venu','NON VENU','.',]), np.nan, 
+                            df[col])
+        
+        df[self.name.total_description] = np.where(df[self.name.detailed_description].isnull(),
+                                                    df[self.name.item_description],
+                                                    df[self.name.item_description] + ". " + df[self.name.detailed_description])
+        
         return df 
-
-    @timing
-    def remove_features(self, df):
-        return df.drop(["OPEN", "CLOSE"], axis=1)

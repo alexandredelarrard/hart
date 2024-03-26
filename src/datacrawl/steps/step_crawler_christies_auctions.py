@@ -69,12 +69,10 @@ class StepCrawlingChristiesAuctions(StepCrawling):
 
         # crawl infos 
         query = driver.current_url.replace(self.root_url_auctions, "")
-        message = ""
-
         list_infos = self.crawl_iteratively(driver, self.crawler_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
-        return driver, message
+        return driver, list_infos
     
