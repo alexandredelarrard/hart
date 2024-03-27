@@ -47,6 +47,7 @@ class StepAgglomerateTextInfos(TextCleaner):
         df = self.deduce_country(df, mapping_country=mapping_city_country)
         df = self.homogenize_title(df)
         df = self.homogenize_description(df)
+        df = self.remove_missing_values(df, important_cols=[self.name.total_description])
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)
@@ -233,8 +234,11 @@ class StepAgglomerateTextInfos(TextCleaner):
                                     '10 ^,,^^,,^', 'Non venu','NON VENU','.',]), np.nan, 
                             df[col])
         
-        df[self.name.total_description] = np.where(df[self.name.detailed_description].isnull(),
-                                                    df[self.name.item_description],
-                                                    df[self.name.item_description] + ". " + df[self.name.detailed_description])
+        df[self.name.total_description] = np.where((df[self.name.detailed_description].notnull())&(df[self.name.item_description].notnull()),
+                                                   df[self.name.item_description].fillna('') + ". " + df[self.name.detailed_description].fillna(''),
+                                          np.where((df[self.name.detailed_description].notnull())&(df[self.name.item_description].isnull()),          
+                                                    df[self.name.detailed_description],
+                                          np.where((df[self.name.detailed_description].isnull())&(df[self.name.item_description].notnull()),    
+                                                    df[self.name.item_description], np.nan)))
         
         return df 

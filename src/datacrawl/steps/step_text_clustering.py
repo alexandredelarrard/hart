@@ -28,8 +28,9 @@ class StepTextClustering(Step):
 
         self.vector = self._config.embedding[database_name].vector
         self.params = self._config.embedding[database_name].clustering.params
-        self.prompt_name = self._config.embedding[database_name].text.prompt_name
         self.sql_table_name = self._config.embedding[database_name].origine_table_name
+        
+        self.prompt_name = self._config.embedding.prompt_name
 
         self.step_cluster = TopicClustering(params=self.params)
         self.step_embedding = StepEmbedding(context=context, config=config, 
@@ -63,10 +64,10 @@ class StepTextClustering(Step):
             self.save_collection(df_desc, self.embeddings)
 
         return df_desc
-
+    
 
     def get_data(self):
-        return pd.read_sql(f"SELECT * FROM \"{self.sql_table_name}\" ", #LIMIT 50000
+        return pd.read_sql(f"SELECT \"ID_ITEM\", \"{self.vector}\" FROM \"{self.sql_table_name}\" ", #LIMIT 50000
                            con=self._context.db_con)
     
     @timing

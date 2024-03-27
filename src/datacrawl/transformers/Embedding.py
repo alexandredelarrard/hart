@@ -12,7 +12,7 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
-from chromadb.utils import embedding_functions
+# from chromadb.utils import embedding_functions
 from transformers import AutoImageProcessor, Swinv2Model, AutoFeatureExtractor
 
 import torch 
@@ -31,26 +31,28 @@ class StepEmbedding(Step):
 
         super().__init__(context=context, config=config)
         self.params = self._config.embedding[database_name].dim_reduc.params
-        self.root_path = self._config.crawling[database_name].save_picture_path
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-
+        # self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.default_picture_path = self._config.cleaning.default_picture_path
+        
         if type == "text":
+            self.batch_size = self._config.embedding[database_name].text.batch_size
+            
             self.prompt = {}
             for k, v in self._config.embedding[database_name].text.prompt.items():
                 self.prompt[k] = v
 
-            self.model = SentenceTransformer(self._config.embedding[database_name].text.model,
+            self.model = SentenceTransformer(self._config.embedding.text_model,
                                             prompts=self.prompt,
-                                            device=self._config.embedding[database_name].device)
+                                            device=self._config.embedding.device)
             
         elif type=="picture":
             self.batch_size = self._config.embedding[database_name].picture.batch_size
 
-            model_ckpt = self._config.embedding[database_name].picture.model
+            model_ckpt = self._config.embedding.picture_model
             self.processor = AutoImageProcessor.from_pretrained(model_ckpt)
             self.extractor = AutoFeatureExtractor.from_pretrained(model_ckpt)
             self.model = Swinv2Model.from_pretrained(model_ckpt)
-            self.model.to(self.device)
+            self.model.to(self._config.embedding.device)
         
         else:
             raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
@@ -62,6 +64,7 @@ class StepEmbedding(Step):
                             {self.prompt.keys()}")
 
         return self.model.encode(input_texts, 
+                                 batch_size=self.batch_size,
                                 #  convert_to_tensor=True, 
                                  normalize_embeddings=False,
                                  prompt_name=prompt_name)
@@ -82,7 +85,7 @@ class StepEmbedding(Step):
 
         return candidate_subset_emb
             
-
+    @timing
     def get_picture_embeddings(self, images : List[PIL.Image]):
 
         # `transformation_chain` is a compostion of preprocessing
@@ -119,7 +122,7 @@ class StepEmbedding(Step):
                     pils_images.append(Image.open(image))
                 except Exception:
                     self._log.error(f"No picture avaiable for {image} path. FILL with picture MISSING.jpg")
-                    pils_images.append(Image.open(self.root_path + "/MISSING.jpg.jpg"))
+                    pils_images.append(Image.open(self.default_picture_path))
 
             else:
                 raise Exception("Images must be passed as string path to \
@@ -129,6 +132,7 @@ class StepEmbedding(Step):
     def get_similarities(self, embeddings):
         return (embeddings @ embeddings.T) * 100
     
+    @timing
     def embedding_reduction(self, embeddings : np.array, 
                             method_dim_reduction : str) -> np.array:
 

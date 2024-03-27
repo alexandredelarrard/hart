@@ -44,21 +44,24 @@ class TextCleaner(Step):
         return  pd.DataFrame(variable.str.split(sep).tolist(), index=index)
     
     @timing
-    def remove_missing_values(self, df):
-
-        important_cols =[self.name.url_full_detail, 
-                        self.name.item_infos]
+    def remove_missing_values(self, df, important_cols : List = []):
+        
+        if len(important_cols) ==0:
+            important_cols = [self.name.url_full_detail, 
+                              self.name.item_infos]
 
         if self.check_cols_exists(important_cols, df.columns):
             shape_0 = df.shape[0]
-            df = df.loc[(df[self.name.url_full_detail].notnull())&(
-                        df[self.name.item_infos].notnull())].reset_index(drop=True) 
+            for i, col in enumerate(important_cols):
+                if i == 0:
+                    filter_missing = df[col].notnull()
+                else:
+                    filter_missing = (filter_missing)*(df[col].notnull())
+
+            df = df.loc[filter_missing].reset_index(drop=True) 
             shape_1 = df.shape[0]
             self._log.info(f"REMOVING {shape_0 - shape_1} \
                         ({(shape_0-shape_1)*100/shape_0:.2f}%) OBS due to lack of curcial infos")
-            
-            # drop duplicates url full detail 
-            df = df.drop_duplicates(self.name.url_full_detail)
             
             return df 
         else:

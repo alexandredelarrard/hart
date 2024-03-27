@@ -12,7 +12,7 @@ from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothe
 from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
 from src.datacrawl.steps.step_text_clean_sothebys import StepTextCleanSothebys
 from src.datacrawl.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
-
+from src.datacrawl.steps.step_manual_cluster import StepManualCluster
 
 if __name__ == "__main__":
 
@@ -45,7 +45,9 @@ if __name__ == "__main__":
     # self = StepPictureClustering(context=context, config=config)
     # embed = self.run()
 
-    self = StepAgglomerateTextInfos(context=context, config=config)
+    # self = StepAgglomerateTextInfos(context=context, config=config)
     # df = self.run()
+
+    self = StepManualCluster(context=context, config=config, database_name="all")
 
     

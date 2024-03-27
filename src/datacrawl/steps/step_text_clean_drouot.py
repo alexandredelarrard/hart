@@ -134,6 +134,9 @@ class StepTextCleanDrouot(TextCleaner):
     @timing
     def extract_infos(self, df):
 
+        # drop duplicates url full detail 
+        df = df.drop_duplicates(self.name.url_full_detail).reset_index(drop=True)
+
         for col in [self.name.item_title, self.name.item_description]:
             df[col] = np.where(df[col].str.lower().isin(["--> ce lot se trouve au depot", "retrait",
                                                         "lot non venu", ".",

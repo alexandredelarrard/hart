@@ -7,4 +7,5 @@ cleaning:
     origine_table_name: CHRISTIES_202403
   sothebys : 
     origine_table_name: SOTHEBYS_202403
+  default_picture_path : "./data/default/MISSING.jpg.jpg"
 

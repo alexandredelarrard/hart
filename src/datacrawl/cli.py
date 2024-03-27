@@ -199,7 +199,7 @@ def step_crawling_detailed(
                                 text_only=text_only)
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 -to True
+    # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 --text-only True
 
 
 @cli.command(

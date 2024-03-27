@@ -130,6 +130,9 @@ class StepTextCleanChristies(TextCleaner):
     @timing
     def extract_infos(self, df):
 
+        # drop duplicates url full detail 
+        df = df.drop_duplicates(self.name.url_full_detail).reset_index(drop=True)
+
         # date, place, maison
         sale = self.get_splitted_infos(df[self.name.item_infos], index=df.index, sep="\n") 
         df[self.name.item_title] = sale[1]
