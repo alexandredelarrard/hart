@@ -75,7 +75,7 @@ class NLPToolBox:
     @timing
     def manuak_clustering(self, vect, manuals):
 
-        if not self.words_vect:
+        if not isinstance(self.words_vect, pd.Series):
             self.split_into_ngrams(vect)
 
         cluster_words, weights, id_mapping = self.get_manual_clusters_infos(manuals)
@@ -85,8 +85,7 @@ class NLPToolBox:
 
     @timing
     def split_into_ngrams(self, vect):
-        self.words_vect = vect.swifter.apply(lambda x : word_tokenize(x))
-        self.words_vect = self.words_vect.swifter.apply(lambda x : [a for a in x if a not in self.stopwords])
+        self.words_vect = vect.swifter.apply(lambda x : [a for a in word_tokenize(x) if a not in self.stopwords])
         self.words_vect = self.words_vect.swifter.apply(lambda x: x + [" ".join(a) for a in list(ngrams(x, 2))])
         return self.words_vect
     

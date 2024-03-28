@@ -39,7 +39,7 @@ class StepManualCluster(Step):
 
         # words = self.nlp_tb.extract_top_n_words(vect[self.vector], ngram_range=(1,2))
         vect["MANUAL_CLUSTER"] = self.nlp_tb.manuak_clustering(vect[self.vector], self.manuals)
-        vect = vect.loc[vect["MANUAL_CLUSTER"].notnull()]
+        # vect = vect.loc[vect["MANUAL_CLUSTER"].notnull()]
 
         # SAVE ITEMS ENRICHED
         self.write_sql_data(dataframe=vect,

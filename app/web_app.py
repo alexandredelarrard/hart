@@ -1,6 +1,6 @@
 from src.context import get_config_context
 from src.datacrawl.steps.step_text_clustering import StepTextClustering
-from src.datacrawl.steps.step_picture_clustering import StepPictureClustering
+from src.datacrawl.steps.step_picture_classification import StepPictureClustering
 import numpy as np
 
 def get_sidebar(st):
