@@ -5,8 +5,8 @@ from typing import List
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-from src.datacrawl.transformers.Clustering import TopicClustering
-from src.datacrawl.transformers.Embedding import StepEmbedding
+from src.modelling.transformers.Clustering import TopicClustering
+from src.modelling.transformers.Embedding import StepEmbedding
 
 from omegaconf import DictConfig
 

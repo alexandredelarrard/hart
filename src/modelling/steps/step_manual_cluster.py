@@ -5,7 +5,7 @@ from typing import List
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-from src.datacrawl.transformers.NlpToolBox import NLPToolBox
+from src.modelling.transformers.NlpToolBox import NLPToolBox
 from src.utils.utils_crawler import read_json
 
 from omegaconf import DictConfig

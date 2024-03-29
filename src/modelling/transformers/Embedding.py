@@ -31,7 +31,6 @@ class StepEmbedding(Step):
 
         super().__init__(context=context, config=config)
         self.params = self._config.embedding[database_name].dim_reduc.params
-        # self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.default_picture_path = self._config.cleaning.default_picture_path
         
         if type == "text":

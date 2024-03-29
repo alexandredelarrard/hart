@@ -4,3 +4,5 @@ picture_classification:
   model : vit_large_patch14_clip_224.openai_ft_in12k_in1k
   batch_size: 128
   device : "cuda"
+
+  fine_tuned_model : ./data/models/peft_block23_vit_large_patch14_clip_224_280329
