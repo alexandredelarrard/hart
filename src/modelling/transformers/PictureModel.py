@@ -45,9 +45,7 @@ class ArtDataset(Dataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        sample = {"image": image, "labels": label}
-
-        return sample
+        return {"image": image, "labels": label}
     
 
 class PictureModel(Step):
@@ -83,11 +81,11 @@ class PictureModel(Step):
         self.batching = {}
 
         # model params
-        target_modules = ['blocks.23.mlp.fc2', 'blocks.23.mlp.fc1', 'blocks.22.mlp.fc2', 'blocks.23.mlp.fc1']#r"blocks.23.*\.mlp\.fc\d"
+        target_modules = ['blocks.23.mlp.fc2', 'blocks.23.mlp.fc1']#r"blocks.23.*\.mlp\.fc\d" # , 'blocks.22.mlp.fc2', 'blocks.23.mlp.fc1'
         self.criterion = torch.nn.CrossEntropyLoss()
         self.lora_model_config = peft.LoraConfig(r=8, target_modules=target_modules, modules_to_save=["head"])
 
-        if not device :
+        if not device:
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         else:
             self.device = device

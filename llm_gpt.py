@@ -4,7 +4,7 @@ import random
 from tqdm import tqdm
 import pandas as pd 
 from src.context import get_config_context
-from src.datacrawl.steps.step_manual_cluster import StepManualCluster
+from src.modelling.steps.step_manual_cluster import StepManualCluster
 
 api_key = "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"
 os.environ["OPENAI_API_KEY"] = api_key

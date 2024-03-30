@@ -1,11 +1,12 @@
 cleaning:
+  path_mapping_country: "./data/default/mapping_country.json"
+  default_picture_path : "./data/default/MISSING.jpg.jpg"
   full_data_auction_houses : ALL_ITEMS_202403
-  path_mapping_country: "./data/mapping_country.json"
   drouot : 
     origine_table_name: DROUOT_202403
   christies : 
     origine_table_name: CHRISTIES_202403
   sothebys : 
     origine_table_name: SOTHEBYS_202403
-  default_picture_path : "./data/default/MISSING.jpg.jpg"
+  
 

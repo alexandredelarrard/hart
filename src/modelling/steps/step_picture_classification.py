@@ -1,9 +1,10 @@
 import glob
 import os 
 import random
-import pandas as pd 
 import numpy as np
+import shutil
 
+from tqdm import tqdm 
 import matplotlib.pyplot as plt
 from src.context import Context
 from src.utils.step import Step
@@ -19,7 +20,8 @@ class StepPictureClassification(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 database_name : str = "drouot"):
+                 database_name : str = "drouot",
+                 save_model : bool = True):
 
         super().__init__(context=context, config=config)
 
@@ -31,6 +33,7 @@ class StepPictureClassification(Step):
         self.batch_size = self._config.picture_classification.batch_size
         self.device = self._config.picture_classification.device
         self.fine_tuned_model=self._config.picture_classification.fine_tuned_model
+        self.save_model = save_model
 
         self.sql_table_name = self._config.embedding[database_name].origine_table_name
 
@@ -46,7 +49,7 @@ class StepPictureClassification(Step):
                                      batch_size=self.batch_size,
                                      device=self.device,
                                      classes=self.classes_2id,
-                                     epochs=8)
+                                     epochs=10)
 
         pict_transformer = picture_model.define_model_transformer()
 
@@ -56,13 +59,17 @@ class StepPictureClassification(Step):
         validation_dataset = ArtDataset(self.data["validation"], self.classes_2id, transform=pict_transformer)
         
         picture_model.fit(train_dataset, validation_dataset)
-        picture_model.save_model(self.fine_tuned_model)
+
+        if self.save_model:
+            picture_model.save_model(self.fine_tuned_model)
         
+        return picture_model
+
 
     @timing
     def predicting(self, liste_pictures):
 
-        liste_pictures = glob.glob("./data/drouot/pictures_old/*.jpg")
+        liste_pictures = glob.glob("./data/drouot/pictures_old/*.jpg")[:10000]
 
         # get and shape data to pytorc
         self.classes_2id = self.define_num_classes()
@@ -86,6 +93,27 @@ class StepPictureClassification(Step):
         answers = self.shape_answer(answers, picture_model.id2_classes)
         answers["PICTURES"] = liste_pictures
 
+        # plot or not 
+        # self.plot_results(answers.iloc[-10:])
+
+        return answers
+    
+    def save_pictures_to_folders(self, answers):
+
+        answers = answers.loc[answers["TOP_0"].isin(["miroir", "arme feu", "arme blanche", "boucle oreille",
+                                                     "stylo", "foulard", "cle", "canape", "ceinture", "chaussures",
+                                                     "chaise", "sac", "evantail", "musique", "robe", "broche", "collier",
+                                                     "bague", "applique"])]
+        answers = answers.loc[answers["PROBA_0"] >=0.5]
+        answers["save_path"] = answers["TOP_0"].apply(lambda x :  self.picture_path + f"{x}")
+
+        for row in tqdm(answers.to_dict(orient="records")):
+            try:
+                shutil.move(row["PICTURES"], row["save_path"])
+            except Exception as e:
+                self._log.warning(e)        
+    
+    def plot_results(self, answers):
         for row in answers.to_dict(orient="records"):
             img = plt.imread(row["PICTURES"])
             plt.imshow(img)
