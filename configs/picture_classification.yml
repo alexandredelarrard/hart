@@ -2,7 +2,9 @@ picture_classification:
   pictures_path : ./data/pictures_training/
   ratio_validation : 0.15
   model : vit_large_patch14_clip_224.openai_ft_in12k_in1k
-  batch_size: 128
+  train_batch_size: 64
+  test_batch_size: 128
   device : "cuda"
+  epochs : 10
 
-  fine_tuned_model : ./data/models/peft_block23_vit_large_patch14_clip_224_280329
+  fine_tuned_model : ./data/models/peft_block23_vit_large_patch14_clip_224_280402

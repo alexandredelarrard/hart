@@ -18,7 +18,9 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
-from src.utils.utils_crawler import encode_file_name
+from src.utils.utils_crawler import (encode_file_name,
+                                     save_queue_to_file)
+
 
 class StepCrawling(Step):
     
@@ -207,7 +209,7 @@ class StepCrawling(Step):
 
                     if queues["results"].qsize() == self.save_queue_size_step:
                         file_name = encode_file_name(url)
-                        self.save_queue_to_file(queues["results"], 
+                        save_queue_to_file(queues["results"], 
                                                 path=self.save_queue_path +
                                                 f"/{file_name}.pickle")
 
@@ -226,25 +228,10 @@ class StepCrawling(Step):
 
             if queue_url.qsize() == 0:
                 file_name = encode_file_name(url)
-                self.save_queue_to_file(queues["results"], 
+                save_queue_to_file(queues["results"], 
                                         path=self.save_queue_path +
                                         f"/{file_name}.pickle")
 
-    def save_queue_to_file(self, queue, path):
-        infos = []
-        while queue.qsize() !=0:
-            infos.append(queue.get())
-        self.save_infos(infos, path)
-        
-    def save_infos(self, df, path):
-
-        if ".csv" in path:
-            df.to_csv(path, index=False, sep=";")
-        elif ".txt" in path or ".pickle" in path:
-            with open(path, "wb") as f:
-                pickle.dump(df, f)
-        else:
-            self._log.error("Extensions handled for saving files are .TXT / .PICKLE or .CSV only. Please try again")
 
     def scrowl_driver(self, driver, Y):
         driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")

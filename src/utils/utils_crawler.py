@@ -97,3 +97,19 @@ def save_picture_crawled(url_picture, image_path, picture_id):
     except Exception as e:
         logging.error(f"SAVING PICTURE FAILED : {e}")
         pass
+
+def save_queue_to_file(queue, path):
+        infos = []
+        while queue.qsize() !=0:
+            infos.append(queue.get())
+        save_infos(infos, path)
+    
+def save_infos(df, path):
+
+    if ".csv" in path:
+        df.to_csv(path, index=False, sep=";")
+    elif ".txt" in path or ".pickle" in path:
+        with open(path, "wb") as f:
+            pickle.dump(df, f)
+    else:
+        logging.error("Extensions handled for saving files are .TXT / .PICKLE or .CSV only. Please try again")

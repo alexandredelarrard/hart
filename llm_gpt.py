@@ -33,6 +33,23 @@ def creat_messages(list_text):
                                     text : "%s"""%text})
     return messages
 
+# watch test 
+schema : {
+        "category": "watch",
+        "house": str,
+        "gender" : str,
+        "watch name" : str,
+        "period or year": str,
+        "bracelet material": str,
+        "case material": str,
+        "case shape": str,
+        "number complications" : int,
+        "type of movement":  str,
+        "object condition": str,
+        "box available": str,
+        "certificate available" : bool,
+        "watch diametre" : float,
+    }
 
 def retreiver(client, messages):
     answers = []

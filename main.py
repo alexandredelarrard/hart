@@ -13,6 +13,7 @@ from src.datacrawl.steps.step_agglomerate_text_infos import StepAgglomerateTextI
 from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_manual_cluster import StepManualCluster
 from src.modelling.steps.step_picture_classification import StepPictureClassification
+from src.modelling.steps.step_text_inference_gpt import StepTextInferenceGpt
 
 if __name__ == "__main__":
 
@@ -50,5 +51,8 @@ if __name__ == "__main__":
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
-    self = StepPictureClassification(context=context, config=config, database_name="all")
-    self.training()
+    # self = StepPictureClassification(context=context, config=config, database_name="all")
+    # self.training()
+
+    self = StepTextInferenceGpt(context=context, config=config)
+

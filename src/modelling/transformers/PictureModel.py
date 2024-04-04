@@ -4,6 +4,7 @@ from typing import Dict
 from pathlib import Path
 from torch.utils.data import Dataset
 import pandas as pd 
+import logging
 import numpy as np
 
 import timm
@@ -21,13 +22,15 @@ from omegaconf import DictConfig
 
 class ArtDataset(Dataset):
 
-    def __init__(self, image_paths, classes, transform=None, mode: str=None):
+    def __init__(self, image_paths, classes, transform=None, mode: str=None, default_path:str=None):
         
         super().__init__()
+
         self.image_paths = image_paths
         self.transform = transform
         self.classes_2id = classes
         self.mode = mode
+        self.default_image_path = default_path
         
     def __len__(self):
         return len(self.image_paths)
@@ -43,7 +46,12 @@ class ArtDataset(Dataset):
             label=""
 
         if self.transform is not None:
-            image = self.transform(image)
+            try:
+                image = self.transform(image)
+            except Exception as e:
+                image = image.convert('RGB')
+                image = self.transform(image)
+                logging.warning(image_filepath, e)
 
         return {"image": image, "labels": label}
     
@@ -81,7 +89,7 @@ class PictureModel(Step):
         self.batching = {}
 
         # model params
-        target_modules = ['blocks.23.mlp.fc2', 'blocks.23.mlp.fc1']#r"blocks.23.*\.mlp\.fc\d" # , 'blocks.22.mlp.fc2', 'blocks.23.mlp.fc1'
+        target_modules = ['blocks.23.mlp.fc2', 'blocks.23.mlp.fc1'] #r"blocks.23.*\.mlp\.fc\d" # , 'blocks.22.mlp.fc2', 'blocks.23.mlp.fc1'
         self.criterion = torch.nn.CrossEntropyLoss()
         self.lora_model_config = peft.LoraConfig(r=8, target_modules=target_modules, modules_to_save=["head"])
 
@@ -159,8 +167,6 @@ class PictureModel(Step):
     def predict(self, test_dataset : Dataset):
 
         self.batching_data(test_dataset, mode="test")
-        # self.load_trained_model(model_path=self.model_path)
-        
         self.new_model.to(self.device).eval()
 
         sorties = []
@@ -169,7 +175,8 @@ class PictureModel(Step):
             xb = xb.to(self.device)
             with torch.no_grad():
                 outputs = self.new_model(xb)
-            answers = torch.topk(outputs, k=self.top_k)
+            lsm = torch.nn.functional.softmax(outputs, dim=-1)
+            answers = torch.topk(lsm, k=self.top_k)
             sorties.append(answers)
 
         return self.clean_sorties(sorties)
@@ -210,10 +217,6 @@ class PictureModel(Step):
             batch_total = pd.concat([pd.DataFrame(probas), pd.DataFrame(classes)], axis=1)
             total = pd.concat([total, batch_total], axis=0)
         total.columns = columns
-
-        total[proba_cols] = np.exp(total[proba_cols])
-        for x in proba_cols: 
-            total[x] = total[x] / np.sum(total[proba_cols], axis=1)
 
         return total.reset_index(drop=True)
     

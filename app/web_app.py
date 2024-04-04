@@ -1,6 +1,6 @@
 from src.context import get_config_context
-from src.datacrawl.steps.step_text_clustering import StepTextClustering
-from src.datacrawl.steps.step_picture_classification import StepPictureClustering
+from src.modelling.steps.step_text_clustering import StepTextClustering
+# from src.modelling.steps.step_picture_classification import StepPictureClustering
 import numpy as np
 
 def get_sidebar(st):
@@ -104,9 +104,9 @@ def instatiate_session(st):
         config, context = get_config_context('./configs', use_cache = False, save=False)
         st.session_state['text_clustering'] = StepTextClustering(context=context, config=config)
 
-    if "picture_clustering" not in st.session_state:
-        config, context = get_config_context('./configs', use_cache = False, save=False)
-        st.session_state['picture_clustering'] = StepPictureClustering(context=context, config=config)
+    # if "picture_clustering" not in st.session_state:
+    #     config, context = get_config_context('./configs', use_cache = False, save=False)
+    #     st.session_state['picture_clustering'] = StepPictureClassification(context=context, config=config)
 
     if "picture_path" not in st.session_state:
         config, context = get_config_context('./configs', use_cache = False, save=False)
