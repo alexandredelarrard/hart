@@ -23,6 +23,14 @@ Outil qui à partir de plusieurs photos détermine :
 - son prix potentiel
 - les caractéristiques qui ont permis de déduire le prix annoncé
 
+
+### Projet 5 : Assurance objets 
+
+Outil qui à partir de plusieurs photos / pdfs / documents : 
+- la catégorie de l'objet 
+- son prix potentiel / intervalle et la prime en conséquence pour l'assurer
+- les caractéristiques qui ont permis de déduire le prix annoncé
+
 ## Cahier des charges : 
 ### Crawling - constitution d'une bdd complete 
 

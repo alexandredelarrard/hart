@@ -14,6 +14,7 @@ from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_manual_cluster import StepManualCluster
 from src.modelling.steps.step_picture_classification import StepPictureClassification
 from src.modelling.steps.step_text_inference_gpt import StepTextInferenceGpt
+from src.modelling.steps.step_clean_gpt_inference import StepCleanGptInference
 
 if __name__ == "__main__":
 
@@ -54,5 +55,7 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config, database_name="all")
     # self.training()
 
-    self = StepTextInferenceGpt(context=context, config=config)
+    # self = StepTextInferenceGpt(context=context, config=config)
+
+    self = StepCleanGptInference(context=context, config=config)
 

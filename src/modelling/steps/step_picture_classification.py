@@ -22,12 +22,9 @@ class StepPictureClassification(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 database_name : str = "drouot",
                  save_model : bool = True):
 
         super().__init__(context=context, config=config)
-
-        self.database_name = database_name
 
         self.ratio_validation = self._config.picture_classification.ratio_validation
         self.model_name = self._config.picture_classification.model
@@ -39,7 +36,6 @@ class StepPictureClassification(Step):
         self.epochs = self._config.picture_classification.epochs
         self.save_model = save_model
 
-        self.sql_table_name = self._config.embedding[database_name].origine_table_name
 
     @timing
     def training(self):
@@ -126,7 +122,7 @@ class StepPictureClassification(Step):
         answers.to_sql("V2_WATCH_PREDICTION_030424", con=self._context.db_con, index=False)
 
         # plot or not 
-        self.plot_results(answers)
+        self.plot_results(answers[:40])
 
         return answers
     

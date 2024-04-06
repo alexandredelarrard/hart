@@ -1,4 +1,3 @@
 # holds all general parameters 
-
-seed : 18
+seed : 1234
 random_state : 1234

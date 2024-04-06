@@ -1,0 +1,3 @@
+evaluator:
+    model_path: ./data/models/evaluator
+    watch_features_mapping: ./data/default/watch_features.json
