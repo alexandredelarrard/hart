@@ -7,4 +7,4 @@ picture_classification:
   device : "cuda"
   epochs : 10
 
-  fine_tuned_model : ./data/models/peft_block23_vit_large_patch14_clip_224_280402
+  fine_tuned_model : ./data/models/peft_block23_vit_large_patch14_clip_224_280406

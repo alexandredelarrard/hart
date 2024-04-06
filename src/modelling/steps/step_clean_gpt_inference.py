@@ -10,8 +10,7 @@ from src.utils.timing import timing
 
 from omegaconf import DictConfig
 from src.utils.utils_crawler import (read_crawled_pickles,
-                                     read_json,
-                                     save_json)
+                                     read_json)
 from src.utils.utils_extraction_gpt import (handle_answer,
                                             homogenize_keys_name,
                                             flatten_description) 
@@ -92,11 +91,6 @@ class StepCleanGptInference(Step):
 
 
     def clean_features(self, df_done):
-
-        for col in ["LUMINOUS", "ALARM", "CHRONOGRAPH", "WARRANTY", 
-                    "WATER_RESISTANCE", "LIMITED_EDITION", "SIGNATURE"]:
-            df_done[col] = 1*df_done[col].notnull()
-
         return df_done
 
     def get_all_keys(self, df_done):
@@ -104,10 +98,6 @@ class StepCleanGptInference(Step):
         def element_cleaner(x):
             x = remove_accents(x.lower()).strip()
             x = x.replace(" ", "_")
-            x = x.replace("additional_items_", "")
-            x = x.replace("additional_details_accessories_", "")
-            x = x.replace("features_", "")
-            x = x.replace("watch_features_", "")
             return x
         
         all_keys = [element_cleaner(element) for dico in df_done["ANSWER"].tolist() 

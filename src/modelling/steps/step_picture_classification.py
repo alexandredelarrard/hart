@@ -5,6 +5,7 @@ import numpy as np
 import shutil
 import swifter
 import pandas as pd 
+from datetime import datetime
 
 from tqdm import tqdm 
 import matplotlib.pyplot as plt
@@ -12,6 +13,8 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
+from src.utils.utils_crawler import (read_json,
+                                     save_json)
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 
 from omegaconf import DictConfig
@@ -35,6 +38,8 @@ class StepPictureClassification(Step):
         self.fine_tuned_model=self._config.picture_classification.fine_tuned_model
         self.epochs = self._config.picture_classification.epochs
         self.save_model = save_model
+
+        self.today = datetime.today().strftime("%d_%m_%Y")
 
 
     @timing
@@ -62,39 +67,20 @@ class StepPictureClassification(Step):
 
         if self.save_model:
             picture_model.save_model(self.fine_tuned_model)
+            save_json(self.classes_2id, 
+                      path=self.fine_tuned_model + "/classes_2id.json")
         
         return picture_model
 
 
     @timing
-    def predicting(self):
+    def predicting(self, view_name=""):
 
         df = self.get_list_pictures()
-
-        # reduce size of 4.1M picts
-        filter = df["TOTAL_DESCRIPTION"].swifter.apply(lambda x : " montre " in " " + x.lower() + " " or 
-                                                                    " watch " in " " + x.lower() + " " or
-                                                                    " rolex " in " " + x.lower() + " " or
-                                                                    " jaeger-lecoutre " in " " + x.lower() + " " or
-                                                                    " mauboussin " in " " + x.lower() + " " or 
-                                                                    " hublot " in " " + x.lower() + " " or 
-                                                                    " patek " in " " + x.lower() + " " or 
-                                                                    " piaget " in " " + x.lower() + " " or 
-                                                                    " omega " in " " + x.lower() + " " or 
-                                                                    " breitling " in " " + x.lower() + " " or 
-                                                                    " tag heuer " in " " + x.lower() + " " or 
-                                                                    " cartier " in " " + x.lower() + " " or 
-                                                                    " vacheron constantin " in " " + x.lower() + " " 
-                                                                    or 
-                                                                    " seiko " in " " + x.lower() + " " or 
-                                                                    " tudor " in " " + x.lower() + " " or 
-                                                                    " breguet " in " " + x.lower() + " " or 
-                                                                    " chopard " in " " + x.lower() + " " )
-        sub_df = df.loc[filter].reset_index(drop=True)
-        sub_df.to_sql("WATCH_PREDICTION_030424", con=self._context.db_con, index=False, if_exists="replace")
+        df = df.sample(frac=0.05)
 
         # get and shape data to pytorc
-        self.classes_2id = self.define_num_classes()
+        self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
 
         # fit model 
         picture_model = PictureModel(context=self._context, config=self._config,
@@ -105,7 +91,7 @@ class StepPictureClassification(Step):
                                      model_path=self.fine_tuned_model)
         
         pict_transformer = picture_model.load_trained_model(model_path=self.fine_tuned_model)
-        test_dataset = ArtDataset(sub_df["from"].tolist(),
+        test_dataset = ArtDataset(df["from"].tolist(),
                                  self.classes_2id, 
                                  transform=pict_transformer,
                                  mode="test")
@@ -115,14 +101,16 @@ class StepPictureClassification(Step):
 
         # shape and save predictions
         answers = self.shape_answer(answers, picture_model.id2_classes)
-        answers["PICTURES"] = sub_df["from"].tolist()
-        answers["ID_ITEM"] = sub_df["ID_ITEM"].tolist()
-        answers['TOTAL_DESCRIPTION'] = sub_df['TOTAL_DESCRIPTION'].tolist()
+        answers["PICTURES"] = df["from"].tolist()
+        answers["ID_ITEM"] = df["ID_ITEM"].tolist()
+        answers['TOTAL_DESCRIPTION'] = df['TOTAL_DESCRIPTION'].tolist()
 
-        answers.to_sql("V2_WATCH_PREDICTION_030424", con=self._context.db_con, index=False)
+        self.write_sql_data(dataframe=answers,
+                            table_name=view_name + "_" + self.today,
+                            if_exists="replace")
 
         # plot or not 
-        self.plot_results(answers[:40])
+        # self.plot_results(answers[:40])
 
         return answers
     

@@ -48,10 +48,10 @@ class ArtDataset(Dataset):
         if self.transform is not None:
             try:
                 image = self.transform(image)
-            except Exception as e:
+            except Exception:
                 image = image.convert('RGB')
                 image = self.transform(image)
-                logging.warning(image_filepath, e)
+                logging.warning(image_filepath)
 
         return {"image": image, "labels": label}
     
