@@ -24,27 +24,24 @@ class TrainLightgbmModel(ModelEvaluator):
         object {[type]} -- 
     """    
     
-    def __init__(self, context : Context, 
-                 config : Dict, 
-                 category : str = "vase"):
-
-        super().__init__(context=context, config=config)
+    def __init__(self, config : Dict, 
+                        category : str = "vase"):
 
         self.today = datetime.today().strftime(date_format)
-        self.random_state=self._config.gbm_training.seed
-        self.save_model_path = self._config.gbm_training.save_model_path
+        self.random_state=config.gbm_training.seed
+        self.save_model_path=config.gbm_training.save_model_path
 
-        self.target_name = self._config.gbm_training[category].model_target
-        self.model_features = self._config.gbm_training[category].model_features
+        self.target_name = config.gbm_training[category].model_target
+        self.model_features = config.gbm_training[category].model_features
         self.model_features = [x.upper() for x in self.model_features]
-        self.model_parameters = self._config.gbm_training[category].model_parameters
-        self.categorical_features = self._config.gbm_training[category].categorical_features
+        self.model_parameters = config.gbm_training[category].model_parameters
+        self.categorical_features = config.gbm_training[category].categorical_features
 
-        self.n_splits=self._config.gbm_training[category].cross_validation.n_splits
+        self.n_splits=config.gbm_training[category].cross_validation.n_splits
         
         self.weight = None
-        if self._config.gbm_training[category].model_weight:
-            self.weight = self._config.gbm_training[category].model_weight
+        if config.gbm_training[category].model_weight:
+            self.weight = config.gbm_training[category].model_weight
 
 
     @timing

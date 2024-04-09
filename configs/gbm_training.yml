@@ -5,8 +5,8 @@ gbm_training:
   train_full_at_the_end: True
 
   vase:
-    model_target: "TARGET_STOCK_+5D_SECTOR_MARKET"
-    model_weight: "WEIGHT"
+    model_target: "EUR_FINAL_RESULT"
+    # model_weight: None
     model_features: 
       - NUMBER_DESCRIBED_OBJECTS
       - VASE_HEIGHT
@@ -19,10 +19,9 @@ gbm_training:
       - VASE_COLOR
       - VASE_COUNTRY
       - VASE_SHAPE
-      - SOLD_YEAR # TODO
-      - SOLD_MONTH # TODO
-      - HOUSE # TODO 
-      - CURRENCY # TODO
+      - AUCTION_YEAR
+      - SELLER 
+      - CURRENCY 
     categorical_features:
       - VASE_MATERIAL
       - VASE_DECORATIONS

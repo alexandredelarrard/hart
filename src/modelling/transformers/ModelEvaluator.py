@@ -1,14 +1,10 @@
 import pandas as pd 
-from typing import Dict
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import shap
 import numpy as np
 
-from src.context import Context
-from src.utils.step import Step
-
-class ModelEvaluator(Step):
+class ModelEvaluator(object):
     """
     Wrapper around LightGBM model responsible for
         * fitting the LightGBM model on in put data.
@@ -18,11 +14,6 @@ class ModelEvaluator(Step):
     Arguments:
         object {[type]} -- 
     """    
-    
-    def __init__(self, context : Context, 
-                       config : Dict):
-
-        super().__init__(context=context, config=config)
 
     def get_model_shap(self, model, data):
         valid_x = data[model.features]

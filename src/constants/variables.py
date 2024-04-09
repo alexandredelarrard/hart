@@ -42,6 +42,7 @@ class Naming:
         
         self.date = "AUCTION_DATE"
         self.hour = "AUCTION_HOUR"
+        self.sold_year = "AUCTION_YEAR"
 
         self.auction_file = "AUCTION_FILE"
         self.item_file = "ITEM_FILE"

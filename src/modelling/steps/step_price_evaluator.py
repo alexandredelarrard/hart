@@ -1,28 +1,37 @@
-from typing import Dict
 import pandas as pd 
-from typing import List
 
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from src.modelling.transformers.TrainerLightgbm import TrainLightgbmModel
 
+from src.constants.variables import date_format
+
 from omegaconf import DictConfig
 
-class StepPriceEvaluator(TrainLightgbmModel):
+class StepPriceEvaluator(Step):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig,
                  category : str = "vase"):
 
-        super().__init__(context=context, config=config, category=category)
+        super().__init__(context=context, config=config)
         self.category = category
 
-    def training(self, database_name):
+    def training(self, database_name="TEST_0.05_CLEAN_VASE"):
 
         df = self.read_sql_data(database_name)
         df_price = self.get_pricing_info()
+
+        # merge dataframe together & ensure output is there
+        df = df.merge(df_price, on=self.name.id_item, how="left", validate="1:1")
+        df = df.loc[df["EUR_FINAL_RESULT"].notnull()]
+        df[self.name.sold_year] = pd.to_datetime(df[self.name.date], format=date_format).dt.year
+
+        # Trainer 
+        self.trainer = TrainLightgbmModel(config=self._config, category=self.category)
+        self.trainer.modelling_cross_validation(data=df)
 
     def get_pricing_info(self):
 

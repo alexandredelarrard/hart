@@ -6,7 +6,7 @@ from numpy import random as rd
 
 def set_seed(config : DictConfig):
 
-    seed = config.seed 
+    seed = config.gbm_training.seed 
     if seed is None:
         raise ValueError("No seed was provided.")
     else:
