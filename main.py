@@ -12,17 +12,17 @@ from src.datacrawl.steps.step_text_clean_sothebys import StepTextCleanSothebys
 from src.datacrawl.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
 from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_picture_clustering import StepPictureClustering
-from src.modelling.steps.step_manual_cluster import StepManualCluster
+from src.modelling.steps.old.step_manual_cluster import StepManualCluster
 from src.modelling.steps.step_picture_classification import StepPictureClassification
 from src.modelling.steps.step_text_inference_gpt import StepTextInferenceGpt
 from src.modelling.steps.step_clean_gpt_inference import StepCleanGptInference
+from src.modelling.steps.step_price_evaluator import StepPriceEvaluator
 
 if __name__ == "__main__":
 
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
     # self = StepTextCleanSothebys(context=context, config=config)
-    # self.run()
 
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot")
 
@@ -34,31 +34,24 @@ if __name__ == "__main__":
     # self.run(self.get_list_items_to_crawl(), self.crawling_list_items_function)
 
     # self = StepTextCleanDrouot(context=context, config=config)
-    # df = self.run()
 
     # self = StepTextCleanChristies(context=context, config=config)
-    # embed = self.run()    
 
     # self = StepTextCleanSothebys(context=context, config=config)
-    # embed = self.run()
 
     # self = StepTextClustering(context=context, config=config)
-    # df_desc = self.run()
 
     # self = StepPictureClustering(context=context, config=config)
-    # df_desc = self.run()
-
-    # self = StepPictureClustering(context=context, config=config)
-    # embed = self.run()
 
     # self = StepAgglomerateTextInfos(context=context, config=config)
-    # df = self.run()
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
     # self = StepPictureClassification(context=context, config=config)
-    # self.training()
 
     # self = StepTextInferenceGpt(context=context, config=config, object="vase")
 
-    self = StepCleanGptInference(context=context, config=config)
+    # self = StepCleanGptInference(context=context, config=config)
+    
+    self = StepPriceEvaluator(context=context, config=config, category="vase")
+    # self.training()

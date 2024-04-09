@@ -1,7 +1,3 @@
-from typing import Dict
-import pandas as pd 
-from typing import List
-
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
@@ -36,8 +32,8 @@ class StepPictureClustering(Step):
     def run(self, data_name : str, vector : str):
 
         #exrtract data from dbeaver
-        data_name = "TEST_0.05_06_04_2024"
-        vector = "PICTURES"
+        # data_name = "TEST_0.05_06_04_2024"
+        # vector = "PICTURES"
         self.vector = vector
         df_desc = self.get_data(data_name)
 
@@ -73,8 +69,21 @@ class StepPictureClustering(Step):
 
         return df_desc 
     
-
     def get_data(self, data_name):
-        return pd.read_sql(f"SELECT \"{self.name.id_item}\", \"TOP_0\", \"{self.vector}\" FROM \"{data_name}\" WHERE \"PROBA_0\" > 0.9",
-                           con=self._context.db_con)
-  
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_text_to_cluster"))
+        formatted_query = self.sql_queries.format_query(
+                raw_query,
+                {
+                    "id_item": self.name.id_item,
+                    "table_name": data_name,
+                    "picture_path": "PICTURES",
+                    "class_prediction" : "TOP_0",
+                    "text_vector": self.vector,
+                    "proba_var" : "PROBA_0",
+                    "proba_threshold": 0.9         
+                },
+            )
+
+        # 3. Fetch results
+        self._log.info(formatted_query)
+        return self.read_sql_data(formatted_query)

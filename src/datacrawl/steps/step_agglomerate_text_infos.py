@@ -126,8 +126,10 @@ class StepAgglomerateTextInfos(TextCleaner):
                               np.where(old_currencies_coef.notnull(), old_currencies_coef,
                                        df[["OPEN", "CLOSE"]].mean(axis=1))).clip(0, None)
         
-        for colname in [self.name.item_result, self.name.min_estimate, self.name.max_estimate]:
-            df["EUR_" + colname] = (df[colname]*df[self.name.currency_coef_eur]).round(0)
+        for new_col, col in [(self.name.eur_item_result, self.name.item_result), 
+                             (self.name.eur_min_estimate, self.name.min_estimate), 
+                             (self.name.eur_max_estimate, self.name.max_estimate)]:
+            df[new_col] = (df[col]*df[self.name.currency_coef_eur]).round(0)
 
         return df 
 

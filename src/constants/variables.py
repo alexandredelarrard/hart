@@ -26,10 +26,13 @@ class Naming:
         self.url_picture = "URL_PICTURE"
 
         self.min_estimate = "MIN_ESTIMATION"
+        self.eur_min_estimate = "EUR_MIN_ESTIMATION"
         self.max_estimate = "MAX_ESTIMATION"
+        self.eur_max_estimate = "EUR_MAX_ESTIMATION"
         self.brut_estimate = "BRUT_ESTIMATE"
         self.brut_result = "BRUT_RESULT"
         self.item_result = "FINAL_RESULT"
+        self.eur_item_result = "EUR_FINAL_RESULT"
         self.is_item_result = "IS_FINAL_RESULT"
 
         self.localisation = "LOCALISATION"

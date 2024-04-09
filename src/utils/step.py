@@ -6,8 +6,8 @@ from omegaconf import DictConfig
 from src.context import Context 
 from src.utils.string import camel_to_snake
 from src.utils.sql_helper import SqlHelper
+from src.utils.sql_queries import SQLQueries
 from src.constants.variables import Naming
-
 
 class Step(SqlHelper):
 
@@ -28,6 +28,9 @@ class Step(SqlHelper):
         # naming convention 
         self._name = Naming()
 
+        # sql queries 
+        self.sql_queries = SQLQueries(query_folder_path="src/sql_queries")
+
     @property
     def name(self):
         return self._name
@@ -39,6 +42,7 @@ class Step(SqlHelper):
     @classmethod
     def get_name(cls):
         return camel_to_snake(cls.__name__)
+
     
     def get_table_names(self):
         
@@ -56,5 +60,5 @@ class Step(SqlHelper):
 
     def get_sql_loaded_tables(self):
         return list(set(self.db_tables).intersection(set(self._sql_table_names)))
-    
+
     

@@ -48,7 +48,7 @@ class StepCleanGptInference(GPTCleaner):
         df_done = self.clean_features(df_done)
         df_done = self.clean_values(df_done)
 
-        self.write_sql_data(dataframe=df_done.drop(["PROMPT", "ANSWER"], axis=1),
+        self.write_sql_data(dataframe=df_done.drop(["PROMPT", "NBR_OBJECTS", "DICT", f'IS_A_{category.upper()}'], axis=1),
                             table_name=f"TEST_0.05_CLEAN_{category.upper()}",
                             if_exists="replace")
 
@@ -155,9 +155,21 @@ class StepCleanGptInference(GPTCleaner):
 
         return df_done
     
+    @timing
     def clean_values(self, df_done):
-        return df_done
+        for col in ["VASE_HEIGHT", "VASE_YEAR", "NUMBER_DESCRIBED_OBJECTS"]:
+            df_done[col] = df_done[col].apply(lambda x: self.eval_number(str(x)))
 
+        #relation d'ordre sur la condition du vase
+        df_done["VASE_CONDITION"] = df_done["VASE_CONDITION"].map({"very good": 4,
+                                                                    "good_": 3,
+                                                                    "okay_": 2,
+                                                                    "poor": 1})
+        # to be able to save into sql 
+        df_done["ANSWER"] = df_done["ANSWER"].astype(str)
+
+        return df_done
+    
     def get_all_keys(self, df_done):
         
         def element_cleaner(x):
@@ -169,4 +181,4 @@ class StepCleanGptInference(GPTCleaner):
                     for element in dico.keys()]
 
         value_counts = pd.Series(all_keys).value_counts()
-        value_counts.to_csv("./data/default//watch_keys.csv")
+        return value_counts

@@ -40,7 +40,6 @@ class StepTextClustering(Step):
         #exrtract data from dbeaver
         self.vector = vector
         df_desc = self.get_data(data_name)
-
         sub_df= df_desc.loc[df_desc["TOP_0"] == "vase"]
 
         # create text embedding
@@ -80,8 +79,24 @@ class StepTextClustering(Step):
     
 
     def get_data(self, data_name):
-        return pd.read_sql(f"SELECT \"{self.name.id_item}\", \"TOP_0\", \"PICTURES\", \"{self.vector}\" FROM \"{data_name}\" WHERE \"PROBA_0\" > 0.9",
-                           con=self._context.db_con)
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_text_to_cluster"))
+        formatted_query = self.sql_queries.format_query(
+                raw_query,
+                {
+                    "id_item": self.name.id_item,
+                    "table_name": data_name,
+                    "picture_path": "PICTURES",
+                    "class_prediction" : "TOP_0",
+                    "text_vector": self.vector,
+                    "proba_var" : "PROBA_0",
+                    "proba_threshold": 0.9         
+                },
+            )
+
+        # 3. Fetch results
+        self._log.info(formatted_query)
+        return self.read_sql_data(formatted_query)
+
     
     def get_top_words_cluster(self, df_desc):
         liste_docs = df_desc[[self.name.cluster_id, self.vector]].groupby(self.name.cluster_id)[self.vector].apply(lambda x : " ".join(x))

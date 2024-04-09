@@ -1,0 +1,51 @@
+gbm_training:
+
+  save_model_path: ./data/models/price_prediction/
+  seed: 1234
+  train_full_at_the_end: True
+
+  vase:
+    model_target: "TARGET_STOCK_+5D_SECTOR_MARKET"
+    model_weight: "WEIGHT"
+    model_features: 
+      - NUMBER_DESCRIBED_OBJECTS
+      - VASE_HEIGHT
+      - VASE_MATERIAL
+      - VASE_YEAR
+      - VASE_DECORATIONS
+      - VASE_SIGNED
+      - VASE_CONDITION
+      - VASE_STYLE
+      - VASE_COLOR
+      - VASE_COUNTRY
+      - VASE_SHAPE
+      - SOLD_YEAR # TODO
+      - SOLD_MONTH # TODO
+      - HOUSE # TODO 
+      - CURRENCY # TODO
+    categorical_features:
+      - VASE_MATERIAL
+      - VASE_DECORATIONS
+      - VASE_STYLE
+      - VASE_COLOR
+      - VASE_COUNTRY
+      - VASE_SHAPE
+      - CURRENCY
+    cross_validation:
+      n_splits: 5
+      
+    model_parameters: 
+      objective: "regression"
+      eval_metric: "mape"
+      metric: 'mape'
+      max_depth: 7
+      min_data_in_leaf: 5
+      colsample_bytree: 0.75
+      subsample: 0.75
+      learning_rate: 0.1
+      num_iteration: 1000
+      lambda_l1 : 0
+      n_jobs: 7
+      verbose_eval: 100
+      verbose : -1
+      early_stopping_round: 40

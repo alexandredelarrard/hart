@@ -19,7 +19,7 @@ class SqlHelper:
         try:
             return pd.read_sql(table_name, con=self._context.db_con)
         except Exception as e:
-            raise Exception(f"table name does not exist in SQL : {table_name}", "")
+            raise Exception(f"table name does not exist in SQL : {table_name}", e)
         
     def alter_table(self,table_name, column_name, column_type):
         pd.read_sql(f"ALTER TABLE \"{table_name}\" ADD COLUMN \

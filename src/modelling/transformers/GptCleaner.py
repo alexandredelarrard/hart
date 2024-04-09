@@ -52,7 +52,13 @@ class GPTCleaner(TextCleaner):
             if k in x:
                 x = v
         return x
-
+    
+    def eval_number(self, x):
+        try: 
+            return eval(x)
+        except Exception:
+            return np.nan
+        
     def clean_periode(self, x):
 
         origin = str(x)
@@ -84,8 +90,8 @@ class GPTCleaner(TextCleaner):
                 dates = np.mean([eval(a) for a in numbers])
                 return eval(infos["sign"])*(dates + eval(infos["distance_century"]))
             else:
-                if origin not in ["None", "nan", np.nan]:
-                    self._log.error(origin)
+                # if origin not in ["None", "nan", np.nan]:
+                #     self._log.error(origin)
                 return np.nan
 
 
