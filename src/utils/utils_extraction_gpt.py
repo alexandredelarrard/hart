@@ -17,7 +17,7 @@ def reconstruct_dict(x):
     return eval("\n".join(new_dict))
 
 
-def handle_answer(x, counter=0):
+def handle_answer(x):
 
     x = x.replace("false", "False")
     x = x.replace("true", "True")
@@ -35,17 +35,13 @@ def handle_answer(x, counter=0):
         x = eval(x)
         return x
     
-    except NameError:
-        return reconstruct_dict(x)
-    
-    except SyntaxError as e:
-        x = x.replace(e.text.strip(), "")
-        if counter !=2:
-            handle_answer(x, counter+1)
-        else:
+    except Exception:
+        try:
+            return reconstruct_dict(x)
+        except Exception:
             logging.error(x)
-            logging.error(e)
             return "{}"
+            
     
 def clean_list(x):
     origin = re.findall("\\[(.*?)\\]", x)[0]
@@ -84,7 +80,7 @@ def homogenize_keys_name(x, col_mapping):
     new_dict = {}
     for k, v in x.items():
         key =  replace_key(k, col_mapping)
-        new_dict[key] = remove_punctuation(remove_accents(str(v).lower().strip()))
+        new_dict[key] = remove_accents(str(v).lower().strip())
     return new_dict
 
 

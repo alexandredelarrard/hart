@@ -48,6 +48,13 @@ class Naming:
         self.id_item = "ID_ITEM"
         self.id_auction = "AUCTION_ID"
 
+        self.category = "CATEGORY"
+        self.prompt_description = "PROMPT"
+
+        # clustering variable
+        self.cluster_id = "label"
+        self.cluster_top_words = "labels_top_words"
+
         self.root_dict = {"LOT" : self.lot,
                         "RESULT" : self.brut_result,
                         "RESULTAT" : self.brut_result,

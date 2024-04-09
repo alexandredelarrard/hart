@@ -36,7 +36,6 @@ def transform_types(dtype : Dict) -> Dict:
             pass
     return dtype
 
-
 def remove_accents(x):
     return unidecode.unidecode(x)
 

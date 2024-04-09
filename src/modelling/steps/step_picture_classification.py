@@ -14,7 +14,8 @@ from src.utils.step import Step
 from src.utils.timing import timing
 
 from src.utils.utils_crawler import (read_json,
-                                     save_json)
+                                     save_json,
+                                     copy_picture)
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 
 from omegaconf import DictConfig
@@ -38,6 +39,7 @@ class StepPictureClassification(Step):
         self.fine_tuned_model=self._config.picture_classification.fine_tuned_model
         self.epochs = self._config.picture_classification.epochs
         self.save_model = save_model
+        self.default_image_path= self._config.picture_classification.default_image_path
 
         self.today = datetime.today().strftime("%d_%m_%Y")
 
@@ -60,8 +62,10 @@ class StepPictureClassification(Step):
 
         # data defined and shaped
         self.data = self.get_train_test_data(ratio_validation=self.ratio_validation)
-        train_dataset = ArtDataset(self.data["train"], self.classes_2id, transform=pict_transformer)
-        validation_dataset = ArtDataset(self.data["validation"], self.classes_2id, transform=pict_transformer)
+        train_dataset = ArtDataset(self.data["train"], self.classes_2id, transform=pict_transformer,
+                                 default_path=self.default_image_path)
+        validation_dataset = ArtDataset(self.data["validation"], self.classes_2id, transform=pict_transformer,
+                                 default_path=self.default_image_path)
         
         picture_model.fit(train_dataset, validation_dataset)
 
@@ -76,8 +80,13 @@ class StepPictureClassification(Step):
     @timing
     def predicting(self, view_name=""):
 
+        view_name = "TEST_0.05_06_04_2024"
         df = self.get_list_pictures()
-        df = df.sample(frac=0.05)
+        
+        df_done = pd.read_sql("TEST_0.05_06_04_2024", con=self._context.db_con)
+        df = df.loc[~df[self.name.id_item].isin(df_done[self.name.id_item].tolist())]
+        df = df.sample(frac=0.06)
+        del df_done
 
         # get and shape data to pytorc
         self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
@@ -94,7 +103,8 @@ class StepPictureClassification(Step):
         test_dataset = ArtDataset(df["from"].tolist(),
                                  self.classes_2id, 
                                  transform=pict_transformer,
-                                 mode="test")
+                                 mode="test",
+                                 default_path=self.default_image_path)
 
         # predict
         answers = picture_model.predict(test_dataset)
@@ -107,7 +117,13 @@ class StepPictureClassification(Step):
 
         self.write_sql_data(dataframe=answers,
                             table_name=view_name + "_" + self.today,
-                            if_exists="replace")
+                            if_exists="append")
+        
+        # answers["TO"] = answers["TOP_0"].apply(lambda x : "./data/other/" + str(x))
+
+        # for row in answers.to_dict(orient="records"):
+        #     if 0.3 > row["PROBA_0"] :
+        #         copy_picture(row["PICTURES"], row["TO"])
 
         # plot or not 
         # self.plot_results(answers[:40])

@@ -12,6 +12,8 @@ from src.constants.command_line_interface import (
     CRAWL_THREADS_KWARG,
     QUEUE_SIZE_ARGS,
     QUEUE_SIZE_KWARGS,
+    OBJECT_ARGS,
+    OBJECT_KWARGS
 )
 
 from src.context import get_config_context
@@ -74,17 +76,19 @@ def step_train_picture_classification(
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*QUEUE_SIZE_ARGS, **QUEUE_SIZE_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+@click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
 def step_inference_gpt(
-    config_path, threads : int, save_queue_size : int,
+    config_path, threads : int, save_queue_size : int, object : str
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     step_inference = StepTextInferenceGpt(config=config, context=context, 
                                           threads=threads, 
-                                          save_queue_size=save_queue_size)
+                                          save_queue_size=save_queue_size,
+                                          object=object)
 
     # get crawling_function 
     step_inference.run()
 
-    #python -m src modelling step-inference-gpt -t 6 -sqs 50
+    #python -m src modelling step-inference-gpt -t 5 -sqs 50 --object vase
     

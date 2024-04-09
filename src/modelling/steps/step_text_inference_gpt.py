@@ -13,26 +13,30 @@ from omegaconf import DictConfig
 from src.utils.utils_crawler import (encode_file_name,
                                      read_crawled_pickles,
                                      save_queue_to_file)
-
+from src.utils.utils_dataframe import (remove_accents,
+                                       remove_punctuation)
 
 class StepTextInferenceGpt(Step):
 
     def __init__(self, 
                 context : Context,
                 config : DictConfig,
+                object : str,
                 threads : int = 7,
                 save_queue_size : int = 50):
 
         super().__init__(context=context, config=config)
 
-        
+        self.save_queue_size_step = save_queue_size
+        self.threads = threads
+        self.object = object
+
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model
-        self.threads = threads
-        self.save_in_queue = True
-        self.save_queue_size_step = save_queue_size
         self.save_queue_path= self._config.gpt.save_path
+        self.prompts_schema = self._config.gpt.prompts_schema
 
+        self.save_in_queue = True
         self.queues = {"descriptions" : Queue(), "results": Queue()}
         self.get_api_keys()
 
@@ -43,19 +47,21 @@ class StepTextInferenceGpt(Step):
         self.initialize_client(api_keys=self.api_keys)
 
         # get data
-        df = pd.read_sql("V2_WATCH_PREDICTION_030424", con=self._context.db_con)
-        df = df.loc[df["PROBA_0"] >= 0.9]
+        df = pd.read_sql("TEST_0.05_06_04_2024", con=self._context.db_con)
+        df = df.loc[df["PROBA_0"] >= 0.85]
+        df = df.loc[df["TOP_0"] == self.object]
         df = df.drop_duplicates(self.name.total_description)
-        df = df.sample(frac=1)
+        df = df.loc[df[self.name.total_description].str.len() > 60] # minimal desc size to have
 
         # get already done 
         df_done = read_crawled_pickles(path=self.save_queue_path)
         if df_done.shape[0] !=0:
             id_done = df_done[self.name.id_item].tolist()
             df = df.loc[~df[self.name.id_item].isin(id_done)]
+        df = df.sample(frac=1)
 
         # initalize the urls queue
-        self.initialize_queue_description(df, category="watch")
+        self.initialize_queue_description(df, category=self.object)
         
         # start the crawl
         self.start_threads_and_queues(queues=self.queues)
@@ -64,6 +70,7 @@ class StepTextInferenceGpt(Step):
         t0 = time.time()
         self.queues["descriptions"].join()
         self._log.info('*** Done in {0}'.format(time.time() - t0))
+        
 
     def get_api_keys(self):
         self.api_keys = []
@@ -81,8 +88,10 @@ class StepTextInferenceGpt(Step):
     def initialize_queue_description(self, df, category):
         for row in df.to_dict(orient="records"):
             item = {self.name.id_item : row[self.name.id_item],
-                    self.name.total_description : self.create_prompt(row[self.name.total_description], 
-                                                                     category)}
+                    self.name.prompt_description : self.create_prompt(row[self.name.total_description], 
+                                                                     category),
+                    self.name.category: category.upper(),
+                    self.name.total_description: row[self.name.total_description]}
 
             self.queues["descriptions"].put(item)
 
@@ -99,7 +108,7 @@ class StepTextInferenceGpt(Step):
 
         while True:
             prompt = queue_desc.get()
-            prompt["ANSWER"], query_status = self.get_answer(prompt[self.name.total_description])
+            prompt["ANSWER"], query_status = self.get_answer(prompt)
 
             if query_status != "200":
                 if len(self.api_keys) > 1:
@@ -130,20 +139,41 @@ class StepTextInferenceGpt(Step):
                                         f"/{file_name}.pickle")
 
     def create_prompt(self, text : str, category: str):
+
+        text = remove_punctuation(remove_accents(text)).lower().strip()
+        schema= str(self.prompts_schema[category]).replace("\n", "")
+
         prompt = {"role": "user", 
-                 "content": """Extract caracteristics from the watch description following the List format. Give a JSON format with values in english. List of JSON if several watches. Only render found information.
-                 List: {"watch_brand": str, "watch_category": str, "watch_model_or_collection_name": str, "watch_movement": str, "gender" : str, "watch_circa_year_or_period": str, "dial_material": str, "dial_color": str, "dial_luminous":bool, "case_or_dial_shape": str,  "case_material": str,  "case_size": str, "watch_reference": str, "bracelet_or_strap_material": str, "number_jewels": int, "jewels_type": str, "bracelet_or_strap_color": str, "dial_or_case_diameter": str,  "watch_weight": str,  "watch_serial_number": str,  "buckle_or_clasp": str, "buckle_or_clasp_type": str, "dial_signature": str, "case_signature": str, "hour_marker_style": str, "minute_index_style": str, "hands_material": str, "hands_style": str, "is_date_displayed": bool,  "crystal_condition": str, "watch_functionning": bool, "limited_edition": str,  "water_resistant": bool, "has_certificate": bool, "is_certified": bool,  "has_chronometer_chronograph": bool, "number_subdial": int, "has_package_box": bool, "under_warranty": bool, "type_of_jewels": str, "number_carats": str, "case_back": str, "bracelet_length": str, "watch_condition": str, "crown_material": str, "glass_material": str, "has_moon_phase": str}
-                 description: %s"""%(text)}
+                 "content": """You are an art expert of %s. Extract caracteristics from the description. Give a JSON format with values in english. List of JSON if several %ss. Only render found information.
+                 List: %s
+                 description: %s"""%(category, category, schema, text)}
+        
         return prompt
 
     def get_answer(self, prompt):
 
         message_content= ""
+        messages = []
+
         try:
+            #step 1
             stream = self.client.chat.completions.create(
                 model=self.llm_model,
                 seed=self.seed,
-                messages=[prompt],
+                messages=[{"role": "user", 
+                           "content": "Art Description : " + prompt[self.name.total_description]}],
+                temperature=0,
+                stream=False,       
+            )
+            message_content = stream.choices[0].message.content
+            messages.append({"role": "assistant", "content": message_content})
+            messages.append(prompt[self.name.prompt_description])
+
+            # step2
+            stream = self.client.chat.completions.create(
+                model=self.llm_model,
+                seed=self.seed,
+                messages=messages,
                 temperature=0,
                 stream=False,       
             )

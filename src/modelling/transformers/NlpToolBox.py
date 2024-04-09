@@ -37,23 +37,18 @@ class NLPToolBox:
         return vect
     
     @timing
-    def c_tf_idf(self, documents : List[str], ngram_range : tuple):
+    def c_tf_idf(self, documents : List[str], count_vectorizer : CountVectorizer):
 
+        # calculate tf_idf
         number_docs = len(documents)
-        count = CountVectorizer(ngram_range=ngram_range, 
-                                max_df=0.3, 
-                                min_df=50,
-                                stop_words="english",
-                                max_features=5000).fit(documents)
-
-        t = count.transform(documents).toarray()
+        t = count_vectorizer.transform(documents).toarray()
         w = t.sum(axis=1)
         tf = np.divide(t.T, w)
         sum_t = t.sum(axis=0)
         idf = np.log(np.divide(number_docs, sum_t)).reshape(-1, 1)
         tf_idf = np.multiply(tf, idf)
 
-        return tf_idf, count
+        return tf_idf
     
     @timing
     def extract_top_n_words(self, text_list : List[str], ngram_range : tuple):
@@ -61,16 +56,45 @@ class NLPToolBox:
         Extract top n words per text list
         """
 
-        count = CountVectorizer(ngram_range=ngram_range, 
+        count_vectorizer = CountVectorizer(ngram_range=ngram_range, 
                                 max_df=0.25, 
-                                min_df=100,
+                                min_df=5,
                                 stop_words="english",
-                                max_features=5000).fit(text_list)
+                                max_features=1000).fit(text_list)
         
-        words = count.get_feature_names_out()
+        words = count_vectorizer.get_feature_names_out()
         words = np.array(words)
 
-        return words 
+        return count_vectorizer, words 
+    
+    def extract_words_per_cluster(self, documents : List[str], 
+                                  ngram_range : tuple = (1,2), 
+                                  n_top_words : int = 5):
+
+        # clean_text
+        documents = self.simple_homegenize(documents)
+
+        #top thousands words
+        count_vectorizer, columns = self.extract_top_n_words(documents, ngram_range)
+
+        # tf idf
+        tf_idf= self.c_tf_idf(documents, count_vectorizer)
+        tf_idf = tf_idf.T
+
+        # shape result
+        mapping_dict = {}
+        for i, word in enumerate(columns):
+            mapping_dict[i] = word
+
+        tf_idf_index = np.argsort(tf_idf, axis=1)
+        tf_idf_index = tf_idf_index[:,-n_top_words:]
+        tf_idf_index = np.vectorize(mapping_dict.get)(tf_idf_index)
+
+        answer_words = {}
+        for i, id_cluster in enumerate(documents.index):
+            answer_words[id_cluster] = list(tf_idf_index[i])
+
+        return answer_words
     
     @timing
     def manuak_clustering(self, vect, manuals):

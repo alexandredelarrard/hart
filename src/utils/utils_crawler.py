@@ -8,6 +8,7 @@ import pickle
 import logging
 import hashlib
 import json 
+import shutil
 
 def read_crawled_csvs(path : str):
 
@@ -76,21 +77,6 @@ def save_pickle_file(df, path):
     with open(path, "wb") as f:
         pickle.dump(df, f)
 
-def encode_file_name(file):
-    return hashlib.sha256(str.encode(file)).hexdigest()
-
-
-def get_files_already_done(df, url_path, to_replace=()):
-    if not to_replace:
-        return df["FILE"].apply(lambda x: url_path + x.replace(".csv",""))
-    else:
-        return df["FILE"].apply(lambda x: url_path + x.replace(".csv","").replace(to_replace[0], to_replace[1]))
-
-def keep_files_to_do(to_crawl, already_crawled):
-    liste_urls = list(set(to_crawl) - set(already_crawled))
-    logging.info(f"ALREADY CRAWLED {len(already_crawled)} REMAINING {len(liste_urls)} / {len(to_crawl)}")
-    return liste_urls
-
 def save_picture_crawled(url_picture, image_path, picture_id):
 
     try:
@@ -116,3 +102,23 @@ def save_infos(df, path):
             pickle.dump(df, f)
     else:
         logging.error("Extensions handled for saving files are .TXT / .PICKLE or .CSV only. Please try again")
+
+def copy_picture(path_from, path_to):
+    if not os.path.exists(path_to):
+        os.mkdir(path_to)
+    shutil.copy(path_from, path_to)
+
+def encode_file_name(file):
+    return hashlib.sha256(str.encode(file)).hexdigest()
+
+
+def get_files_already_done(df, url_path, to_replace=()):
+    if not to_replace:
+        return df["FILE"].apply(lambda x: url_path + x.replace(".csv",""))
+    else:
+        return df["FILE"].apply(lambda x: url_path + x.replace(".csv","").replace(to_replace[0], to_replace[1]))
+
+def keep_files_to_do(to_crawl, already_crawled):
+    liste_urls = list(set(to_crawl) - set(already_crawled))
+    logging.info(f"ALREADY CRAWLED {len(already_crawled)} REMAINING {len(liste_urls)} / {len(to_crawl)}")
+    return liste_urls

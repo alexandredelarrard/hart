@@ -5,7 +5,6 @@ import pandas as pd
 pd.options.mode.copy_on_write = True
 
 from src.context import Context
-from src.utils.step import Step
 from src.utils.timing import timing
 
 from omegaconf import DictConfig
@@ -15,9 +14,10 @@ from src.utils.utils_extraction_gpt import (handle_answer,
                                             homogenize_keys_name,
                                             flatten_description) 
 from src.utils.utils_dataframe import remove_accents
+from src.modelling.transformers.GptCleaner import GPTCleaner
 
 
-class StepCleanGptInference(Step):
+class StepCleanGptInference(GPTCleaner):
 
     def __init__(self, 
                 context : Context,
@@ -27,29 +27,34 @@ class StepCleanGptInference(Step):
 
         self.save_queue_path= self._config.gpt.save_path
         self.model_path = self._config.evaluator.model_path
-        self.watch_col_mapping_path = self._config.evaluator.watch_features_mapping
+
 
     @timing
-    def run(self):
+    def run(self, category="vase"):
+
+        # get category path
+        self._mapping_path = self._config.evaluator.mappings[category.lower()]
 
         # get col_mapping:
-        self.col_mapping = read_json(self.watch_col_mapping_path)
+        self.col_mapping = read_json(self._mapping_path)
 
         df_done = read_crawled_pickles(path=self.save_queue_path)
-        df_done = self.clean_answer(df_done)
+        df_done = df_done.loc[df_done[self.name.category] == category.upper()]
+        df_done = df_done.loc[df_done["PROMPT"].notnull()]
+
         df_done = self.eval_json(df_done)
         df_done = self.extract_features(df_done)
+        df_done = self.remove_outliers(df_done, category)
         df_done = self.clean_features(df_done)
+        df_done = self.clean_values(df_done)
+
+        self.write_sql_data(dataframe=df_done.drop(["PROMPT", "ANSWER"], axis=1),
+                            table_name=f"TEST_0.05_CLEAN_{category.upper()}",
+                            if_exists="replace")
 
         return df_done
 
-
-    def clean_answer(self, df_done):
-        df_done[self.name.total_description] = df_done[self.name.total_description].str.get("content")
-        df_done[self.name.total_description] = df_done[self.name.total_description].apply(lambda x: x.split("description:")[-1])
-        return df_done
-
-
+    @timing
     def eval_json(self, df_done):
 
         # evaluate string to Dict or List
@@ -68,7 +73,7 @@ class StepCleanGptInference(Step):
 
         return df_done
 
-
+    @timing
     def extract_features(self, df_done):
 
         # handle features element
@@ -84,13 +89,73 @@ class StepCleanGptInference(Step):
             df_done[col.upper()] = df_done["ANSWER"].str.get(col)
             df_done[col.upper()] = np.where(df_done[col.upper()].isin(["n/a", "unspecified", "", "unknown", 
                                                 "none", 'not specified', "'n/a'", "null", "not found", 'na',
+                                                "nan", "undefined",
                                                 'non specified', 'not applicable', 'non specificato']), np.nan,
                                                 df_done[col.upper()])
     
         return df_done
 
+    @timing
+    def remove_outliers(self, df_done, category):
 
+        shape_0 = df_done.shape[0]
+
+        df_done["NUMBER_DESCRIBED_OBJECTS"] = df_done["NUMBER_DESCRIBED_OBJECTS"].fillna("1")
+        df_done = df_done.loc[df_done["NUMBER_DESCRIBED_OBJECTS"].isin(["1", "2", "3", "4", "5"])]
+        
+        df_done = df_done.loc[df_done["OBJECT_CATEGORY"].notnull()]
+        df_done = df_done.loc[df_done[f"IS_A_{category.upper()}"].isin(["true", "True"])]
+
+        self._log.info(f"FILTERING {shape_0 - df_done.shape[0]} ({(shape_0 - df_done.shape[0])*100/shape_0:.1f}%) due to lack of info / mismatch")
+
+        return df_done
+
+    @timing
     def clean_features(self, df_done):
+        
+        df_done["VASE_HEIGHT"] = df_done["VASE_HEIGHT"].apply(lambda x: self.handle_cm(str(x)))
+        df_done["VASE_SHAPE"] = df_done["VASE_SHAPE"].apply(lambda x : self.map_value_to_key(x, self.shape_mapping))
+        df_done["VASE_COUNTRY"] = df_done["VASE_COUNTRY"].apply(lambda x : self.map_value_to_key(x, self.country_mapping))
+
+        # deduce color
+        vase_color = df_done["VASE_COLOR"].apply(lambda x : self.map_value_to_key(x, self.color_mapping))
+        df_done["VASE_COLOR"] = np.where(vase_color.isnull(),
+                                           df_done["VASE_MATERIAL"].apply(lambda x : self.map_value_to_key(x, self.color_mapping)),
+                                          vase_color)
+       
+        # deduce material
+        vase_material = df_done["VASE_MATERIAL"].apply(lambda x : self.map_value_to_key(x, self.material_mapping))
+        df_done["VASE_MATERIAL"] = np.where(vase_material.isnull(),
+                                           vase_color.apply(lambda x : self.map_value_to_key(x, self.material_mapping)),
+                                           vase_material)
+        
+        # get style
+        df_done["VASE_STYLE"] = df_done["VASE_PERIODE_OR_CIRCA_YEAR"].apply(lambda x: self.map_value_to_key(x, self.style_mapping))
+        df_done["VASE_STYLE"] = np.where(df_done["VASE_STYLE"].isnull(),
+                                        df_done["VASE_SIGNED"].apply(lambda x: self.map_value_to_key(x, self.style_mapping)),
+                                        df_done["VASE_STYLE"])
+        
+        # deduce year
+        df_done["VASE_YEAR"] = df_done["VASE_PERIODE_OR_CIRCA_YEAR"].apply(lambda x: self.clean_periode(x))
+        df_done["VASE_YEAR"] = np.where(df_done["VASE_YEAR"].isnull(),
+                                        df_done["VASE_PERIODE_OR_CIRCA_YEAR"].apply(lambda x: self.map_value_to_key(x, self.period_mapping)),
+                                        df_done["VASE_YEAR"])
+
+        df_done["VASE_SIGNED"] = np.where(df_done["VASE_SIGNED"].isnull()|df_done["VASE_SIGNED"].isin(["not marked", "non signe", 
+                                                                                                       "not signed", "no", "false", 
+                                                                                                       "unmarked"]), 
+                                            False, True)
+        
+        # conditions cleaning 
+        # TODO: model qui prédit létat à partir du texte- score allant de 0 a 5
+        df_done["VASE_CONDITION"] = df_done["VASE_CONDITION"].apply(lambda x : self.map_value_to_key(x, self.condition_mapping))
+
+        # decorations cleaning
+        df_done["VASE_DECORATIONS"] = df_done["VASE_DECORATIONS"].apply(lambda x : self.map_value_to_key(x, self.decorations_mapping))
+
+        return df_done
+    
+    def clean_values(self, df_done):
         return df_done
 
     def get_all_keys(self, df_done):

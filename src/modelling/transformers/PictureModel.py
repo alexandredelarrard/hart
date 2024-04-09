@@ -38,7 +38,12 @@ class ArtDataset(Dataset):
     def __getitem__(self, idx):
 
         image_filepath = self.image_paths[idx]
-        image = Image.open(image_filepath)
+
+        try:
+            image = Image.open(image_filepath).convert('RGB')
+        except Exception:
+            image = Image.open(self.default_image_path).convert('RGB')
+            logging.error(image_filepath)
 
         if self.mode!="test":
             label = self.classes_2id[str(Path(image_filepath).parent).split("\\")[-1]]
@@ -49,9 +54,9 @@ class ArtDataset(Dataset):
             try:
                 image = self.transform(image)
             except Exception:
-                image = image.convert('RGB')
+                image = Image.open(self.default_image_path).convert('RGB')
                 image = self.transform(image)
-                logging.warning(image_filepath)
+                logging.error(image_filepath)
 
         return {"image": image, "labels": label}
     
@@ -180,7 +185,25 @@ class PictureModel(Step):
             sorties.append(answers)
 
         return self.clean_sorties(sorties)
+    
+    def predict_embedding(self, test_dataset : Dataset):
 
+        self.batching_data(test_dataset, mode="test")
+        self.new_model.to(self.device).eval()
+
+        sorties = []
+        for batch in tqdm(self.batching["test"]):
+            xb = batch["image"]
+            xb = xb.to(self.device)
+            with torch.no_grad():
+                outputs = self.new_model(xb)
+                
+            self._log.info(outputs.keys())
+            last = outputs.last_hidden_state.mean(1)
+
+            sorties.append(last)
+        
+        return sorties
 
     def batching_data(self, data, mode="train"):
         self.batching[mode] = torch.utils.data.DataLoader(data, shuffle=False, batch_size=self.batch_size)

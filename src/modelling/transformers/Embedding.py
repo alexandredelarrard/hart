@@ -12,8 +12,11 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
-# from chromadb.utils import embedding_functions
-from transformers import AutoImageProcessor, Swinv2Model, AutoFeatureExtractor
+
+# from transformers import AutoImageProcessor, Swinv2Model, AutoFeatureExtractor
+from transformers import ViTImageProcessor, ViTForImageClassification, ViTFeatureExtractor
+from src.utils.utils_crawler import (read_json)
+from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 
 import torch 
 import torchvision.transforms as T
@@ -26,18 +29,17 @@ class StepEmbedding(Step):
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 database_name : str = None,
                  type : str = "text"):
 
         super().__init__(context=context, config=config)
-        self.params = self._config.embedding[database_name].dim_reduc.params
+        self.params = self._config.embedding.dim_reduc.params
         self.default_picture_path = self._config.cleaning.default_picture_path
         
         if type == "text":
-            self.batch_size = self._config.embedding[database_name].text.batch_size
+            self.batch_size = self._config.embedding.text.batch_size
             
             self.prompt = {}
-            for k, v in self._config.embedding[database_name].text.prompt.items():
+            for k, v in self._config.embedding.prompt.items():
                 self.prompt[k] = v
 
             self.model = SentenceTransformer(self._config.embedding.text_model,
@@ -45,14 +47,26 @@ class StepEmbedding(Step):
                                             device=self._config.embedding.device)
             
         elif type=="picture":
-            self.batch_size = self._config.embedding[database_name].picture.batch_size
-
+            self.batch_size = self._config.embedding.picture.batch_size
             model_ckpt = self._config.embedding.picture_model
-            self.processor = AutoImageProcessor.from_pretrained(model_ckpt)
-            self.extractor = AutoFeatureExtractor.from_pretrained(model_ckpt)
-            self.model = Swinv2Model.from_pretrained(model_ckpt)
+            self.processor = ViTImageProcessor.from_pretrained(model_ckpt)
+            self.extractor = ViTFeatureExtractor.from_pretrained(model_ckpt)
+            self.model = ViTForImageClassification.from_pretrained(model_ckpt)
             self.model.to(self._config.embedding.device)
-        
+
+            # self.fine_tuned_model =self._config.embedding.picture_model
+
+            # # get and shape data to pytorc
+            # self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
+
+            # # fit model 
+            # self.picture_model = PictureModel(context=self._context, config=self._config,
+            #                                 model_name=self._config.picture_classification.model,
+            #                                 batch_size=self._config.embedding.picture.batch_size,
+            #                                 device=self._config.embedding.device,
+            #                                 classes=self.classes_2id,
+            #                                 model_path=self.fine_tuned_model)
+            
         else:
             raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
 
@@ -69,7 +83,15 @@ class StepEmbedding(Step):
                                  prompt_name=prompt_name)
     
     def get_batched_picture_embeddings(self, images : List[str]):
+
+        # pict_transformer = self.picture_model.load_trained_model(model_path=self.fine_tuned_model)
+        # test_dataset = ArtDataset(images,
+        #                          self.classes_2id, 
+        #                          transform=pict_transformer,
+        #                          mode="test")
         
+        # embeddings = self.picture_model.predict_embedding(test_dataset)
+
         steps = len(images) // self.batch_size 
 
         for i in tqdm(range(steps+1)):
@@ -81,9 +103,9 @@ class StepEmbedding(Step):
                 candidate_subset_emb = extract
             else:
                 candidate_subset_emb = np.concatenate((candidate_subset_emb, extract))
-
+        
         return candidate_subset_emb
-            
+    
     @timing
     def get_picture_embeddings(self, images : List[PIL.Image]):
 
@@ -118,7 +140,7 @@ class StepEmbedding(Step):
         for image in images:
             if isinstance(image, str):
                 try:
-                    pils_images.append(Image.open(image))
+                    pils_images.append(Image.open(image).convert("RGB"))
                 except Exception:
                     self._log.error(f"No picture avaiable for {image} path. FILL with picture MISSING.jpg")
                     pils_images.append(Image.open(self.default_picture_path))
