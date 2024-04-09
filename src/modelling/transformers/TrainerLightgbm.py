@@ -5,13 +5,11 @@ from datetime import datetime
 from sklearn.model_selection import KFold
 
 from src.constants.variables import date_format
-from src.context import Context
 from src.modelling.transformers.ModelEvaluator import ModelEvaluator
 
 from src.utils.timing import timing
 from src.utils.utils_crawler import (save_pickle_file,
                                     read_pickle)
-
 
 class TrainLightgbmModel(ModelEvaluator):
     """
@@ -38,10 +36,17 @@ class TrainLightgbmModel(ModelEvaluator):
         self.categorical_features = config.gbm_training[category].categorical_features
 
         self.n_splits=config.gbm_training[category].cross_validation.n_splits
-        
+
+        self.verbose = 100
+        if "verbose_eval" in self.model_parameters.keys():
+            self.verbose = self.model_parameters.verbose_eval
+        elif "verbose" in self.model_parameters.keys():
+            self.verbose = self.model_parameters.verbose
+
         self.weight = None
-        if config.gbm_training[category].model_weight:
-            self.weight = config.gbm_training[category].model_weight
+        if "model_weight" in config.gbm_training[category].keys():
+            if config.gbm_training[category].model_weight:
+                self.weight = config.gbm_training[category].model_weight
 
 
     @timing
@@ -50,10 +55,18 @@ class TrainLightgbmModel(ModelEvaluator):
         Creates LightGBM model instance and trains on a train dataset. If a tests set is provided,
         we validate on this set and use early stopping to avoid over-fitting.
         """
+
+        train_data = self.ensure_categorical(train_data)
         
         if isinstance(test_data, pd.DataFrame):
+
+            test_data = self.ensure_categorical(test_data)
+
             if "early_stopping_round" not in self.model_parameters.keys():
                 self.model_parameters["early_stopping_round"] = 40
+
+            if "verbose_eval" in self.model_parameters.keys():
+                self.model_parameters.pop("verbose_eval")
 
             if self.weight:
                 train_weight = train_data[self.weight]
@@ -88,10 +101,9 @@ class TrainLightgbmModel(ModelEvaluator):
             )
 
             self.model = lgb.train(self.model_parameters,
-                            train_set=train_data, 
-                            valid_sets=[train_data, val_data],
-                            valid_names=["data_train", "data_valid"],
-                            verbose_eval=self.model_parameters.verbose_eval)
+                                    train_set=train_data, 
+                                    valid_sets=[train_data, val_data],
+                                    valid_names=["data_train", "data_valid"])
 
         else:
             if "early_stopping_round" in self.model_parameters:
@@ -116,7 +128,6 @@ class TrainLightgbmModel(ModelEvaluator):
                             train_data[self.target_name], 
                             sample_weight=sample_weight,
                             init_score= init_bias,
-                            verbose=self.model_parameters.verbose,
                             categorical_feature=self.categorical_features)
 
     @timing
@@ -126,8 +137,8 @@ class TrainLightgbmModel(ModelEvaluator):
         on the predictions. Returns tests dataset with added columns for pediction and metrics.
         """
 
-        prediction = self.model.predict(test_data[self.model_features],
-                                        categorical_feature=self.categorical_features)
+        test_data = self.ensure_categorical(test_data)
+        prediction = self.model.predict(test_data[self.model_features])
         if init_score: 
             prediction = prediction + test_data[init_score]
 
@@ -159,17 +170,18 @@ class TrainLightgbmModel(ModelEvaluator):
 
             self.evaluate_model(self.model_parameters, 
                                 y_prediction=x_val,
-                                y_true=test_data[self.target_name])
+                                y_true=test_data[self.target_name].tolist())
 
             # concatenate all test_errors
-            self.total_test = pd.concat([self.total_test, x_val], axis=0)
+            test_data["PREDICTION"] = x_val
+            self.total_test = pd.concat([self.total_test, test_data], axis=0)
         
         return self.total_test.reset_index(drop=True)
     
-    #     self._log.info("TRAIN full model")
-    #     model = self.fit(train_data=data, 
-    #                      init_score=init_score)
-
+    def ensure_categorical(self, data):
+        for col in self.categorical_features:
+            data[col] = data[col].astype("category")
+        return data
 
     def save_model(self, model):
         dict_to_save= {"model": model,
@@ -185,3 +197,7 @@ class TrainLightgbmModel(ModelEvaluator):
         self.model_parameters = dict_saved["model_parameters"]
         self.model_features = dict_saved["model_features"]
         self.categorical_features = dict_saved["categorical_features"]
+
+    #     self._log.info("TRAIN full model")
+    #     model = self.fit(train_data=data, 
+    #                      init_score=init_score)

@@ -25,13 +25,49 @@ class StepPriceEvaluator(Step):
         df_price = self.get_pricing_info()
 
         # merge dataframe together & ensure output is there
-        df = df.merge(df_price, on=self.name.id_item, how="left", validate="1:1")
-        df = df.loc[df["EUR_FINAL_RESULT"].notnull()]
-        df[self.name.sold_year] = pd.to_datetime(df[self.name.date], format=date_format).dt.year
+        df = self.shape_data(df, df_price)
+        df = df.loc[df[self.name.eur_item_result].between(10, 50000)]
 
         # Trainer 
         self.trainer = TrainLightgbmModel(config=self._config, category=self.category)
-        self.trainer.modelling_cross_validation(data=df)
+        self.get_baseline(df)
+
+        # 5 fold to get error rate
+        results = self.trainer.modelling_cross_validation(data=df)
+        results["PREDICTION"] = (results["PREDICTION"]/10).round(0)*10
+
+        # predictions global error rate
+        self.trainer.evaluate_model(self.trainer.model_parameters, 
+                                    results["PREDICTION"], 
+                                    results[self.trainer.target_name])
+        
+        self.trainer.fit(df)
+        self.trainer.get_model_shap(self.trainer.model, data=df)
+
+        results[["PREDICTION", self.trainer.target_name, self.name.auctionner_estimate]]
+
+    def shape_data(self, df, df_price):
+        df = df.merge(df_price, on=self.name.id_item, how="left", validate="1:1")
+        df = df.loc[df["EUR_FINAL_RESULT"].notnull()]
+        df[self.name.sold_year] = pd.to_datetime(df[self.name.date], format=date_format).dt.year
+        df[self.name.auctionner_estimate] = df[[self.name.eur_min_estimate,
+                                    self.name.eur_min_estimate]].mean(axis=1)
+        return df 
+
+    def get_baseline(self, df):
+
+        df_real_result = df.loc[df[self.name.is_item_result] == 1] 
+
+        if df_real_result.shape[0] !=0:
+            mape = self.trainer.evaluation_mape_mean(df_real_result[self.trainer.target_name],
+                                                df_real_result[self.name.auctionner_estimate])
+            std = self.trainer.evaluation_mape_std(df_real_result[self.trainer.target_name],
+                                                df_real_result[self.name.auctionner_estimate])
+            self._log.info(f"BASELINE ERROR = {mape:.2f} +/- {std:.2f} EUR")
+            
+        else:
+            self._log.warning("No BASELINE can be calculated since all results are duduced from center of estimates ")
+
 
     def get_pricing_info(self):
 
@@ -43,6 +79,7 @@ class StepPriceEvaluator(Step):
                     "eur_min_estimate" : self.name.eur_min_estimate,
                     "eur_max_estimate" : self.name.eur_max_estimate,
                     "eur_item_result" : self.name.eur_item_result,
+                    "is_item_result": self.name.is_item_result,
                     "currency" : self.name.currency,  
                     "auction_date" : self.name.date, 
                     "localisation" : self.name.localisation, 

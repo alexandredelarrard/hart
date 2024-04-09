@@ -6,7 +6,7 @@ gbm_training:
 
   vase:
     model_target: "EUR_FINAL_RESULT"
-    # model_weight: None
+    model_weight: Null
     model_features: 
       - NUMBER_DESCRIBED_OBJECTS
       - VASE_HEIGHT
@@ -20,6 +20,8 @@ gbm_training:
       - VASE_COUNTRY
       - VASE_SHAPE
       - AUCTION_YEAR
+      - EUR_MIN_ESTIMATION
+      - EUR_MAX_ESTIMATION
       - SELLER 
       - CURRENCY 
     categorical_features:
@@ -30,6 +32,7 @@ gbm_training:
       - VASE_COUNTRY
       - VASE_SHAPE
       - CURRENCY
+      - SELLER 
     cross_validation:
       n_splits: 5
       
@@ -41,10 +44,10 @@ gbm_training:
       min_data_in_leaf: 5
       colsample_bytree: 0.75
       subsample: 0.75
-      learning_rate: 0.1
-      num_iteration: 1000
-      lambda_l1 : 0
+      learning_rate: 0.008
+      num_iterations: 2000
+      lambda_l1 : 0.1
       n_jobs: 7
-      verbose_eval: 100
+      verbose_eval: -1
       verbose : -1
-      early_stopping_round: 40
+      early_stopping_round: 50

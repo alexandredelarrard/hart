@@ -34,6 +34,7 @@ class Naming:
         self.item_result = "FINAL_RESULT"
         self.eur_item_result = "EUR_FINAL_RESULT"
         self.is_item_result = "IS_FINAL_RESULT"
+        self.auctionner_estimate = "EXPERT_ESTIMATION"
 
         self.localisation = "LOCALISATION"
         self.country = "COUNTRY"

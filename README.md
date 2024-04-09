@@ -10,7 +10,12 @@ Donner la possibilité d'étudier les évolutions de prix d'artistes & etc. au c
 
 ### Projet 2 : Aide à l'estimation pour CP 
 
-En fonction du text et des images donner une estimation de prix avec un intervalle de confiance ainsi que des critères prédits qui permettent de donner une telle évaluation 
+En fonction du text et des images donner une estimation de prix avec un intervalle de confiance ainsi que des critères prédits qui permettent de donner une telle évaluation
+
+sur les vases: 
+- Baseline 135% hors cas extremes (10, 200 000)
+- Erreur de 100% avec toutes les infos dont CP estimate min max 
+- Erreur de 400% si juste le text 
 
 ### Projet 3 : Arbitrage 
 
