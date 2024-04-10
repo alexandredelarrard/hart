@@ -4,7 +4,6 @@ import random
 import numpy as np
 import shutil
 import swifter
-import pandas as pd 
 from datetime import datetime
 
 from tqdm import tqdm 
@@ -14,8 +13,7 @@ from src.utils.step import Step
 from src.utils.timing import timing
 
 from src.utils.utils_crawler import (read_json,
-                                     save_json,
-                                     copy_picture)
+                                     save_json)
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 
 from omegaconf import DictConfig
@@ -38,9 +36,10 @@ class StepPictureClassification(Step):
         self.device = self._config.picture_classification.device
         self.fine_tuned_model=self._config.picture_classification.fine_tuned_model
         self.epochs = self._config.picture_classification.epochs
-        self.save_model = save_model
         self.default_image_path= self._config.picture_classification.default_image_path
+        self.full_data = self._config.cleaning.full_data_auction_houses
 
+        self.save_model = save_model
         self.today = datetime.today().strftime("%d_%m_%Y")
 
 
@@ -78,15 +77,15 @@ class StepPictureClassification(Step):
 
 
     @timing
-    def predicting(self, view_name=""):
+    def predicting(self, view_name="TEST_0.05_06_04_2024"):
 
-        view_name = "TEST_0.05_06_04_2024"
-        df = self.get_list_pictures()
-        
-        df_done = pd.read_sql("TEST_0.05_06_04_2024", con=self._context.db_con)
-        df = df.loc[~df[self.name.id_item].isin(df_done[self.name.id_item].tolist())]
+        #get data
+        df = self.read_sql_data(self.full_data)
+        df_done = self.read_sql_data(view_name)
+
+        # ensure pictures available and subsample
+        df = self.clean_list_pictures(df, df_done)
         df = df.sample(frac=0.06)
-        del df_done
 
         # get and shape data to pytorc
         self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
@@ -119,27 +118,18 @@ class StepPictureClassification(Step):
                             table_name=view_name + "_" + self.today,
                             if_exists="append")
         
-        # answers["TO"] = answers["TOP_0"].apply(lambda x : "./data/other/" + str(x))
-
-        # for row in answers.to_dict(orient="records"):
-        #     if 0.3 > row["PROBA_0"] :
-        #         copy_picture(row["PICTURES"], row["TO"])
-
-        # plot or not 
-        # self.plot_results(answers[:40])
-
         return answers
     
 
-    def get_list_pictures(self):
-        # liste_pictures = glob.glob("./data/drouot/pictures_old/*.jpg")
+    def clean_list_pictures(self, df, df_done):
 
-        df = pd.read_sql("ALL_ITEMS_202403", con = self._context.db_con)
         df["from"] = df[["SELLER", "ID_PICTURE"]].apply(lambda x: f"./data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", axis=1)
         df = df.loc[df["ID_PICTURE"].notnull()]
 
         df["EXISTS_PICT"] = df["from"].swifter.apply(lambda x : os.path.isfile(x))
         df = df[df["EXISTS_PICT"]].reset_index(drop=True)
+
+        df = df.loc[~df[self.name.id_item].isin(df_done[self.name.id_item].tolist())]
 
         return df
 
@@ -156,6 +146,7 @@ class StepPictureClassification(Step):
             except Exception as e:
                 self._log.warning(e)        
     
+
     def plot_results(self, answers):
         for row in answers.to_dict(orient="records"):
             img = plt.imread(row["PICTURES"])
@@ -177,6 +168,7 @@ class StepPictureClassification(Step):
 
         return self.classes_2id
     
+
     def get_train_test_data(self, ratio_validation):
 
         pictures_paths = glob.glob(self.picture_path + "/*/*.jpg")

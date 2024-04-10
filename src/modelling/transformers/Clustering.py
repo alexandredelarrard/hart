@@ -1,14 +1,8 @@
-from sklearn import cluster
-
-import re
 from src.utils.timing import timing
-
 import hdbscan
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from sklearn.neighbors import NearestNeighbors
 import scipy.cluster.hierarchy as sch
-import scipy.spatial.distance as ssd
 from sklearn.cluster import AgglomerativeClustering
 import pandas as pd 
 from typing import List

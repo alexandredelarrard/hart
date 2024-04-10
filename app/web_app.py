@@ -1,6 +1,7 @@
 from src.context import get_config_context
 from src.modelling.steps.step_text_clustering import StepTextClustering
-# from src.modelling.steps.step_picture_classification import StepPictureClustering
+from src.modelling.steps.step_picture_clustering import StepPictureClustering
+from src.modelling.transformers.ChromaCollection import ChromaCollection
 import numpy as np
 
 def get_sidebar(st):
@@ -65,8 +66,10 @@ def display_text_results(tab1, text_results):
         col2.write(doc['URL_FULL_DETAILS'])
 
         if "MISSING" not in doc['PICTURE_ID']:
-            col1.image(rf"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
-
+            try:
+                col1.image(f"./data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
+            except Exception:
+                pass
 
 
 def display_picture_results(tab2, picture_results):
@@ -95,21 +98,26 @@ def display_picture_results(tab2, picture_results):
         col2.write(doc['URL_FULL_DETAILS'])
 
         if "MISSING" not in doc['PICTURE_ID']:
-            col1.image(rf"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
+            try:
+                col1.image(f"./data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
+            except Exception:
+                pass
 
 
 def instatiate_session(st):
 
+    config, context = get_config_context('./configs', use_cache = False, save=False)
+
     if 'text_clustering' not in st.session_state:
-        config, context = get_config_context('./configs', use_cache = False, save=False)
         st.session_state['text_clustering'] = StepTextClustering(context=context, config=config)
 
-    # if "picture_clustering" not in st.session_state:
-    #     config, context = get_config_context('./configs', use_cache = False, save=False)
-    #     st.session_state['picture_clustering'] = StepPictureClassification(context=context, config=config)
+    if "picture_clustering" not in st.session_state:
+        st.session_state['picture_clustering'] = StepPictureClustering(context=context, config=config)
+
+    if "collection" not in st.session_state:
+        st.session_state["collection"] = ChromaCollection(context=context, config=config)
 
     if "picture_path" not in st.session_state:
-        config, context = get_config_context('./configs', use_cache = False, save=False)
-        st.session_state['picture_path'] = r"C:/Users/alarr/Documents/repos/hart/data/drouot/pictures_old"#config.crawling.drouot.save_picture_path
+        st.session_state['picture_path'] = r"./data/drouot/pictures_old" #config.crawling.drouot.save_picture_path
     
     return st

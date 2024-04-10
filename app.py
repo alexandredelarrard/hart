@@ -21,7 +21,8 @@ def main():
 
         if widget_ui["query_text"]:
             st.write(widget_ui["query_text"])
-            text_results = st.session_state["text_clustering"].query_collection(widget_ui["query_text"])
+            embeddings = st.session_state["text_clustering"].text_to_embedding(widget_ui["query_text"])
+            text_results = st.session_state["collection"].query_collection(embeddings)
 
         if widget_ui["picture_paths"]:
             st.write(widget_ui["picture_paths"])
