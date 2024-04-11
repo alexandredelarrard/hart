@@ -1,8 +1,9 @@
-from src.context import get_config_context
-from src.modelling.steps.step_text_clustering import StepTextClustering
-from src.modelling.steps.step_picture_clustering import StepPictureClustering
-from src.modelling.transformers.ChromaCollection import ChromaCollection
 import numpy as np
+import pandas as pd 
+
+def extract_info_meta_data(description, feature):
+    serie = [x[feature] for x in description if x[feature] != ""]
+    return pd.Series(serie)
 
 def get_sidebar(st):
 
@@ -12,7 +13,7 @@ def get_sidebar(st):
     form = st.sidebar.form("my_form")
 
     form.header("How would you describe the art piece you want to estimate ?")
-    ui_inputs["query_text"] = form.text_input("Enter your description            ")
+    ui_inputs["query_text"] = form.text_input("Enter your description")
 
     form.header("Any picture of the piece of art ?")
     ui_inputs["picture_paths"] = form.file_uploader("Art pictures", accept_multiple_files=False)
@@ -22,7 +23,7 @@ def get_sidebar(st):
     return ui_inputs
 
 
-def get_display(st, text_results, picture_results):
+def get_display(st, text_results, picture_results, naming):
 
     if picture_results and text_results:
         tab1, tab2 = st.tabs(["Text", "Pictures"])
@@ -34,90 +35,43 @@ def get_display(st, text_results, picture_results):
         st.write("Please submit either picture or text")
 
     if text_results:
-        display_text_results(tab1, text_results)
+        display_text_results(tab1, text_results, naming)
         
     if picture_results:
-        display_text_results(tab2, picture_results)
+        display_text_results(tab2, picture_results, naming)
+        
 
-
-def display_text_results(tab1, text_results):
+def display_text_results(tab1, text_results, naming):
 
     distances = text_results["distances"][0]
     documents = text_results["documents"][0]
     description = text_results["metadatas"][0]
 
-    estim_min = np.median([x["MIN_ESTIMATION"] for x in description])
-    estim_max = np.median([x["MAX_ESTIMATION"] for x in description])
-    result = np.median([x["FINAL_RESULT"] for x in description])
+    estim_min = extract_info_meta_data(description, naming.eur_min_estimate).median()
+    estim_max = extract_info_meta_data(description, naming.eur_max_estimate).median()
+    result = extract_info_meta_data(description, naming.eur_item_result).median()
 
     tab1.header(f"Estimations  : {estim_min:.0f} - {estim_max:.0f} EUR ")
     tab1.header(f"Resultats : {result:.0f} EUR")
-    tab1.write(f"Distance Moyenne : {np.mean(distances)*100:.2f}%")
+    tab1.write(f"Distance Moyenne : {np.median(distances)*100:.2f}%")
 
     for i, doc in enumerate(description):
         tab1.divider()
         col1, col2 = tab1.columns([1, 2])
 
-        doc['PICTURE_ID'] += ".jpg" 
-
-        col2.write(f"Estimations : {doc["MIN_ESTIMATION"]} - {doc["MAX_ESTIMATION"]} {doc["CURRENCY"]}")
-        col2.write(f"Resultat : {doc['FINAL_RESULT']}")
+        col2.write(f"Estimations : {doc[naming.eur_min_estimate]} - {doc[naming.eur_max_estimate]} {doc[naming.currency]}")
+        col2.write(f"Resultat : {doc[naming.eur_item_result]}")
         col2.write(documents[i])
-        col2.write(doc['URL_FULL_DETAILS'])
 
-        if "MISSING" not in doc['PICTURE_ID']:
+        try:
+            col2.write(doc[naming.url_full_detail])
+        except Exception:
+            pass
+
+        if "MISSING" not in doc[naming.id_picture]:
             try:
-                col1.image(f"./data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
+                col1.image(f"D:/data/{doc[naming.seller]}/pictures/{doc[naming.id_picture]}.jpg", 
+                           caption=f"Distance : {distances[i]}", 
+                           width=250)
             except Exception:
                 pass
-
-
-def display_picture_results(tab2, picture_results):
-
-    distances = picture_results["distances"][0]
-    documents = picture_results["documents"][0]
-    description = picture_results["metadatas"][0]
-
-    estim_min = np.median([x["MIN_ESTIMATION"] for x in description])
-    estim_max = np.median([x["MAX_ESTIMATION"] for x in description])
-    result = np.median([x["FINAL_RESULT"] for x in description])
-
-    tab2.header(f"Estimations  : {estim_min:.0f} - {estim_max:.0f} EUR ")
-    tab2.header(f"Resultats : {result:.0f} EUR")
-    tab2.write(f"Distance Moyenne : {np.mean(distances)*100:.2f}%")
-
-    for i, doc in enumerate(description):
-        tab2.divider()
-        col1, col2 = tab2.columns([1, 2])
-
-        doc['PICTURE_ID'] += ".jpg" 
-
-        col2.write(f"Estimations : {doc["MIN_ESTIMATION"]} - {doc["MAX_ESTIMATION"]} {doc["CURRENCY"]}")
-        col2.write(f"Resultat : {doc['FINAL_RESULT']}")
-        col2.write(documents[i])
-        col2.write(doc['URL_FULL_DETAILS'])
-
-        if "MISSING" not in doc['PICTURE_ID']:
-            try:
-                col1.image(f"./data/drouot/pictures_old/{doc['PICTURE_ID']}", caption=f"Category : {doc['CATEGORY']} Distance : {distances[i]}", width=250)
-            except Exception:
-                pass
-
-
-def instatiate_session(st):
-
-    config, context = get_config_context('./configs', use_cache = False, save=False)
-
-    if 'text_clustering' not in st.session_state:
-        st.session_state['text_clustering'] = StepTextClustering(context=context, config=config)
-
-    if "picture_clustering" not in st.session_state:
-        st.session_state['picture_clustering'] = StepPictureClustering(context=context, config=config)
-
-    if "collection" not in st.session_state:
-        st.session_state["collection"] = ChromaCollection(context=context, config=config)
-
-    if "picture_path" not in st.session_state:
-        st.session_state['picture_path'] = r"./data/drouot/pictures_old" #config.crawling.drouot.save_picture_path
-    
-    return st

@@ -38,12 +38,19 @@ class GPTCleaner(TextCleaner):
                 
         return np.nan
         
-
     def handle_cm(self, x):
-        for dim in ["", "cm", " cm"]:
-            test = re.findall(f"(\\d+.?\\d+){dim}", x)
-            if len(test) != 0:
-                return test[0]
+
+        x = " " + x.replace("-", " ") + " "
+        x = x.replace("x", " ")
+        test = []
+        for dim in ["", " ", "cm", " cm", "mm"]:
+            test += re.findall(f"(\\d+.?\\d+){dim}", x)
+
+        if len(test) != 0:
+            if "mm" in x:
+                test[-1] + "*0.1"
+            else:
+                return test[-1]
         return np.nan
     
         
@@ -64,6 +71,9 @@ class GPTCleaner(TextCleaner):
         origin = str(x)
         infos = {}
         x = " " + str(x) + " "
+        x = x.replace("era", "")
+        x = x.replace("period", "")
+        x = re.sub(" +", " ", x)
 
         infos["sign"] = "1"
         if " bc " in x or " b c " in x:

@@ -1,8 +1,8 @@
 embedding:
-  manual_cluster: ./data/default/manuel_cluster_mapping_word.json
+  manual_cluster: D:/data/default/manuel_cluster_mapping_word.json
   device: cuda
   text_model: 'intfloat/multilingual-e5-large-instruct'
-  picture_model: microsoft/swinv2-tiny-patch4-window8-256 # "./data/models/peft_block23_vit_large_patch14_clip_224_280406" #''
+  picture_model: 'microsoft/swinv2-tiny-patch4-window8-256' # "./data/models/peft_block23_vit_large_patch14_clip_224_280406" #''
   prompt_name : clustering
   prompt:
       clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "

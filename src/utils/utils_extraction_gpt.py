@@ -7,17 +7,25 @@ from src.utils.utils_dataframe import remove_accents, remove_punctuation
 def reconstruct_dict(x):
     new_dict= []
     a = x.split("\n")
+    count_element = 0
     for element in a: 
-        if ": " in element:
-            key, value = element.split(": ")
-            key = key.replace("\"", "").strip()
-            value = value.replace("\"", "").replace(",","").strip()
-            element = f"\"{key}\": \"{value}\","
-        new_dict.append(element)
+        if element == '':
+            pass
+        else:
+            if element == '{':
+                count_element +=1
+            if ": " in element:
+                key, value = element.split(": ")
+                key = key.replace("\"", "").strip()
+                value = value.replace("\"", "").replace(",","").strip()
+                element = f"\"{key}\": \"{value}\","
+            new_dict.append(element)
     return eval("\n".join(new_dict))
 
 
-def handle_answer(x):
+def handle_answer(answer):
+
+    x = answer["ANSWER"]
 
     x = x.replace("false", "False")
     x = x.replace("true", "True")
@@ -39,7 +47,7 @@ def handle_answer(x):
         try:
             return reconstruct_dict(x)
         except Exception:
-            logging.error(x)
+            logging.error(answer["ID_ITEM"])
             return "{}"
             
     

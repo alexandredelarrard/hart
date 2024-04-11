@@ -134,6 +134,21 @@ class StepEmbedding(Step):
 
         return embeddings
     
+    def text_to_embedding(self, query_text):
+
+        if isinstance(query_text, str):
+            query_text = [query_text]
+
+        elif isinstance(query_text, List):
+            query_text = query_text
+
+        else:
+            raise Exception(f"Text need to be str or List[str] to be embedded intead of {query_text.dtype}")
+
+        query_embedded = self.get_text_embeddings(query_text, 
+                                        prompt_name=self.prompt_name)
+        return query_embedded
+    
     def read_images(self, images : List[str]):
 
         pils_images= []

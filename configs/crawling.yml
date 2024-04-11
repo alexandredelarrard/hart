@@ -1,9 +1,9 @@
 crawling:
     met:
         webpage_url : https://www.metmuseum.org
-        url_path : ./data/met/infos/MetObjects.csv
-        save_picture_path : ./data/met/pictures
-        save_data_path : ./data/met/
+        url_path : D:/data/met/infos/MetObjects.csv
+        save_picture_path : D:/data/met/pictures
+        save_data_path : D:/data/met/
         settings : 
             browser : chrome 
             nodes : 1
@@ -12,11 +12,11 @@ crawling:
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
         auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?
         url_crawled : https://www.gazette-drouot.com/ventes-aux-encheres/
-        url_path : ./data/drouot/infos/*
-        save_picture_path : ./data/drouot/pictures
-        save_data_path : ./data/drouot/infos
-        save_data_path_auctions: ./data/drouot/auctions
-        save_data_path_details: ./data/drouot/details
+        url_path : D:/data/drouot/infos/*
+        save_picture_path : D:/data/drouot/pictures
+        save_data_path : D:/data/drouot/infos
+        save_data_path_auctions: D:/data/drouot/auctions
+        save_data_path_details: D:/data/drouot/details
         settings : 
             browser : chrome 
             nodes : 1
@@ -105,12 +105,12 @@ crawling:
     christies: 
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
-        url_path : ./data/christies/infos/*
-        save_picture_path : ./data/christies/pictures
-        save_data_path : ./data/christies/infos
-        save_data_path_auctions: ./data/christies/auctions
-        save_data_path_details: ./data/christies/details
-        correction_urls_auction : ./data/christies/auctions/correction_urls_auctions.pickle
+        url_path : D:/data/christies/infos/*
+        save_picture_path : D:/data/christies/pictures
+        save_data_path : D:/data/christies/infos
+        save_data_path_auctions: D:/data/christies/auctions
+        save_data_path_details: D:/data/christies/details
+        correction_urls_auction : D:/data/christies/auctions/correction_urls_auctions.pickle
         settings : 
             browser : chrome 
             nodes : 1
@@ -178,11 +178,11 @@ crawling:
         webpage_url : https://www.sothebys.com/en/buy/auction
         auctions_url : https://www.sothebys.com/en/results? #6581
         url_crawled :  https://rmsothebys.com/en/home/auction-results/
-        url_path : ./data/sothebys/infos/*
-        save_picture_path : ./data/sothebys/pictures
-        save_data_path : ./data/sothebys/infos
-        save_data_path_auctions: ./data/sothebys/auctions
-        save_data_path_details: ./data/sothebys/details
+        url_path : D:/data/sothebys/infos/*
+        save_picture_path : D:/data/sothebys/pictures
+        save_data_path : D:/data/sothebys/infos
+        save_data_path_auctions: D:/data/sothebys/auctions
+        save_data_path_details: D:/data/sothebys/details
         oldest_year : 2007
         settings : 
             browser : chrome 

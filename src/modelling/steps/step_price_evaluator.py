@@ -6,7 +6,6 @@ from src.utils.timing import timing
 from src.modelling.transformers.TrainerLightgbm import TrainLightgbmModel
 
 from src.constants.variables import date_format
-
 from omegaconf import DictConfig
 
 class StepPriceEvaluator(Step):
@@ -26,7 +25,8 @@ class StepPriceEvaluator(Step):
 
         # merge dataframe together & ensure output is there
         df = self.shape_data(df, df_price)
-        df = df.loc[df[self.name.eur_item_result].between(10, 50000)]
+        df = df.loc[df[self.name.eur_item_result].between(10, 200000)]
+        df = df.loc[df[self.name.is_item_result] == 1] 
 
         # Trainer 
         self.trainer = TrainLightgbmModel(config=self._config, category=self.category)
@@ -44,13 +44,15 @@ class StepPriceEvaluator(Step):
         self.trainer.fit(df)
         self.trainer.get_model_shap(self.trainer.model, data=df)
 
-        results[["PREDICTION", self.trainer.target_name, self.name.auctionner_estimate]]
+        a = results[["PREDICTION", self.trainer.target_name, self.name.auctionner_estimate]]
+
+        self.trainer.evaluation_mape_mean(a["EXPERT_ESTIMATION"], a["EUR_FINAL_RESULT"])
 
     def shape_data(self, df, df_price):
         df = df.merge(df_price, on=self.name.id_item, how="left", validate="1:1")
         df = df.loc[df["EUR_FINAL_RESULT"].notnull()]
         df[self.name.sold_year] = pd.to_datetime(df[self.name.date], format=date_format).dt.year
-        df[self.name.auctionner_estimate] = df[[self.name.eur_min_estimate,
+        df[self.name.auctionner_estimate] = df[[self.name.eur_max_estimate,
                                     self.name.eur_min_estimate]].mean(axis=1)
         return df 
 
@@ -59,11 +61,11 @@ class StepPriceEvaluator(Step):
         df_real_result = df.loc[df[self.name.is_item_result] == 1] 
 
         if df_real_result.shape[0] !=0:
-            mape = self.trainer.evaluation_mape_mean(df_real_result[self.trainer.target_name],
-                                                df_real_result[self.name.auctionner_estimate])
-            std = self.trainer.evaluation_mape_std(df_real_result[self.trainer.target_name],
-                                                df_real_result[self.name.auctionner_estimate])
-            self._log.info(f"BASELINE ERROR = {mape:.2f} +/- {std:.2f} EUR")
+            mape = self.trainer.evaluation_mape_mean(df_real_result[self.name.auctionner_estimate], 
+                                                     df_real_result[self.trainer.target_name])
+            std = self.trainer.evaluation_mape_std(df_real_result[self.name.auctionner_estimate],
+                                                df_real_result[self.trainer.target_name])
+            self._log.info(f"BASELINE ERROR = {mape:.2f} +/- {std:.2f} EUR ({df_real_result.shape[0]*100/df.shape[0]:.1f})")
             
         else:
             self._log.warning("No BASELINE can be calculated since all results are duduced from center of estimates ")

@@ -1,6 +1,6 @@
 cleaning:
-  path_mapping_country: "./data/default/mapping_country.json"
-  default_picture_path : "./data/default/MISSING.jpg.jpg"
+  path_mapping_country: D:/data/default/mapping_country.json
+  default_picture_path : D:/data/default/MISSING.jpg.jpg
   full_data_auction_houses : ALL_ITEMS_202403
   drouot : 
     origine_table_name: DROUOT_202403

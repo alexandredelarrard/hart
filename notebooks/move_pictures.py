@@ -13,10 +13,10 @@ if __name__ == "__main__":
 
     df = pd.read_sql("ALL_ITEMS_202403", con = context.db_con)
     df = df.loc[df["ID_PICTURE"].notnull()]
-    df["from"] = df[["SELLER", "ID_PICTURE"]].swifter.apply(lambda x: f"./data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", axis=1)
+    df["from"] = df[["SELLER", "ID_PICTURE"]].swifter.apply(lambda x: f"D:/data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", axis=1)
 
     a = df.loc[df["TOTAL_DESCRIPTION"].apply(lambda x : " lettre autographe " in " " + x.lower() + " ")]
-    save_path = "./data/pictures_training/lettre autographe"
+    save_path = "D:/data/pictures_training/lettre autographe"
 
     for row in tqdm(a[["from"]].to_dict(orient="records")[:200]):
         try:

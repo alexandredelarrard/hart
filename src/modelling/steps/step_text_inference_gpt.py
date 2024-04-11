@@ -47,11 +47,14 @@ class StepTextInferenceGpt(Step):
         self.initialize_client(api_keys=self.api_keys)
 
         # get data
-        df = pd.read_sql("TEST_0.05_06_04_2024", con=self._context.db_con)
-        df = df.loc[df["PROBA_0"] >= 0.85]
-        df = df.loc[df["TOP_0"] == self.object]
+        # df = pd.read_sql("TEST_0.05_06_04_2024", con=self._context.db_con)
+        # df = df.loc[df["PROBA_0"] >= 0.85]
+        # df = df.loc[df["TOP_0"] == self.object]
+        df = self.read_sql_data(self._config.cleaning.full_data_auction_houses) 
+        df = df.loc[df[self.name.total_description].apply(lambda x: " vase " in " " + str(x).lower() + " ")].sample(frac=0.25)
         df = df.drop_duplicates(self.name.total_description)
         df = df.loc[df[self.name.total_description].str.len() > 60] # minimal desc size to have
+        df = df.loc[df[self.name.eur_item_result]> 5]
 
         # get already done 
         df_done = read_crawled_pickles(path=self.save_queue_path)

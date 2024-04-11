@@ -3,8 +3,9 @@ from src.utils.step import Step
 from src.utils.timing import timing
 from src.modelling.transformers.Clustering import TopicClustering
 from src.modelling.transformers.Embedding import StepEmbedding
-from src.modelling.transformers.NlpToolBox import NLPToolBox
 from src.utils.utils_crawler import copy_picture
+
+from src.constants.variables import (CHROMA_PICTURE_DB_NAME)
 
 from omegaconf import DictConfig
 
@@ -51,7 +52,7 @@ class StepPictureClustering(Step):
         if self.save_pictures:
             sub_df = sub_df.loc[sub_df[self.name.cluster_id] != -1]
 
-            sub_df["TO"] = sub_df[self.name.cluster_id].apply(lambda x : "./data/other/" + "vase_" + str(x))
+            sub_df["TO"] = sub_df[self.name.cluster_id].apply(lambda x : "D:/data/other/" + "vase_" + str(x))
             for row in sub_df.to_dict(orient="records"):
                 copy_picture(row[self.vector], row["TO"])
 
@@ -63,7 +64,7 @@ class StepPictureClustering(Step):
 
         if self.save_embeddings:
             self.collection = self._context.chroma_db.get_or_create_collection(
-                                    name = data_name,
+                                    name=CHROMA_PICTURE_DB_NAME,
                                     metadata={"hnsw:space": "cosine"})
             self.save_collection(df_desc, self.embeddings)
 

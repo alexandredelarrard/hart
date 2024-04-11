@@ -1,11 +1,11 @@
 picture_classification:
-  pictures_path : ./data/pictures_training/
+  pictures_path : D:/data/pictures_training/
   ratio_validation : 0.15
   model : vit_large_patch14_clip_224.openai_ft_in12k_in1k
   train_batch_size: 64
   test_batch_size: 128
   device : "cuda"
   epochs : 10
-  default_image_path: ./data/default/MISSING.jpg
+  default_image_path: D:/data/default/MISSING.jpg
 
-  fine_tuned_model : ./data/models/peft_block23_vit_large_patch14_clip_224_280406
+  fine_tuned_model : D:/data/models/peft_block23_vit_large_patch14_clip_224_280406

@@ -1,8 +1,8 @@
 evaluator:
-    model_path: ./data/models/evaluator
+    model_path: D:/data/models/evaluator
     mappings: 
-        watch: ./data/default/watch_features.json
-        vase: ./data/default/vase_features.json
+        watch: D:/data/default/watch_features.json
+        vase: D:/data/default/vase_features.json
 
     cleaning_mapping:
         period: {
@@ -53,6 +53,11 @@ evaluator:
             "basse epoque": "-500",
             "spring and autumn": "-500",
             "hellenistic":  "-300",
+            "art nouveau": "1900",
+            "louis xvi": "1780",
+            "contemporary": "1970",
+            "louis xiv": "1680",
+            "post-war": "1950",
             "neolithic": "-4000"}
 
         style: {
@@ -116,24 +121,32 @@ evaluator:
         
         material: {
             "porcelaine" : ["porcelaine", "porcelain", 'blue and white', "white and blue", "bleu et blanc", "white blue", "bleu blanc"],
-            "ceramique": ["ceramique", "ceramic", "glazed", "glazed ceramic"],
+            "ceramique": ["ceramique", "ceramic", "glazed", "glazed ceramic", "ceramics"],
             "emaux": ["emaux", "email", "emaille", "enamel", "enamels", "cloisonne", "enamelled"],
             "gres" : ["gres", "stoneware"],
-            "wood": ["wood", "bois"],
+            "wood": ["wood", "bois", "bamboo"],
             "marble": ["marble", "marbre"],
-            "clay" : ["clay", "argile"],
+            "clay" : ["clay", "argile", "barbotine"],
             "agate": ["agate"],
             "bronze" : ["bronze", "copper", "bronze cloisonne"],
-            "glass" : ["glass", "verre", "crystal", "cameo"],
+            "glass" : ["glass", "verre", "crystal", "cameo", "cristal"],
             "faience": ["fayence", "faience", "maiolica", "majolica"],
-            "terre_cuite" : ["earthenware", "terre cuite", "terracotta", "lagynos", "pottery", "poterie", "impasto"], 
+            "terre_cuite" : ["biscuit", "earthenware", "terre cuite", "terracotta", 
+                            "lagynos", "pottery", "poterie", "impasto"], 
             "celadon" : ["celadon"],
             "jade": ["jade", "jadeite"],
+            "opaline" : ["opal", "opaline"],
             "gold": ["gold", "or"],
+            "silk": ["silk", "soie"],
+            "toile": ["canvas", "tissu", "toile"],
+            "ivory": ["ivory", "ivoire"],
+            "stone": ["stone", "pierre"],
             "alabaster" : ["alabaster"],
+            "paper": ["paper", "papuier", "carton", ""],
             "laque": ["lacquer", "laque"],
             "silver": ["silver", "argent"],
-            "iron" : ["iron", "tole", "metal", 'laiton'],
+            "laiton" : ["brass", 'laiton', "dinanderie"],
+            "metal" : ["iron", "tole", "metal", "pewter", "tin", "etain", "plomb"],
         }
 
         shape: {
@@ -175,10 +188,10 @@ evaluator:
         }
 
         color: {
-            "polychrome multicolor" : ["polychrome", "multi colored", "colored", "multi-colored", 
+            "multicolor" : ["polychrome", "multi colored", "colored", "multiple",
                             "multicolored", "polychromes", "polychromie", "multicolore", 
                             "multi color", "various", "multicolor", "colorful", "varied",
-                            "polychrome and gold", "vibrant colors"],
+                            "polychrome and gold", "vibrant colors", "vibrant"],
             "blue and white" : ["blue-white", "blue, white", "blue and white", 
                                 "white and blue", "bleu et blanc", "white blue", 
                                 "bleu blanc", "white, blue"],
@@ -189,24 +202,26 @@ evaluator:
             "red and white": ["red and white", "white and red", "bland et rouge", 
                               "rouge et blanc", "black, rouge", "rouge, blanc",
                               "white, red", "red, white"],
-            "green" : ["green", "vert", "olive green", "famille verte"],
+            "iridescent": ["iridescent", "opalescent"],
+            "green" : ["floral", "green", "vert", "olive green", "famille verte", "greenish"],
             "white": ["white", "blanc", "blanche"],
-            "blue" : ["blue", "bleu", "cobalt blue", "pale blue", "dark blue"],
-            "yellow" : ["yellow", "yellow and orange"],
+            "blue" : ["blue", "bleu", "cobalt blue", "pale blue", "dark blue", "indigo", "aquamarine"],
+            "yellow" : ["yellow", "yellow and orange", "flamed", "flame"],
             "amber": ["amber and white", "amber"],
             "turquoise": ["turquoise", "blue turquoise"],
-            "red": ["rouge", "red", "iron red", "sang de boeuf", "copper-red"],
+            "red": ['reddish',"rouge", "red", "iron red", "sang de boeuf", "copper-red", "blood", "oxblood", "burgundy"],
             "vert_pale" : ["celadon", "vert pale", "pale green"],
-            "brown": ["brown", "brownish black", "marron", "dark brown", "beige and brown"],
-            "black": ["black", "noir", "noire", "black and gold"],
-            "orange" : ["orange", "caramel", "peach"],
-            "transparent" : ["transparent"],
-            "purple": ["purple", "mauve", "violet"],
-            "rose": ["rose", "pink"],
-            "gold": ["gold", "gilt", "or"],
-            "beige" : ["beige", "creme", "clear"],
+            "brown": ["brownish", "wood",  "brown", "earthy", "earth", "brownish black", "marron", "dark brown", "beige and brown", "bronze"],
+            "black": ["black", "noir", "noire", "black and gold", "dark"],
+            "orange" : ["orange", "copper", "caramel", "peach", 'coral', "salmon"],
+            "transparent" : ["transparent", "colorless", "translucent"],
+            "purple": ["purple", "mauve", "violet", "aubergine", "lavender", "lilac", "prune"],
+            "rose": ["rose", "pink", "ochre"],
+            "gold": ["gold", "gilt", "or", "golden"],
+            "ocre": ["ocre", terracotta],
+            "beige" : ["beige", "creme", "clear", "cream", "ivory", "patinated", "soft", 'bright', "opalin"],
             "silver" : ["silver", "argent"],
-            "grey": ["grey", "gris"]
+            "grey": ["grey", "gris", "gray"]
         }
 
         manufacturer: {

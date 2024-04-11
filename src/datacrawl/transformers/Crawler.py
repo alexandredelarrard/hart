@@ -38,7 +38,7 @@ class StepCrawling(Step):
         self.text_only = text_only
         self.save_in_queue = save_in_queue
         self.save_queue_size_step = save_queue_size_step
-        self.save_queue_path = "./data"
+        self.save_queue_path = "D:/data"
 
         self.missed_urls = []
         self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue()}

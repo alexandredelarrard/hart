@@ -58,7 +58,7 @@ class StepCleanGptInference(GPTCleaner):
     def eval_json(self, df_done):
 
         # evaluate string to Dict or List
-        df_done["ANSWER"] = df_done["ANSWER"].apply(lambda x : handle_answer(x))
+        df_done["ANSWER"] = df_done[["ID_ITEM", "ANSWER"]].apply(lambda x : handle_answer(x), axis=1)
         df_done = df_done.loc[(df_done["ANSWER"] != "{}")&(df_done["ANSWER"].notnull())]
         
         # remove lots of too many different objects
@@ -95,13 +95,14 @@ class StepCleanGptInference(GPTCleaner):
     
         return df_done
 
+
     @timing
     def remove_outliers(self, df_done, category):
 
         shape_0 = df_done.shape[0]
 
         df_done["NUMBER_DESCRIBED_OBJECTS"] = df_done["NUMBER_DESCRIBED_OBJECTS"].fillna("1")
-        df_done = df_done.loc[df_done["NUMBER_DESCRIBED_OBJECTS"].isin(["1", "2", "3", "4", "5"])]
+        df_done = df_done.loc[df_done["NUMBER_DESCRIBED_OBJECTS"].isin(["1"])]
         
         df_done = df_done.loc[df_done["OBJECT_CATEGORY"].notnull()]
         df_done = df_done.loc[df_done[f"IS_A_{category.upper()}"].isin(["true", "True"])]
@@ -118,13 +119,14 @@ class StepCleanGptInference(GPTCleaner):
         df_done["VASE_COUNTRY"] = df_done["VASE_COUNTRY"].apply(lambda x : self.map_value_to_key(x, self.country_mapping))
 
         # deduce color
-        vase_color = df_done["VASE_COLOR"].apply(lambda x : self.map_value_to_key(x, self.color_mapping))
+        # TODO: deduce number of colors
+        vase_color = df_done["VASE_COLOR"].apply(lambda x : self.map_value_to_key(str(x).replace("-"," ").replace(",",""), self.color_mapping))
         df_done["VASE_COLOR"] = np.where(vase_color.isnull(),
                                            df_done["VASE_MATERIAL"].apply(lambda x : self.map_value_to_key(x, self.color_mapping)),
                                           vase_color)
-       
+        
         # deduce material
-        vase_material = df_done["VASE_MATERIAL"].apply(lambda x : self.map_value_to_key(x, self.material_mapping))
+        vase_material = df_done["VASE_MATERIAL"].apply(lambda x : self.map_value_to_key(str(x).replace("-"," ").replace(",",""), self.material_mapping))
         df_done["VASE_MATERIAL"] = np.where(vase_material.isnull(),
                                            vase_color.apply(lambda x : self.map_value_to_key(x, self.material_mapping)),
                                            vase_material)
@@ -136,10 +138,10 @@ class StepCleanGptInference(GPTCleaner):
                                         df_done["VASE_STYLE"])
         
         # deduce year
-        df_done["VASE_YEAR"] = df_done["VASE_PERIODE_OR_CIRCA_YEAR"].apply(lambda x: self.clean_periode(x))
-        df_done["VASE_YEAR"] = np.where(df_done["VASE_YEAR"].isnull(),
+        vase_year = df_done["VASE_PERIODE_OR_CIRCA_YEAR"].apply(lambda x: self.clean_periode(x))
+        df_done["VASE_YEAR"] = np.where(vase_year.isnull(),
                                         df_done["VASE_PERIODE_OR_CIRCA_YEAR"].apply(lambda x: self.map_value_to_key(x, self.period_mapping)),
-                                        df_done["VASE_YEAR"])
+                                        vase_year)
 
         df_done["VASE_SIGNED"] = np.where(df_done["VASE_SIGNED"].isnull()|df_done["VASE_SIGNED"].isin(["not marked", "non signe", 
                                                                                                        "not signed", "no", "false", 

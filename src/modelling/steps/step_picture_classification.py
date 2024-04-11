@@ -123,7 +123,10 @@ class StepPictureClassification(Step):
 
     def clean_list_pictures(self, df, df_done):
 
-        df["from"] = df[["SELLER", "ID_PICTURE"]].apply(lambda x: f"./data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", axis=1)
+        df["from"] = df[[self.name.seller, 
+                         self.name.id_picture]].apply(lambda x: 
+                                                      f"D:/data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", 
+                                                      axis=1)
         df = df.loc[df["ID_PICTURE"].notnull()]
 
         df["EXISTS_PICT"] = df["from"].swifter.apply(lambda x : os.path.isfile(x))

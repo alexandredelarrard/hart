@@ -179,8 +179,9 @@ class TrainLightgbmModel(ModelEvaluator):
         return self.total_test.reset_index(drop=True)
     
     def ensure_categorical(self, data):
-        for col in self.categorical_features:
-            data[col] = data[col].astype("category")
+        if self.categorical_features:
+            for col in self.categorical_features:
+                data[col] = data[col].astype("category")
         return data
 
     def save_model(self, model):
