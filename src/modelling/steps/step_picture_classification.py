@@ -80,12 +80,13 @@ class StepPictureClassification(Step):
     def predicting(self, view_name="TEST_0.05_06_04_2024"):
 
         #get data
-        df = self.read_sql_data(self.full_data)
+        df = self.read_sql_data(f"SELECT \"TOTAL_DESCRIPTION\", \"SELLER\", \"ID_PICTURE\", \"ID_ITEM\" FROM \"{self.full_data}\" WHERE \"ID_PICTURE\" IS NOT NULL")
         df_done = self.read_sql_data(view_name)
 
         # ensure pictures available and subsample
+        df = df.sample(frac=0.04)
         df = self.clean_list_pictures(df, df_done)
-        df = df.sample(frac=0.06)
+        df = self.check_is_file(df)
 
         # get and shape data to pytorc
         self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
@@ -115,8 +116,8 @@ class StepPictureClassification(Step):
         answers['TOTAL_DESCRIPTION'] = df['TOTAL_DESCRIPTION'].tolist()
 
         self.write_sql_data(dataframe=answers,
-                            table_name=view_name + "_" + self.today,
-                            if_exists="append")
+                            table_name=view_name,# + "_" + self.today,
+                            if_exists="replace")
         
         return answers
     
@@ -128,27 +129,28 @@ class StepPictureClassification(Step):
                                                       f"D:/data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", 
                                                       axis=1)
         df = df.loc[df["ID_PICTURE"].notnull()]
-
-        df["EXISTS_PICT"] = df["from"].swifter.apply(lambda x : os.path.isfile(x))
-        df = df[df["EXISTS_PICT"]].reset_index(drop=True)
-
         df = df.loc[~df[self.name.id_item].isin(df_done[self.name.id_item].tolist())]
-
         return df
-
+    
+    def check_is_file(self, df):
+        exists_pict = df["from"].swifter.apply(lambda x : os.path.isfile(x))
+        df = df[exists_pict].reset_index(drop=True)
+        return df
     
     def save_pictures_to_folders(self, answers):
 
-        sub_answers = answers.loc[answers["TOP_0"].isin(["cle"])]
-        sub_answers = sub_answers.loc[sub_answers["PROBA_0"] >=0.85]
-        sub_answers["save_path"] = sub_answers["TOP_0"].apply(lambda x : self.picture_path + f"{x}")
+        # sub_answers = answers.loc[answers["TOP_0"].isin(["cle"])]
+        sub_answers = answers.loc[0.4 >= answers["PROBA_0"] ]
+        sub_answers["save_path"] = sub_answers["TOP_0"].apply(lambda x : f"D:/data/test/_autre/{x}")
 
         for row in tqdm(sub_answers.to_dict(orient="records")):
             try:
-                shutil.move(row["PICTURES"], row["save_path"])
+                if not os.path.isdir( row["save_path"]):
+                    os.mkdir(row["save_path"])
+                shutil.copy(row["PICTURES"], row["save_path"])
             except Exception as e:
                 self._log.warning(e)        
-    
+
 
     def plot_results(self, answers):
         for row in answers.to_dict(orient="records"):

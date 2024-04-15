@@ -41,3 +41,21 @@ def remove_accents(x):
 
 def remove_punctuation(x):
     return re.sub("[^A-Za-z0-9_]+", " ", x)  # only alphanumeric characters and underscore are allowed
+
+
+def flatten_dict(mapping_dict):
+    flat_dict = {}
+    for key, values in mapping_dict.items():
+        for value in values:
+            flat_dict[value] = key
+    return flat_dict
+
+
+def map_value_to_key(x, mapping_dict):
+
+    for key, values in mapping_dict.items():
+        for sub_value in values:
+            if str(sub_value)==str(x).strip():
+                return key
+            
+    return x

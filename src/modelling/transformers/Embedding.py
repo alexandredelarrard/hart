@@ -13,8 +13,6 @@ from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
 
-# from transformers import AutoImageProcessor, Swinv2Model, AutoFeatureExtractor
-from transformers import ViTImageProcessor, ViTForImageClassification, ViTFeatureExtractor
 from src.utils.utils_crawler import (read_json)
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 
@@ -48,24 +46,18 @@ class StepEmbedding(Step):
             
         elif type=="picture":
             self.batch_size = self._config.embedding.picture.batch_size
-            model_ckpt = self._config.embedding.picture_model
-            self.processor = ViTImageProcessor.from_pretrained(model_ckpt)
-            self.extractor = ViTFeatureExtractor.from_pretrained(model_ckpt)
-            self.model = ViTForImageClassification.from_pretrained(model_ckpt)
-            self.model.to(self._config.embedding.device)
+            self.fine_tuned_model =self._config.embedding.picture_model
 
-            # self.fine_tuned_model =self._config.embedding.picture_model
+            # get and shape data to pytorc
+            self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
 
-            # # get and shape data to pytorc
-            # self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
-
-            # # fit model 
-            # self.picture_model = PictureModel(context=self._context, config=self._config,
-            #                                 model_name=self._config.picture_classification.model,
-            #                                 batch_size=self._config.embedding.picture.batch_size,
-            #                                 device=self._config.embedding.device,
-            #                                 classes=self.classes_2id,
-            #                                 model_path=self.fine_tuned_model)
+            # fit model 
+            self.picture_model = PictureModel(context=self._context, config=self._config,
+                                            model_name=self._config.picture_classification.model,
+                                            batch_size=self._config.embedding.picture.batch_size,
+                                            device=self._config.embedding.device,
+                                            classes=self.classes_2id,
+                                            model_path=self.fine_tuned_model)
             
         else:
             raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
@@ -78,20 +70,24 @@ class StepEmbedding(Step):
 
         return self.model.encode(input_texts, 
                                  batch_size=self.batch_size,
-                                #  convert_to_tensor=True, 
                                  normalize_embeddings=False,
                                  prompt_name=prompt_name)
     
+    @timing
     def get_batched_picture_embeddings(self, images : List[str]):
 
-        # pict_transformer = self.picture_model.load_trained_model(model_path=self.fine_tuned_model)
-        # test_dataset = ArtDataset(images,
-        #                          self.classes_2id, 
-        #                          transform=pict_transformer,
-        #                          mode="test")
+        pict_transformer = self.picture_model.load_trained_model(model_path=self.fine_tuned_model)
+        test_dataset = ArtDataset(images,
+                                 self.classes_2id, 
+                                 transform=pict_transformer,
+                                 mode="test")
         
-        # embeddings = self.picture_model.predict_embedding(test_dataset)
-
+        candidate_subset_emb = self.picture_model.predict_embedding(test_dataset)
+        
+        return np.concatenate(candidate_subset_emb)
+    
+    @timing
+    def loop_manually_per_batch(self, images : List[str]):
         steps = len(images) // self.batch_size 
 
         for i in tqdm(range(steps+1)):
@@ -103,7 +99,7 @@ class StepEmbedding(Step):
                 candidate_subset_emb = extract
             else:
                 candidate_subset_emb = np.concatenate((candidate_subset_emb, extract))
-        
+
         return candidate_subset_emb
     
     @timing

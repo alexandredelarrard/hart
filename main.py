@@ -16,7 +16,7 @@ from src.modelling.steps.old.step_manual_cluster import StepManualCluster
 from src.modelling.steps.step_picture_classification import StepPictureClassification
 from src.modelling.steps.step_text_inference_gpt import StepTextInferenceGpt
 from src.modelling.steps.step_clean_gpt_inference import StepCleanGptInference
-from src.modelling.steps.step_price_evaluator import StepPriceEvaluator
+from src.modelling.steps.step_gbm_price_evaluator import StepGBMPriceEvaluator
 from src.modelling.steps.step_knn_price_evaluator import StepKNNPriceEvaluator
 
 if __name__ == "__main__":
@@ -42,19 +42,21 @@ if __name__ == "__main__":
 
     # self = StepTextClustering(context=context, config=config)
 
-    # self = StepPictureClustering(context=context, config=config)
+    self = StepPictureClustering(context=context, config=config)
 
     # self = StepAgglomerateTextInfos(context=context, config=config)
+    # self.run()
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
     # self = StepPictureClassification(context=context, config=config)
+    # self.training()
 
     # self = StepTextInferenceGpt(context=context, config=config, object="vase")
 
     # self = StepCleanGptInference(context=context, config=config)
     
-    self = StepPriceEvaluator(context=context, config=config, category="vase")
+    # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()
 
     # self = StepKNNPriceEvaluator(context=context, config=config, category="vase")

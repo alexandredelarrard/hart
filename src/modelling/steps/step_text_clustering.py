@@ -89,7 +89,6 @@ class StepTextClustering(Step):
         for row in sub_df.to_dict(orient="records"):
             copy_picture(row["PICTURES"], row["TO"])
 
-
     def get_top_words_cluster(self, df_desc):
         liste_docs = df_desc[[self.name.cluster_id, self.vector]].groupby(self.name.cluster_id)[self.vector].apply(lambda x : " ".join(x))
         self.mapping_words_cluster = self.nlp.extract_words_per_cluster(liste_docs, ngram_range=(1,2), n_top_words=self.n_words_cluster)
@@ -110,7 +109,6 @@ class StepTextClustering(Step):
                                                 prompt_name=self.prompt_name)
         return query_embedded
 
-
     def get_data(self, data_name):
         raw_query = str.lower(getattr(self.sql_queries.SQL, "get_text_to_cluster"))
         formatted_query = self.sql_queries.format_query(
@@ -120,7 +118,7 @@ class StepTextClustering(Step):
                     "table_name": data_name,
                     "picture_path": "PICTURES",
                     "class_prediction": "TOP_0",
-                    "text_vector": self.vector,
+                    "text_vector": self.name.total_description,
                     "proba_var": "PROBA_0",
                     "proba_threshold": 0.9         
                 },

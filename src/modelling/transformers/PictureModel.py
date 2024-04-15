@@ -196,12 +196,9 @@ class PictureModel(Step):
             xb = batch["image"]
             xb = xb.to(self.device)
             with torch.no_grad():
-                outputs = self.new_model(xb)
-                
-            self._log.info(outputs.keys())
-            last = outputs.last_hidden_state.mean(1)
-
-            sorties.append(last)
+                outputs = self.new_model.forward_features(xb)
+            last = self.new_model.forward_head(outputs, pre_logits=True)
+            sorties.append(last.cpu().numpy())
         
         return sorties
 

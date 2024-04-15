@@ -2,33 +2,22 @@ embedding:
   manual_cluster: D:/data/default/manuel_cluster_mapping_word.json
   device: cuda
   text_model: 'intfloat/multilingual-e5-large-instruct'
-  picture_model: 'microsoft/swinv2-tiny-patch4-window8-256' # "./data/models/peft_block23_vit_large_patch14_clip_224_280406" #''
+  picture_model: D:/data/models/peft_block23_vit_large_patch14_clip_224_280412 #'''microsoft/swinv2-tiny-patch4-window8-256'
   prompt_name : clustering
   prompt:
       clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
   text:
       batch_size : 64
   picture:
-      batch_size : 128
+      batch_size : 92
   dim_reduc:
       params:
-        umap_n_neighbors : 15
-        umap_n_components : 30
+        umap_n_neighbors : 25
+        umap_n_components : 64
   clustering:
     params:
       verbose: 0 #0 or 1 if 1 then plot clusters on projected embeddings
-      min_cluster_size: 10 # minimal number of obs for hdbscan clustering
+      min_cluster_size: 3 # minimal number of obs for hdbscan clustering
+      cluster_selection_epsilon: 2
       n_words_cluster: 5 # number of words to caracterize the cluster
-      min_samples : 10 # The number of samples in a neighbourhood for a point to be considered a core point.
-
-  all:
-    origine_table_name: ALL_ITEMS_202403
-    vector : TOTAL_DESCRIPTION
-   
-  drouot:
-    origine_table_name: DROUOT_202401
-    vector : DETAIL_DESCRIPTION
-  
-  christies:
-    origine_table_name: CHRISTIES_202403
-    vector : DETAIL_DESCRIPTION
+      min_samples : 5 # The number of samples in a neighbourhood for a point to be considered a core point.

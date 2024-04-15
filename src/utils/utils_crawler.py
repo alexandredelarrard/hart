@@ -108,6 +108,11 @@ def copy_picture(path_from, path_to):
         os.mkdir(path_to)
     shutil.copy(path_from, path_to)
 
+def move_picture(path_from, path_to):
+    if not os.path.exists(path_to):
+        os.mkdir(path_to)
+    shutil.move(path_from, path_to)
+
 def encode_file_name(file):
     return hashlib.sha256(str.encode(file)).hexdigest()
 

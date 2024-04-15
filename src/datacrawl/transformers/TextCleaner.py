@@ -130,9 +130,59 @@ class TextCleaner(Step):
     
     @timing
     def clean_detail_infos(self, df_detailed):
-        df_detailed[self.name.detailed_description] = np.where(df_detailed[self.name.detailed_description].isin(["", " "]), np.nan,
+        lowered= df_detailed[self.name.detailed_description].str.lower()
+        df_detailed[self.name.detailed_description] = np.where(lowered.isin(["retiré", ".", "", " ", 'lot non venu', 'non venu',
+                                                                            'aucune désignation', "retrait", "no lot",
+                                                                            "--> ce lot se trouve au depot", "pas de lot",
+                                                                            "withdrawn", "--> ce lot se trouve au depôt",
+                                                                            "pas de lot", "lot non venu", ""]), 
+                                                                np.nan,
                                                                df_detailed[self.name.detailed_description])
         df_detailed = df_detailed.drop_duplicates([self.name.url_full_detail])
         return df_detailed
+    
+    def remove_dates_in_parenthesis(self, x):
+        pattern = re.compile(r'\([0-9-]+\)')
+        return re.sub(pattern, '',  x)
 
+    def clean_dimensions(self, x):
+        pattern = re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+)")
+        origin = re.findall(pattern, x)
+        if len(origin) == 1:
+            origin = origin[0]
+            numbers = origin.lower().split("x")
+            if len(numbers) == 2:
+                new = f" longueur: {numbers[0].strip()} largeur: {numbers[1].strip()}"
+                return x.replace(origin, new)
+        return x 
+    
+    def clean_hight(self, x):
+        x = re.sub(r"(H[\s.:])[\s.:\d+]", " hauteur ", x, flags=re.I)
+        x = re.sub(r"(L[\s.:])[\s.:\d+]", " longueur ", x, flags=re.I)
+        x = re.sub(r"(Q[\s.:])[\s.:\d+]", " quantite ", x, flags=re.I)
+        x = re.sub(" g. ", " gramme ", x, flags=re.I)
+        x = re.sub(" gr. ", " gramme ", x, flags=re.I)
+        return x
+    
+    def clean_shorten_words(self, x):
+        x = re.sub(r"[\s\d+\s](B)\s", " bouteille ", x, flags=re.I, count=1)
+        x = re.sub(" bout. ", " bouteille ", x, flags=re.I, count=1)
+        x = re.sub(" bt. ", " bouteille ", x, flags=re.I, count=1)
+        x = re.sub("@", "a", x)
+        x = re.sub("n°", " numéro ", x)
+        x = re.sub(" in. ", " inch ", x, flags=re.I)
+        x = re.sub(" ft. ", " feet ", x, flags=re.I)
+        x = re.sub(" approx. ", " approximativement ", x)
+        return x
+    
+    def remove_spaces(self, x):
+        x = str(x).strip()
+        x = re.sub(" +", " ", x)
+        return x
+    
+    def remove_lot_number(self, x):
+        return re.sub(r"^(\d+\. )", '', str(x))
+    
+    def remove_estimate(self, x):
+        return str(x).split("\nEstimate")[0]
     

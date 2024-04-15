@@ -21,9 +21,9 @@ class StepManualCluster(Step):
         super().__init__(context=context, config=config)
 
         self.database_name = database_name
-        self.vector = self._config.embedding[self.database_name].vector
+        self.vector = self.name.total_description
 
-        self.sql_table_name = self._config.embedding[self.database_name].origine_table_name
+        self.sql_table_name = self._config.cleaning[self.database_name].origine_table_name
         self.output_table_name = "MANUAL_CLUSTER"
         self.manual_cluster =  self._config.embedding.manual_cluster
 

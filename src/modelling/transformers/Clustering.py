@@ -46,7 +46,7 @@ class TopicClustering(object):
         dbscan = hdbscan.HDBSCAN(min_cluster_size=self.params["min_cluster_size"],
                                 min_samples= self.params["min_samples"],
                                 metric='minkowski',  
-                                # cluster_selection_epsilon= self.params["cluster_selection_epsilon"],
+                                cluster_selection_epsilon= self.params["cluster_selection_epsilon"],
                                 p=2,                    
                                 cluster_selection_method='leaf',
                                 algorithm='best', 

@@ -63,6 +63,7 @@ class StepTextCleanDrouot(TextCleaner):
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
 
+        # SAVE TO SQL
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
                             if_exists="replace")

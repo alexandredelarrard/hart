@@ -3,18 +3,18 @@ import numpy as np
 import pandas as pd 
 from typing import List
 from datetime import datetime
-import re
+import swifter
+import langid
 
 from src.context import Context
 from src.utils.timing import timing
-from src.constants.variables import (list_sellers, 
-                                    liste_currency_paires, 
+from src.constants.variables import (liste_currency_paires, 
                                     fixed_eur_rate,
                                     date_format)
 
 from src.datacrawl.transformers.TextCleaner import TextCleaner
-from src.utils.utils_crawler import read_json
-from src.utils.utils_dataframe import remove_accents
+from src.utils.utils_dataframe import (remove_accents,
+                                       flatten_dict)
 from src.utils.utils_currencies import extract_currencies
 
 from omegaconf import DictConfig
@@ -29,25 +29,21 @@ class StepAgglomerateTextInfos(TextCleaner):
         super().__init__(context=context, config=config)
 
         self.sql_table_name = self._config.cleaning.full_data_auction_houses
-        self.path_mapping_country = self._config.cleaning.path_mapping_country
-        self.today = datetime.today().strftime(date_format)
-        self.table_names = {}
-        for seller in list_sellers:
-            self.table_names[seller] = self.get_sql_db_name(seller)
+        self.country_mapping  = self._config.cleaning.mapping.country
+        self.localisation_mapping = self._config.cleaning.mapping.localisation
 
+        self.today = datetime.today().strftime(date_format)
 
     @timing
     def run(self):
 
-        mapping_city_country = read_json(path=self.path_mapping_country)
-
-        df = self.concatenate_sellers()
-        df = self.keep_relevant_features(df)
+        df = self.get_data()
         df = self.homogenize_localisation(df)
-        df = self.deduce_country(df, mapping_country=mapping_city_country)
-        df = self.homogenize_title(df)
-        df = self.homogenize_description(df)
+        df = self.deduce_country(df)
+        df = self.homogenize_text(df)
+        df = self.create_total_description(df)
         df = self.remove_missing_values(df, important_cols=[self.name.total_description])
+        # df = self.deduce_language(df)
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)
@@ -62,37 +58,42 @@ class StepAgglomerateTextInfos(TextCleaner):
         
         return df
 
+    @timing
+    def get_data(self)-> pd.DataFrame:
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_sellers_dataframe"))
+        formatted_query = self.sql_queries.format_query(
+                raw_query,
+                {
+                    "drouot_name": self._config.cleaning.drouot.origine_table_name,
+                    "christies_name": self._config.cleaning.christies.origine_table_name,
+                    "sothebys_name": self._config.cleaning.sothebys.origine_table_name,
+                    "id_item": self.name.id_item,
+                    "id_picture": self.name.id_picture,
+                    "lot": self.name.lot,
+                    "date": self.name.date,
+                    "localisation": self.name.localisation,
+                    "seller": self.name.seller,
+                    "type_sale": self.name.type_sale,
+                    "url_full_detail": self.name.url_full_detail,
+                    "item_title": self.name.item_title,
+                    "detailed_title": self.name.detailed_title,
+                    "item_description": self.name.item_description,
+                    "detailed_description": self.name.detailed_description,
+                    "min_estimate": self.name.min_estimate,
+                    "max_estimate": self.name.max_estimate,
+                    "item_result": self.name.item_result,
+                    "is_item_result": self.name.is_item_result,
+                    "currency": self.name.currency
+                },
+            )
+
+        # 3. Fetch results
+        self._log.info(formatted_query)
+        return self.read_sql_data(formatted_query)
 
     @timing
-    def concatenate_sellers(self):
-        final_df = pd.DataFrame()
-        for seller in list_sellers: 
-            df = pd.read_sql(self.table_names[seller], con=self._context.db_con)
-            final_df = pd.concat([final_df, df], axis=0)
-        return final_df
-
-    @timing
-    def keep_relevant_features(self, final_df):
-        return final_df[[self.name.id_item,
-                        self.name.lot, 
-                        self.name.date,
-                        self.name.hour,
-                        self.name.item_title,
-                        self.name.detailed_title,
-                        self.name.item_description,
-                        self.name.detailed_description,
-                        self.name.min_estimate,
-                        self.name.max_estimate,
-                        self.name.item_result,
-                        self.name.is_item_result,
-                        self.name.currency,
-                        self.name.id_picture,
-                        self.name.localisation,
-                        self.name.seller,
-                        self.name.type_sale]]
-
-    @timing
-    def concatenate_currencies(self, dict_currencies, min_date="2000-01-01"):
+    def concatenate_currencies(self, dict_currencies: Dict, 
+                               min_date : str ="2000-01-01") -> pd.DataFrame:
         
         date_range = pd.DataFrame(pd.date_range(start=min_date, end=self.today), columns=[self.name.date])
         date_range[self.name.date] = date_range[self.name.date].dt.strftime("%Y-%m-%d")
@@ -115,7 +116,8 @@ class StepAgglomerateTextInfos(TextCleaner):
 
 
     @timing
-    def homogenize_currencies(self, df, df_currencies):
+    def homogenize_currencies(self, df: pd.DataFrame, 
+                              df_currencies: pd.DataFrame) -> pd.DataFrame:
 
         # two same chinese currency terms
         df[self.name.currency] = np.where(df[self.name.currency]=="RMB", "CNY", df[self.name.currency])
@@ -135,66 +137,38 @@ class StepAgglomerateTextInfos(TextCleaner):
 
 
     @timing
-    def homogenize_localisation(self, df):
+    def homogenize_localisation(self, df: pd.DataFrame) -> pd.DataFrame:
+        
+        df[self.name.type_sale] =1*(df[self.name.localisation].isin(['www.aguttes.com',
+                                'www.bonhams.com', 'www.christies.com',
+                                'www.dawsonsauctions.co.uk', 'www.drouot.com',
+                                'www.elmwoods.co.uk', 'www.geneve-encheres.ch',
+                                'www.incanto.auction/it/asta-0216/design.asp',
+                                'www.invaluable.com', 'www.kollerauctions.com',
+                                'www.lambertzhao.com', 'www.millon.com',
+                                'www.nathanmilleraste.com', 'www.online.aguttes.com',
+                                'www.pastor-mdv.fr', 'www.piasa.fr', 'www.piguet.com',
+                                'https://www.boisgirard-antonini.com/vente/aviation-3/',
+                                'www.auktionshalle-cuxhaven.com',
+                                'www.clarauction.com',
+                                'www.rops-online.be', 'www.sothebys.com', 'www.venduehuis.com',
+                                'www.vendurotterdam.nl', 'online', 'onlineonly.christies.com']))
 
-        df[self.name.type_sale] = np.where(df[self.name.localisation].isin(['www.aguttes.com',
-                                                'www.bonhams.com', 'www.christies.com',
-                                                'www.dawsonsauctions.co.uk', 'www.drouot.com',
-                                                'www.elmwoods.co.uk', 'www.geneve-encheres.ch',
-                                                'www.incanto.auction/it/asta-0216/design.asp',
-                                                'www.invaluable.com', 'www.kollerauctions.com',
-                                                'www.lambertzhao.com', 'www.millon.com',
-                                                'www.nathanmilleraste.com', 'www.online.aguttes.com',
-                                                'www.pastor-mdv.fr', 'www.piasa.fr', 'www.piguet.com',
-                                                'www.rops-online.be', 'www.sothebys.com', 'www.venduehuis.com',
-                                                'www.vendurotterdam.nl', 'online', 'onlineonly.christies.com']), 
-                                            1, df[self.name.type_sale])
-        df[self.name.type_sale] = df[self.name.type_sale].fillna(0)
-
+        # clean localisation
+        self.localisation_mapping = flatten_dict(self.localisation_mapping)
         df[self.name.localisation] = df[self.name.localisation].str.lower()
-        df[self.name.localisation] = np.where(df[self.name.localisation].isin(['online', 'onlineonly.christies.com', "londres", "london (south kensigton)", 
-                                                                "london", "www.nathanmilleraste.com", "www.lambertzhao.com", "www.bonhams.com", "www.sothebys.com", 
-                                                                'www.dawsonsauctions.co.uk','www.elmwoods.co.uk']), "london",
-                                    np.where(df[self.name.localisation].isin(['', "nan", '(mo)', '(ta)', '(vr)', '54623', '7']), np.nan,
-                                    np.where(df[self.name.localisation].isin(['(anvers)', 'anvers']), 'anvers',
-                                    np.where(df[self.name.localisation].isin(['alencon','alençon']), "alencon",
-                                    np.where(df[self.name.localisation].isin(['athens', 'athènes']), "athènes",
-                                    np.where(df[self.name.localisation].isin(['barcelona', 'barcelone']), "barcelone",
-                                    np.where(df[self.name.localisation].isin(['bern', 'berne']), "berne", 
-                                    np.where(df[self.name.localisation].isin(['bruxelles', 'www.rops-online.be']), "bruxelles",
-                                    np.where(df[self.name.localisation].isin(['paris', "www.millon.com", 'www.online.aguttes.com', 'www.piasa.fr',
-                                                                            'www.drouot.com', "www.piguet.com", 'www.aguttes.com',
-                                                                            "https://www.boisgirard-antonini.com/vente/aviation-3/",
-                                                                            "www.pastor-mdv.fr"]), "paris",
-                                    np.where(df[self.name.localisation].isin(['bologna', 'bologne']), "bologne",
-                                    np.where(df[self.name.localisation].isin(['basel', 'bâle']), "bâle",
-                                    np.where(df[self.name.localisation].isin(['chambery', 'chambéry']), "chambéry",
-                                    np.where(df[self.name.localisation].isin(['geneva', 'geneve', 'genova', 'www.geneve-encheres.ch', 
-                                                                            'genève', 'genèves', "www.kollerauctions.com"]), "geneve",
-                                    np.where(df[self.name.localisation].isin(['germany', 'berlin']), "berlin",
-                                    np.where(df[self.name.localisation].isin(['hong kong', 'hong-kong', 'hongkong']), "hong-kong",
-                                    np.where(df[self.name.localisation].isin(['levallois', 'levallois-perret']), 'levallois-perret',
-                                    np.where(df[self.name.localisation].isin(['milan', 'milano', 'www.incanto.auction/it/asta-0216/design.asp']), "milan",
-                                    np.where(df[self.name.localisation].isin(['roma', 'rome']), "rome",
-                                    np.where(df[self.name.localisation].isin(['rosiere', 'rosière']), "rosière",
-                                    np.where(df[self.name.localisation].isin(['saarbrucken', 'saarbrücken',]), "saarbrucken",
-                                    np.where(df[self.name.localisation].isin(['vienna', 'vienne']), "vienne",
-                                    np.where(df[self.name.localisation].isin(['zurich', 'zürich']), "zurich",
-                                    np.where(df[self.name.localisation].isin(['www.venduehuis.com', 'la hague']), "la hague",
-                                    np.where(df[self.name.localisation].isin(['www.invaluable.com', 'nouvelle orleans']), "nouvelle orleans",
-                                    np.where(df[self.name.localisation].isin(['www.vendurotterdam.nl', 'rotterdam']), "rotterdam",
-                                    np.where(df[self.name.localisation].isin(['hannut', 'hannut)', "(hannut)"]), "hannut",
-                                            df[self.name.localisation] ))))))))))))))))))))))))))
+        mapped_loc = df[self.name.localisation].map(self.localisation_mapping)
+        df[self.name.localisation] = np.where(mapped_loc.notnull(), mapped_loc,
+                                     np.where(df[self.name.localisation]=="nan", np.nan, 
+                                            df[self.name.localisation]))
+        df[self.name.localisation] = df[self.name.localisation].apply(lambda x: remove_accents(str(x)))
 
         return df
 
     @timing
-    def deduce_country(self, df, mapping_country):
-        clean_mapping =  {remove_accents(k) : v for k, v in mapping_country.items()}
-
-        df[self.name.localisation] = df[self.name.localisation].apply(lambda x: remove_accents(str(x)))
+    def deduce_country(self, df: pd.DataFrame) -> pd.DataFrame:
+        clean_mapping =  {remove_accents(k) : v for k, v in self.country_mapping.items()}
         df[self.name.country] = df[self.name.localisation].map(clean_mapping)
-
         df[self.name.country] = np.where((df[self.name.country] != "nan")&(df[self.name.country].notnull()), df[self.name.country],
                                 np.where(df[self.name.currency] == "GBP", "UK",
                                 np.where(df[self.name.currency] == "CHF", "SUISSE",
@@ -207,27 +181,11 @@ class StepAgglomerateTextInfos(TextCleaner):
         return df
 
     @timing
-    def homogenize_title(self, df):
+    def homogenize_text(self, df: pd.DataFrame) -> pd.DataFrame:
 
-        df[self.name.item_title] = df[self.name.item_title].apply(lambda x : re.sub("^(\\d+\\. )", '', str(x)))
-        df[self.name.item_title] = np.where(df[self.name.item_title] == "None", np.nan, 
-                                            df[self.name.item_title])
-        df[self.name.detailed_title] = np.where(df[self.name.detailed_title].isin(["None","", "nan"]), np.nan, 
-                                            df[self.name.detailed_title])
-        
-        return df 
-
-    @timing
-    def homogenize_description(self, df):
-
-        df[self.name.item_description] = df[self.name.item_description].apply(
-                                        lambda x : str(x).split("\nEstimate")[0])
-        df[self.name.item_description] = df[self.name.item_description].apply(lambda x : re.sub("^(\\d+\\. )", '', str(x)))
-        df[self.name.item_description] = np.where(df[self.name.item_description] == "None", np.nan, 
-                                            df[self.name.item_description])
-        
         # detailed description cleaning 
-        for col in [self.name.item_description, self.name.detailed_description]:
+        for col in [self.name.item_description, self.name.detailed_description,
+                    self.name.item_title, self.name.detailed_title]:
             df[col] = np.where(df[col].isin([
                                     '', '1 ^,,^^,,^','2 ^,,^^,,^','1 ^"^^"^',
                                     '1 ^,,^', '3 ^,,^^,,^','6 ^,,^','2 ^,,^',
@@ -235,12 +193,47 @@ class StepAgglomerateTextInfos(TextCleaner):
                                     '4 ^,,^', 'size 52.', '1 ^,,^^,,^ per dozen',
                                     '10 ^,,^^,,^', 'Non venu','NON VENU','.',]), np.nan, 
                             df[col])
+            
+            df[col] = df[col].swifter.apply(lambda x: self.clean_description(x))
+            df[col] = np.where(df[col].isin(["None","", "nan"]), np.nan, df[col])
         
-        df[self.name.total_description] = np.where((df[self.name.detailed_description].notnull())&(df[self.name.item_description].notnull()),
-                                                   df[self.name.item_description].fillna('') + ". " + df[self.name.detailed_description].fillna(''),
-                                          np.where((df[self.name.detailed_description].notnull())&(df[self.name.item_description].isnull()),          
-                                                    df[self.name.detailed_description],
-                                          np.where((df[self.name.detailed_description].isnull())&(df[self.name.item_description].notnull()),    
-                                                    df[self.name.item_description], np.nan)))
+        return df
+    
+    def deduce_language(self, df: pd.DataFrame) -> pd.DataFrame: # takes 4h....
+        df["LANGUE"] = df[self.name.total_description].swifter.apply(lambda x: 
+                                                    langid.classify(str(x)))
+        df["TEXT_LEN"] = df[self.name.total_description].apply(lambda x: len(str(x)))
+        return df
+    
+    @timing
+    def create_total_description(self, df: pd.DataFrame) -> pd.DataFrame:
+
+        df[self.name.total_description] = np.where(df[self.name.detailed_description].notnull(),
+                                                   df[self.name.detailed_description],
+                                                   df[self.name.item_description])
         
+        df[self.name.total_description] = np.where(df[self.name.total_description].isnull(),
+                                                   df[self.name.item_title],
+                                                   df[self.name.total_description])
+        
+        # add title to desc if not in desc
+        title_in_desc = df[[self.name.item_title, 
+                           self.name.total_description]].apply(lambda x: str(x[0]).replace("...","").lower() in str(x[1]).lower().replace("\n"," "), axis=1)
+        df[self.name.total_description] = np.where((~title_in_desc)&(df[self.name.item_title].notnull()),
+                                                   df[self.name.item_title] + ". " + df[self.name.total_description].fillna(""),
+                                                   df[self.name.total_description])
+
         return df 
+    
+    
+    def clean_description(self, x :str) -> str :
+    
+        x = self.remove_lot_number(x)
+        x = self.remove_estimate(x)
+        x = self.remove_dates_in_parenthesis(x)
+        x = self.clean_dimensions(x)
+        x = self.clean_hight(x)
+        x = self.clean_shorten_words(x)
+        x = self.remove_spaces(x)
+
+        return x

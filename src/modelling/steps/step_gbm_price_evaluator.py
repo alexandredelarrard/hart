@@ -8,7 +8,7 @@ from src.modelling.transformers.TrainerLightgbm import TrainLightgbmModel
 from src.constants.variables import date_format
 from omegaconf import DictConfig
 
-class StepPriceEvaluator(Step):
+class StepGBMPriceEvaluator(Step):
     
     def __init__(self, 
                  context : Context,
