@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # self = StepTextClustering(context=context, config=config)
 
-    self = StepPictureClustering(context=context, config=config)
+    # self = StepPictureClustering(context=context, config=config)
 
     # self = StepAgglomerateTextInfos(context=context, config=config)
     # self.run()
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self.training()
 
-    # self = StepTextInferenceGpt(context=context, config=config, object="vase")
+    self = StepTextInferenceGpt(context=context, config=config, object="vase")
 
     # self = StepCleanGptInference(context=context, config=config)
     

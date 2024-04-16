@@ -7,7 +7,7 @@ from pathlib import Path
 
 from openai import AsyncClient
 
-from genai_utils.day1.prompts import _Prompt
+from src.genai_utils.prompts import _Prompt
 
 MEMOIZATION_DIR = (Path.home() / ".gen-ai-cache").resolve()
 

@@ -1,4 +1,5 @@
 import openai
+openai.api_version = "2023-07-01-preview"
 import os
 import time
 from queue import Queue
@@ -8,7 +9,7 @@ from threading import Thread
 from omegaconf import DictConfig
 from src.schemas.gpt_schemas import Vase
 from src.genai_utils.traced_calls import TracedVLLMCompletion
-from genai_utils.params import vLLMExtraCompletionParams
+from src.genai_utils.params import vLLMExtraCompletionParams
 
 from src.utils.utils_crawler import (encode_file_name,
                                      read_crawled_pickles,
@@ -51,7 +52,10 @@ class StepTextInferenceGpt(Step):
     @timing
     def run(self):
 
+        # initialize tracking in localhos:6006
         self.initialize_phoenix()
+
+        # initialize client OPENAI
         self.initialize_client(api_keys=self.api_keys)
         
         # get data
@@ -82,29 +86,6 @@ class StepTextInferenceGpt(Step):
         self.queues["descriptions"].join()
         self._log.info('*** Done in {0}'.format(time.time() - t0))
         
-
-    def get_api_keys(self):
-        self.api_keys = []
-        for key, item in os.environ.items():
-            if "OPENAI_API_KEY" in key: 
-                self.api_keys.append(item)
-        
-        if len(self.api_keys) == 0:
-            raise Exception("Please provide an API KEY in .env file for OPENAI")
-
-    def initialize_client(self, api_keys):
-        self.client = openai.OpenAI(api_key=api_keys[0])
-        self._log.info(f"Run with API key : {self.client.api_key}")
-
-
-    def initialize_phoenix(self):
-        if not is_phoenix_already_launched():
-            tds = maybe_load_trace_dataset(trace_dir="D:/data/llm_log/")
-            self.px_session = px.launch_app(trace=tds)
-        else:
-            self._log.info("Phoenix already launched at http://localhost:6006")
-        
-        save_trace_dataset(px.Client(), trace_dir="D:/data/llm_log/")
 
     def initialize_queue_description(self, df, category):
         for row in df.to_dict(orient="records"):
@@ -196,8 +177,10 @@ class StepTextInferenceGpt(Step):
                 seed=self.seed,
                 messages=messages,
                 temperature=0,
+                response_format={"type": "json_object"},
                 stream=False,       
             )
+            
             message_content = self.get_text(stream)
             query_status = "200"
 
@@ -223,3 +206,37 @@ class StepTextInferenceGpt(Step):
     
     def get_text(self, stream):
         return stream.choices[0].message.content
+    
+    def get_api_keys(self):
+        self.api_keys = []
+        for key, item in os.environ.items():
+            if "OPENAI_API_KEY" in key: 
+                self.api_keys.append(item)
+        
+        if len(self.api_keys) == 0:
+            raise Exception("Please provide an API KEY in .env file for OPENAI")
+
+    def initialize_client(self, api_keys):
+        self.client = openai.OpenAI(api_key=api_keys[0])
+        self._log.info(f"Run with API key : {self.client.api_key}")
+
+    def initialize_phoenix(self):
+        if not is_phoenix_already_launched():
+            tds = maybe_load_trace_dataset(trace_dir="D:/data/llm_log/")
+            self.px_session = px.launch_app(trace=tds)
+        else:
+            self._log.info("Phoenix already launched at http://localhost:6006")
+        
+        try:
+            save_trace_dataset(px.Client(), trace_dir="D:/data/llm_log/")
+        except Exception:
+            pass
+
+    def initialize_llm(self, schema):
+        format = vLLMExtraCompletionParams(response_format=Vase.model_json_schema())
+        self.llm = TracedVLLMCompletion(client = self.client,
+                                        # vllm_extra_completion_params=format,
+                                        openai_completion_params={
+                                            "model":self.llm_model,
+                                            "seed":self.seed,
+                                            "temperature":0})
