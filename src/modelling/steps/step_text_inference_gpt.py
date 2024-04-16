@@ -1,20 +1,27 @@
 import openai
 import os
 import time
-import pandas as pd 
 from queue import Queue
+import phoenix as px
 from threading import Thread
 
-from src.context import Context
-from src.utils.step import Step
-from src.utils.timing import timing
-
 from omegaconf import DictConfig
+from src.schemas.gpt_schemas import Vase
+from src.genai_utils.traced_calls import TracedVLLMCompletion
+from genai_utils.params import vLLMExtraCompletionParams
+
 from src.utils.utils_crawler import (encode_file_name,
                                      read_crawled_pickles,
                                      save_queue_to_file)
 from src.utils.utils_dataframe import (remove_accents,
                                        remove_punctuation)
+from src.genai_utils.tracing import (maybe_load_trace_dataset,
+                                    is_phoenix_already_launched,
+                                    save_trace_dataset)
+from src.context import Context
+from src.utils.step import Step
+from src.utils.timing import timing
+
 
 class StepTextInferenceGpt(Step):
 
@@ -44,8 +51,9 @@ class StepTextInferenceGpt(Step):
     @timing
     def run(self):
 
+        self.initialize_phoenix()
         self.initialize_client(api_keys=self.api_keys)
-
+        
         # get data
         # df = pd.read_sql("TEST_0.05_06_04_2024", con=self._context.db_con)
         # df = df.loc[df["PROBA_0"] >= 0.85]
@@ -87,6 +95,16 @@ class StepTextInferenceGpt(Step):
     def initialize_client(self, api_keys):
         self.client = openai.OpenAI(api_key=api_keys[0])
         self._log.info(f"Run with API key : {self.client.api_key}")
+
+
+    def initialize_phoenix(self):
+        if not is_phoenix_already_launched():
+            tds = maybe_load_trace_dataset(trace_dir="D:/data/llm_log/")
+            self.px_session = px.launch_app(trace=tds)
+        else:
+            self._log.info("Phoenix already launched at http://localhost:6006")
+        
+        save_trace_dataset(px.Client(), trace_dir="D:/data/llm_log/")
 
     def initialize_queue_description(self, df, category):
         for row in df.to_dict(orient="records"):
@@ -168,7 +186,7 @@ class StepTextInferenceGpt(Step):
                 temperature=0,
                 stream=False,       
             )
-            message_content = stream.choices[0].message.content
+            message_content = self.get_text(stream)
             messages.append({"role": "assistant", "content": message_content})
             messages.append(prompt[self.name.prompt_description])
 
@@ -180,7 +198,7 @@ class StepTextInferenceGpt(Step):
                 temperature=0,
                 stream=False,       
             )
-            message_content = stream.choices[0].message.content
+            message_content = self.get_text(stream)
             query_status = "200"
 
         except openai.APIError as e:
@@ -202,3 +220,6 @@ class StepTextInferenceGpt(Step):
             pass
 
         return message_content, query_status
+    
+    def get_text(self, stream):
+        return stream.choices[0].message.content
