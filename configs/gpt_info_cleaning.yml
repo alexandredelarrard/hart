@@ -3,7 +3,22 @@ evaluator:
     mappings: 
         watch: D:/data/default/watch_features.json
         vase: D:/data/default/vase_features.json
+        all: D:/data/default/category_features.json
 
+    info_to_mapping:
+        shape_mapping: [_SHAPE]
+        country_mapping: [_COUNTRY]
+        color_mapping: ["_COLOR", "_MATERIAL"]
+        material_mapping: ["_MATERIAL", "_COLOR"]
+        period_mapping: [_PERIODE_OR_CIRCA_YEAR]
+        style_mapping: ["_PERIODE_OR_CIRCA_YEAR", "_STYLE"] 
+        condition_mapping: [_CONDITION]
+        decorations_mapping: [_DECORATIONS]
+
+    handle_dates: ["_PERIODE_OR_CIRCA_YEAR"]
+    handle_cm: ["_HEIGHT"]
+    cols_to_float: ["_HEIGHT", "_DIAMETER", "_LENGTH", "_YEAR", "_PERIODE_OR_CIRCA_YEAR", "NUMBER_DESCRIBED_OBJECTS"]
+        
     cleaning_mapping:
         period: {
             "qianlong" : "1780",
@@ -264,4 +279,54 @@ evaluator:
             "color": ["polychrome decoration", "colorful"],
             "glass": ["glass", "transparent"],
             "patterns" : ["blue and white", "designs", "patterns", "intricate", "geometric", "abstract", "traditional chinese motifs"]
+        }
+
+        object_sub_category: {
+            "ring": ["ring"],
+            "bracelet": ["bracelet"],
+            "necklace": ["necklace"],
+            "pendant": ["pendant", "pendentif", "medallion pendant"],
+            "brooch": ["brooch"],
+            "earrings": ["earrings", "ear clips"],
+            "ceramic_vase": ["ceramic vase"],
+            "wine": ["bordeaux wine", "bordeaux", "bottles", "bordeaux wine collection", "red wine", "fine wine", "fine and rare wine", "fine and rare wines", "sauternes"],
+            "champagne": ["champagne"],
+            "painting_life": ["still life"],
+            "painting_landscape": ["landscape", "classical ruins landscape"],
+            "painting_portrait": ["portrait", "self-portrait"],
+            "painting_modern": ["modern art", "abstract art", "modern and contemporary art", "impressionist modern art", "contemporary art"],
+            "painting_religious": ["religious art"],
+            "painting_watercolor": ["watercolor"],
+            "painting_oil_canvas": ["oil on canvas", "old master painting"],
+            "painting_maritime": ["maritime scene"],
+            "table": ["table"],
+            "armchair": ["armchair", "armchairs"],
+            "desk": ["desk"],
+            "commode": ["commode"],
+            "chair": ["chair", "chairs"],
+            "sofa": ["sofa", "canape"],
+            "lithography": ["lithograph", "lithography", "lithographie"],
+            "etching": ["etching", "gravure"],
+            "drawing": ["drawing"],
+            "print": ["print", "limited edition print"],
+            "candlesticks": ["candlesticks"],
+            "vase_glass": ["glass vase"],
+            "vase_murano": ["murano glass vase"], 
+            "vase_porcelaine": ["porcelain vase"],
+            "vase_terracotta": ["terracotta"],
+            "time_watch": ["wristwatch", "watches", "mechanical watch", "automatic wristwatch", "pocket watch"],
+            "time_clock": ["mechanical clock"],
+            "sculpture_bronze": ["bronze figurine", "bronze figure", "bronze", "bronze sculpture"],
+            "sculpture_wood": ["wooden sculpture"],
+            "sculpture_animal": ["animal figurine"],
+            "sculpture_mask": ["wooden mask"],
+            "sculpture_terracota": ["terracotta sculpture"],
+            "screenprint": ["screenprint", "cinema poster"],
+            "book": ["rare book", "art book", "limited edition", "art history"],
+            "table_lamp": ["table lamp"],
+            "lamp": ["lamp"],
+            "wall appliques": ["wall appliques"],
+            "rug": ["carpet", "rug"],
+            "cloth_women": ["women's clothing"],
+            "cloth_handbag": ["handbag", "leather handbag"],
         }

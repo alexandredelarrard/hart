@@ -4,6 +4,7 @@ import pandas as pd
 from typing import List
 from datetime import datetime
 import swifter
+import re 
 import langid
 
 from src.context import Context
@@ -14,6 +15,7 @@ from src.constants.variables import (liste_currency_paires,
 
 from src.datacrawl.transformers.TextCleaner import TextCleaner
 from src.utils.utils_dataframe import (remove_accents,
+                                       remove_punctuation,
                                        flatten_dict)
 from src.utils.utils_currencies import extract_currencies
 
@@ -75,6 +77,7 @@ class StepAgglomerateTextInfos(TextCleaner):
                     "seller": self.name.seller,
                     "type_sale": self.name.type_sale,
                     "url_full_detail": self.name.url_full_detail,
+                    "auction_title": self.name.auction_title,
                     "item_title": self.name.item_title,
                     "detailed_title": self.name.detailed_title,
                     "item_description": self.name.item_description,
@@ -186,12 +189,12 @@ class StepAgglomerateTextInfos(TextCleaner):
         # detailed description cleaning 
         for col in [self.name.item_description, self.name.detailed_description,
                     self.name.item_title, self.name.detailed_title]:
-            df[col] = np.where(df[col].isin([
+            df[col] = np.where(df[col].str.lower().isin([
                                     '', '1 ^,,^^,,^','2 ^,,^^,,^','1 ^"^^"^',
                                     '1 ^,,^', '3 ^,,^^,,^','6 ^,,^','2 ^,,^',
                                     '3 ^,,^','5 ^,,^^,,^', '4 ^,,^^,,^',
                                     '4 ^,,^', 'size 52.', '1 ^,,^^,,^ per dozen',
-                                    '10 ^,,^^,,^', 'Non venu','NON VENU','.',]), np.nan, 
+                                    '10 ^,,^^,,^', 'non venu', '.']), np.nan, 
                             df[col])
             
             df[col] = df[col].swifter.apply(lambda x: self.clean_description(x))
@@ -213,12 +216,20 @@ class StepAgglomerateTextInfos(TextCleaner):
                                                    df[self.name.item_description])
         
         df[self.name.total_description] = np.where(df[self.name.total_description].isnull(),
-                                                   df[self.name.item_title],
+                                                   df[self.name.item_description],
                                                    df[self.name.total_description])
         
+        df[self.name.total_description] = np.where(df[self.name.total_description].isnull(),
+                                                   df[self.name.item_title],
+                                                   df[self.name.total_description])
+
         # add title to desc if not in desc
+        function_clean = lambda x: remove_punctuation(re.sub(" +", " ", str(x).lower().replace("\n"," "))).strip()
+        # item_desc_in_desc =  df[[self.name.item_description, 
+        #                    self.name.total_description]].swifter.apply(lambda x: function_clean(x[0]) in function_clean(x[1]), axis=1)
+        
         title_in_desc = df[[self.name.item_title, 
-                           self.name.total_description]].apply(lambda x: str(x[0]).replace("...","").lower() in str(x[1]).lower().replace("\n"," "), axis=1)
+                           self.name.total_description]].swifter.apply(lambda x: function_clean(x[0]) in function_clean(x[1]), axis=1)
         df[self.name.total_description] = np.where((~title_in_desc)&(df[self.name.item_title].notnull()),
                                                    df[self.name.item_title] + ". " + df[self.name.total_description].fillna(""),
                                                    df[self.name.total_description])
@@ -235,5 +246,6 @@ class StepAgglomerateTextInfos(TextCleaner):
         x = self.clean_hight(x)
         x = self.clean_shorten_words(x)
         x = self.remove_spaces(x)
+        x = self.remove_rdv(x)
 
         return x

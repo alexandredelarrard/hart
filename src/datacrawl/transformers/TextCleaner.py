@@ -131,7 +131,8 @@ class TextCleaner(Step):
     @timing
     def clean_detail_infos(self, df_detailed):
         lowered= df_detailed[self.name.detailed_description].str.lower()
-        df_detailed[self.name.detailed_description] = np.where(lowered.isin(["retiré", ".", "", " ", 'lot non venu', 'non venu',
+        lowered= lowered.str.strip()
+        df_detailed[self.name.detailed_description] = np.where(lowered.isin(["retiré", ".", "", " ", ". ", 'lot non venu', 'non venu',
                                                                             'aucune désignation', "retrait", "no lot",
                                                                             "--> ce lot se trouve au depot", "pas de lot",
                                                                             "withdrawn", "--> ce lot se trouve au depôt",
@@ -139,6 +140,7 @@ class TextCleaner(Step):
                                                                 np.nan,
                                                                df_detailed[self.name.detailed_description])
         df_detailed = df_detailed.drop_duplicates([self.name.url_full_detail])
+        
         return df_detailed
     
     def remove_dates_in_parenthesis(self, x):
@@ -160,8 +162,6 @@ class TextCleaner(Step):
         x = re.sub(r"(H[\s.:])[\s.:\d+]", " hauteur ", x, flags=re.I)
         x = re.sub(r"(L[\s.:])[\s.:\d+]", " longueur ", x, flags=re.I)
         x = re.sub(r"(Q[\s.:])[\s.:\d+]", " quantite ", x, flags=re.I)
-        x = re.sub(" g. ", " gramme ", x, flags=re.I)
-        x = re.sub(" gr. ", " gramme ", x, flags=re.I)
         return x
     
     def clean_shorten_words(self, x):
@@ -173,6 +173,12 @@ class TextCleaner(Step):
         x = re.sub(" in. ", " inch ", x, flags=re.I)
         x = re.sub(" ft. ", " feet ", x, flags=re.I)
         x = re.sub(" approx. ", " approximativement ", x)
+        x = re.sub(" g. ", " gramme ", x, flags=re.I)
+        x = re.sub(" gr. ", " gramme ", x, flags=re.I)
+        x = re.sub(" diam. ", " diametre ", x, flags=re.I)
+        x = x.replace("Photo non contractuelle", "")
+        x = x.replace("Pour enchérir, veuillez consulter la section « Informations de vente »", "")
+
         return x
     
     def remove_spaces(self, x):
@@ -186,3 +192,7 @@ class TextCleaner(Step):
     def remove_estimate(self, x):
         return str(x).split("\nEstimate")[0]
     
+    def remove_rdv(self, x):
+        x = str(x).split("\nSans rendez-vous")[0]
+        x = str(x).split("\nProvenance")[0]
+        return x

@@ -33,6 +33,11 @@ def handle_answer(answer):
     x = x.replace("```json", "")
     x = x.replace("```", "")
     x = x.replace("N/A", "None")
+    x = x.replace("Here is the extracted information in JSON format:", "")
+    x = x.replace("Here is the extracted features in JSON format:", "")
+    x = x.replace("Here are the extracted features in JSON format:", "")
+    x = x.replace("Here is the extracted information in JSON format:", "")
+    x = x.strip()
     
     # handle lists 
     if len(re.findall("\\[(.*?)\\]", x)) !=0: 
@@ -63,7 +68,7 @@ def clean_list(x):
 
 def homogenize_value_format(value):
     if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
-        return remove_accents(value.lower())
+        return remove_accents(str(value).lower())
     elif isinstance(value, List):
         liste = []
         for element in value:
@@ -86,10 +91,20 @@ def replace_key(k, col_mapping):
 
 def homogenize_keys_name(x, col_mapping):
     new_dict = {}
-    for k, v in x.items():
-        key =  replace_key(k, col_mapping)
-        new_dict[key] = remove_accents(str(v).lower().strip())
-    return new_dict
+    try:
+        for k, v in x.items():
+            key =  replace_key(k, col_mapping)
+            if isinstance(v, List):
+                values = []
+                for sub_values in v:
+                    values.append(remove_accents(str(sub_values).lower().strip()))
+                new_dict[key] = values
+            else:
+                new_dict[key] = remove_accents(str(v).lower().strip())
+        return new_dict
+    except Exception:
+        logging.warning(x)
+        return x
 
 
 ### OLD

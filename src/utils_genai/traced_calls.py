@@ -18,14 +18,14 @@ from tenacity import (
     wait_random,
 )
 
-from genai_utils.day1.deepmerge import deepmerge
-from genai_utils.day1.memoize import memoize
-from genai_utils.day1.params import (
+from src.genai_utils.deepmerge import deepmerge
+from src.genai_utils.memoize import memoize
+from src.genai_utils.params import (
     OpenAICompletionParams,
     params_to_dict,
     vLLMExtraCompletionParams,
 )
-from genai_utils.day1.prompts import _Prompt
+from src.genai_utils.prompts import _Prompt
 
 CONFIG__TRACER_NAME = __name__
 

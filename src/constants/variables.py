@@ -24,6 +24,7 @@ class Naming:
         self.url_auction = "URL_AUCTION"
         self.url_item = "URL_ITEM"
         self.url_picture = "URL_PICTURE"
+        self.pictures_list_url = "PICTURES_URL"
 
         self.min_estimate = "MIN_ESTIMATION"
         self.eur_min_estimate = "EUR_MIN_ESTIMATION"

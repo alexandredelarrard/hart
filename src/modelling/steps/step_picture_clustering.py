@@ -44,7 +44,7 @@ class StepPictureClustering(Step):
         df_desc = self.get_data(data_name)
         df_desc = self.check_is_file(df_desc)
 
-        liste_picts = glob(r"D:\data\pictures_training\tableau\*.jpg") + glob(r"D:\data\test\tableau\*.jpg")
+        liste_picts = glob(r"D:\data\test\_autre\photographie\*.jpg") # + glob(r"D:\data\test\affiche\*.jpg")
         df_desc = pd.DataFrame(liste_picts, columns = ["PICTURES"])
 
         # create text embedding

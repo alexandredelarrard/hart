@@ -14,10 +14,12 @@ from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_picture_clustering import StepPictureClustering
 from src.modelling.steps.old.step_manual_cluster import StepManualCluster
 from src.modelling.steps.step_picture_classification import StepPictureClassification
-from src.modelling.steps.step_text_inference_gpt import StepTextInferenceGpt
-from src.modelling.steps.step_clean_gpt_inference import StepCleanGptInference
+from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
+from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
 from src.modelling.steps.step_gbm_price_evaluator import StepGBMPriceEvaluator
 from src.modelling.steps.step_knn_price_evaluator import StepKNNPriceEvaluator
+
+from src.modelling.transformers.TextModel import TextModel
 
 if __name__ == "__main__":
 
@@ -35,14 +37,16 @@ if __name__ == "__main__":
     # self.run(self.get_list_items_to_crawl(), self.crawling_list_items_function)
 
     # self = StepTextCleanDrouot(context=context, config=config)
+    # self.run()
 
     # self = StepTextCleanChristies(context=context, config=config)
 
     # self = StepTextCleanSothebys(context=context, config=config)
+    # self.run()
 
     # self = StepTextClustering(context=context, config=config)
 
-    self = StepPictureClustering(context=context, config=config)
+    # self = StepPictureClustering(context=context, config=config)
 
     # self = StepAgglomerateTextInfos(context=context, config=config)
     # self.run()
@@ -60,3 +64,5 @@ if __name__ == "__main__":
     # self.training()
 
     # self = StepKNNPriceEvaluator(context=context, config=config, category="vase")
+
+    self = TextModel(context=context, config=config, model_name="mistralai/Mistral-7B-Instruct-v0.2") #"meta-llama/Meta-Llama-3-8B"

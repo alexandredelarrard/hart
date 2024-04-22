@@ -20,8 +20,8 @@ from src.context import get_config_context
 from src.utils.cli_helper import SpecialHelpOrder
 from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_picture_classification import StepPictureClassification
-from src.modelling.steps.step_text_inference_gpt import StepTextInferenceGpt
-from src.modelling.steps.step_clean_gpt_inference import StepCleanGptInference
+from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
+from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
 
 @click.group(cls=SpecialHelpOrder)
 def cli():

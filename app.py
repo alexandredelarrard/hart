@@ -44,9 +44,9 @@ class WebAPP(Step):
                 embeddings = st.session_state["text_clustering"].text_to_embedding(widget_ui["query_text"])
                 text_results = st.session_state["collection"].query_collection(embeddings)
 
-            # if widget_ui["picture_paths"]:
-            #     st.write(widget_ui["picture_paths"])
-            #     picture_results = st.session_state["picture_clustering"].query_collection("/".join([st.session_state['picture_path'], widget_ui['picture_paths'].name]))
+            if widget_ui["picture_paths"]:
+                st.write(widget_ui["picture_paths"])
+                picture_results = st.session_state["picture_clustering"].query_collection("/".join([st.session_state['picture_path'], widget_ui['picture_paths'].name]))
 
             ui.get_display(st, text_results, picture_results, self.name)
 

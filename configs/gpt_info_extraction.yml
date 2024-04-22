@@ -1,6 +1,6 @@
 gpt:
-  save_path: D:/data/gpt_extract_v2/
-  llm_model: "gpt-3.5-turbo-0125"
+  save_path: D:/data/llama3_extract/
+  llm_model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF #"gpt-3.5-turbo-0125"
   seed: 1234
 
   prompts_schema: 

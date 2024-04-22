@@ -28,9 +28,11 @@ class StepTextCleanSothebys(TextCleaner):
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
         self.details_data_path = self._config.crawling[self.seller].save_data_path_details
+        self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         
         self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
+        self.auctions_col_names= self.name.dict_rename_auctions()
 
         self.sql_table_name = self.get_sql_db_name(self.seller)
         
@@ -53,10 +55,12 @@ class StepTextCleanSothebys(TextCleaner):
         #merge with items 
         df_detailed = read_crawled_pickles(path=self.details_data_path)
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
+        df_detailed = self.complement_with_condition(df_detailed)
         df_detailed = self.clean_detail_infos(df_detailed)
         df_detailed = self.remove_features(df_detailed, ["NOTE_CATALOGUE", 
                                                          "ARTIST"])
         
+
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
 
@@ -84,7 +88,6 @@ class StepTextCleanSothebys(TextCleaner):
         df[self.name.item_description] = df[self.name.item_infos]
         df[self.name.item_file] = df[self.name.item_file].str.replace(".csv","")
         df[self.name.lot] = df[self.name.item_description].apply(lambda x: x.split(".")[0].replace("No reserve\n", ""))
-        df[self.name.item_title] = df[self.name.item_infos].split("\n")[0]
 
         #error of url full detail need to be corrected 
         df[self.name.url_full_detail] = df[[self.name.url_full_detail, self.name.lot]].apply(lambda x : 
@@ -92,6 +95,9 @@ class StepTextCleanSothebys(TextCleaner):
 
         # because sothebys crawling creates duplicates 
         df = df.drop_duplicates([self.name.url_full_detail]).reset_index(drop=True)
+
+        # missing auction title 
+        df[self.name.auction_title] = df[self.name.item_file].apply(lambda x: " ".join(x.split("-")[:-1]))
 
         return df
 
@@ -110,4 +116,11 @@ class StepTextCleanSothebys(TextCleaner):
                                                 "Estimate Upon Request"]), np.nan,
                                   df[self.name.currency]) # ~2000 missing
         return df
+    
+    @timing
+    def complement_with_condition(self, df_detailed):
+        df_detailed[self.name.detailed_description] = (df_detailed[self.name.detailed_description].fillna("") + 
+                                                       ". " + 
+                                                       df_detailed["CONDITION"].fillna(""))
+        return df_detailed
     

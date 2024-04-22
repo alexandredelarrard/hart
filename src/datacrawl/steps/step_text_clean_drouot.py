@@ -59,9 +59,11 @@ class StepTextCleanDrouot(TextCleaner):
         df_detailed = read_crawled_pickles(path=self.details_data_path)
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.clean_detail_infos(df_detailed)
+        df_detailed = self.clean_pictures_url(df_detailed)
 
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
+        df = df.loc[df[self.name.detailed_description].notnull()]
 
         # SAVE TO SQL
         self.write_sql_data(dataframe=df,
@@ -149,3 +151,12 @@ class StepTextCleanDrouot(TextCleaner):
         
         return df
     
+    @timing
+    def clean_pictures_url(self, df_detailed):
+        col_list_urls = self.name.pictures_list_url
+        df_detailed[col_list_urls] = np.where(df_detailed[col_list_urls].notnull(),
+                                            df_detailed[col_list_urls].apply(lambda x: 
+                                                [str(a).split("url(")[-1].split(")")[0].replace("\"", "") for a in x]),
+                                            np.nan)
+        df_detailed[col_list_urls] = df_detailed[col_list_urls].apply(lambda x: np.nan if len(x)==0 else x)
+        return df_detailed

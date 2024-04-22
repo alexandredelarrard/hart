@@ -19,7 +19,7 @@ from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 from omegaconf import DictConfig
 
 
-class StepPictureClassification(Step):
+class StepTextClassification(Step):
     
     def __init__(self, 
                  context : Context,
@@ -77,14 +77,14 @@ class StepPictureClassification(Step):
 
 
     @timing
-    def predicting(self, view_name="TEST_20_04_2024"):
+    def predicting(self, view_name="TEST_0.05_06_04_2024"):
 
         #get data
         df = self.read_sql_data(f"SELECT \"TOTAL_DESCRIPTION\", \"SELLER\", \"ID_PICTURE\", \"ID_ITEM\" FROM \"{self.full_data}\" WHERE \"ID_PICTURE\" IS NOT NULL")
         df_done = self.read_sql_data(view_name)
 
         # ensure pictures available and subsample
-        df = df.sample(frac=0.40)
+        df = df.sample(frac=0.04)
         df = self.clean_list_pictures(df, df_done)
         df = self.check_is_file(df)
 
@@ -117,7 +117,7 @@ class StepPictureClassification(Step):
 
         self.write_sql_data(dataframe=answers,
                             table_name=view_name,# + "_" + self.today,
-                            if_exists="append")
+                            if_exists="replace")
         
         return answers
     
