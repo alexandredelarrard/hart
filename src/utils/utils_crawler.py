@@ -70,8 +70,8 @@ def read_json(path : str):
     return df_file
 
 def save_json(dico, path: str):
-    with open(path, "w") as f:
-        json.dump(dico, f)
+    with open(path, "w", encoding='utf-8') as f:
+        json.dump(dico, f, ensure_ascii=False)
 
 def save_pickle_file(df, path):
     with open(path, "wb") as f:

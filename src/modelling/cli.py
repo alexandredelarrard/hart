@@ -67,6 +67,23 @@ def step_train_picture_classification(
     step_inference.training()
 
     #python -m src modelling step-train-picture-classification
+
+@cli.command(
+    help="Extract Json from description with gpt3.5",
+    help_priority=15,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+def step_predict_picture_classification(
+    config_path
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    step_inference = StepPictureClassification(config=config, context=context)
+
+    # get crawling_function 
+    step_inference.predicting()
+
+    #python -m src modelling step-predict-picture-classification
     
 
 @cli.command(

@@ -77,14 +77,13 @@ class StepPictureClassification(Step):
 
 
     @timing
-    def predicting(self, view_name="TEST_20_04_2024"):
+    def predicting(self, view_name="PICTURES_CATEGORY_20_04_2024"):
 
         #get data
         df = self.read_sql_data(f"SELECT \"TOTAL_DESCRIPTION\", \"SELLER\", \"ID_PICTURE\", \"ID_ITEM\" FROM \"{self.full_data}\" WHERE \"ID_PICTURE\" IS NOT NULL")
         df_done = self.read_sql_data(view_name)
 
         # ensure pictures available and subsample
-        df = df.sample(frac=0.40)
         df = self.clean_list_pictures(df, df_done)
         df = self.check_is_file(df)
 

@@ -1,0 +1,22 @@
+llm:
+    hug_repo: "adldl"
+    model_path: "D:/data/models/llm"
+    temp_folder: "D:/data/temp"
+    new_model_name: "Meta-Llama-3-8B-Instruct_V1"
+    origin_model_name: "meta-llama/Meta-Llama-3-8B-Instruct"
+
+    train_data_path: 'D:/data/llm_log/train_category.jsonl'
+    test_data_path: 'D:/data/llm_log/test_category.jsonl'
+
+    params: 
+        batch_size: 4
+        ecpochs: 5
+
+    PROMPT: """You are an art expert. Extract a valid JSON object from the art description. Only return valid json and nothing else. Write all JSON values only in english, translate them if necessary.
+                JSON Schema: {"object_category": str, "object_sub_category": str, "object_subject": str, "object_brand": str, "object_material": str, "object_length": str, "object_width": str, "object_height": str, "object_weight": str, "object_signed": str, "object_condition": str, "number_objects_described" : str, "object_period_or_year": str}
+                Object category is the family of object the description is about. For instance a Bowl, a Vase, a Chair, a Table, etc.
+                Object sub category refers to a more specific part of the family of object. For instance a ceramic bowl, a glass vase, a watercolor painting etc. Give only the concept of the sub family with few words only.
+                Object subject refers to what the picture is about, or what is displayed on a picture, etc.
+                Number of objects described refers to the number of items described in the text below. Render only a number.
+                Dimensions such as length, height, width are in centimeter and weight in grams.
+                """

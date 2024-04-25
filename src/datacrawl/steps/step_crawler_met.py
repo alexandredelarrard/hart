@@ -17,7 +17,6 @@ class StepCrawlingMet(StepCrawling):
 
         super().__init__(context=context, config=config, threads=threads)
         self.seller = "met"
-        
 
     def get_urls(self):
 

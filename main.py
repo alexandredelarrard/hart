@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
     # self = StepPictureClassification(context=context, config=config)
-    # self.training()
+    # self.predicting()
 
     # self = StepTextInferenceGpt(context=context, config=config, object="vase")
 
@@ -65,4 +65,4 @@ if __name__ == "__main__":
 
     # self = StepKNNPriceEvaluator(context=context, config=config, category="vase")
 
-    self = TextModel(context=context, config=config, model_name="mistralai/Mistral-7B-Instruct-v0.2") #"meta-llama/Meta-Llama-3-8B"
+    self = TextModel(context=context, config=config, model_name="meta-llama/Meta-Llama-3-8B-Instruct") #="D:/data/models/llm/Meta-Llama-3-8B-Instruct_fine_tuned_merged_model" "mistralai/Mistral-7B-Instruct-v0.2"
