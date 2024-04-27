@@ -1,22 +1,22 @@
-import glob
-import os 
-import random
-import numpy as np
-import shutil
-import swifter
 from datetime import datetime
+import pandas as pd 
+import numpy as np
+import evaluate
+from datasets import Dataset, DatasetDict
+from omegaconf import DictConfig
 
-from tqdm import tqdm 
-import matplotlib.pyplot as plt
+from peft import LoraConfig, TaskType, get_peft_model
+from transformers import (TrainingArguments,
+                            Trainer,
+                            AutoTokenizer,
+                            AutoModelForSequenceClassification)
+
+from src.utils.utils_crawler import save_json
+from src.utils.utils_models import print_trainable_parameters
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-
-from src.utils.utils_crawler import (read_json,
-                                     save_json)
-from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
-
-from omegaconf import DictConfig
+from src.constants.class_map import class_mapping
 
 
 class StepTextClassification(Step):
@@ -28,166 +28,135 @@ class StepTextClassification(Step):
 
         super().__init__(context=context, config=config)
 
-        self.ratio_validation = self._config.picture_classification.ratio_validation
-        self.model_name = self._config.picture_classification.model
-        self.picture_path = self._config.picture_classification.pictures_path
-        self.train_batch_size = self._config.picture_classification.train_batch_size
-        self.test_batch_size = self._config.picture_classification.test_batch_size
-        self.device = self._config.picture_classification.device
-        self.fine_tuned_model=self._config.picture_classification.fine_tuned_model
-        self.epochs = self._config.picture_classification.epochs
-        self.default_image_path= self._config.picture_classification.default_image_path
-        self.full_data = self._config.cleaning.full_data_auction_houses
+        self.ratio_validation = self._config.text_classification.ratio_validation
+        self.model_name = self._config.text_classification.model
+        self.train_batch_size = self._config.text_classification.train_batch_size
+        self.test_batch_size = self._config.text_classification.test_batch_size
+        self.device = self._config.text_classification.device
+        self.epochs = self._config.text_classification.epochs
+        self.fine_tuned_model = self._config.text_classification.fine_tuned_model
 
         self.save_model = save_model
         self.today = datetime.today().strftime("%d_%m_%Y")
 
+    def create_training_data(self):
+
+        df = self.read_sql_data("SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"PROBA_0\" > 0.95")
+        df = df[[self.name.id_item, self.name.total_description, "TOP_0"]]
+        df = df.loc[df[self.name.total_description].apply(lambda x: len(x))> 100]
+        df["TOP_0"] = df["TOP_0"].map(class_mapping)
+        volume_classes = df["TOP_0"].value_counts().loc[df["TOP_0"].value_counts() > 15].index
+        df = df.loc[df["TOP_0"].isin(volume_classes)]
+
+        # sample per class
+        total_sample_size = 350
+        id_items_to_keep = df.groupby('TOP_0').apply(lambda x: x[self.name.id_item][:total_sample_size]).values
+        df = df.loc[df[self.name.id_item].isin(id_items_to_keep)]
+        df.to_csv("D:/data/test_classif.csv", index=False, sep=";")
+
+        return df 
+    
+    def split_train_test(self, df):
+
+        df_validation = df.sample(frac= self.ratio_validation)
+        df_train = df.drop(df_validation.index)
+                
+        train = Dataset.from_pandas(df_train)
+        validation = Dataset.from_pandas(df_validation)
+
+        dataset = DatasetDict()
+        dataset['train'] = train
+        dataset['validation'] = validation
+
+        return dataset
 
     @timing
     def training(self):
 
-        # get and shape data to pytorc
-        self.classes_2id = self.define_num_classes()
+        df = self.create_training_data()
+        self.classes_2id = self.define_num_classes(df["TOP_0"].unique())
+        dataset = self.split_train_test(df)
 
-        # fit model 
-        picture_model = PictureModel(context=self._context, config=self._config,
-                                     model_name=self.model_name,
-                                     batch_size=self.train_batch_size,
-                                     device=self.device,
-                                     classes=self.classes_2id,
-                                     epochs=self.epochs)
+        self.load_tokenizer()
+        tokenized_datasets = dataset.map(self.tokenize_text, batched=True)
+        small_train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(1000))
+        small_eval_dataset = tokenized_datasets["validation"].shuffle(seed=42).select(range(1000))
 
-        pict_transformer = picture_model.define_model_transformer()
+        self.lora_config = self.set_lora_config()
+        self.base_model = self.load_base_model()
+        self.text_model = get_peft_model(self.base_model, self.lora_config)
+        print_trainable_parameters(self.text_model)
 
-        # data defined and shaped
-        self.data = self.get_train_test_data(ratio_validation=self.ratio_validation)
-        train_dataset = ArtDataset(self.data["train"], self.classes_2id, transform=pict_transformer,
-                                 default_path=self.default_image_path)
-        validation_dataset = ArtDataset(self.data["validation"], self.classes_2id, transform=pict_transformer,
-                                 default_path=self.default_image_path)
+        self.metric = evaluate.load("accuracy")
+        self.trainer  = self.get_trainer(small_train_dataset, small_eval_dataset)
+        self.trainer.train()
         
-        picture_model.fit(train_dataset, validation_dataset)
-
         if self.save_model:
-            picture_model.save_model(self.fine_tuned_model)
+            self.text_model.save_model(self.fine_tuned_model)
             save_json(self.classes_2id, 
                       path=self.fine_tuned_model + "/classes_2id.json")
         
-        return picture_model
-
+        return self.text_model
 
     @timing
-    def predicting(self, view_name="TEST_0.05_06_04_2024"):
-
-        #get data
-        df = self.read_sql_data(f"SELECT \"TOTAL_DESCRIPTION\", \"SELLER\", \"ID_PICTURE\", \"ID_ITEM\" FROM \"{self.full_data}\" WHERE \"ID_PICTURE\" IS NOT NULL")
-        df_done = self.read_sql_data(view_name)
-
-        # ensure pictures available and subsample
-        df = df.sample(frac=0.04)
-        df = self.clean_list_pictures(df, df_done)
-        df = self.check_is_file(df)
-
-        # get and shape data to pytorc
-        self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
-
-        # fit model 
-        picture_model = PictureModel(context=self._context, config=self._config,
-                                     model_name=self.model_name,
-                                     batch_size=self.test_batch_size,
-                                     device=self.device,
-                                     classes=self.classes_2id,
-                                     model_path=self.fine_tuned_model)
-        
-        pict_transformer = picture_model.load_trained_model(model_path=self.fine_tuned_model)
-        test_dataset = ArtDataset(df["from"].tolist(),
-                                 self.classes_2id, 
-                                 transform=pict_transformer,
-                                 mode="test",
-                                 default_path=self.default_image_path)
-
-        # predict
-        answers = picture_model.predict(test_dataset)
-
-        # shape and save predictions
-        answers = self.shape_answer(answers, picture_model.id2_classes)
-        answers["PICTURES"] = df["from"].tolist()
-        answers["ID_ITEM"] = df["ID_ITEM"].tolist()
-        answers['TOTAL_DESCRIPTION'] = df['TOTAL_DESCRIPTION'].tolist()
-
-        self.write_sql_data(dataframe=answers,
-                            table_name=view_name,# + "_" + self.today,
-                            if_exists="replace")
-        
-        return answers
+    def predicting(self):
+        return 0
     
+    @timing
+    def load_tokenizer(self):
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
-    def clean_list_pictures(self, df, df_done):
+    def tokenize_text(self, df):
+        return self.tokenizer(df[self.name.total_description], padding="max_length", truncation=True)
 
-        df["from"] = df[[self.name.seller, 
-                         self.name.id_picture]].apply(lambda x: 
-                                                      f"D:/data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", 
-                                                      axis=1)
-        df = df.loc[df["ID_PICTURE"].notnull()]
-        df = df.loc[~df[self.name.id_item].isin(df_done[self.name.id_item].tolist())]
-        return df
-    
-    def check_is_file(self, df):
-        exists_pict = df["from"].swifter.apply(lambda x : os.path.isfile(x))
-        df = df[exists_pict].reset_index(drop=True)
-        return df
-    
-    def save_pictures_to_folders(self, answers):
+    @timing
+    def set_lora_config(self):
+        return LoraConfig(
+            task_type=TaskType.SEQ_CLS, 
+            r=16, 
+            lora_alpha=1, 
+            lora_dropout=0.1
+        )
 
-        # sub_answers = answers.loc[answers["TOP_0"].isin(["cle"])]
-        sub_answers = answers.loc[answers["PROBA_0"] >= 0.9 ]
-        sub_answers["save_path"] = sub_answers["TOP_0"].apply(lambda x : f"D:/data/test/{x}")
+    @timing
+    def load_base_model(self):
+        return AutoModelForSequenceClassification.from_pretrained(
+            self.model_name, 
+            num_labels=len(self.classes_2id.keys())
+        )
 
-        for row in tqdm(sub_answers.to_dict(orient="records")):
-            try:
-                if not os.path.isdir( row["save_path"]):
-                    os.mkdir(row["save_path"])
-                shutil.copy(row["PICTURES"], row["save_path"])
-            except Exception as e:
-                self._log.warning(e)        
-
-
-    def plot_results(self, answers):
-        for row in answers.to_dict(orient="records"):
-            img = plt.imread(row["PICTURES"])
-            plt.imshow(img)
-            plt.title(row["TOP_0"] + " " + str(row["PROBA_0"]))
-            plt.show()
-
-        return answers
-    
-
-    def define_num_classes(self):
-
-        folders = [os.path.basename(x[0]) for x in os.walk(self.picture_path)]
-        folders = list(set(folders) - set([""]))
+    @timing
+    def define_num_classes(self, classes):
 
         self.classes_2id = {}
-        for i, classe in enumerate(np.sort(folders)):
+        for i, classe in enumerate(classes):
             self.classes_2id[classe] = i
 
         return self.classes_2id
     
-
-    def get_train_test_data(self, ratio_validation):
-
-        pictures_paths = glob.glob(self.picture_path + "/*/*.jpg")
-
-        random.shuffle(pictures_paths)
-        train_volume = int(len(pictures_paths)*(1-ratio_validation))
-        self._log.info(f"TRAIN DATA VOLUME = {train_volume} / VAL VOLUME = {len(pictures_paths) - train_volume}")
-
-        data = {"train" : pictures_paths[:train_volume],
-                "validation" : pictures_paths[train_volume:]}
+    @timing
+    def compute_metrics(self, eval_pred):
+        logits, labels = eval_pred
+        predictions = np.argmax(logits, axis=-1)
+        return self.metric.compute(predictions=predictions, references=labels)
+    
+    @timing
+    def get_trainer(self, train_data, test_data):
+        training_args = TrainingArguments(output_dir=self.fine_tuned_model, 
+                                        evaluation_strategy="steps",
+                                        num_train_epochs=self.epochs,
+                                        per_device_train_batch_size=self.train_batch_size,
+                                        lr_scheduler_type="constant",
+                                        report_to="tensorboard",
+                                        warmup_ratio=0.03,
+                                        group_by_length=True,
+                                        logging_steps=500,
+                                        learning_rate=2e-4)
         
-        return data
-
-    def shape_answer(self, answers, id2_classes):
-        for col in [x for x in answers.columns if "TOP" in x]:
-            answers[col] = answers[col].map(id2_classes)
-        return answers
+        return Trainer(
+                model=self.text_model,
+                args=training_args,
+                train_dataset=train_data,
+                eval_dataset=test_data,
+                compute_metrics=self.compute_metrics
+            )

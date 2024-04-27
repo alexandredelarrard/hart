@@ -1,8 +1,9 @@
 import re
-import numpy as np
 from typing import List, Dict
 import logging 
-from src.utils.utils_dataframe import remove_accents, remove_punctuation
+from src.utils.utils_dataframe import remove_accents
+import warnings 
+warnings.simplefilter("ignore")
 
 def reconstruct_dict(x):
     new_dict= []
@@ -15,11 +16,15 @@ def reconstruct_dict(x):
             if element == '{':
                 count_element +=1
             if ": " in element:
-                key, value = element.split(": ")
+                key, value = element.split(": ", 1)
                 key = key.replace("\"", "").strip()
-                value = value.replace("\"", "").replace(",","").strip()
+                value = value.replace("\"", "").replace(",","").split("//")[0].strip()
                 element = f"\"{key}\": \"{value}\","
             new_dict.append(element)
+
+    if new_dict[-1] != "}":
+        new_dict.append("}")
+
     return eval("\n".join(new_dict))
 
 
@@ -27,16 +32,15 @@ def handle_answer(answer):
 
     x = answer["ANSWER"]
 
-    x = x.replace("false", "False")
-    x = x.replace("true", "True")
+    if x[:5] == "Here ":
+        x = x.split(":", 1)[-1]
+
+    x = x.replace("false", "\"False\"")
+    x = x.replace("true", "\"True\"")
     x = x.replace("null", "\"Null\"")
+    x = x.replace("N/A", "\"None\"")
     x = x.replace("```json", "")
     x = x.replace("```", "")
-    x = x.replace("N/A", "None")
-    x = x.replace("Here is the extracted information in JSON format:", "")
-    x = x.replace("Here is the extracted features in JSON format:", "")
-    x = x.replace("Here are the extracted features in JSON format:", "")
-    x = x.replace("Here is the extracted information in JSON format:", "")
     x = x.strip()
     
     # handle lists 
@@ -52,7 +56,7 @@ def handle_answer(answer):
         try:
             return reconstruct_dict(x)
         except Exception:
-            logging.error(answer["ID_ITEM"])
+            logging.error(answer["ANSWER"])
             return "{}"
             
     
@@ -105,41 +109,3 @@ def homogenize_keys_name(x, col_mapping):
     except Exception:
         logging.warning(x)
         return x
-
-
-### OLD
-def flatten_dict(subdict, key):
-    new_sub_dict = {}
-    for sub_key, sub_value in subdict.items():
-        new_sub_dict["_".join([key, sub_key])]= sub_value
-    return new_sub_dict
-
-
-def flatten_description(x):
-
-    final_dict = {}
-
-    try:
-        for key, value in x.items():
-            if isinstance(value, List):
-                if len(value) !=0:
-                    if isinstance(value[0], str):
-                        final_dict[key] = ", ".join(value)
-
-                    elif isinstance(value[0], Dict):
-                        for subdict in value:
-                            new_sub_dict = flatten_dict(subdict, key)
-                            final_dict = {**final_dict, **new_sub_dict}
-                    
-            elif isinstance(value, Dict):
-                new_sub_dict = flatten_dict(value, key)
-                final_dict = {**final_dict, **new_sub_dict}
-
-            else:
-                final_dict[key] = value
-        
-        return final_dict
-    
-    except Exception:
-        logging.error(x)
-        

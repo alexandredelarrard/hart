@@ -11,8 +11,7 @@ from omegaconf import DictConfig
 from src.utils.utils_crawler import (read_crawled_pickles,
                                      read_json)
 from src.utils.utils_extraction_gpt import (handle_answer,
-                                            homogenize_keys_name,
-                                            flatten_description) 
+                                            homogenize_keys_name) 
 from src.utils.utils_dataframe import remove_accents
 from src.modelling.transformers.GptCleaner import GPTCleaner
 from src.modelling.transformers.NlpToolBox import NLPToolBox
@@ -27,7 +26,6 @@ class StepCleanGptInference(GPTCleaner):
         super().__init__(context=context, config=config)
 
         self.save_queue_path= self._config.gpt.save_path
-        self.model_path = self._config.evaluator.model_path
         self.clean_info_with_mapping = self._config.evaluator.info_to_mapping
         self.cols_to_cm = self._config.evaluator.handle_cm
         self.cols_to_date = self._config.evaluator.handle_cm
@@ -38,7 +36,7 @@ class StepCleanGptInference(GPTCleaner):
     @timing
     def run(self, category="all"):
 
-        category="all"
+        category="paintings"
         self.category= category.upper()
 
         # get category path
@@ -48,7 +46,6 @@ class StepCleanGptInference(GPTCleaner):
         self.col_mapping = read_json(self._mapping_path)
 
         df_done = read_crawled_pickles(path=self.save_queue_path)
-        df_done = df_done.loc[df_done[self.name.category] == category.upper()]
         df_done = df_done.loc[df_done["PROMPT"].notnull()]
 
         df_done = self.eval_json(df_done)
@@ -91,8 +88,6 @@ class StepCleanGptInference(GPTCleaner):
 
         # handle features element
         df_done = df_done.loc[df_done["ANSWER"].notnull()]
-        df_done["ANSWER"] = df_done["ANSWER"].swifter.apply(lambda x: 
-                                            flatten_description(x))
         
         # clean dict 
         df_done["ANSWER"] = df_done["ANSWER"].swifter.apply(lambda x: 
@@ -112,11 +107,8 @@ class StepCleanGptInference(GPTCleaner):
     def remove_outliers(self, df_done):
 
         shape_0 = df_done.shape[0]
-
         df_done["NUMBER_OBJECTS_DESCRIBED"] = df_done["NUMBER_OBJECTS_DESCRIBED"].fillna("1")
         df_done = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(["1", "2"])]
-        df_done = df_done.loc[df_done["OBJECT_CATEGORY"].notnull()]
-
         self._log.info(f"FILTERING {shape_0 - df_done.shape[0]} ({(shape_0 - df_done.shape[0])*100/shape_0:.1f}%) due to lack of info / mismatch")
 
         return df_done

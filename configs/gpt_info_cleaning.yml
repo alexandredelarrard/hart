@@ -1,23 +1,24 @@
 evaluator:
     model_path: D:/data/models/evaluator
     mappings: 
-        watch: D:/data/default/watch_features.json
-        vase: D:/data/default/vase_features.json
-        all: D:/data/default/category_features.json
+        watch: D:/data/llm_extracts/features_to_extract/watch_features.json
+        vase: D:/data/llm_extracts/features_to_extract/vase_features.json
+        all: D:/data/llm_extracts/features_to_extract/category_features.json
+        paintings: D:/data/llm_extracts/features_to_extract/paintings_features.json
 
     info_to_mapping:
         shape_mapping: [_SHAPE]
         country_mapping: [_COUNTRY]
         color_mapping: ["_COLOR", "_MATERIAL"]
         material_mapping: ["_MATERIAL", "_COLOR"]
-        period_mapping: [_PERIODE_OR_CIRCA_YEAR]
+        period_mapping: [_PERIODE_OR_CIRCA_YEAR, "_PERIODE_OR_YEAR"]
         style_mapping: ["_PERIODE_OR_CIRCA_YEAR", "_STYLE"] 
         condition_mapping: [_CONDITION]
         decorations_mapping: [_DECORATIONS]
 
-    handle_dates: ["_PERIODE_OR_CIRCA_YEAR"]
+    handle_dates: ["_PERIODE_OR_CIRCA_YEAR", "_PERIODE_OR_YEAR"]
     handle_cm: ["_HEIGHT"]
-    cols_to_float: ["_HEIGHT", "_DIAMETER", "_LENGTH", "_YEAR", "_PERIODE_OR_CIRCA_YEAR", "NUMBER_DESCRIBED_OBJECTS"]
+    cols_to_float: ["_HEIGHT", "_DIAMETER", "_LENGTH", "_YEAR", "_PERIODE_OR_CIRCA_YEAR", "_PERIODE_OR_YEAR", "NUMBER_DESCRIBED_OBJECTS"]
         
     cleaning_mapping:
         period: {

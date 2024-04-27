@@ -1,5 +1,5 @@
 gpt:
-  save_path: D:/data/llama3_extract/
+  save_path: D:/data/llm_extracts/llama3_extract_paintings/
   llm_model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF #"gpt-3.5-turbo-0125"
   seed: 1234
 

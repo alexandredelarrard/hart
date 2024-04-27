@@ -11,8 +11,6 @@ from src.schemas.gpt_schemas import Vase
 from src.utils.utils_crawler import (encode_file_name,
                                      read_crawled_pickles,
                                      save_queue_to_file)
-from src.utils.utils_dataframe import (remove_accents,
-                                       remove_punctuation)
 from src.utils_genai.tracing import (maybe_load_trace_dataset,
                                     is_phoenix_already_launched,
                                     save_trace_dataset)
@@ -26,8 +24,8 @@ class StepTextInferenceGpt(Step):
     def __init__(self, 
                 context : Context,
                 config : DictConfig,
-                object : str,
                 threads : int = 1,
+                object : str = "",
                 save_queue_size : int = 50):
 
         super().__init__(context=context, config=config)
@@ -52,10 +50,9 @@ class StepTextInferenceGpt(Step):
         self.initialize_client(api_keys=self.api_keys)
         
         # get data
-        df = self.read_sql_data(self._config.cleaning.full_data_auction_houses) 
-        df = df.sample(frac=0.05)
+        df = self.read_sql_data("SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"='tableau figuratif' AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
         df = df.drop_duplicates(self.name.total_description)
-        df = df.loc[df[self.name.total_description].str.len() > 60] # minimal desc size to have
+        df = df.loc[df[self.name.total_description].str.len() > 100] # minimal desc size to have
 
         # get already done 
         df_done = read_crawled_pickles(path=self.save_queue_path)
@@ -64,7 +61,7 @@ class StepTextInferenceGpt(Step):
             df = df.loc[~df[self.name.id_item].isin(id_done)]
 
         # initalize the urls queue
-        self.initialize_queue_description(df, category=self.object)
+        self.initialize_queue_description(df)
         
         # start the crawl
         self.start_threads_and_queues(queues=self.queues)
@@ -98,12 +95,10 @@ class StepTextInferenceGpt(Step):
         
         save_trace_dataset(px.Client(), trace_dir="D:/data/llm_log/")
 
-    def initialize_queue_description(self, df, category):
+    def initialize_queue_description(self, df):
         for row in df.to_dict(orient="records"):
             item = {self.name.id_item : row[self.name.id_item],
-                    self.name.prompt_description : self.create_prompt(row[self.name.total_description], 
-                                                                      row[self.name.auction_title]),
-                    self.name.category: category.upper(),
+                    self.name.prompt_description : self.create_prompt(row[self.name.total_description]),
                     self.name.total_description: row[self.name.total_description]}
 
             self.queues["descriptions"].put(item)
@@ -146,8 +141,8 @@ class StepTextInferenceGpt(Step):
                                         path=self.save_queue_path +
                                         f"/{file_name}.pickle")
 
-    def create_prompt(self, text : str, auction_title: str):
-        return {"role": "user", "content": f"Auction Title: {str(auction_title).lower()}\n Description: {text.lower().strip()}"[:2048]}
+    def create_prompt(self, text : str):
+        return {"role": "user", "content": f"Description: {text.lower().strip()}"[:2048]} #Auction Title: {str(auction_title).lower()}\n 
 
     def get_answer(self, prompt):
         

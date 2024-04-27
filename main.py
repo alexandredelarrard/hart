@@ -18,6 +18,7 @@ from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
 from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
 from src.modelling.steps.step_gbm_price_evaluator import StepGBMPriceEvaluator
 from src.modelling.steps.step_knn_price_evaluator import StepKNNPriceEvaluator
+from src.modelling.steps.step_text_classification import StepTextClassification
 
 from src.modelling.transformers.TextModel import TextModel
 
@@ -56,7 +57,9 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self.predicting()
 
-    # self = StepTextInferenceGpt(context=context, config=config, object="vase")
+    self = StepTextClassification(context=context, config=config)
+
+    # self = StepTextInferenceGpt(context=context, config=config)
 
     # self = StepCleanGptInference(context=context, config=config)
     
@@ -65,4 +68,4 @@ if __name__ == "__main__":
 
     # self = StepKNNPriceEvaluator(context=context, config=config, category="vase")
 
-    self = TextModel(context=context, config=config, model_name="meta-llama/Meta-Llama-3-8B-Instruct") #="D:/data/models/llm/Meta-Llama-3-8B-Instruct_fine_tuned_merged_model" "mistralai/Mistral-7B-Instruct-v0.2"
+    # self = TextModel(context=context, config=config, model_name="meta-llama/Meta-Llama-3-8B-Instruct") #="D:/data/models/llm/Meta-Llama-3-8B-Instruct_fine_tuned_merged_model" "mistralai/Mistral-7B-Instruct-v0.2"

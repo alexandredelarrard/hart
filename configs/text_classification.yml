@@ -1,11 +1,9 @@
 text_classification:
-  pictures_path : D:/data/pictures_training/
   ratio_validation : 0.15
-  model : 'intfloat/multilingual-e5-large-instruct'
+  model : bert-base-multilingual-cased #'intfloat/multilingual-e5-large-instruct'
   train_batch_size: 64
   test_batch_size: 128
   device : "cuda"
   epochs : 5
-  default_text: "Missing"
 
-  fine_tuned_model : D:/data/models/multilingual-e5-large-instruct_280418
+  fine_tuned_model : D:/data/models/bert-base-multilingual-cased_270424 #D:/data/models/multilingual-e5-large-instruct_280418

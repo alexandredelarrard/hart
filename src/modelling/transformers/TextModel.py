@@ -1,4 +1,3 @@
-import logging
 import os 
 from huggingface_hub import HfApi
 import subprocess
@@ -15,6 +14,7 @@ from transformers import (
 from peft import LoraConfig, get_peft_model, AutoPeftModelForCausalLM
 from trl import SFTTrainer  
 
+from src.utils.utils_models import print_trainable_parameters
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
@@ -28,23 +28,13 @@ Object category is the family of object the description is about. For instance a
 Object sub category refers to a more specific part of the family of object. For instance a ceramic bowl, a glass vase, a watercolor painting etc. Give only the concept of the sub family with few words only.
 Object subject refers to what the picture is about, or what is displayed on a picture, etc.
 Number of objects described refers to the number of items described in the text below. Render only a number.
-Dimensions such as length, height, width are in centimeter and weight in grams.
-"""
+Dimensions such as length, height, width are in centimeter and weight in grams."""
 
 def prompt_llama3(prompt, input, output):
-    return f"""<|start_header_id|>system<|end_header_id|> 
-                {prompt} <|eot_id|>
-                <|start_header_id|>user<|end_header_id|> 
-                {input} <|eot_id|>
-                <|start_header_id|>assistant<|end_header_id|>
-                {output} <|eot_id|>"""
+    return f"""<|start_header_id|>system<|end_header_id|> {prompt} <|eot_id|><|start_header_id|>user<|end_header_id|> {input} <|eot_id|><|start_header_id|>assistant<|end_header_id|> {output} <|eot_id|>"""
 
 def prompt_llam3_generate(prompt, input):
-    return f"""<|start_header_id|>system<|end_header_id|> 
-            {prompt} <|eot_id|>
-            <|start_header_id|>user<|end_header_id|> 
-            {input} <|eot_id|>
-            <|start_header_id|>assistant<|end_header_id|>"""
+    return f"""<|start_header_id|>system<|end_header_id|> {prompt} <|eot_id|><|start_header_id|>user<|end_header_id|> {input} <|eot_id|>"""
 
 def prompt_mixtral_7b(prompt, input, output):
     return f"""<s>[INST] {prompt} here are the inputs {input} [/INST] \\n {output} </s>"""
@@ -56,17 +46,6 @@ def formatting_prompts_func(PROMPT, examples):
                                             examples["input"][i], 
                                             examples["output"][i]))
     return output_texts
-
-def print_trainable_parameters(model):
-    trainable_params = 0
-    all_param = 0
-    for _, param in model.named_parameters():
-        all_param += param.numel()
-        if param.requires_grad:
-            trainable_params += param.numel()
-    logging.info(
-        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
-    ) 
 
 class TextModel(Step):
     
