@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot")
 
-    # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
+    self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
     # crawl.run(crawl.get_urls(), crawl.crawling_function)
 
     # self = StepCrawlingChristiesItems(context=context, config=config, threads=1)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self.predicting()
 
-    self = StepTextClassification(context=context, config=config)
+    # self = StepTextClassification(context=context, config=config)
 
     # self = StepTextInferenceGpt(context=context, config=config)
 

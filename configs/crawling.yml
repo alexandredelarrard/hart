@@ -101,7 +101,6 @@ crawling:
                         value_css: thumbPreview
                     per_element : 
                         value_of_css_element: background
-
     christies: 
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
@@ -275,3 +274,10 @@ crawling:
                 NOTE_CATALOGUE :
                     by_type: CLASS_NAME
                     value_css : LotPage-lotDescription 
+    artus: # TODO 2003-2024
+        auctions_url: https://www.artus-encheres.fr/ventes-passees
+    millon: #TODO 31 pages jusqu'a 2012 - manque 
+        auctions_url: https://www.millon.com/catalogue/ventes-passees/page1 
+    agutes: # TODO: 2003-2024
+        auctions_url: https://www.aguttes.com/resultats-des-ventes
+    

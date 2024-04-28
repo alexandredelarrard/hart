@@ -1,9 +1,9 @@
 text_classification:
-  ratio_validation : 0.15
-  model : bert-base-multilingual-cased #'intfloat/multilingual-e5-large-instruct'
-  train_batch_size: 64
+  ratio_validation : 0.1
+  model : 'intfloat/multilingual-e5-large'
+  train_batch_size: 8
   test_batch_size: 128
   device : "cuda"
-  epochs : 5
+  epochs : 1
 
-  fine_tuned_model : D:/data/models/bert-base-multilingual-cased_270424 #D:/data/models/multilingual-e5-large-instruct_280418
+  fine_tuned_model : D:/data/models/multilingual-e5-large_finetuned

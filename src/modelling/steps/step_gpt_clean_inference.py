@@ -108,7 +108,7 @@ class StepCleanGptInference(GPTCleaner):
 
         shape_0 = df_done.shape[0]
         df_done["NUMBER_OBJECTS_DESCRIBED"] = df_done["NUMBER_OBJECTS_DESCRIBED"].fillna("1")
-        df_done = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(["1", "2"])]
+        df_done = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(['0', "1", "2"])]
         self._log.info(f"FILTERING {shape_0 - df_done.shape[0]} ({(shape_0 - df_done.shape[0])*100/shape_0:.1f}%) due to lack of info / mismatch")
 
         return df_done
@@ -186,8 +186,9 @@ class StepCleanGptInference(GPTCleaner):
     def homogenize_answers(self, df_done):
 
         for col in ["OBJECT_CATEGORY", "OBJECT_SUB_CATEGORY"]:
-            df_done[col] = df_done[col].str.lower()
-            df_done[col] = df_done[col].swifter.apply(lambda x: self.nlp.stemSentence(str(x).split(" ")))
+            if col in df_done.columns:
+                df_done[col] = df_done[col].str.lower()
+                df_done[col] = df_done[col].swifter.apply(lambda x: self.nlp.stemSentence(str(x).split(" ")))
 
         df_done["CLASSE"] = np.where(df_done["OBJECT_CATEGORY"].isin(["jewelri", "jewelleri", "furnitur",
                                                                       "silver", "objet d'art", "decor art", "sculptur", "print",
