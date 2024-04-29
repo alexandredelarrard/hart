@@ -139,9 +139,10 @@ class StepTextClassification(Step):
         return answers
 
     def model_prediction(self, model, batch_dict, top_k=5):
-        outputs = model(**batch_dict)
-        lsm = torch.nn.functional.softmax(outputs.logits, dim=-1)
-        answers = torch.topk(lsm, k=top_k)
+        with torch.no_grad():
+            outputs = model(**batch_dict)
+            lsm = torch.nn.functional.softmax(outputs.logits, dim=-1)
+            answers = torch.topk(lsm, k=top_k)
         return answers
 
     def load_tokenizer(self):
@@ -174,7 +175,7 @@ class StepTextClassification(Step):
       finetuned_model = PeftModel.from_pretrained(base_model, 
                                                   self.finetuned_model_name, 
                                                   is_trainable=False)
-      return finetuned_model
+      return finetuned_model.eval()
 
     def define_num_classes(self, classes):
 
