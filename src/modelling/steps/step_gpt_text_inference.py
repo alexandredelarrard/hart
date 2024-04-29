@@ -41,7 +41,6 @@ class StepTextInferenceGpt(Step):
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model
         self.save_queue_path= self._config.gpt.save_path
-        self.prompts_schema = self._config.gpt.prompts_schema
         self.introduction = self._config.gpt.introduction
 
         self.save_in_queue = True
@@ -53,7 +52,7 @@ class StepTextInferenceGpt(Step):
     def run(self):
         
         # get data
-        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"={self.object} AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
+        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"='tableau figuratif' AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
         df = df.drop_duplicates(self.name.total_description)
         df = df.loc[df[self.name.total_description].str.len() > 100] # minimal desc size to have
 
@@ -96,7 +95,7 @@ class StepTextInferenceGpt(Step):
                             model=self.llm_model,
                             temperature=0,
                             seed=self.seed) 
-        self._log.info(f"Run with API key : {client.api_key}")
+        self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
 
     def initialize_phoenix(self):
@@ -126,7 +125,7 @@ class StepTextInferenceGpt(Step):
         
         message_content = ""
         try:
-            message_content = self.chain.invoke({"query": prompt[self.name.total_description]})
+            message_content = self.chain.invoke({"query": "Description: " + prompt[self.name.total_description]})
             query_status = "200"
 
         except Exception as e:

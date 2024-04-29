@@ -107,5 +107,5 @@ def step_inference_gpt(
     # get crawling_function 
     step_inference.run()
 
-    #python -m src modelling step-inference-gpt -t 1 -sqs 50 --object paintings
+    #python -m src modelling step-inference-gpt -t 1 -sqs 50 --object painting
     

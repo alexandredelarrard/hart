@@ -57,9 +57,9 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self.predicting()
 
-    # self = StepTextClassification(context=context, config=config)
+    self = StepTextClassification(context=context, config=config)
 
-    self = StepTextInferenceGpt(context=context, config=config, object="painting")
+    # self = StepTextInferenceGpt(context=context, config=config)
 
     # self = StepCleanGptInference(context=context, config=config)
     

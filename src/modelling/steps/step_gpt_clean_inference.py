@@ -16,7 +16,6 @@ from src.utils.utils_dataframe import remove_accents
 from src.modelling.transformers.GptCleaner import GPTCleaner
 from src.modelling.transformers.NlpToolBox import NLPToolBox
 
-
 class StepCleanGptInference(GPTCleaner):
 
     def __init__(self, 

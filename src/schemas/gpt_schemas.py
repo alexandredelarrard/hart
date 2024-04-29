@@ -2,21 +2,20 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class Painting(BaseModel):
-    is_a_painting: bool = Field(description="Do we describe a painting or something else ? An icone is not a painting, a drawing either, etc.")
-    object_described: Optional[str] = Field(description="If the object described is not a painting, write what kind of object is described")
     artirst_surname : str = Field(description="Surname of the artist")
     artirst_name: str = Field(description="Name of the artist")
     painting_title: str = Field(description="Title of the painting")
     is_painted_by_artist: bool = Field(description="Is this painting painted by the artist ? If painted by the school / copy of the artist style then answer False")
-    signature_location: str = Field(description="Where is the signature of the artist on the painting if there is one ?")
+    is_signed: str = Field(description="Is the painting signed by the artist?")
     is_dated: bool = Field(description="Is the painting dated ?")
-    painting_length: str = Field(description="Length of the painting in cm. Convert to centimeters if necessary")
-    painting_width: str = Field(description="Width of the painting in cm. Convert to centimeters if necessary")
+    is_framed: bool = Field(description="Is the painting framed ?")
+    painting_length: str = Field(description="Length of the painting in cm. Convert to centimeters if necessary. For instance if written 24 x 36 inch (61 x 91.4 cm.) you should write 61 cm")
+    painting_width: str = Field(description="Width of the painting in cm. Convert to centimeters if necessary. For instance if written 24 x 36 inch (61 x 91.4 cm.) you should write 91.4 cm")
     painting_support_material: str = Field(description="What material the painting has been painted on ? For instance canvas, wood, paper, etc.")
     painting_material: str = Field(description="What material has been used to do the painting? Example: oil, gouache, watercolor, etc.")
-    is_framed: bool = Field(description="Is the painting framed ?")
     painting_condition: Optional[str] = Field(description="Is the painting in good condition ? Is there scratches, holes, etc ?")
-    painting_periode_or_year: str = Field(description="Year the painting was painted or circa year or period")
+    painting_period_or_year: str = Field(description="Year the painting was painted or circa year or period")
+    number_objects_described: str = Field(description="The number of objects described in the text")
 
 class Sculpture(BaseModel):
     is_a_sculpture: bool = Field(description="Do we describe a sculpture or something else ? False if this is a mask, a vase, etc.")
@@ -32,6 +31,7 @@ class Sculpture(BaseModel):
     sculpture_color: str = Field(description="What color is the sculpture ? Render the material color if available")
     sculpture_material: str = Field(description="What material has been used to do the sculpture? Example: marble, wood, earthstone, etc.")
     sculpture_periode_or_year: str = Field(description="Year the sculpture was done or century/period")
+    number_objects_described: str = Field(description="The number of objects described in the text")
 
 class Vase(BaseModel):
     object_category : str
