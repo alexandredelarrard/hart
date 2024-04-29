@@ -1,4 +1,37 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+class Painting(BaseModel):
+    is_a_painting: bool = Field(description="Do we describe a painting or something else ? An icone is not a painting, a drawing either, etc.")
+    object_described: Optional[str] = Field(description="If the object described is not a painting, write what kind of object is described")
+    artirst_surname : str = Field(description="Surname of the artist")
+    artirst_name: str = Field(description="Name of the artist")
+    painting_title: str = Field(description="Title of the painting")
+    is_painted_by_artist: bool = Field(description="Is this painting painted by the artist ? If painted by the school / copy of the artist style then answer False")
+    signature_location: str = Field(description="Where is the signature of the artist on the painting if there is one ?")
+    is_dated: bool = Field(description="Is the painting dated ?")
+    painting_length: str = Field(description="Length of the painting in cm. Convert to centimeters if necessary")
+    painting_width: str = Field(description="Width of the painting in cm. Convert to centimeters if necessary")
+    painting_support_material: str = Field(description="What material the painting has been painted on ? For instance canvas, wood, paper, etc.")
+    painting_material: str = Field(description="What material has been used to do the painting? Example: oil, gouache, watercolor, etc.")
+    is_framed: bool = Field(description="Is the painting framed ?")
+    painting_condition: Optional[str] = Field(description="Is the painting in good condition ? Is there scratches, holes, etc ?")
+    painting_periode_or_year: str = Field(description="Year the painting was painted or circa year or period")
+
+class Sculpture(BaseModel):
+    is_a_sculpture: bool = Field(description="Do we describe a sculpture or something else ? False if this is a mask, a vase, etc.")
+    object_described: Optional[str] = Field(description="If the object described is not a sculpture, write what kind of object is described")
+    artirst_surname : str = Field(description="Surname of the artist. Render the school of the sculpture if available")
+    artirst_name: str = Field(description="Name of the artist")
+    sculpture_subject: str = Field(description="What is the sculpture representing ?")
+    sculpture_height: str = Field(description="Height of the sculpture in cm. Convert to centimeters if necessary")
+    sculpture_width: str = Field(description="Width of the sculpture in cm. Convert to centimeters if necessary")
+    sculpture_length: str = Field(description="Length of the sculpture in cm. Convert to centimeters if necessary")
+    signature_location: str = Field(description="Where is the signature of the artist on the sculpture if there is one ?")
+    sculpture_condition: Optional[str] = Field(description="Is the sculpture in good condition ? Is there scratches, holes, etc ?")
+    sculpture_color: str = Field(description="What color is the sculpture ? Render the material color if available")
+    sculpture_material: str = Field(description="What material has been used to do the sculpture? Example: marble, wood, earthstone, etc.")
+    sculpture_periode_or_year: str = Field(description="Year the sculpture was done or century/period")
 
 class Vase(BaseModel):
     object_category : str
@@ -64,3 +97,13 @@ class Watch(BaseModel):
     glass_material: str 
     has_moon_phase: str
 
+def get_mapping_pydentic_object(object : str):
+    mapping_object= {"painting": Painting,
+                    "vase": Vase,
+                    "watch": Watch,
+                    "sculpture": Sculpture}
+    
+    if object not in mapping_object.keys():
+        raise Exception(f"{object} not handled yet by pydentic schemas, please add to the schema or change object")
+    else:
+        return mapping_object[object]

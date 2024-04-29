@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     # self = StepTextClassification(context=context, config=config)
 
-    # self = StepTextInferenceGpt(context=context, config=config)
+    self = StepTextInferenceGpt(context=context, config=config, object="painting")
 
     # self = StepCleanGptInference(context=context, config=config)
     
