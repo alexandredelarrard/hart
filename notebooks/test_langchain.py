@@ -23,8 +23,7 @@ class Painting(BaseModel):
 
 
 class Sculpture(BaseModel):
-    is_a_sculpture: bool = Field(description="Do we describe a sculpture or something else ? False if this is a mask, a vase, etc.")
-    object_described: Optional[str] = Field(description="If the object described is not a sculpture, write what kind of object is described")
+    sculpture_category: bool = Field(description="What kind of sculpture is this object about ? It can be a bust, a sculpture, a figurine, etc.")
     artirst_surname : str = Field(description="Surname of the artist. Render the school of the sculpture if available")
     artirst_name: str = Field(description="Name of the artist")
     sculpture_subject: str = Field(description="What is the sculpture representing ?")
@@ -81,8 +80,10 @@ Bronze, patine foncée. Fonte posthume contemporaine, début du 21e siècle ; re
 Après François Pompon (1855 - 1933). Bronze patiné foncé. Posthume, fonte contemporaine, début du XXIe siècle."""
 chain.invoke({"query": description})
 
-description="""Jean-Baptiste Carpeaux, Bronze Sculpture Le Génie de la Danse
-Jean-Baptiste Carpeaux, sculpture en bronze Le Génie de la Danse
-1872
-Jean-Baptiste Carpeaux, sculpture en bronze Le Génie de la Danse, 1872. bronze, patine brun foncé. Figure de garçon souriant dans une danse joyeuse, brandissant un tambourin dans la main droite, un putto à ses pieds. H. 99 cm. Platine signée : JB Carpeaux JC (bosselée).
-Littérature : Michel Poletti, Alain Richarme, Jean-Baptiste Carpeaux, sculpteur, cat. Rais. Paris 2003, p. 58."""
+description="""FRANCIS RENAUD (1887-1973)
+BUSTE D'HOMME
+Terre cuite
+Signée à droite sur la terrasse
+Terracotta; signed on the right of the terrace
+
+HAUTEUR : 42 CM • HEIGHT : 16 1/2 IN."""

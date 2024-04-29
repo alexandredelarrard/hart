@@ -7,7 +7,7 @@ import torch
 from datasets import Dataset, DatasetDict
 from omegaconf import DictConfig
 
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, TaskType, get_peft_model, PeftModel
 from transformers import (TrainingArguments,
                             Trainer,
                             AutoTokenizer,
@@ -108,12 +108,7 @@ class StepTextClassification(Step):
     def predicting(self):
 
         df = self.create_training_data()
-
-        try:
-          self.classes_2id = self.load_classes_id()
-        except Exception: 
-          self.classes_2id = self.define_num_classes(df["labels"].unique())
-
+        self.classes_2id = self.load_classes_id()
         self.id_2classes = self.reverse_classes_id(self.classes_2id)
         dataset = self.split_train_test(df)
 
@@ -123,15 +118,15 @@ class StepTextClassification(Step):
 
         #load model & tokenizer
         self.load_tokenizer()
-        self.fine_tuned_model = self.load_base_model(model_name=self.finetuned_model_name).eval()
+        self.fine_tuned_model = self.load_peft_finetuned_model(model_name=self.model_name)
 
         # predict labels 
         answers = self.batched_prediction(self.fine_tuned_model, self.batching)
 
         # reshape top_k answers
         df_answers = self.clean_answers(answers)
-        df_answers["text"] = df["text"]
-        df_answers["labels"] = df["labels"]
+        df_answers["text"] = dataset["validation"]["text"]
+        df_answers["labels"] = dataset["validation"]["labels"]
 
         return df_answers
 
@@ -173,6 +168,13 @@ class StepTextClassification(Step):
             num_labels=len(self.classes_2id.keys()),
             device_map="auto"
         )
+    
+    def load_peft_finetuned_model(self, model_name):
+      base_model = self.load_base_model(model_name)
+      finetuned_model = PeftModel.from_pretrained(base_model, 
+                                                  self.finetuned_model_name, 
+                                                  is_trainable=False)
+      return finetuned_model
 
     def define_num_classes(self, classes):
 
