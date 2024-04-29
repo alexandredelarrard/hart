@@ -1,4 +1,18 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+class Painting(BaseModel):
+    artirst_surname : str = Field(description="question to set up a joke")
+    artirst_name: str = Field(description="question to set up a joke")
+    painting_title: str = Field(description="question to set up a joke")
+    is_painted_by_artist: bool = Field(description="question to set up a joke")
+    signature_location: str = Field(description="question to set up a joke")
+    is_dated: bool = Field(description="question to set up a joke")
+    painting_length: str = Field(description="question to set up a joke")
+    painting_width: str = Field(description="question to set up a joke")
+    painting_support_material: str = Field(description="question to set up a joke")
+    painting_condition: str = Field(description="question to set up a joke")
+    painting_material: str = Field(description="question to set up a joke")
+    painting_periode_or_year: str = Field(description="question to set up a joke")
 
 class Vase(BaseModel):
     object_category : str
@@ -64,3 +78,12 @@ class Watch(BaseModel):
     glass_material: str 
     has_moon_phase: str
 
+def get_mapping_pydentic_object(object : str):
+    mapping_object= {"painting": Painting,
+                    "vase": Vase,
+                    "watch": Watch}
+    
+    if object not in mapping_object.keys():
+        raise Exception(f"{object} not handled yet by pydentic schemas, please add to the schema or change object")
+    else:
+        return mapping_object[object]
