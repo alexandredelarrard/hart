@@ -49,7 +49,7 @@ class StepTextClustering(Step):
         sub_df = df_desc.loc[df_desc[self.vector].apply(lambda x: " vase " in " "+ str(x).lower() + " ")]
 
         # create text embedding
-        self.embeddings = self.text_to_embedding(sub_df[self.vector].tolist())
+        self.embeddings = self.get_text_embedding(sub_df[self.vector].tolist())
         
         if self.to_cluster:
             self.reduced_embedding = self.step_embedding.embedding_reduction(self.embeddings, 
@@ -94,7 +94,7 @@ class StepTextClustering(Step):
         self.mapping_words_cluster = self.nlp.extract_words_per_cluster(liste_docs, ngram_range=(1,2), n_top_words=self.n_words_cluster)
         return df_desc[self.name.cluster_id].map(self.mapping_words_cluster)
     
-    def text_to_embedding(self, query_text):
+    def get_text_embedding(self, query_text):
 
         if isinstance(query_text, str):
             query_text = [query_text]

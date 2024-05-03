@@ -18,6 +18,7 @@ from src.utils.utils_dataframe import (remove_accents,
                                        remove_punctuation,
                                        flatten_dict)
 from src.utils.utils_currencies import extract_currencies
+from src.utils.dataset_retreival import DatasetRetreiver
 
 from omegaconf import DictConfig
 
@@ -33,13 +34,14 @@ class StepAgglomerateTextInfos(TextCleaner):
         self.sql_table_name = self._config.cleaning.full_data_auction_houses
         self.country_mapping  = self._config.cleaning.mapping.country
         self.localisation_mapping = self._config.cleaning.mapping.localisation
+        self.data_retreiver =  DatasetRetreiver(context=context, config=config)
 
         self.today = datetime.today().strftime(date_format)
 
     @timing
     def run(self):
 
-        df = self.get_data()
+        df = self.data_retreiver.get_all_dataframes()
         df = self.homogenize_localisation(df)
         df = self.deduce_country(df)
         df = self.homogenize_text(df)
@@ -59,40 +61,6 @@ class StepAgglomerateTextInfos(TextCleaner):
                             if_exists="replace")
         
         return df
-
-    @timing
-    def get_data(self)-> pd.DataFrame:
-        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_sellers_dataframe"))
-        formatted_query = self.sql_queries.format_query(
-                raw_query,
-                {
-                    "drouot_name": self._config.cleaning.drouot.origine_table_name,
-                    "christies_name": self._config.cleaning.christies.origine_table_name,
-                    "sothebys_name": self._config.cleaning.sothebys.origine_table_name,
-                    "id_item": self.name.id_item,
-                    "id_picture": self.name.id_picture,
-                    "lot": self.name.lot,
-                    "date": self.name.date,
-                    "localisation": self.name.localisation,
-                    "seller": self.name.seller,
-                    "type_sale": self.name.type_sale,
-                    "url_full_detail": self.name.url_full_detail,
-                    "auction_title": self.name.auction_title,
-                    "item_title": self.name.item_title,
-                    "detailed_title": self.name.detailed_title,
-                    "item_description": self.name.item_description,
-                    "detailed_description": self.name.detailed_description,
-                    "min_estimate": self.name.min_estimate,
-                    "max_estimate": self.name.max_estimate,
-                    "item_result": self.name.item_result,
-                    "is_item_result": self.name.is_item_result,
-                    "currency": self.name.currency
-                },
-            )
-
-        # 3. Fetch results
-        self._log.info(formatted_query)
-        return self.read_sql_data(formatted_query)
 
     @timing
     def concatenate_currencies(self, dict_currencies: Dict, 
@@ -242,7 +210,7 @@ class StepAgglomerateTextInfos(TextCleaner):
         x = self.remove_lot_number(x)
         x = self.remove_estimate(x)
         x = self.remove_dates_in_parenthesis(x)
-        x = self.clean_dimensions(x)
+        # x = self.clean_dimensions(x)
         x = self.clean_hight(x)
         x = self.clean_shorten_words(x)
         x = self.remove_spaces(x)

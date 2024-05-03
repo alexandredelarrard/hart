@@ -138,7 +138,7 @@ class_mapping = {
     "caligraphie asiatique": "caligraphie_asiatique",
     "sculpture colonne": "colonne",
     "tissu": "tissu",
-    "archers": "archers",
+    "archers": "archet",
     "paniere": "paniere",
     "bijou bracelet or": "bracelet",
     "vetement manteau long": "vetement",

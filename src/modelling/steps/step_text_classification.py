@@ -42,6 +42,12 @@ class StepTextClassification(Step):
         self.save_model = save_model
         self.today = datetime.today().strftime("%d_%m_%Y")
 
+    def create_testing_data(self):
+        df = self.read_sql_data("SELECT \"ID_ITEM\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS_202403\" ORDER BY RANDOM() LIMIT 50000")
+        df = df.loc[df[self.name.total_description].apply(lambda x: len(x))> 100]
+        df.rename(columns={"TOTAL_DESCRIPTION": "text"}, inplace=True)
+        df.to_csv("D:/data/prediction_classif.csv", index=False, sep=";")
+
     def create_training_data(self):
 
         df = self.read_sql_data("SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"PROBA_0\" > 0.95")
@@ -55,7 +61,7 @@ class StepTextClassification(Step):
         total_sample_size = 400
         id_items_to_keep = df.groupby('TOP_0').apply(lambda x: x[self.name.id_item][:total_sample_size]).values
         df = df.loc[df[self.name.id_item].isin(id_items_to_keep)]
-        # df.to_csv("D:/data/test_classif.csv", index=False, sep=";")
+        df.to_csv("D:/data/test_classif.csv", index=False, sep=";")
 
         df.rename(columns={"TOP_0": "labels", "TOTAL_DESCRIPTION": "text"}, inplace=True)
 

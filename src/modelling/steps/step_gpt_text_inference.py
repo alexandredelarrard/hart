@@ -5,9 +5,9 @@ import phoenix as px
 from threading import Thread
 
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 
 from omegaconf import DictConfig
 from src.schemas.gpt_schemas import get_mapping_pydentic_object
@@ -64,10 +64,11 @@ class StepTextInferenceGpt(Step):
 
         # get parser 
         pytendic_schemas = get_mapping_pydentic_object(self.object)
-        self.client = self.initialize_client(api_keys=self.api_keys)
+        self.client = self.initialize_client_groq(api_keys=self.api_keys)
         self.parser = JsonOutputParser(pydantic_object=pytendic_schemas)
-        self.prompt = self.create_prompt()
-        self.chain = self.prompt | self.client | self.parser
+        self.schema = pytendic_schemas
+        self.prompt = self.create_prompt_groq()
+        self.chain = self.prompt
 
         # initalize the urls queue
         self.initialize_queue_description(df)
@@ -81,21 +82,32 @@ class StepTextInferenceGpt(Step):
         self._log.info('*** Done in {0}'.format(time.time() - t0))
 
     def get_api_keys(self):
-        self.api_keys = []
+        self.api_keys = {"openai": [], "groq": []}
         for key, item in os.environ.items():
             if "OPENAI_API_KEY" in key: 
-                self.api_keys.append(item)
+                self.api_keys["openai"].append(item)
+            if "GROQ_API_KEY" in key: 
+                self.api_keys["groq"].append(item)
         
         if len(self.api_keys) == 0:
             raise Exception("Please provide an API KEY in .env file for OPENAI")
 
-    def initialize_client(self, api_keys):
+    def initialize_client_open_ai(self, api_keys):
         client = ChatOpenAI(base_url="http://localhost:1234/v1", 
                             openai_api_key="lm-studio",
                             model=self.llm_model,
                             temperature=0,
                             seed=self.seed) 
         self._log.info(f"Run with API key : {client.openai_api_key}")
+        return client
+    
+    def initialize_client_groq(self, api_keys):
+        client = ChatGroq(groq_api_key=api_keys["groq"][0],
+                        model=self.llm_model,
+                        temperature=0,
+                        max_tokens=512,
+                        seed=self.seed) 
+        self._log.info(f"Run with API key : {client.groq_api_key}")
         return client
 
     def initialize_phoenix(self):
@@ -113,19 +125,32 @@ class StepTextInferenceGpt(Step):
                     self.name.total_description: row[self.name.total_description]}
             self.queues["descriptions"].put(item)
     
-    def create_prompt(self):
+    def create_prompt_openai(self):
         prompt = PromptTemplate(
             template=self.introduction + "\n{format_instructions}\n{query}\n",
             input_variables=["query"],
             partial_variables={"format_instructions": self.parser.get_format_instructions()},
         )
         return prompt
+    
+    def create_prompt_groq(self):
+
+        structured_llm = self.client.with_structured_output(
+                self.schema,
+                method="json_mode",
+                include_raw=True
+            )
+        self.introduction = self.introduction + f"\n{self.parser.get_format_instructions().replace("{", "").replace("}","")}"
+        # prompt = ChatPromptTemplate.from_messages([("system", self.introduction + formatting), ("human", "{text}")])
+        return structured_llm
 
     def get_answer(self, prompt):
         
         message_content = ""
         try:
-            message_content = self.chain.invoke({"query": "Description: " + prompt[self.name.total_description]})
+            # message_content = self.chain.invoke({"text": "Description: " + prompt[self.name.total_description]})
+            message_content = self.chain.invoke(self.introduction +  "Description: " + prompt[self.name.total_description])
+            message_content = message_content["raw"].content
             query_status = "200"
 
         except Exception as e:
@@ -133,7 +158,7 @@ class StepTextInferenceGpt(Step):
             query_status = "400"
 
         return message_content, query_status
-
+    
     def start_threads_and_queues(self, queues):
 
         for _ in range(self.threads):

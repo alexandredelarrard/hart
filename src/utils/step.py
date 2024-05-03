@@ -42,7 +42,6 @@ class Step(SqlHelper):
     @classmethod
     def get_name(cls):
         return camel_to_snake(cls.__name__)
-
     
     def get_table_names(self):
         

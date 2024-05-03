@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import List, Optional
 
 class Painting(BaseModel):
@@ -6,7 +6,7 @@ class Painting(BaseModel):
     artirst_name: str = Field(description="Name of the artist")
     painting_title: str = Field(description="Title of the painting")
     is_painted_by_artist: bool = Field(description="Is this painting painted by the artist ? If painted by the school / copy of the artist style then answer False")
-    is_signed: str = Field(description="Is the painting signed by the artist?")
+    is_signed: bool = Field(description="Is the painting signed by the artist ?")
     is_dated: bool = Field(description="Is the painting dated ?")
     is_framed: bool = Field(description="Is the painting framed ?")
     painting_length: str = Field(description="Length of the painting in cm. Convert to centimeters if necessary. For instance if written 24 x 36 inch (61 x 91.4 cm.) you should write 61 cm")

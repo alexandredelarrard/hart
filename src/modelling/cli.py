@@ -87,7 +87,7 @@ def step_predict_picture_classification(
     
 
 @cli.command(
-    help="Extract Json from description with gpt3.5",
+    help="Extract Json from description with gpt3.5 or any other model like llama 3 8b",
     help_priority=2,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
