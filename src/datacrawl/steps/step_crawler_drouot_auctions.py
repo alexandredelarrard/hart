@@ -9,7 +9,8 @@ from selenium.webdriver.common.by import By
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (get_files_already_done, 
-                                    keep_files_to_do)
+                                    keep_files_to_do,
+                                    save_infos)
 
 class StepCrawlingDrouotAuctions(StepCrawling):
     
@@ -70,6 +71,6 @@ class StepCrawlingDrouotAuctions(StepCrawling):
                 self._log.warning(f"ERROR happened for URL {driver.current_url} - {e}")
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
+        save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
         return driver, list_infos

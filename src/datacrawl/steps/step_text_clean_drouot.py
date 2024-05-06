@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import locale
 import re
+import os 
 
 
 from src.datacrawl.transformers.TextCleaner import TextCleaner
@@ -41,7 +42,6 @@ class StepTextCleanDrouot(TextCleaner):
         df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.extract_hour_infos(df)
         df = self.handle_type_of_sale(df)
-        df = self.clean_id_picture(df)
         df = self.clean_items_per_auction(df)
         df = self.extract_estimates(df)
         df = self.extract_currency(df)
@@ -51,9 +51,6 @@ class StepTextCleanDrouot(TextCleaner):
                                         'Estimation : Manquante'])
         df = self.remove_missing_values(df)
         df = self.extract_infos(df)
-        df = self.remove_features(df, [self.name.item_infos, 
-                                       self.name.brut_estimate, 
-                                        self.name.brut_result])
 
         #merge with items 
         df_detailed = read_crawled_pickles(path=self.details_data_path)
@@ -63,6 +60,15 @@ class StepTextCleanDrouot(TextCleaner):
 
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
+        df = self.explode_df_per_picture(df)
+        df = self.clean_id_picture(df)
+        
+        # remove not used cols and rows
+        df = self.remove_features(df, [self.name.item_infos, 
+                                       self.name.brut_estimate, 
+                                        self.name.brut_result,
+                                        self.name.pictures_list_url,
+                                        self.name.detail_file])
         df = df.loc[df[self.name.detailed_description].notnull()]
 
         # SAVE TO SQL
@@ -156,7 +162,29 @@ class StepTextCleanDrouot(TextCleaner):
         col_list_urls = self.name.pictures_list_url
         df_detailed[col_list_urls] = np.where(df_detailed[col_list_urls].notnull(),
                                             df_detailed[col_list_urls].apply(lambda x: 
-                                                [str(a).split("url(")[-1].split(")")[0].replace("\"", "") for a in x]),
+                                                [str(a).split("url(")[-1].split(")")[0].replace("\"", "").replace("size=small", "size=phare") for a in x]),
                                             np.nan)
         df_detailed[col_list_urls] = df_detailed[col_list_urls].apply(lambda x: np.nan if len(x)==0 else x)
         return df_detailed
+    
+    @timing
+    def explode_df_per_picture(self, df):
+
+        df[self.name.url_picture] = np.where((df[self.name.pictures_list_url].isnull()), 
+                                            df[self.name.url_picture].apply(lambda x: [x]),
+                                            df[self.name.pictures_list_url])
+        
+        df = df.explode(self.name.url_picture) # from 3.3 to 6.4M rows
+
+        # rename picture_ids based on url path
+        df[self.name.id_picture] = df[self.name.url_picture].swifter.apply(lambda x: os.path.basename(str(x)))
+        df[self.name.id_picture] = np.where(df[self.name.id_picture] == "nan", np.nan, df[self.name.id_picture])
+        
+        # keep ID picture when picture is available for drouot ~2.3M
+        picture_path = df[self.name.id_picture].apply(lambda x : f"D:/data/{self.seller}/pictures/{x}.jpg")
+        exists_pict = picture_path.swifter.apply(lambda x : os.path.isfile(x))
+        df[self.name.id_picture] = np.where(exists_pict, df[self.name.id_picture], np.nan)
+        
+        return df
+        
+        

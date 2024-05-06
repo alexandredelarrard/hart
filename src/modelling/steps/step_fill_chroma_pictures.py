@@ -36,7 +36,7 @@ class StepFillChromaPictures(Step):
 
         # exrtract data from dbeaver, ensure not done and sample to test
         df_desc = self.data_retreiver.get_all_pictures(data_name="ALL_ITEMS_202403")
-        df_desc = df_desc.sample(frac=0.3)
+        df_desc = df_desc.sample(frac=0.5)
         df_desc = self.filter_out_embeddings_done(df_desc)
         df_desc = self.check_is_file(df_desc)
 

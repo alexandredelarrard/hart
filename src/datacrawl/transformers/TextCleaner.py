@@ -75,7 +75,7 @@ class TextCleaner(Step):
         self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} picts having more than {limite} picts")
         
         df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
-                                                np.nan, df[self.name.id_picture])
+                                              "FAKE_PICTURE", df[self.name.id_picture])
         return df
 
     @timing

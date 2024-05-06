@@ -9,7 +9,8 @@ import time
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (get_files_already_done, 
-                                    keep_files_to_do)
+                                    keep_files_to_do,
+                                    save_infos)
 
 class StepCrawlingChristiesAuctions(StepCrawling):
     
@@ -72,7 +73,7 @@ class StepCrawlingChristiesAuctions(StepCrawling):
         list_infos = self.crawl_iteratively(driver, self.crawler_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
+        save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
 
         return driver, list_infos
     

@@ -27,6 +27,7 @@ from src.datacrawl.steps.step_crawler_christies_auctions import StepCrawlingChri
 from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
 from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
 from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
+from src.datacrawl.steps.step_crawl_pictures import StepCrawlingPictures
 
 
 @click.group(cls=SpecialHelpOrder)
@@ -195,3 +196,24 @@ def step_crawling_detailed(
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
     # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 --text-only True
+
+
+@cli.command(
+    help="Crawling Chrysties",
+    help_priority=5,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+@click.option(*SELLER_ARGS, **SELLER_KWARGS)
+@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+def step_crawling_pictures(
+    config_path, threads : int, seller: str
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    crawl = StepCrawlingPictures(config=config, context=context, 
+                                    threads=threads,
+                                    seller=seller)
+
+    # get crawling_function 
+    crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_picture)
+    # python -m src datacrawl step-crawling-pictures -t 2 --seller drouot

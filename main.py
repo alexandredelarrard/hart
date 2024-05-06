@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # self.run(self.get_auctions_urls_to_wrawl(), self.crawling_list_auctions_function)
     # self.run(self.get_list_items_to_crawl(), self.crawling_list_items_function)
 
-    # self = StepTextCleanDrouot(context=context, config=config)
+    self = StepTextCleanDrouot(context=context, config=config)
     # self.run()
 
     # self = StepTextCleanChristies(context=context, config=config)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     # self = StepTextClustering(context=context, config=config)
 
-    self = StepFillChromaPictures(context=context, config=config)
+    # self = StepFillChromaPictures(context=context, config=config)
 
     # self = StepAgglomerateTextInfos(context=context, config=config)
     # self.run()
