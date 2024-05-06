@@ -19,6 +19,7 @@ from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
 from src.modelling.steps.step_gbm_price_evaluator import StepGBMPriceEvaluator
 from src.modelling.steps.step_knn_price_evaluator import StepKNNPriceEvaluator
 from src.modelling.steps.step_text_classification import StepTextClassification
+from src.modelling.steps.step_fill_chroma_pictures import StepFillChromaPictures
 
 from src.modelling.transformers.TextModel import TextModel
 
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
     # self = StepTextClustering(context=context, config=config)
 
-    self = StepPictureClustering(context=context, config=config)
+    self = StepFillChromaPictures(context=context, config=config)
 
     # self = StepAgglomerateTextInfos(context=context, config=config)
     # self.run()

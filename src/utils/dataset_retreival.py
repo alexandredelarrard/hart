@@ -41,7 +41,7 @@ class DatasetRetreiver(Step):
     def get_text_to_cluster(self, data_name:str=None):
 
         if data_name==None:
-            data_name="TEST_0.05_06_04_2024_12_04_2024"
+            data_name="PICTURES_CATEGORY_20_04_2024"
 
         raw_query = str.lower(getattr(self.sql_queries.SQL, "get_text_to_cluster"))
         formatted_query = self.sql_queries.format_query(
@@ -113,12 +113,16 @@ class DatasetRetreiver(Step):
                     "type_sale": self.name.type_sale,
                     "url_full_detail": self.name.url_full_detail,
                     "auction_title": self.name.auction_title,
-                    "total_description": self.name.detailed_description,
+                    "total_description": self.name.total_description,
                     "min_estimate": self.name.min_estimate,
                     "max_estimate": self.name.max_estimate,
                     "item_result": self.name.item_result,
+                    "eur_min_estimate": self.name.eur_min_estimate,
+                    "eur_max_estimate": self.name.eur_max_estimate,
+                    "eur_item_result": self.name.eur_item_result,
                     "is_item_result": self.name.is_item_result,
-                    "currency": self.name.currency
+                    "currency": self.name.currency,
+                    "country": self.name.country
                 },
             )
 

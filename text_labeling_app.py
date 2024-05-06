@@ -60,7 +60,7 @@ class WebAPP(Step):
 
         try:
             col1.image(f"D:/data/{row["SELLER"]}/pictures/{row["ID_PICTURE"]}.jpg", 
-                        width=250)
+                        width=350)
         except Exception:
             pass
         

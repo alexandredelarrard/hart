@@ -1,9 +1,5 @@
-from sklearn import preprocessing
 import numpy as np
 from typing import List
-import umap.umap_ as umap
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 
 from tqdm import tqdm
 import PIL
@@ -13,14 +9,13 @@ from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
 
-from src.utils.utils_crawler import (read_json)
+from src.utils.utils_crawler import read_json
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
 
 import torch 
 import torchvision.transforms as T
 
 from omegaconf import DictConfig
-
 
 class StepEmbedding(Step):
     
@@ -80,7 +75,8 @@ class StepEmbedding(Step):
         test_dataset = ArtDataset(images,
                                  self.classes_2id, 
                                  transform=pict_transformer,
-                                 mode="test")
+                                 mode="test",
+                                 default_path=self.default_picture_path)
         
         candidate_subset_emb = self.picture_model.predict_embedding(test_dataset)
         
@@ -161,83 +157,30 @@ class StepEmbedding(Step):
                                 the file for read to embed them")
         return pils_images
     
-    def get_similarities(self, embeddings):
-        return (embeddings @ embeddings.T) * 100
+    def get_picture_embedding(self, picture_path):
+         
+        if isinstance(picture_path, str):
+            picture_path = [picture_path]
+
+        elif isinstance(picture_path, List):
+            picture_path = picture_path
+
+        else:
+            raise Exception(f"Text need to be str or List[str] to be embedded intead of {picture_path.dtype}")
+
+        return self.get_batched_picture_embeddings(picture_path)
     
-    @timing
-    def embedding_reduction(self, embeddings : np.array, 
-                            method_dim_reduction : str) -> np.array:
+    def get_text_embedding(self, query_text, prompt_name):
 
-        # PCA : reduce embeddings dim 
-        if method_dim_reduction == "pca":
-            self._log.info("PCA")
-            new_embeddings = self.reduce_embeddings_pca(embeddings)
+        if isinstance(query_text, str):
+            query_text = [query_text]
 
-        # UMAP : reduce dimmension based on kullback lieber distance 
-        elif method_dim_reduction == "umap":    
-            self._log.info("UMAP EMBEDDING")
-            new_embeddings = self.reduce_embeddings_umap(embeddings)
+        elif isinstance(query_text, List):
+            query_text = query_text
 
-        # UMAP : reduce dimmension based on kullback lieber distance 
-        elif method_dim_reduction == "tsne":    
-            self._log.info("TSNE EMBEDDING")
-            new_embeddings = self.reduce_embeddings_tsne(embeddings)
-        
         else:
-            raise Exception("Only PCA and UMAP available for now")
+            raise Exception(f"Text need to be str or List[str] to be embedded intead of {query_text.dtype}")
 
-        return new_embeddings
-
-    def reduce_embeddings_pca(self, embeddings : np.array) -> np.array:
-        """
-        Reduction of embedding dimension with PCA keeping 90% of info
-
-        Returns:
-            [Array]: [embeddings]
-        """
-
-        # normalize embeddings before pca
-        scaler = preprocessing.StandardScaler()
-        scaled_embeddings = scaler.fit_transform(embeddings)
-        
-        #first PCA -> keeps 95% information
-        pca = PCA(random_state=42, n_components=0.95)
-        af = pca.fit(scaled_embeddings)
-
-        new_embeddings = af.transform(scaled_embeddings)
-        return new_embeddings
-
-
-    def reduce_embeddings_umap(self, embeddings : np.array) -> np.array:
-        """
-        Reduction of embedding dimension with UMAP 
-
-        Returns:
-            [Array]: [embeddings]
-        """
-
-        if len(embeddings.shape) == 2:
-            umap_embeddings = umap.UMAP(random_state=42,
-                                        n_neighbors=self.params["umap_n_neighbors"], 
-                                        n_components=self.params["umap_n_components"], 
-                                        metric='cosine').fit_transform(embeddings)
-        else:
-            raise Exception("Embedding should have a 2 shaped matrix")
-
-        return umap_embeddings
-    
-
-    def reduce_embeddings_tsne(self, embeddings : np.array) -> np.array:
-        """
-        Reduction of embedding dimension with UMAP 
-
-        Returns:
-            [Array]: [embeddings]
-        """
-
-        if len(embeddings.shape) == 2:
-            tsne_embeddings = TSNE().fit_transform(embeddings)
-        else:
-            raise Exception("Embedding should have a 2 shaped matrix")
-
-        return tsne_embeddings
+        query_embedded = self.get_text_embeddings(query_text, 
+                                                prompt_name=prompt_name)
+        return query_embedded

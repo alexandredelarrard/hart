@@ -19,6 +19,7 @@ from src.constants.command_line_interface import (
 from src.context import get_config_context
 from src.utils.cli_helper import SpecialHelpOrder
 from src.modelling.steps.step_text_clustering import StepTextClustering
+from src.modelling.steps.step_fill_chroma_pictures import StepFillChromaPictures
 from src.modelling.steps.step_picture_classification import StepPictureClassification
 from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
 from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
@@ -50,6 +51,23 @@ def step_embed_art_house(
     step_cluster.run()
     
     #python -m src modelling step-embed-art-house -tv DESCRIPTION -ah drouot
+
+@cli.command(
+    help="embedding db of art house into chroma db embeddings",
+    help_priority=1,
+)
+@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
+def step_fill_chroma_pictures(
+    config_path
+):
+    
+    config, context = get_config_context(config_path, use_cache = False, save=False)
+    enrich_chroma_picts = StepFillChromaPictures(config=config, context=context)
+
+    # embeddings and saving for queries 
+    enrich_chroma_picts.run()
+    
+    #python -m src modelling step-fill-chroma-pictures
 
 @cli.command(
     help="Extract Json from description with gpt3.5",
