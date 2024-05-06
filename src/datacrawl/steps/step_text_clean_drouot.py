@@ -186,5 +186,3 @@ class StepTextCleanDrouot(TextCleaner):
         df[self.name.id_picture] = np.where(exists_pict, df[self.name.id_picture], np.nan)
         
         return df
-        
-        

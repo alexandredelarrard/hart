@@ -1,11 +1,13 @@
 from datetime import datetime
 import pandas as pd 
+import glob
 import os 
 from omegaconf import DictConfig
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
-from src.utils.utils_crawler import save_picture_crawled
+from src.utils.utils_crawler import (save_picture_crawled,
+                                     keep_files_to_do)
 
 class StepCrawlingPictures(StepCrawling):
     
@@ -28,9 +30,15 @@ class StepCrawlingPictures(StepCrawling):
     def get_list_items_to_crawl(self):
 
         # get clean seller bdd
-        df = self.read_sql_data(self.seller + "_202403")
+        df = self.read_sql_data(f"SELECT \"ID_PICTURE\", \"URL_PICTURE\" FROM \"{self.seller.upper() + "_202403"}\"")   
         df = df.loc[df[self.name.id_picture].isnull()]
         liste_urls = df[self.name.url_picture].drop_duplicates().tolist()
+
+        done = glob.glob(self.save_picture_path + "/*.jpg")
+        done = [os.path.basename(x).replace(".jpg","") for x in done]
+
+        liste_urls = keep_files_to_do(liste_urls, done)
+        self._log.info(f"NUMBER PICTURES TO CRAWL = {len(liste_urls)}")
 
         return liste_urls
     

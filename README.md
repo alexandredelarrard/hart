@@ -57,19 +57,18 @@ Infos extraites :
 - ville
 - date 
 
-Extraire les infos suivantes : 
-- catégorie de l'objet à partir du text / image - classification 
-- Auteur / artiste si disponible - regex / manuel  - seq to seq
-- année de la pièce / circa - regex / manuel  - seq to seq
-- état de la pièce / objet - regex / manuel  - seq to seq
-- existance d'une signature ou non de l'objet / d'un écusson - regex - seq to seq
-- taille de l'objet / poids de l'objet - seq to seq
-- matériau / type de surface etc. - regex - seq to seq 
-- disponibilité des papiers de possession / identification que c'est un vrai 
-- nombre de piece dans le lot
+A faire : 
 
 RAG à développer à partir des embeddings :
 - uniquement text 
 - text + image en indépendant 
 - text & image conjoint en layer mlp (fully connected)
 - ensembling d'embeddings si possible
+
+Modeles :
+- detection automatique de signature et nom associé 
+- lineage des oeuvers dans le temps / provenance
+- extraction des informations du text de manière robuste / JSON - GPT
+- Prédire le prix d'une oeuvre à partir de text + image 
+- Prédire la description d'une image à partir d'une paire image, text 
+- Chatbot qui donne l'estimation d'une oeuvre à travers un chat

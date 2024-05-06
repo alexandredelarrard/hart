@@ -127,3 +127,14 @@ SAVE_EMBEDDINGS_KWARGS={
         "save embeddings or not into a chroma db for futur similarity calculation"
     )
 }
+
+GPT_METHODE_ARGS=("--gpt-methode", "-gptm", "methode")
+GPT_METHODE_KWARGS={
+    "type" : str, 
+    "default" : "local", 
+    "required" : True,
+    "show_default" : "local",
+    "help": (
+        "which api to call for llm inference based on text. If local, need to start local server first with LM Studio"
+    )
+}

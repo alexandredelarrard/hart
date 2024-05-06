@@ -55,7 +55,6 @@ def step_crawling_met(
 
     #python -m src art step-crawling -t 1
 
-
 @cli.command(
     help="Crawling DROUOT AUCTIONS",
     help_priority=3,

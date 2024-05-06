@@ -5,7 +5,7 @@ import phoenix as px
 from threading import Thread
 
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 
@@ -15,9 +15,7 @@ from src.schemas.gpt_schemas import get_mapping_pydentic_object
 from src.utils.utils_crawler import (encode_file_name,
                                      read_crawled_pickles,
                                      save_queue_to_file)
-from src.utils_genai.tracing import (maybe_load_trace_dataset,
-                                    is_phoenix_already_launched,
-                                    save_trace_dataset)
+
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
@@ -30,16 +28,18 @@ class StepTextInferenceGpt(Step):
                 config : DictConfig,
                 threads : int = 1,
                 object : str = "painting",
-                save_queue_size : int = 50):
+                save_queue_size : int = 50,
+                methode: str ="open_ai"):
 
         super().__init__(context=context, config=config)
 
         self.save_queue_size_step = save_queue_size
         self.threads = threads
         self.object = object
+        self.methode = methode
 
         self.seed = self._config.gpt.seed
-        self.llm_model = self._config.gpt.llm_model
+        self.llm_model = self._config.gpt.llm_model[methode]
         self.save_queue_path= self._config.gpt.save_path
         self.introduction = self._config.gpt.introduction
 
@@ -63,12 +63,11 @@ class StepTextInferenceGpt(Step):
             df = df.loc[~df[self.name.id_item].isin(id_done)]
 
         # get parser 
-        pytendic_schemas = get_mapping_pydentic_object(self.object)
-        self.client = self.initialize_client_groq(api_keys=self.api_keys)
-        self.parser = JsonOutputParser(pydantic_object=pytendic_schemas)
-        self.schema = pytendic_schemas
-        self.prompt = self.create_prompt_groq()
-        self.chain = self.prompt
+        self.schema = get_mapping_pydentic_object(self.object)
+        self.client = self.initialize_client()
+        self.parser = JsonOutputParser(pydantic_object=self.schema)
+        self.prompt = self.create_prompt()
+        self.chain = self.prompt | self.client
 
         # initalize the urls queue
         self.initialize_queue_description(df)
@@ -81,6 +80,24 @@ class StepTextInferenceGpt(Step):
         self.queues["descriptions"].join()
         self._log.info('*** Done in {0}'.format(time.time() - t0))
 
+    def initialize_client(self):
+        if self.methode == "open_ai":
+            client = self.initialize_client_open_ai()
+        elif self.methode == "groq":
+            client = self.initialize_client_groq()
+        elif self.methode == "local":
+            client = self.initialize_client_local()
+        else:
+            raise Exception("Please provide a method either in open_ai, groq or local")
+        return client
+    
+    def create_prompt(self):
+        if self.methode in ["open_ai", "local"]:
+            prompt = self.create_prompt_openai()
+        else:
+            prompt = self.create_prompt_groq()
+        return prompt
+
     def get_api_keys(self):
         self.api_keys = {"openai": [], "groq": []}
         for key, item in os.environ.items():
@@ -92,7 +109,15 @@ class StepTextInferenceGpt(Step):
         if len(self.api_keys) == 0:
             raise Exception("Please provide an API KEY in .env file for OPENAI")
 
-    def initialize_client_open_ai(self, api_keys):
+    def initialize_client_open_ai(self):
+        client = ChatOpenAI(openai_api_key=self.api_keys["openai"][0],
+                            model=self.llm_model,
+                            temperature=0,
+                            seed=self.seed) 
+        self._log.info(f"Run with API key : {client.openai_api_key}")
+        return client
+    
+    def initialize_client_local(self):
         client = ChatOpenAI(base_url="http://localhost:1234/v1", 
                             openai_api_key="lm-studio",
                             model=self.llm_model,
@@ -110,15 +135,6 @@ class StepTextInferenceGpt(Step):
         self._log.info(f"Run with API key : {client.groq_api_key}")
         return client
 
-    def initialize_phoenix(self):
-        if not is_phoenix_already_launched():
-            tds = maybe_load_trace_dataset(trace_dir="D:/data/llm_log/")
-            self.px_session = px.launch_app(trace=tds)
-        else:
-            self._log.info("Phoenix already launched at http://localhost:6006")
-        
-        save_trace_dataset(px.Client(), trace_dir="D:/data/llm_log/")
-
     def initialize_queue_description(self, df):
         for row in df.to_dict(orient="records"):
             item = {self.name.id_item: row[self.name.id_item],
@@ -127,8 +143,8 @@ class StepTextInferenceGpt(Step):
     
     def create_prompt_openai(self):
         prompt = PromptTemplate(
-            template=self.introduction + "\n{format_instructions}\n{query}\n",
-            input_variables=["query"],
+            template=self.introduction + "\n{format_instructions}\n{text}\n",
+            input_variables=["text"],
             partial_variables={"format_instructions": self.parser.get_format_instructions()},
         )
         return prompt
@@ -143,14 +159,21 @@ class StepTextInferenceGpt(Step):
         self.introduction = self.introduction + f"\n{self.parser.get_format_instructions().replace("{", "").replace("}","")}"
         # prompt = ChatPromptTemplate.from_messages([("system", self.introduction + formatting), ("human", "{text}")])
         return structured_llm
+    
+    def invoke_llm(self, prompt):
+        if self.methode in ["open_ai", "local"]:
+            message_content = self.chain.invoke({"text": "Description: " + prompt[self.name.total_description]})
+            message_content = message_content.content
+        else:
+            message_content = self.chain.invoke(self.introduction +  "Description: " + prompt[self.name.total_description])
+            message_content = message_content["raw"].content
+        return message_content
 
     def get_answer(self, prompt):
         
         message_content = ""
         try:
-            # message_content = self.chain.invoke({"text": "Description: " + prompt[self.name.total_description]})
-            message_content = self.chain.invoke(self.introduction +  "Description: " + prompt[self.name.total_description])
-            message_content = message_content["raw"].content
+            message_content = self.invoke_llm(prompt)
             query_status = "200"
 
         except Exception as e:

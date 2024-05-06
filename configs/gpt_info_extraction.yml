@@ -1,5 +1,8 @@
 gpt:
   save_path: D:/data/llm_extracts/llama3_extract_paintings/
-  llm_model: llama3-70b-8192 #llama3-70b-8192 #lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF #"gpt-3.5-turbo-0125"
+  llm_model: 
+    groq: llama3-70b-8192
+    open_ai: gpt-3.5-turbo-0125
+    local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
   seed: 1234
   introduction: "You are an art expert. Extract following features from the painting description with a JSON format. Write all JSON values only in english, translate them if necessary." #Only return valid json and nothing else. 
