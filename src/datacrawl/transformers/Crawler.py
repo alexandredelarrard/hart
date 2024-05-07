@@ -1,9 +1,6 @@
-import os
 import time
 import tqdm
 import logging
-import pickle
-from datetime import datetime
 
 from typing import List, Dict
 from queue import Queue
@@ -61,7 +58,6 @@ class StepCrawling(Step):
 
         self.close_queue_drivers()
 
-
     def initialize_driver_firefox(self):
         """
         Initialize the web driver with Firefox driver as principal driver geckodriver
@@ -92,7 +88,6 @@ class StepCrawling(Step):
 
         return driver
     
-    
     def initialize_driver_chrome(self):
         """
         Initialize the web driver with chrome driver as principal driver chromedriver.exe, headless means no open web page. But seems slower than firefox driver  
@@ -102,7 +97,7 @@ class StepCrawling(Step):
         options = Options()
 
         prefs = {
-                'disk-cache-size': 8000,
+                'disk-cache-size': 16000,
                 "profile.default_content_setting_values.notifications":2,
                 "profile.managed_default_content_settings.stylesheets":2,
                 "profile.managed_default_content_settings.cookies" : 2,
@@ -138,7 +133,6 @@ class StepCrawling(Step):
 
         return driver
 
-
     def delete_driver(self, driver):
         driver.close()
 
@@ -153,7 +147,6 @@ class StepCrawling(Step):
         driver = self.initialize_driver_chrome()
 
         return driver
-
     
     def initialize_queue_drivers(self):
         for _ in range(self.threads):
@@ -163,14 +156,12 @@ class StepCrawling(Step):
     def initialize_queue_urls(self, urls=[]):
         for url in urls:
              self.queues["urls"].put(url)
-        
 
     def close_queue_drivers(self):
 
         for i in range(self.queues["drivers"].qsize()):
             driver = self.queues["drivers"].get()
             driver.close()
-
     
     def start_threads_and_queues(self, function):
 
@@ -178,7 +169,6 @@ class StepCrawling(Step):
             t = Thread(target= self.queue_calls, args=(function, self.queues, )) # self.configs no longer used
             t.daemon = True
             t.start()
-
 
     def get_url(self, driver, url):
 
@@ -189,11 +179,10 @@ class StepCrawling(Step):
         
         return driver
 
-
     def queue_calls(self, function, queues, *args):
         
         queue_url = queues["urls"]
-        missed_urls = []
+        self.missed_urls = []
         
         #### extract all articles
         while True:
@@ -213,25 +202,23 @@ class StepCrawling(Step):
                                                 path=self.save_queue_path +
                                                 f"/{file_name}.pickle")
 
+                driver.delete_all_cookies()
                 queues["drivers"].put(driver)
                 queue_url.task_done()
-
+                
                 self._log.info(f"[OOF {queue_url.qsize()}] CRAWLED URL {url}")
             
             except Exception as e:
                 logging.error(url, e)
-                missed_urls.append(url)
+                self.missed_urls.append(url)
                 queue_url.task_done()
                 queues["drivers"].put(driver)
-
-            self.missed_urls = missed_urls
 
             if queue_url.qsize() == 0:
                 file_name = encode_file_name(url)
                 save_queue_to_file(queues["results"], 
                                         path=self.save_queue_path +
                                         f"/{file_name}.pickle")
-
 
     def scrowl_driver(self, driver, Y):
         driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")

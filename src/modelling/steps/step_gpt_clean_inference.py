@@ -26,16 +26,18 @@ class StepCleanGptInference(GPTCleaner):
 
         self.save_queue_path= self._config.gpt.save_path
         self.clean_info_with_mapping = self._config.evaluator.info_to_mapping
+        self.mappings = self._config.evaluator.cleaning_mapping
         self.cols_to_cm = self._config.evaluator.handle_cm
-        self.cols_to_date = self._config.evaluator.handle_cm
-        self.cols_to_float = self._config.evaluator.handle_cm
+        self.cols_to_date = self._config.evaluator.handle_dates
+        self.cols_to_float = self._config.evaluator.cols_to_float
+        self.binary_cols = self._config.evaluator.binary_cols
 
         self.nlp = NLPToolBox()
 
     @timing
-    def run(self, category="all"):
+    def run(self, category="painting"):
 
-        category="paintings"
+        category="painting"
         self.category= category.upper()
 
         # get category path
@@ -45,18 +47,19 @@ class StepCleanGptInference(GPTCleaner):
         self.col_mapping = read_json(self._mapping_path)
 
         df_done = read_crawled_pickles(path=self.save_queue_path)
-        df_done = df_done.loc[df_done["PROMPT"].notnull()]
+        del df_done["PROMPT"]
 
         df_done = self.eval_json(df_done)
         df_done = self.extract_features(df_done)
-        self.homogenize_answers(df_done)
-
         df_done = self.remove_outliers(df_done)
-        df_done = self.clean_features(df_done)
+        df_done = self.clean_dimensions(df_done)
+        df_done = self.clean_dates(df_done)
+        df_done = self.clean_text(df_done)
+        df_done = self.clean_binary(df_done)
         df_done = self.clean_values(df_done)
 
         self.write_sql_data(dataframe=df_done.drop(["PROMPT"], axis=1),
-                            table_name=f"TEST_0.05_CLEAN_{category.upper()}",
+                            table_name=f"{category.upper()}_GPT_FEATURES",
                             if_exists="replace")
 
         return df_done
@@ -70,7 +73,8 @@ class StepCleanGptInference(GPTCleaner):
         
         # remove lots of too many different objects
         nbr_objects = df_done["ANSWER"].apply(lambda x: len(x) if isinstance(x, List) else 1)
-        df_done = df_done.loc[1>=nbr_objects]
+        self._log.info(nbr_objects.value_counts())
+        df_done = df_done.loc[3>=nbr_objects]
 
         # align multi objects with simple objects by exploding desc and keep thos existing
         df_done["ANSWER"] = df_done["ANSWER"].apply(lambda x: [x] if isinstance(x, Dict) else x)
@@ -94,12 +98,12 @@ class StepCleanGptInference(GPTCleaner):
         
         for col in self.col_mapping.keys():
             df_done[col.upper()] = df_done["ANSWER"].str.get(col)
+            df_done[col.upper()] = df_done[col.upper()].apply(lambda x: ", ".join(x) if isinstance(x, List) else x)
             df_done[col.upper()] = np.where(df_done[col.upper()].isin(["n/a", "unspecified", "", "unknown", 
                                                 "none", 'not specified', "'n/a'", "null", "not found", 'na',
-                                                "nan", "undefined", "Null",
+                                                "nan", "undefined", "Null", " ",
                                                 'non specified', 'not applicable', 'non specificato']), np.nan,
                                                 df_done[col.upper()])
-    
         return df_done
 
     @timing
@@ -107,48 +111,72 @@ class StepCleanGptInference(GPTCleaner):
 
         shape_0 = df_done.shape[0]
         df_done["NUMBER_OBJECTS_DESCRIBED"] = df_done["NUMBER_OBJECTS_DESCRIBED"].fillna("1")
-        df_done = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(['0', "1", "2"])]
+        df_done = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(['0', "1", "2", "3"])]
         self._log.info(f"FILTERING {shape_0 - df_done.shape[0]} ({(shape_0 - df_done.shape[0])*100/shape_0:.1f}%) due to lack of info / mismatch")
 
+        df_done = df_done.reset_index(drop=True)
         return df_done
     
-    def apply_mapping_func(self, vector, function_mapping):
-        return vector.apply(lambda x: eval(f"self.map_value_to_key(str(x).replace(\"-\",\" \").replace(\",\",\"\"), self.{function_mapping})"))
+    def apply_mapping_func(self, vector, mapping_dict):
+        return vector.swifter.apply(lambda x: self.map_value_to_key(str(x).replace("\"-\"", "\" \"").replace("\",\"","\"\""), mapping_dict))
+    
+    @timing
+    def clean_dimensions(self, df_done):
+        df_columns = df_done.columns
+        for column in self.cols_to_cm:
+            column = self.col_names_with_category(column)
+            if column in df_columns:
+                df_done[column] = df_done[column].apply(lambda x: self.handle_cm(str(x)))
+        return df_done
 
     @timing
-    def clean_features(self, df_done):
-
+    def clean_dates(self, df_done):
         df_columns = df_done.columns
-
-        for column in self.cols_to_cm:
-            if column in df_columns:
-                df_done[f"{self.category}" + column] = df_done[f"{self.category}" + column].apply(lambda x: self.handle_cm(str(x)))
-
         for column in self.cols_to_date:
+            column = self.col_names_with_category(column)
             if column in df_columns:
-                df_done[f"{self.category}" + column] = df_done[f"{self.category}" + column].apply(lambda x: self.clean_periode(str(x)))
-        
-        for function_mapping, columns_name in self.clean_info_with_mapping.items():
-            if len(columns_name) == 1:
-                col_name = columns_name[0]
-                if col_name in df_columns:
-                    df_done[f"{self.category}" + col_name] = self.apply_mapping_func(df_done[f"{self.category}" + col_name], function_mapping)
-            else:
-                col_name = columns_name[0]
-                if col_name in df_columns:
-                    df_done[f"{self.category}" + col_name] = self.apply_mapping_func(df_done[f"{self.category}" + col_name], function_mapping)
-                    for other_col_name in columns_name[1:]:
-                        df_done[f"{self.category}" + col_name] = np.where(df_done[f"{self.category}" + col_name].isnull(),
-                                                    self.apply_mapping_func(df_done[f"{self.category}" + other_col_name], function_mapping),
-                                                    df_done[f"{self.category}" + col_name])
+                df_done[column] = df_done[column].apply(lambda x: self.clean_periode(str(x)))
+        return df_done
+    
+    @timing
+    def clean_text(self, df_done):
+        df_columns = df_done.columns
+        for function_mapping, column_to_clean in self.clean_info_with_mapping.items():
+            for target_column, columns_name in column_to_clean.items():
+                if len(columns_name) == 1:
+                    col_name = self.col_names_with_category(target_column)
 
-        if f"{self.category}_SIGNED" in df_done.columns:
-            df_done[f"{self.category}_SIGNED"] = np.where(df_done[f"{self.category}_SIGNED"].isnull()|df_done[f"{self.category}_SIGNED"].isin(
-                                                                    ["not marked", "non signe", 
-                                                                    "not signed", "no", "false", 
-                                                                    "unmarked"]), 
-                                                False, True)
+                    if col_name in df_columns:
+                        self._log.info(f"CLEANING {target_column}")
 
+                        mapping_dict = self.order_mapping_dict(self.mappings[function_mapping])
+                        df_done["CLEAN_"+col_name] = self.apply_mapping_func(df_done[col_name], mapping_dict)
+                else:
+                    col_name = self.col_names_with_category(target_column)
+
+                    if col_name in df_columns:
+                        self._log.info(f"CLEANING {target_column}")
+
+                        mapping_dict = self.order_mapping_dict(self.mappings[function_mapping])
+                        df_done["CLEAN_"+ col_name] = self.apply_mapping_func(df_done[col_name], mapping_dict)
+                        
+                        for other_col_name in columns_name[1:]:
+                            other_col_name = self.col_names_with_category(other_col_name)
+                            df_done["CLEAN_"+ col_name] = np.where(df_done["CLEAN_"+ col_name].isnull(),
+                                                                self.apply_mapping_func(df_done[other_col_name], mapping_dict),
+                                                                df_done["CLEAN_"+col_name])
+        return df_done
+    
+    @timing
+    def clean_binary(self, df_done):
+        df_columns = df_done.columns
+        for column in self.binary_cols:
+            column = self.col_names_with_category(column)
+            if column in df_columns:
+                df_done[column] = np.where(df_done[column].isin(["not marked", "non signe", "non signee",
+                                            "not signed", "no", "false", "not dated", "not", "non", "faux",
+                                            "unmarked"]), False,
+                                  np.where(df_done[column].isnull()|df_done[column].isin(["none", "null", "nan"]), np.nan, True))
         return df_done
     
     @timing
@@ -167,6 +195,19 @@ class StepCleanGptInference(GPTCleaner):
         df_done["ANSWER"] = df_done["ANSWER"].astype(str)
 
         return df_done
+    
+    def col_names_with_category(self, col_name):
+        if col_name[0] == "_":
+            return self.category + col_name
+        return col_name
+    
+    def order_mapping_dict(self, mapping_dict):
+        ordered_mapping_dict = {}
+        for k in sorted(mapping_dict, key=len, reverse=True):
+            ordered_mapping_dict[k] = mapping_dict[k]
+        return ordered_mapping_dict
+
+    #### FOR CHECKS
     
     def get_all_keys(self, df_done):
         

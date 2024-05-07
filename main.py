@@ -1,5 +1,6 @@
 from src.context import get_config_context
 
+from src.datacrawl.steps.step_crawl_pictures import StepCrawlingPictures
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
 from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItems
 from src.datacrawl.steps.step_crawler_christies_items import StepCrawlingChristiesItems
@@ -38,7 +39,9 @@ if __name__ == "__main__":
     # self.run(self.get_auctions_urls_to_wrawl(), self.crawling_list_auctions_function)
     # self.run(self.get_list_items_to_crawl(), self.crawling_list_items_function)
 
-    self = StepTextCleanDrouot(context=context, config=config)
+    # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="drouot")
+
+    # self = StepTextCleanDrouot(context=context, config=config)
     # self.run()
 
     # self = StepTextCleanChristies(context=context, config=config)
@@ -62,7 +65,7 @@ if __name__ == "__main__":
 
     # self = StepTextInferenceGpt(context=context, config=config)
 
-    # self = StepCleanGptInference(context=context, config=config)
+    self = StepCleanGptInference(context=context, config=config)
     
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()

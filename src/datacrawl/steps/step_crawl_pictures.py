@@ -17,7 +17,7 @@ class StepCrawlingPictures(StepCrawling):
                  threads : int,
                  seller : str = "christies"):
 
-        super().__init__(context=context, config=config, threads=threads)
+        super().__init__(context=context, config=config, threads=threads, save_in_queue=False, text_only=False)
 
         self.seller = seller
         self.infos_data_path = self._config.crawling[self.seller].save_data_path
@@ -31,13 +31,16 @@ class StepCrawlingPictures(StepCrawling):
 
         # get clean seller bdd
         df = self.read_sql_data(f"SELECT \"ID_PICTURE\", \"URL_PICTURE\" FROM \"{self.seller.upper() + "_202403"}\"")   
-        df = df.loc[df[self.name.id_picture].isnull()]
-        liste_urls = df[self.name.url_picture].drop_duplicates().tolist()
+        df = df.loc[(df[self.name.id_picture].isnull())&(df[self.name.url_picture].notnull())]
+        df = df.drop_duplicates(self.name.url_picture)
+        df[self.name.id_picture] = df[self.name.url_picture].apply(lambda x: os.path.basename(x))
 
         done = glob.glob(self.save_picture_path + "/*.jpg")
         done = [os.path.basename(x).replace(".jpg","") for x in done]
 
-        liste_urls = keep_files_to_do(liste_urls, done)
+        liste_ids = keep_files_to_do(df[self.name.id_picture].tolist(), done)
+        df = df.loc[df[self.name.id_picture].isin(liste_ids)].drop_duplicates(self.name.id_picture)
+        liste_urls = df[self.name.url_picture].tolist()
         self._log.info(f"NUMBER PICTURES TO CRAWL = {len(liste_urls)}")
 
         return liste_urls

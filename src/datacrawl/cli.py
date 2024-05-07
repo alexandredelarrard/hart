@@ -211,8 +211,8 @@ def step_crawling_pictures(
     config, context = get_config_context(config_path, use_cache = False, save=False)
     crawl = StepCrawlingPictures(config=config, context=context, 
                                     threads=threads,
-                                    seller=seller)
+                                    seller=seller,)
 
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_picture)
-    # python -m src datacrawl step-crawling-pictures -t 2 --seller drouot
+    # python -m src datacrawl step-crawling-pictures -t 5 --seller drouot

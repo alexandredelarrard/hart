@@ -52,7 +52,7 @@ class StepTextInferenceGpt(Step):
     def run(self):
         
         # get data
-        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"='tableau figuratif' AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
+        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"='tableau moderne' AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
         df = df.drop_duplicates(self.name.total_description)
         df = df.loc[df[self.name.total_description].str.len() > 100] # minimal desc size to have
 

@@ -4,24 +4,34 @@ evaluator:
         watch: D:/data/llm_extracts/features_to_extract/watch_features.json
         vase: D:/data/llm_extracts/features_to_extract/vase_features.json
         all: D:/data/llm_extracts/features_to_extract/category_features.json
-        paintings: D:/data/llm_extracts/features_to_extract/paintings_features.json
+        painting: D:/data/llm_extracts/features_to_extract/paintings_features.json
 
     info_to_mapping:
-        shape_mapping: [_SHAPE]
-        country_mapping: [_COUNTRY]
-        color_mapping: ["_COLOR", "_MATERIAL"]
-        material_mapping: ["_MATERIAL", "_COLOR"]
-        period_mapping: [_PERIODE_OR_CIRCA_YEAR, "_PERIODE_OR_YEAR"]
-        style_mapping: ["_PERIODE_OR_CIRCA_YEAR", "_STYLE"] 
-        condition_mapping: [_CONDITION]
-        decorations_mapping: [_DECORATIONS]
+        shape_mapping: 
+            _SHAPE: [_SHAPE]
+        country_mapping: 
+            _COUNTRY: [_COUNTRY]
+        color_mapping: 
+            _COLOR: [_COLOR]
+        material_mapping: 
+            VASE_MATERIAL: [VASE_MATERIAL, VASE_COLOR]
+            PAINTING_SUPPORT_MATERIAL: [PAINTING_SUPPORT_MATERIAL, PAINTING_MATERIAL]
+        painting_material_mapping:
+            PAINTING_MATERIAL: [PAINTING_MATERIAL, PAINTING_SUPPORT_MATERIAL]
+        style_mapping: 
+            _STYLE: [_PERIODE_OR_CIRCA_YEAR, _STYLE"] 
+        condition_mapping: 
+            _CONDITION: [_CONDITION]
+        decorations_mapping: 
+            _DECORATIONS: [_DECORATIONS]
 
-    handle_dates: ["_PERIODE_OR_CIRCA_YEAR", "_PERIODE_OR_YEAR"]
-    handle_cm: ["_HEIGHT"]
+    handle_dates: ["_PERIODE_OR_CIRCA_YEAR", "_PERIOD_OR_YEAR"]
+    handle_cm: ["_HEIGHT", "_LENGTH", "_WIDTH"]
     cols_to_float: ["_HEIGHT", "_DIAMETER", "_LENGTH", "_YEAR", "_PERIODE_OR_CIRCA_YEAR", "_PERIODE_OR_YEAR", "NUMBER_DESCRIBED_OBJECTS"]
-        
+    binary_cols: ["IS_SIGNED", "_SIGNED", "IS_FRAMED", "IS_DATED", "IS_PAINTED_BY_ARTIST"]
+
     cleaning_mapping:
-        period: {
+        period_mapping: {
             "qianlong" : "1780",
             "kangxi": "1692",
             "meiji" : "1886",
@@ -74,9 +84,10 @@ evaluator:
             "contemporary": "1970",
             "louis xiv": "1680",
             "post-war": "1950",
+            "restauration": "1815",
             "neolithic": "-4000"}
 
-        style: {
+        style_mapping: {
             "neolithic": ["neolithic", "prehistoric", "neolithique"],
             "antique_egypt": ["basse epoque", "egypt"],
             "medieval": ["medieval"],
@@ -107,7 +118,7 @@ evaluator:
             "modern": ["modern"]
         }
         
-        country: {
+        country_mapping: {
             "china" : ["china", "chine", "chinese", "asia", "canton", "asia", "nankin"],
             "france": ["france", "paris", "nancy", "sevre", "limoges"],
             "japan" : ["japan", "japon", "japanese"],
@@ -135,37 +146,56 @@ evaluator:
             "england" : ["england", "uk"]
         }
         
-        material: {
-            "porcelaine" : ["porcelaine", "porcelain", 'blue and white', "white and blue", "bleu et blanc", "white blue", "bleu blanc"],
+        material_mapping: {
+            "porcelaine" : ["porcelaine", "porcelain"],
             "ceramique": ["ceramique", "ceramic", "glazed", "glazed ceramic", "ceramics"],
             "emaux": ["emaux", "email", "emaille", "enamel", "enamels", "cloisonne", "enamelled"],
             "gres" : ["gres", "stoneware"],
-            "wood": ["wood", "bois", "bamboo"],
-            "marble": ["marble", "marbre"],
+            "wood": ["wood", "bois", "bamboo", "oak", "chene", "holz", "acajou", "mahagony", "legno"],
+            "marble": ["marble", "marbre", "alabaster"],
             "clay" : ["clay", "argile", "barbotine"],
             "agate": ["agate"],
-            "bronze" : ["bronze", "copper", "bronze cloisonne"],
+            "bronze" : ["bronze"],
+            "aluminum": ["aluminum", "aluminium", "aluchromie"],
+            "copper": ["copper", "cuivre"],
             "glass" : ["glass", "verre", "crystal", "cameo", "cristal"],
             "faience": ["fayence", "faience", "maiolica", "majolica"],
-            "terre_cuite" : ["biscuit", "earthenware", "terre cuite", "terracotta", 
+            "terre_cuite" : ["biscuit", "earthenware", "terre", "terracotta", 
                             "lagynos", "pottery", "poterie", "impasto"], 
             "celadon" : ["celadon"],
             "jade": ["jade", "jadeite"],
             "opaline" : ["opal", "opaline"],
             "gold": ["gold", "or"],
+            "plastic": ["plastic", "plastique", "plexiglas", "linoleum"],
             "silk": ["silk", "soie"],
-            "toile": ["canvas", "tissu", "toile"],
+            "peau": ["velin", "peau", "skin", "vellum"],
+            "   toile   ": ["burlap", "lienzo", "doek", "canvas", "tissu", "toile", "toiles", "tela", 
+                            "leinwand", "canvasboard", "lin"],
             "ivory": ["ivory", "ivoire"],
             "stone": ["stone", "pierre"],
-            "alabaster" : ["alabaster"],
-            "paper": ["paper", "papuier", "carton", ""],
-            "laque": ["lacquer", "laque"],
+            "paper": ["paper", "papuier", "papier", "arches", "parchemin"],
+            "  carton  ": ["millboard", "cartoncino", "card", "cardboard", "carton", 
+                            "karton", "cartone", "cartonnette", "paperboard"],
+            "  panneau  ": ["panneau", "panneaux", "panel", "pane", "board", "isore", "isorel", "masonite", "linen", "bois", "wood", "plywood", "contreplaque"],
             "silver": ["silver", "argent"],
-            "laiton" : ["brass", 'laiton', "dinanderie"],
-            "metal" : ["iron", "tole", "metal", "pewter", "tin", "etain", "plomb"],
+            "metal" : ["zinc", "iron", "tole", "metal", "pewter", "tin", "etain", "plomb", "brass", 'laiton', "dinanderie"],
         }
 
-        shape: {
+        painting_material_mapping: {
+            "   oil   ": ["oil", "oilo", "olio", "huile", "olie", "ol", "huiles", "tempera", "oel", "oleo", "olieverf"],
+            "gouache": ["gouache", "gouachee"],
+            "ink": ["ink", "inks", "encre"],
+            "collage": ["collage"],
+            " pastel ": ["pastel", "pastello", "pastels"],
+            "mixed": ["mixed", "mixe", "mixer"],
+            "acrylic": ["acrylic", "acrylique", "acrylics"],
+            "crayon": ["crayon", "pencil", "fusain"],
+            "watercolor": ["aquatinte", "aquarelle", "watercolor", "acquarello", "watercolour", "bodycolour", "acquerello", "aquarell", "aquatint"],
+            "serigraphy": ["serigraphy", "serigraphie", "serigraphe", "screenprint", "impression"],
+            "lithography": ["lithography", "lithograph", "lithographie", "estampe"],
+        }
+
+        shape_mapping: {
             "baluster" : ["baluster", "balustre", "baluster form", "baluster jar", 
                           "baluster-shaped", "two-handled", "twin-handled"],
             "double gourd": ["double gourd", "gourd-shaped", "gourd", "gourde", "double-gourd"],
@@ -203,7 +233,7 @@ evaluator:
             "bell" : ["bell-shaped"]
         }
 
-        color: {
+        color_mapping: {
             "multicolor" : ["polychrome", "multi colored", "colored", "multiple",
                             "multicolored", "polychromes", "polychromie", "multicolore", 
                             "multi color", "various", "multicolor", "colorful", "varied",
@@ -240,7 +270,7 @@ evaluator:
             "grey": ["grey", "gris", "gray"]
         }
 
-        manufacturer: {
+        manufacturer_mapping: {
             "meissen" : ["meissen"],
             "daum" : ["daum"],
             "sevres": ["sevres"],
@@ -262,7 +292,7 @@ evaluator:
             "pantin" : ["pantin"]
         }
 
-        condition: {
+        condition_mapping: {
             "very_good" : ["very good", "excellent", "exquisite", "perfect"],
             "good_" : ["good", "restored", "restorations", "fine", "repaired", "bon", "minor"],
             "okay_": ["old wear", "small signs", "minimally damaged", "some egrenures", "some wear", "some chips", "signs of use", "used", 
@@ -270,7 +300,7 @@ evaluator:
             "poor" : ["craquelee", "craquelure", "cracks", "damaged", "degraded", "cracked", "accidents", "worn", "damages", "fractured", "chipped", "crack", "eclat"],
         }
 
-        decorations: {
+        decorations_mapping: {
             "landscape_nature": ["floral", "flowers", "branches", "foliage", "nature", "birds",
                     "poppy", "landscape", "water", "vegetal", "butterflies", "lilies", "clouds", "wind", "rain"],
             "dragons" : ["dragons"],
@@ -282,7 +312,7 @@ evaluator:
             "patterns" : ["blue and white", "designs", "patterns", "intricate", "geometric", "abstract", "traditional chinese motifs"]
         }
 
-        object_sub_category: {
+        object_sub_category_mapping: {
             "ring": ["ring"],
             "bracelet": ["bracelet"],
             "necklace": ["necklace"],

@@ -18,19 +18,29 @@ def reconstruct_dict(x):
             if ": " in element:
                 key, value = element.split(": ", 1)
                 key = key.replace("\"", "").strip()
-                value = value.replace("\"", "").replace(",","").split("//")[0].strip()
+                value = value.replace("\"", "").replace("\\", "").replace(",","").split("//")[0].strip()
                 element = f"\"{key}\": \"{value}\","
             new_dict.append(element)
 
     if new_dict[-1] != "}":
         new_dict.append("}")
 
-    return eval("\n".join(new_dict))
+    answer = "\n".join(new_dict)
+    answer = answer.replace("\"[\",", "[")
+    answer = answer.replace("\"{\",", "{")
+
+    if "}\n{" in answer:
+        answer = "[" + answer + "]"
+        answer = answer.replace("}\n{", "},\n{")
+
+    return eval(answer)
 
 
 def handle_answer(answer):
 
     x = answer["ANSWER"]
+    if isinstance(x, dict):
+        return x
 
     if x[:5] == "Here ":
         x = x.split(":", 1)[-1]
@@ -41,6 +51,7 @@ def handle_answer(answer):
     x = x.replace("N/A", "\"None\"")
     x = x.replace("```json", "")
     x = x.replace("```", "")
+    x = x.replace("\"\"", "\"")
     x = x.strip()
     
     # handle lists 
@@ -56,7 +67,7 @@ def handle_answer(answer):
         try:
             return reconstruct_dict(x)
         except Exception:
-            logging.error(answer["ANSWER"])
+            logging.error(answer["ID_ITEM"])
             return "{}"
             
     
