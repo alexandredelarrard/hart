@@ -176,21 +176,23 @@ evaluator:
             "paper": ["paper", "papuier", "papier", "arches", "parchemin"],
             "  carton  ": ["millboard", "cartoncino", "card", "cardboard", "carton", 
                             "karton", "cartone", "cartonnette", "paperboard"],
-            "  panneau  ": ["panneau", "panneaux", "panel", "pane", "board", "isore", "isorel", "masonite", "linen", "bois", "wood", "plywood", "contreplaque"],
+            "  panneau  ": ["panneau", "panneaux", "panel", "pane", "board", "isore", "isorel", "hardboard",
+                            "masonite", "linen", "linnen", "bois", "wood", "plywood", "contreplaque", "faesite", "hartfaser"],
             "silver": ["silver", "argent"],
             "metal" : ["zinc", "iron", "tole", "metal", "pewter", "tin", "etain", "plomb", "brass", 'laiton', "dinanderie"],
         }
 
         painting_material_mapping: {
-            "   oil   ": ["oil", "oilo", "olio", "huile", "olie", "ol", "huiles", "tempera", "oel", "oleo", "olieverf"],
+            "   oil   ": ["oil", "oilo", "olio", "peinture", "huile", "olie", "ol", "huiles", "tempera", "oel", "oleo", "olieverf"],
+            "paint_spray": ["spray", "aerosol"],
             "gouache": ["gouache", "gouachee"],
             "ink": ["ink", "inks", "encre"],
             "collage": ["collage"],
             " pastel ": ["pastel", "pastello", "pastels"],
-            "mixed": ["mixed", "mixe", "mixer"],
-            "acrylic": ["acrylic", "acrylique", "acrylics"],
+            "mixed": ["mixed", "mixe", "mixer", "mixte", "mista"],
+            "acrylic": ["acrylic", "acrylique", "acrylics", "acryl"],
             "crayon": ["crayon", "pencil", "fusain"],
-            "watercolor": ["aquatinte", "aquarelle", "watercolor", "acquarello", "watercolour", "bodycolour", "acquerello", "aquarell", "aquatint"],
+            "watercolor": ["aquarel", "acuarela", "aquatinte", "aquarelle", "watercolor", "watercolours", "acquarello", "watercolour", "bodycolour", "acquerello", "aquarell", "aquatint"],
             "serigraphy": ["serigraphy", "serigraphie", "serigraphe", "screenprint", "impression"],
             "lithography": ["lithography", "lithograph", "lithographie", "estampe"],
         }
@@ -293,11 +295,11 @@ evaluator:
         }
 
         condition_mapping: {
-            "very_good" : ["very good", "excellent", "exquisite", "perfect"],
-            "good_" : ["good", "restored", "restorations", "fine", "repaired", "bon", "minor"],
+            "very_good" : ["very good", "excellent", "exquisite", "perfect", "parfait"],
+            "good_" : ["good", "restored", "restorations", "fine", "repaired", "bon", "minor", "restaurations", "restauration"],
             "okay_": ["old wear", "small signs", "minimally damaged", "some egrenures", "some wear", "some chips", "signs of use", "used", 
-                    "slightly", "small chips", "minor defects", "usures", "minor"],
-            "poor" : ["craquelee", "craquelure", "cracks", "damaged", "degraded", "cracked", "accidents", "worn", "damages", "fractured", "chipped", "crack", "eclat"],
+                    "slightly", "small chips", "minor defects", "usures", "minor", "craquelures", "manques", "craquele"],
+            "poor" : ["craquelee", "craquelure", "cracks", "damaged", "dechirure", "manques", "degraded", "cracked", "accidents", "taches", "accident", "worn", "damages", "fractured", "chipped", "crack", "eclat"],
         }
 
         decorations_mapping: {

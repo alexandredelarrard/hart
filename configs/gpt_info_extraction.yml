@@ -5,4 +5,4 @@ gpt:
     open_ai: gpt-3.5-turbo-0125
     local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
   seed: 1234
-  introduction: "You are an art expert. Extract following features from the painting description with a JSON format. Write all JSON values only in english, translate them if necessary." #Only return valid json and nothing else. 
+  introduction: "You are an art expert. Extract features from the painting description with a JSON format below. Translate all JSON values in english and only english. Only return a valid json and nothing else. Never write 'Here is the extracted features in JSON'. If no value found, write an empty string ''. Never comment the JSON. JSON values must never be a List."

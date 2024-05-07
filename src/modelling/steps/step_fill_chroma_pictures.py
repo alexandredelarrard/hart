@@ -1,11 +1,8 @@
 import os 
-from tqdm import tqdm
-from typing import List
 
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-from src.modelling.transformers.Clustering import TopicClustering
 from src.modelling.transformers.Embedding import StepEmbedding
 from src.utils.utils_crawler import move_picture
 from src.utils.dataset_retreival import DatasetRetreiver
@@ -44,6 +41,7 @@ class StepFillChromaPictures(Step):
         self.embeddings = self.step_embedding.get_picture_embedding(df_desc[self.vector].tolist())
 
         #save to chroma db
+        # Unique ID is the ID picture 
         self.chroma_collection.save_collection(df_desc.fillna(""), self.embeddings)
 
         return df_desc 
@@ -55,8 +53,8 @@ class StepFillChromaPictures(Step):
         
     def filter_out_embeddings_done(self, df_desc):
         collection_infos = self.chroma_collection.collection.get()
-        done_ids = collection_infos["ids"]
-        df_desc = df_desc.loc[~df_desc[self.name.id_item].isin(done_ids)]
+        done_ids = collection_infos["ids"].apply(lambda x: x.split("_")[0])
+        df_desc = df_desc.loc[~df_desc[self.name.id_picture].isin(done_ids)]
         return df_desc
 
     @timing

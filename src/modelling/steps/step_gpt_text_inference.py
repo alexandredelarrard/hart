@@ -4,7 +4,7 @@ from queue import Queue
 import phoenix as px
 from threading import Thread
 
-from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
@@ -51,8 +51,8 @@ class StepTextInferenceGpt(Step):
     @timing
     def run(self):
         
-        # get data
-        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"='tableau moderne' AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
+        # get data DONE: moderne, figuratif
+        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"TOP_0\"='tableau portrait' AND \"PROBA_0\" > 0.9") #self._config.cleaning.full_data_auction_houses) 
         df = df.drop_duplicates(self.name.total_description)
         df = df.loc[df[self.name.total_description].str.len() > 100] # minimal desc size to have
 
@@ -65,9 +65,9 @@ class StepTextInferenceGpt(Step):
         # get parser 
         self.schema = get_mapping_pydentic_object(self.object)
         self.client = self.initialize_client()
-        self.parser = JsonOutputParser(pydantic_object=self.schema)
+        self.parser = PydanticOutputParser(pydantic_object=self.schema)
         self.prompt = self.create_prompt()
-        self.chain = self.prompt | self.client
+        self.chain = self.prompt | self.client | self.parser
 
         # initalize the urls queue
         self.initialize_queue_description(df)
@@ -126,8 +126,8 @@ class StepTextInferenceGpt(Step):
         self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
     
-    def initialize_client_groq(self, api_keys):
-        client = ChatGroq(groq_api_key=api_keys["groq"][0],
+    def initialize_client_groq(self):
+        client = ChatGroq(groq_api_key=self.api_keys["groq"][0],
                         model=self.llm_model,
                         temperature=0,
                         max_tokens=512,
@@ -143,8 +143,8 @@ class StepTextInferenceGpt(Step):
     
     def create_prompt_openai(self):
         prompt = PromptTemplate(
-            template=self.introduction + "\n{format_instructions}\n{text}\n",
-            input_variables=["text"],
+            template=self.introduction + " \n {format_instructions} \n {query}",
+            input_variables=["query"],
             partial_variables={"format_instructions": self.parser.get_format_instructions()},
         )
         return prompt
@@ -161,9 +161,11 @@ class StepTextInferenceGpt(Step):
         return structured_llm
     
     def invoke_llm(self, prompt):
-        if self.methode in ["open_ai", "local"]:
-            message_content = self.chain.invoke({"text": "Description: " + prompt[self.name.total_description]})
+        if self.methode == "open_ai":
+            message_content = self.chain.invoke({"query": "Description: " + prompt[self.name.total_description]})
             message_content = message_content.content
+        elif self.methode == "local":
+            message_content = self.chain.invoke({"query": "Description: " + prompt[self.name.total_description]})
         else:
             message_content = self.chain.invoke(self.introduction +  "Description: " + prompt[self.name.total_description])
             message_content = message_content["raw"].content

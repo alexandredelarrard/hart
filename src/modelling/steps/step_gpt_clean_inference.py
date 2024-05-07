@@ -208,7 +208,6 @@ class StepCleanGptInference(GPTCleaner):
         return ordered_mapping_dict
 
     #### FOR CHECKS
-    
     def get_all_keys(self, df_done):
         
         def element_cleaner(x):
