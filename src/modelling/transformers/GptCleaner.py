@@ -135,7 +135,7 @@ class GPTCleaner(TextCleaner):
         # TODO: handle picture frames with x 
 
         dimensions = {}
-        for dim in ["cm", "mm", "in", ""]:
+        for dim in ["cm", "mm", "in", "po", ""]:
             extract =  re.findall(f"(\\d+.?\\d+\s?){dim}", x)
             if len(extract) == 1:
                 if dim != "":
@@ -143,6 +143,8 @@ class GPTCleaner(TextCleaner):
                         dimensions[dim] = extract[0].strip() + "*2.54"
                     elif dim == "mm":
                         dimensions[dim] = extract[0].strip() + "*0.1"
+                    elif dim == "po":
+                        dimensions[dim] = extract[0].strip() + "*2.54"
                     else:
                         dimensions[dim] = extract[0].strip()
                 else:

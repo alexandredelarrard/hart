@@ -44,7 +44,7 @@ Outil qui à partir de plusieurs photos / pdfs / documents :
 - Sothebys Level 2: crawl les images manquantes (50%)
 
 - Drouot Level 2: crawl les pdfs des ventes manquantes + cleaning 
-- Drouot Level 2: missing 1M pictures /3.3M items - recrawl them
+- Drouot Level 2: missing 0.38M pictures /3.3M items - recrawl them
 
 - Christies level 2 & 3: recrawl SSO urls redirected because only first page was crawled because missing ?loadall=true after rediction (10%)
 

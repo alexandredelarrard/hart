@@ -1,4 +1,5 @@
 crawling:
+    root_path: D:/data
     met:
         webpage_url : https://www.metmuseum.org
         url_path : D:/data/met/infos/MetObjects.csv

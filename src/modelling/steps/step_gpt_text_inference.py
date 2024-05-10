@@ -112,7 +112,7 @@ class StepTextInferenceGpt(Step):
     def initialize_client_open_ai(self):
         client = ChatOpenAI(openai_api_key=self.api_keys["openai"][0],
                             model=self.llm_model,
-                            temperature=0,
+                            temperature=0.2,
                             seed=self.seed) 
         self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
@@ -121,7 +121,7 @@ class StepTextInferenceGpt(Step):
         client = ChatOpenAI(base_url="http://localhost:1234/v1", 
                             openai_api_key="lm-studio",
                             model=self.llm_model,
-                            temperature=0,
+                            temperature=0.2,
                             seed=self.seed) 
         self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
@@ -177,7 +177,7 @@ class StepTextInferenceGpt(Step):
         try:
             message_content = self.invoke_llm(prompt)
             query_status = "200"
-
+            self._log.info(message_content)
         except Exception as e:
             self._log.error(e)
             query_status = "400"

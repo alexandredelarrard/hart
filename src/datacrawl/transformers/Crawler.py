@@ -35,10 +35,11 @@ class StepCrawling(Step):
         self.text_only = text_only
         self.save_in_queue = save_in_queue
         self.save_queue_size_step = save_queue_size_step
-        self.save_queue_path = "D:/data"
+        self.save_queue_path = self._config.crawling.root_path
+        self.count_to_restart_driver = 7000//threads
 
         self.missed_urls = []
-        self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue()}
+        self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue(), "count": Queue()}
 
     @timing
     def run(self, liste_urls : List, function_crawling):
@@ -193,9 +194,15 @@ class StepCrawling(Step):
                 driver = self.get_url(driver, url)
                 driver, information = function(driver, *args)
 
+                queues["count"].put(information)
+
+                if queues["count"].qsize() % self.count_to_restart_driver ==0:
+                    driver= self.restart_driver(driver)
+                    with queues["count"].mutex:
+                        queues["count"].queue.clear()
+
                 if self.save_in_queue:
                     queues["results"].put(information)
-
                     if queues["results"].qsize() == self.save_queue_size_step:
                         file_name = encode_file_name(url)
                         save_queue_to_file(queues["results"], 
