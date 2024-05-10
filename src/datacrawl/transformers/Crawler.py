@@ -274,7 +274,7 @@ class StepCrawling(Step):
     def get_info_from_step_value(self, driver, step_values):
 
         if "by_type" not in step_values.keys():
-            if "attribute" in step_values.keys():
+            if "attribute" in step_values.keys() and "attribute" != "text":
                 info = driver.get_attribute(step_values["attribute"])
             elif "value_of_css_element" in step_values.keys():
                 info = driver.value_of_css_property(step_values["value_of_css_element"])
@@ -341,7 +341,6 @@ class StepCrawling(Step):
 
                 new_info = self.extract_element_infos(lot, config.per_element)
                 lot_info.update(new_info)
-                
                 list_infos.append(lot_info)
             
             except Exception as e:

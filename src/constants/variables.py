@@ -94,6 +94,13 @@ class Naming:
                                     "DESCRIPTION": self.detailed_description,
                                     "FILE" : self.detail_file}}
 
+class Artists:
+    def __init__(self):
+        self.artist_family_name = "ARTIST_FAMILY_NAME"
+        self.artist_surname = "ARTIST_SURNAME"
+        self.artist_year_born = "ARTIST_YEAR_BORN"
+        self.artist_year_death = "ARTIST_YEAR_DEATH"
+
 # date format 
 date_format = "%Y-%m-%d"
 

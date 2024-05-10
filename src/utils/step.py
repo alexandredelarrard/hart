@@ -7,7 +7,7 @@ from src.context import Context
 from src.utils.string import camel_to_snake
 from src.utils.sql_helper import SqlHelper
 from src.utils.sql_queries import SQLQueries
-from src.constants.variables import Naming
+from src.constants.variables import Naming, Artists
 
 class Step(SqlHelper):
 
@@ -27,6 +27,7 @@ class Step(SqlHelper):
 
         # naming convention 
         self._name = Naming()
+        self._artist = Artists()
 
         # sql queries 
         self.sql_queries = SQLQueries(query_folder_path="src/sql_queries")

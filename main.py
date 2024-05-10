@@ -1,5 +1,6 @@
 from src.context import get_config_context
 
+from src.datacrawl.steps.step_crawl_artists import StepCrawlingArtists
 from src.datacrawl.steps.step_crawl_pictures import StepCrawlingPictures
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
 from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItems
@@ -10,7 +11,9 @@ from src.datacrawl.steps.step_text_clean_christies import StepTextCleanChristies
 from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
 from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
 from src.datacrawl.steps.step_text_clean_sothebys import StepTextCleanSothebys
+from src.datacrawl.steps.step_text_clean_artists import StepTextCleanArtists
 from src.datacrawl.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
+
 from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_picture_clustering import StepPictureClustering
 from src.modelling.steps.old.step_manual_cluster import StepManualCluster
@@ -28,8 +31,10 @@ if __name__ == "__main__":
 
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
-    # self = StepTextCleanSothebys(context=context, config=config)
+    # self = StepCrawlingArtists(context=context, config=config, threads=1)
+    self = StepTextCleanArtists(context=context, config=config)
 
+    # self = StepTextCleanSothebys(context=context, config=config)
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot")
 
     # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
@@ -65,7 +70,7 @@ if __name__ == "__main__":
 
     # self = StepTextInferenceGpt(context=context, config=config)
 
-    self = StepCleanGptInference(context=context, config=config)
+    # self = StepCleanGptInference(context=context, config=config)
     
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()
