@@ -259,16 +259,16 @@ crawling:
         auctions_url: https://www.artus-encheres.fr/ventes-passees
     millon: 
         history_start_year: 2012
-        webpage_url : https://www.millon.com/catalogue/ventes-passees/
+        webpage_url: https://www.millon.com/catalogue/ventes-passees/
         auctions_url: https://www.millon.com/catalogue/ventes-passees/
         auctions:
-            liste_elements : 
+            liste_elements: 
                 by_type: CLASS_NAME
                 value_css: item
             per_element:
                 URL_AUCTION:
-                    by_type : XPATH
-                    value_css : //h5[@class='card-title']/a
+                    by_type : CLASS_NAME
+                    value_css : card-image
                     attribute: href
                 AUCTION_TITLE:
                     by_type : CLASS_NAME
@@ -283,16 +283,16 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: sales-time
         items:
-            liste_elements : 
+            liste_elements: 
                 by_type: CLASS_NAME
                 value_css: item
             per_element:
                 ITEM_TITLE:
-                    by_type : CLASS_NAME
-                    value_css : card-title
+                    by_type: CLASS_NAME
+                    value_css: card-title
                 URL_FULL_DETAIL:
-                    by_type : XPATH
-                    value_css : //h5[@class='card-title']/a
+                    by_type: XPATH
+                    value_css: //h5[@class='card-title']/a
                     attribute: href
                 LOT:
                     by_type: CLASS_NAME

@@ -2,10 +2,6 @@ from datetime import datetime
 import os 
 from omegaconf import DictConfig
 import pandas as pd 
-import numpy as np
-import tqdm
-import pickle
-import time
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
@@ -36,7 +32,7 @@ class StepCrawlingItems(StepCrawling):
         self.define_save_paths(self.seller, mode=mode)
         self.root_url = self._config.crawling[self.seller].webpage_url
         
-        self.crawler_infos = self._config.crawling[self.seller].items
+        self.crawler_infos = self._config.crawling[self.seller]["items"]
         self.seller_utils = eval(f"{self.seller.capitalize()}Items(context=context, config=config)")
     
     # second crawling step  to get list of pieces per auction 
@@ -61,7 +57,7 @@ class StepCrawlingItems(StepCrawling):
 
         # crawl infos 
         query = encode_file_name(os.path.basename(driver.current_url))
-        list_infos = self.seller_utils.crawl_iteratively(driver, self.crawler_infos)
+        list_infos = self.seller_utils.crawl_iteratively_seller(driver, self.crawler_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")

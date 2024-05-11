@@ -1,7 +1,5 @@
-from datetime import datetime
-import os 
+from typing import Dict
 from omegaconf import DictConfig
-import pandas as pd 
 import numpy as np
 import tqdm
 import pickle
@@ -73,3 +71,6 @@ class ChristiesItems(StepCrawling):
 
         except Exception:
             pass
+
+    def crawl_iteratively_seller(self, driver, config: Dict):
+        return self.crawl_iteratively(driver, config)

@@ -49,7 +49,7 @@ class SothebysItems(StepCrawling):
         else:
             "true"
 
-    def crawl_iteratively(self, driver, config: Dict):
+    def crawl_iteratively_seller(self, driver, config: Dict):
 
         # crawl infos 
         url = driver.current_url

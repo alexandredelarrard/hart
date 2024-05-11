@@ -37,7 +37,7 @@ class StepCrawlingAuctions(StepCrawling):
         self.start_date = self.define_start_date(start_date, history_start_year)
         self.end_date = self.define_end_date(end_date)
 
-        self.crawler_infos = self._config.crawling[self.seller].auctions
+        self.crawler_infos = self._config.crawling[self.seller]["auctions"]
 
 
     # first crawling level # list of auctions in the past to get urls 

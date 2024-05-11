@@ -275,59 +275,59 @@ class StepCrawling(Step):
         except Exception:
             return []
         
-    def get_info_from_step_value(self, driver, step_values):
+    def get_info_from_step_value(self, element, step_values):
 
         if "by_type" not in step_values.keys():
             if "attribute" in step_values.keys() and "attribute" != "text":
-                info = driver.get_attribute(step_values["attribute"])
+                info = element.get_attribute(step_values["attribute"])
             elif "value_of_css_element" in step_values.keys():
-                info = driver.value_of_css_property(step_values["value_of_css_element"])
+                info = element.value_of_css_property(step_values["value_of_css_element"])
             else:
-                info = driver.text
+                info = element.text
                 
         else:
             if "value_of_css_element" in step_values.keys():
-                info = self.get_value_of_css_element(driver, 
+                info = self.get_value_of_css_element(element, 
                                     step_values["by_type"], 
                                     step_values["value_css"],
                                     key=step_values["value_of_css_element"])
                 
             elif "attribute" in step_values.keys():
-                info = self.get_element_infos(driver, 
+                info = self.get_element_infos(element, 
                                     step_values["by_type"], 
                                     step_values["value_css"],
                                     type=step_values["attribute"])
             else:
-                info = self.get_element_infos(driver, 
+                info = self.get_element_infos(element, 
                                     step_values["by_type"], 
                                     step_values["value_css"])
             
-            if "replace" in step_values.keys():
-                info = info.replace(step_values["replace"][0], 
-                                    step_values["replace"][1]).strip()
-            
-            if "split" in step_values.keys():
-                info = info.split(step_values["split"]["character"])
+        if "replace" in step_values.keys():
+            info = info.replace(step_values["replace"][0], 
+                                step_values["replace"][1]).strip()
+        
+        if "split" in step_values.keys():
+            info = info.split(step_values["split"]["character"])
 
-                if step_values["replace"]["id_split"]:
-                    info = info[step_values["split"]["id_split"]]
+            if step_values["replace"]["id_split"]:
+                info = info[step_values["split"]["id_split"]]
 
         return info
     
     
-    def extract_element_infos(self, driver, config):
+    def extract_element_infos(self, lot, config):
 
         lot_info = {}
 
         # get infos 
         for step, step_values in config.items(): 
-            lot_info[step] = self.get_info_from_step_value(driver, step_values)
+            lot_info[step] = self.get_info_from_step_value(lot, step_values)
         
         return lot_info
     
 
     def crawl_iteratively(self, driver, 
-                          config : Dict):
+                          config : DictConfig):
 
         list_infos = []
         liste_lots = self.get_elements(driver, 

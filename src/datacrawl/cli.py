@@ -105,7 +105,7 @@ def step_crawling_items(
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawl_items_iteratively)
 
-    #python -m src datacrawl step-crawling-items -t 1 --seller sothebys  --crawling-mode new
+    #python -m src datacrawl step-crawling-items -t 1 --seller millon
 
 @cli.command(
     help="Crawling details for any seller",

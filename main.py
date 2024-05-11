@@ -3,13 +3,9 @@ from src.context import get_config_context
 from src.datacrawl.steps.step_crawl_artists import StepCrawlingArtists
 from src.datacrawl.steps.step_crawler_pictures import StepCrawlingPictures
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
-from src.datacrawl.steps.step_crawler_drouot_auctions import StepCrawlingDrouotAuctions
-from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItems
-from src.datacrawl.steps.step_crawler_christies_auctions import StepCrawlingChristiesAuctions
-from src.datacrawl.steps.step_crawler_christies_items import StepCrawlingChristiesItems
 from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
-from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
-from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
+from src.datacrawl.steps.step_crawler_items import StepCrawlingItems
+from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 
 from src.dataclean.steps.step_text_clean_drouot import StepTextCleanDrouot
 from src.dataclean.steps.step_text_clean_christies import StepTextCleanChristies
@@ -39,8 +35,8 @@ if __name__ == "__main__":
 
     # self = StepTextCleanSothebys(context=context, config=config)
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot")
-
-    self = StepCrawlingDrouotAuctions(context=context, config=config, threads=1, mode="new", start_date="2024-03-01")
+    self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="millon")
+    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="millon")
     # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
     # crawl.run(crawl.get_urls(), crawl.crawling_function)
 
