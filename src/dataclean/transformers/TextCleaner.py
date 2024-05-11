@@ -104,6 +104,8 @@ class TextCleaner(Step):
     def add_complementary_variables(self, df, seller):
         df[self.name.id_item] = df[self.name.url_full_detail].apply(lambda x : encode_file_name(str(x)))
         df[self.name.seller] = seller
+        if seller != "drouot":
+            df[self.name.house] = seller
         return df
 
     def check_cols_exists(self, cols_a, cols_b):

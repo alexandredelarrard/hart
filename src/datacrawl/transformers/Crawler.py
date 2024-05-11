@@ -1,7 +1,9 @@
 import time
+import os 
 import tqdm
 import logging
-
+import pandas as pd
+from datetime import datetime
 from typing import List, Dict
 from queue import Queue
 from threading import Thread
@@ -11,12 +13,14 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+from src.constants.variables import date_format
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
 from src.utils.utils_crawler import (encode_file_name,
-                                     save_queue_to_file)
+                                     save_queue_to_file,
+                                     check_path_exist)
 
 
 class StepCrawling(Step):
@@ -347,3 +351,35 @@ class StepCrawling(Step):
                 self._log.warning(f"ERROR happened for URL {driver.current_url} - {e}")
 
         return list_infos
+    
+    def define_save_paths(self, seller, mode="history"):
+
+        root_path = self._config.crawling.root_path
+
+        if mode=="new":
+            new_path = self._config.crawling.path_new
+        elif mode=="history":
+            new_path = ""
+        else:
+            raise Exception(f"Must declare a valid mode of savepath : new or history. Got {mode}")
+        
+        self._log.info(f"CRAWLING WITH MODE = {mode}")
+        self.pictures_data_path = f"{root_path}/{seller}/{self._config.crawling.picture_path}"
+        self.details_data_path = f"{root_path}/{seller}/{new_path}/{self._config.crawling.details_path}"
+        self.infos_data_path = f"{root_path}/{seller}/{new_path}/{self._config.crawling.infos_path}"
+        self.auctions_data_path = f"{root_path}/{seller}/{new_path}/{self._config.crawling.auctions_path}"
+
+        for path in [self.pictures_data_path, self.details_data_path, self.infos_data_path, self.auctions_data_path]:
+            check_path_exist(path)
+
+    def define_end_date(self, end_date):
+        if end_date:
+            return pd.to_datetime(end_date, format=date_format)
+        else:
+            return datetime.today()
+    
+    def define_start_date(self, start_date, history_start_year):
+        if start_date:
+            return pd.to_datetime(start_date, format=date_format)
+        else:
+            return pd.to_datetime(history_start_year, format="%Y")

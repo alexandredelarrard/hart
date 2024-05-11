@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 from src.context import Context
-from src.datacrawl.transformers.TextCleaner import TextCleaner
+from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
 from nltk.tokenize import word_tokenize
 from src.utils.utils_crawler import (read_crawled_pickles,

@@ -13,7 +13,7 @@ from src.constants.variables import (liste_currency_paires,
                                     fixed_eur_rate,
                                     date_format)
 
-from src.datacrawl.transformers.TextCleaner import TextCleaner
+from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.utils.utils_dataframe import (remove_accents,
                                        remove_punctuation,
                                        flatten_dict)
@@ -47,7 +47,7 @@ class StepAgglomerateTextInfos(TextCleaner):
         df = self.homogenize_text(df)
         df = self.create_total_description(df)
         df = self.remove_missing_values(df, important_cols=[self.name.total_description])
-        # df = self.deduce_language(df)
+        df = self.deduce_language(df)
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)

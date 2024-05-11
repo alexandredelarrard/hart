@@ -1,61 +1,34 @@
-from datetime import datetime
-import os 
 from omegaconf import DictConfig
-
-import pandas as pd 
 import re
 import time
+from typing import Dict
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
-from src.utils.utils_crawler import (read_crawled_csvs, 
-                                    get_files_already_done, 
-                                    keep_files_to_do,
-                                    encode_file_name)
 
-class StepCrawlingSothebysItems(StepCrawling):
+class SothebysItems(StepCrawling):
     
     def __init__(self, 
                  context : Context,
-                 config : DictConfig,
-                 threads : int):
+                 config : DictConfig):
 
-        super().__init__(context=context, config=config, threads=threads)
-
-        self.seller = "sothebys"        
-        self.infos_data_path = self._config.crawling[self.seller].save_data_path
-        self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
-        self.root_url = self._config.crawling[self.seller].webpage_url
-        self.url_crawled = self._config.crawling[self.seller].url_crawled
-        self.today = datetime.today()
-
-        self.crawler_infos_auction_url = self._config.crawling[self.seller].items.auctions_url
-        self.crawler_infos_buy_url = self._config.crawling[self.seller].items.buy_url
+        super().__init__(context=context, config=config, threads=1)
+        self.root_url = self._config.crawling["sothebys"].webpage_url
+        self.to_replace=(self.root_url, '')
 
         # weird webpage format regarding F1
         # TODO: include the F1 webpage formating from sothebys*
         # TODO : pages with /en/buy
         # TODO: re extract pictures with src = data:image/svg+xml;base64 = 50%
     
-    def get_list_items_to_crawl(self):
-
-        df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = (
-                    df.loc[(self.name.url_auction != "MISSING_URL_AUCTION")&
-                            (df[self.name.url_auction].notnull()), 
+    def urls_to_crawl(self, df_auctions):
+        to_crawl = (df_auctions.loc[(self.name.url_auction != "MISSING_URL_AUCTION")&
+                            (df_auctions[self.name.url_auction].notnull()), 
                             self.name.url_auction]
                             .drop_duplicates()
-                            .tolist()
-                    )
+                            .tolist())
         to_crawl = [x for x in to_crawl if "rmsothebys" not in x and "/en/buy/" not in x]
-
-        # ALREADY DONE
-        df_infos = read_crawled_csvs(path=self.infos_data_path)
-        already_crawled = get_files_already_done(df=df_infos, 
-                                                url_path='')
-        liste_urls = keep_files_to_do(to_crawl, already_crawled)
-
-        return liste_urls
+        return to_crawl
     
     def get_number_pages_auctions(self, driver):
         
@@ -76,10 +49,9 @@ class StepCrawlingSothebysItems(StepCrawling):
         else:
             "true"
 
-    def crawling_list_items_function(self, driver):
+    def crawl_iteratively(self, driver, config: Dict):
 
         # crawl infos 
-        query = encode_file_name(os.path.basename(driver.current_url))
         url = driver.current_url
         list_infos = []
 
@@ -94,7 +66,7 @@ class StepCrawlingSothebysItems(StepCrawling):
                     for i, new_url in enumerate([url + f"?p={x}" for x in range(1, pages+1)]):
                         if i != 1:
                             self.get_url(driver, new_url)
-                        new_infos = self.crawl_iteratively(driver, self.crawler_infos_auction_url)
+                        new_infos = self.crawl_iteratively(driver, config.auctions_url)
                         list_infos = list_infos + new_infos
 
                 if "/en/buy/" in url:
@@ -103,7 +75,7 @@ class StepCrawlingSothebysItems(StepCrawling):
                     
                     while next_button_call != "true":
                         page_counter +=1
-                        new_infos = self.crawl_iteratively(driver, self.crawler_infos_buy_url)
+                        new_infos = self.crawl_iteratively(driver, config.buy_url)
                         list_infos = list_infos + new_infos
                         time.sleep(1)
 
@@ -119,7 +91,4 @@ class StepCrawlingSothebysItems(StepCrawling):
         else:
             self._log.warning(f"PAGE {url} DOES NOT EXIST {error}")
 
-        df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
-
-        return driver, list_infos
+        return list_infos

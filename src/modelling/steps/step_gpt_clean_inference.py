@@ -13,7 +13,7 @@ from src.utils.utils_crawler import (read_crawled_pickles,
 from src.utils.utils_extraction_gpt import (handle_answer,
                                             homogenize_keys_name) 
 from src.utils.utils_dataframe import remove_accents
-from src.modelling.transformers.GptCleaner import GPTCleaner
+from src.dataclean.transformers.GptCleaner import GPTCleaner
 from src.modelling.transformers.NlpToolBox import NLPToolBox
 
 class StepCleanGptInference(GPTCleaner):

@@ -1,55 +1,29 @@
 import os
-import re
-from typing import List
-from omegaconf import DictConfig
-
-import pandas as pd 
-import tqdm
 import time
+from typing import List, Dict
+from omegaconf import DictConfig
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
-from src.utils.utils_crawler import (read_crawled_csvs,
-                                     get_files_already_done,
-                                    keep_files_to_do,
-                                    encode_file_name)
 
-class StepCrawlingDrouotItems(StepCrawling):
+class DrouotItems(StepCrawling):
     
     def __init__(self, 
                  context : Context,
-                 config : DictConfig,
-                 threads : int, 
-                 object : str = ""):
+                 config : DictConfig):
 
-        super().__init__(context=context, config=config, threads=threads)
-
-        self.seller = "drouot"     
-        self.object = object   
-        self.infos_data_path = self._config.crawling[self.seller].save_data_path
-        self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
-        self.root_url = self._config.crawling[self.seller].webpage_url
-        self.url_crawled = self._config.crawling[self.seller].url_crawled
-
-        self.crawler_infos = self._config.crawling[self.seller].items
+        super().__init__(context=context, config=config, threads=1)
+        self.to_replace=()
 
         # TODO: handle pdfs downloading and extraction ... Low prio
-        # TODO : missing 1M pictures /3.3M items
 
-    def get_urls(self) -> List[str]:
+    def urls_to_crawl(self, df_auctions) -> List[str]:
         
         # CRAWLING TO DO 
-        df = read_crawled_csvs(path=self.auctions_data_path)
-        to_crawl = df.loc[df[self.name.url_auction] != "MISSING_URL_AUCTION", 
-                             self.name.url_auction].drop_duplicates().tolist()
-
-        # CRAWLING DONE based on url list
-        df_infos = read_crawled_csvs(path=self.infos_data_path)
-        already_crawled = get_files_already_done(df=df_infos, 
-                                                 url_path=self.url_crawled)
-        liste_urls = keep_files_to_do(to_crawl, already_crawled)
+        to_crawl = df_auctions.loc[df_auctions[self.name.url_auction] != "MISSING_URL_AUCTION", 
+                                    self.name.url_auction].drop_duplicates().tolist()
         
-        return liste_urls
+        return to_crawl
 
     def check_loggedin(self, driver, counter=0):
 
@@ -92,11 +66,10 @@ class StepCrawlingDrouotItems(StepCrawling):
         return page_nbr
 
 
-    def crawling_function(self, driver):
+    def crawl_iteratively(self, driver, config: Dict):
 
         # log in if necessary
         url = driver.current_url.split("?controller=")[0]
-        query = encode_file_name(os.path.basename(url))
 
         # crawl infos 
         list_infos = []
@@ -108,13 +81,10 @@ class StepCrawlingDrouotItems(StepCrawling):
             if i != 1:
                 self.get_url(driver, new_url)
                 
-            new_infos = self.crawl_iteratively(driver, self.crawler_infos)
+            new_infos = self.crawl_iteratively(driver, config)
             list_infos = list_infos + new_infos
 
             # url_picture = re.findall(r'\((.*?)\)', style_tagname_pict)[-1]
             # return eval(str(url_picture))
 
-        df_infos = pd.DataFrame().from_dict(list_infos)
-        self.save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
-        
-        return driver, list_infos
+        return list_infos

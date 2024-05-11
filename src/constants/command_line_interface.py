@@ -38,17 +38,6 @@ CRAWL_THREADS_KWARG = {
 }
 
 
-OBJECT_ARGS=("--object", "-obj", "object")
-OBJECT_KWARGS= {
-    "type" : str, 
-    "default" : "meuble",
-    "required" : True,
-    "show_default" : True,
-    "help": (
-        "Object to crawl from drouot portal"
-    )
-}
-
 DATABASE_NAME_ARGS=("--house_art", "-ah", "database_name")
 DATABASE_NAME_KWARGS= {
     "type" : str, 
@@ -71,17 +60,6 @@ TEXT_VECTOR_KWARGS= {
     )
 }
 
-NBR_AUCTION_PAGES_ARGS=("--nbr_pages_auctions", "-nbau", "nbr_auction_pages")
-NBR_AUCTION_PAGES_KWARGS= {
-    "type" : int, 
-    "default" : 2566, # all pages up to 17/03/2024
-    "required" : True,
-    "show_default" : True,
-    "help": (
-        "number of auction pages referenced in drouot website"
-    )
-}
-
 
 TEXT_ONLY_ARGS=("--text-only", "-to", "text_only")
 TEXT_ONLY_KWARGS= {
@@ -93,7 +71,6 @@ TEXT_ONLY_KWARGS= {
         "if we want to initialize the webdriver without loading javascript / images etc. for fast crawling"
     )
 }
-
 
 SELLER_ARGS=("--seller", "-s", "seller")
 SELLER_KWARGS= {
@@ -136,5 +113,38 @@ GPT_METHODE_KWARGS={
     "show_default" : "local",
     "help": (
         "which api to call for llm inference based on text. If local, need to start local server first with LM Studio"
+    )
+}
+
+START_DATE_ARGS=("--start-date", "-sd", "start_date")
+START_DATE_KWARGS= {
+    "type" : str, 
+    "default" : None,
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "Start date from which to crawl auctions from a defined website"
+    )
+}
+
+END_DATE_ARGS=("--end-date", "-ed", "end_date")
+END_DATE_KWARGS= {
+    "type" : str, 
+    "default" : None,
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "End date from which to crawl auctions from a defined website"
+    )
+}
+
+CRAWLING_MODE_ARGS=("--crawling-mode", "-crm", "crawling_mode")
+CRAWLING_MODE_KWARGS= {
+    "type" : str, 
+    "default" : "history",
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "Either history or new depending if want to crawl all or append to existing values"
     )
 }

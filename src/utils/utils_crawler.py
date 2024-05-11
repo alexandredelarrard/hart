@@ -1,5 +1,4 @@
 import pandas as pd 
-from typing import List
 from glob import glob
 import os 
 from tqdm import tqdm
@@ -27,7 +26,10 @@ def read_crawled_csvs(path : str):
         except Exception:
             not_read.append(file)
 
-    df = pd.concat(liste_dfs, axis=0, ignore_index=True)
+    if len(liste_dfs) !=0:
+        df = pd.concat(liste_dfs, axis=0, ignore_index=True)
+    else:
+        df = pd.DataFrame()
     
     logging.info(f"RECORDINGS : {df.shape[0]}")
     logging.info(f"Missing reads of files : {len(not_read)}")
@@ -118,14 +120,24 @@ def move_picture(path_from, path_to):
 def encode_file_name(file):
     return hashlib.sha256(str.encode(file)).hexdigest()
 
-
 def get_files_already_done(df, url_path, to_replace=()):
-    if not to_replace:
-        return df["FILE"].apply(lambda x: url_path + x.replace(".csv",""))
+    if df.shape[0] !=0:
+        if not to_replace:
+            return df["FILE"].apply(lambda x: url_path + x.replace(".csv",""))
+        else:
+            return df["FILE"].apply(lambda x: url_path + x.replace(".csv","").replace(to_replace[0], to_replace[1]))
     else:
-        return df["FILE"].apply(lambda x: url_path + x.replace(".csv","").replace(to_replace[0], to_replace[1]))
+        return []
+    
+def get_files_done_from_path(file_path=None, url_path=None):
+    files = glob(file_path + "/*.csv")
+    return [url_path + os.path.basename(x).replace(".csv", "") for x in files]
 
 def keep_files_to_do(to_crawl, already_crawled):
     liste_urls = list(set(to_crawl) - set(already_crawled))
     logging.info(f"ALREADY CRAWLED {len(already_crawled)} REMAINING {len(liste_urls)} / {len(to_crawl)}")
     return liste_urls
+
+def check_path_exist(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)

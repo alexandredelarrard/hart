@@ -20,9 +20,8 @@ class StepCrawlingPictures(StepCrawling):
         super().__init__(context=context, config=config, threads=threads, save_in_queue=False, text_only=False)
 
         self.seller = seller
-        self.infos_data_path = self._config.crawling[self.seller].save_data_path
-        self.save_picture_path = self._config.crawling[self.seller].save_picture_path
         self.today = datetime.today()
+        self.define_save_paths(self.seller) # independant from mode 
         
         self.per_element = self._config.crawling[self.seller].detailed.per_element
     
@@ -30,12 +29,10 @@ class StepCrawlingPictures(StepCrawling):
     def get_list_items_to_crawl(self):
 
         # get clean seller bdd
-        df = self.read_sql_data(f"SELECT \"ID_PICTURE\", \"URL_PICTURE\" FROM \"{self.seller.upper() + "_202403"}\"")   
-        df = df.loc[(df[self.name.id_picture].isnull())&(df[self.name.url_picture].notnull())]
-        df = df.drop_duplicates(self.name.url_picture)
+        df = self.read_sql_data(f"SELECT DISTINCT \"URL_PICTURE\" FROM \"{self.seller.upper() + "_202403"}\" WHERE \"URL_PICTURE\" IS NOT NULL")   
         df[self.name.id_picture] = df[self.name.url_picture].apply(lambda x: os.path.basename(x))
 
-        done = glob.glob(self.save_picture_path + "/*.jpg")
+        done = glob.glob(self.pictures_data_path + "/*.jpg")
         done = [os.path.basename(x).replace(".jpg","") for x in done]
 
         liste_ids = keep_files_to_do(df[self.name.id_picture].tolist(), done)
@@ -52,6 +49,6 @@ class StepCrawlingPictures(StepCrawling):
         picture_id = os.path.basename(url)
 
         # save pictures & infos
-        message = save_picture_crawled(url, self.save_picture_path, picture_id)
+        message = save_picture_crawled(url, self.pictures_data_path, picture_id)
 
         return driver, message

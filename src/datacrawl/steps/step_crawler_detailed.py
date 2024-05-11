@@ -1,5 +1,3 @@
-from datetime import datetime
-import os 
 from omegaconf import DictConfig
 
 from src.context import Context
@@ -16,17 +14,16 @@ class StepCrawlingDetailed(StepCrawling):
                  threads : int,
                  seller : str = "christies",
                  save_queue_size : int = 500,
-                 text_only : bool = True):
+                 text_only : bool = True,
+                 mode: str= "history"):
 
         super().__init__(context=context, config=config, threads=threads, 
                          text_only=text_only, save_in_queue=True, 
                          save_queue_size_step=save_queue_size)
 
         self.seller = seller
-        self.infos_data_path = self._config.crawling[self.seller].save_data_path
-        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
-        self.save_queue_path = self._config.crawling[self.seller].save_data_path_details
-        
+        self.define_save_paths(self.seller, mode=mode)
+
         self.per_element = self._config.crawling[self.seller].detailed.per_element
     
     # second crawling step  to get list of pieces per auction 

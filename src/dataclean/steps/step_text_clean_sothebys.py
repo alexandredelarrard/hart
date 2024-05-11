@@ -4,7 +4,7 @@ import locale
 import re
 
 
-from src.datacrawl.transformers.TextCleaner import TextCleaner
+from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.context import Context
 from src.utils.timing import timing
 from src.constants.variables import localisation, currencies, date_format

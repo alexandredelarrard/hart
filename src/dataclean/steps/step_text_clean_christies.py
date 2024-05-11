@@ -3,7 +3,7 @@ import numpy as np
 import os 
 
 from src.context import Context
-from src.datacrawl.transformers.TextCleaner import TextCleaner
+from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
 from src.constants.variables import date_format
 

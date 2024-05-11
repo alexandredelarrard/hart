@@ -1,5 +1,10 @@
 crawling:
     root_path: D:/data
+    path_new: new
+    picture_path: pictures
+    infos_path: infos
+    details_path: details
+    auctions_path: auctions
     met:
         webpage_url : https://www.metmuseum.org
         url_path : D:/data/met/infos/MetObjects.csv
@@ -10,18 +15,9 @@ crawling:
             nodes : 1
             retry : 1
     drouot: 
+        history_start_year: 2000
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
-        auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?
-        url_crawled : https://www.gazette-drouot.com/ventes-aux-encheres/
-        url_path : D:/data/drouot/infos/*
-        save_picture_path : D:/data/drouot/pictures
-        save_data_path : D:/data/drouot/infos
-        save_data_path_auctions: D:/data/drouot/auctions
-        save_data_path_details: D:/data/drouot/details
-        settings : 
-            browser : chrome 
-            nodes : 1
-            retry : 1   
+        auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?isForAgenda=true&typeName=passees
         auctions:
             liste_elements : 
                 by_type: CLASS_NAME
@@ -103,22 +99,14 @@ crawling:
                     per_element : 
                         value_of_css_element: background
     christies: 
+        history_start_year: 1999
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
-        url_path : D:/data/christies/infos/*
-        save_picture_path : D:/data/christies/pictures
-        save_data_path : D:/data/christies/infos
-        save_data_path_auctions: D:/data/christies/auctions
-        save_data_path_details: D:/data/christies/details
         correction_urls_auction : D:/data/christies/auctions/correction_urls_auctions.pickle
-        settings : 
-            browser : chrome 
-            nodes : 1
-            retry : 1 
         auctions:
             functions:
                 - 'self.scrowl_driver(driver, Y=150)'
-                - 'self.handle_signups(driver)'
+                - 'self.seller_utils.handle_signups(driver)'
             liste_elements : 
                 by_type: XPATH
                 value_css: '//ul[@aria-labelledby="calendar-tab-undefined"]/li'
@@ -135,7 +123,7 @@ crawling:
         items:
             functions:
                 - 'self.scrowl_driver(driver, Y=150)'
-                - 'self.handle_signups(driver)'
+                - 'self.seller_utils.handle_signups(driver)'
             liste_elements : 
                 by_type: CLASS_NAME
                 value_css: chr-browse-lot-tile-wrapper
@@ -175,19 +163,9 @@ crawling:
                     by_type : CLASS_NAME
                     value_css : chr-lot-section__accordion--text
     sothebys: 
+        history_start_year: 2007
         webpage_url : https://www.sothebys.com/en/buy/auction
         auctions_url : https://www.sothebys.com/en/results? #6581
-        url_crawled :  https://rmsothebys.com/en/home/auction-results/
-        url_path : D:/data/sothebys/infos/*
-        save_picture_path : D:/data/sothebys/pictures
-        save_data_path : D:/data/sothebys/infos
-        save_data_path_auctions: D:/data/sothebys/auctions
-        save_data_path_details: D:/data/sothebys/details
-        oldest_year : 2007
-        settings : 
-            browser : chrome 
-            nodes : 1
-            retry : 1 
         auctions:
             liste_elements : 
                 by_type: CLASS_NAME
@@ -275,10 +253,71 @@ crawling:
                 NOTE_CATALOGUE :
                     by_type: CLASS_NAME
                     value_css : LotPage-lotDescription 
-    artus: # TODO 2003-2024
+    artus: # TODO 2003-2024 - merdique vend de l'industriel ...
+        history_start_year: 2003
+        webpage_url : https://www.artus-encheres.fr/ventes-passees
         auctions_url: https://www.artus-encheres.fr/ventes-passees
-    millon: #TODO 31 pages jusqu'a 2012 - manque 
-        auctions_url: https://www.millon.com/catalogue/ventes-passees/page1 
+    millon: 
+        history_start_year: 2012
+        webpage_url : https://www.millon.com/catalogue/ventes-passees/
+        auctions_url: https://www.millon.com/catalogue/ventes-passees/
+        auctions:
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: item
+            per_element:
+                URL_AUCTION:
+                    by_type : XPATH
+                    value_css : //h5[@class='card-title']/a
+                    attribute: href
+                AUCTION_TITLE:
+                    by_type : CLASS_NAME
+                    value_css : card-title
+                LOCALISATION:
+                    by_type : CLASS_NAME
+                    value_css : selling-location
+                AUCTION_DATE:
+                    by_type: CLASS_NAME
+                    value_css: day-of-sale
+                AUCTION_HOUR:
+                    by_type: CLASS_NAME
+                    value_css: sales-time
+        items:
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: item
+            per_element:
+                ITEM_TITLE:
+                    by_type : CLASS_NAME
+                    value_css : card-title
+                URL_FULL_DETAIL:
+                    by_type : XPATH
+                    value_css : //h5[@class='card-title']/a
+                    attribute: href
+                LOT:
+                    by_type: CLASS_NAME
+                    value_css: lot
+                ITEM_INFOS:
+                    by_type: CLASS_NAME
+                    value_css: content
+                FINAL_RESULT:
+                    by_type: CLASS_NAME
+                    value_css: estimation
     agutes: # TODO: 2003-2024
         auctions_url: https://www.aguttes.com/resultats-des-ventes
-    
+    artcurial: #TODO:
+        auctions_url: https://www.artcurial.com/resultats-ventes-aux-encheres
+    tajan:
+        auctions_url: https://www.tajan.com/fr/past/?pg=1
+    ivoire:
+        auctions_url: https://www.ivoire-france.com/chartres/fr/resultats/59-resultats_ventes
+    liladam:
+        auctions_url: https://www.liladam.com/ventes-passees
+    rossini: 
+        auctions_url: https://www.rossini.fr/resultats
+    orsenat: 
+        auctions_url: https://www.osenat.com/resultats-ventes-passees
+    sgl-encheres:
+        auctions_url: https://www.sgl-encheres.com/ventes-passees
+    ader:
+        auctions_url: https://www.ader-paris.fr/ventes-passees

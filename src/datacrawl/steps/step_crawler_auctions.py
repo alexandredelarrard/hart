@@ -1,0 +1,67 @@
+
+from typing import List
+from omegaconf import DictConfig
+import pandas as pd 
+
+from src.context import Context
+
+from src.constants.variables import date_format
+from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.utils.utils_drouot_auctions import DrouotAuctions
+from src.datacrawl.utils.utils_christies_auctions import ChristiesAuctions
+from src.datacrawl.utils.utils_sothebys_auctions import SothebysAuctions
+from src.datacrawl.utils.utils_millon_auctions import MillonAuctions
+from src.utils.utils_crawler import (get_files_done_from_path, 
+                                    keep_files_to_do,
+                                    save_infos)
+
+class StepCrawlingAuctions(StepCrawling):
+    
+    def __init__(self, 
+                 context : Context,
+                 config : DictConfig,
+                 threads : int,
+                 seller: str,
+                 start_date: str = None,
+                 end_date: str = None,
+                 mode: str= "history"):
+
+        self.seller = seller.lower()
+        super().__init__(context=context, config=config, threads=threads)
+
+        self.seller_utils = eval(f"{self.seller.capitalize()}Auctions(context=context, config=config)")
+        self.define_save_paths(self.seller, mode=mode)
+
+        self.url_auctions = self._config.crawling[self.seller].auctions_url
+        history_start_year = self._config.crawling[self.seller].history_start_year
+        self.start_date = self.define_start_date(start_date, history_start_year)
+        self.end_date = self.define_end_date(end_date)
+
+        self.crawler_infos = self._config.crawling[self.seller].auctions
+
+
+    # first crawling level # list of auctions in the past to get urls 
+    def get_auctions_urls_to_crawl(self) -> List[str]:
+        """
+        Liste of all auctions on the month over the world done by christies
+        keep only the month / year pair not already crawled
+        """
+
+        to_crawl = self.seller_utils.urls_to_crawl(self.start_date, self.end_date, self.url_auctions)
+        already_crawled = get_files_done_from_path(file_path=self.auctions_data_path, 
+                                                    url_path=self.url_auctions)
+        liste_urls = keep_files_to_do(to_crawl, already_crawled)
+        
+        return liste_urls
+
+    def crawling_auctions_iteratively(self, driver):
+
+        # crawl infos 
+        query = driver.current_url.replace(self.url_auctions, "").replace("results?", "").replace("%2F", "-")
+        list_infos = self.seller_utils.crawl_iteratively(driver, self.crawler_infos)
+
+        df_infos = pd.DataFrame().from_dict(list_infos)
+        save_infos(df_infos, path=self.auctions_data_path + f"/{query}.csv")
+
+        return driver, list_infos
+    

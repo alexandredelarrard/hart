@@ -5,7 +5,7 @@ import re
 import os 
 
 
-from src.datacrawl.transformers.TextCleaner import TextCleaner
+from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.context import Context
 from src.utils.timing import timing
 from src.constants.variables import date_format

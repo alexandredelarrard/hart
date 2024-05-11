@@ -3,32 +3,30 @@ import click
 from src.constants.command_line_interface import (
     CONFIG_ARGS,
     CONFIG_KWARGS,
-    OBJECT_ARGS,
-    OBJECT_KWARGS,
     CRAWL_THREADS_ARG, 
     CRAWL_THREADS_KWARG,
-    NBR_AUCTION_PAGES_ARGS,
-    NBR_AUCTION_PAGES_KWARGS,
     TEXT_ONLY_ARGS,
     TEXT_ONLY_KWARGS,
     SELLER_ARGS,
     SELLER_KWARGS,
     QUEUE_SIZE_ARGS,
     QUEUE_SIZE_KWARGS,
+    START_DATE_ARGS,
+    START_DATE_KWARGS,
+    END_DATE_ARGS,
+    END_DATE_KWARGS,
+    CRAWLING_MODE_ARGS,
+    CRAWLING_MODE_KWARGS
 )
 
 from src.context import get_config_context
 from src.utils.cli_helper import SpecialHelpOrder
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
 from src.datacrawl.steps.step_crawl_artists import StepCrawlingArtists
-from src.datacrawl.steps.step_crawler_drouot_items import StepCrawlingDrouotItems 
-from src.datacrawl.steps.step_crawler_christies_items import StepCrawlingChristiesItems
-from src.datacrawl.steps.step_crawler_drouot_auctions import StepCrawlingDrouotAuctions 
-from src.datacrawl.steps.step_crawler_christies_auctions import StepCrawlingChristiesAuctions
-from src.datacrawl.steps.step_crawler_sothebys_auctions import StepCrawlingSothebysAuctions
-from src.datacrawl.steps.step_crawler_sothebys_items import StepCrawlingSothebysItems
+from src.datacrawl.steps.step_crawler_items import StepCrawlingItems 
+from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
-from src.datacrawl.steps.step_crawl_pictures import StepCrawlingPictures
+from src.datacrawl.steps.step_crawler_pictures import StepCrawlingPictures
 
 
 @click.group(cls=SpecialHelpOrder)
@@ -57,126 +55,60 @@ def step_crawling_met(
     #python -m src art step-crawling -t 1
 
 @cli.command(
-    help="Crawling DROUOT AUCTIONS",
+    help="Crawling AUCTIONS for any seller",
     help_priority=3,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-@click.option(*NBR_AUCTION_PAGES_ARGS, **NBR_AUCTION_PAGES_KWARGS)
-def step_crawling_drouot_auctions(
-    config_path, threads : int, nbr_auction_pages : int 
+@click.option(*SELLER_ARGS, **SELLER_KWARGS)
+@click.option(*START_DATE_ARGS, **START_DATE_KWARGS)
+@click.option(*END_DATE_ARGS, **END_DATE_KWARGS)
+@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
+def step_crawling_auctions(
+    config_path, threads : int, seller:str,  start_date: str, end_date: str, crawling_mode: str
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingDrouotAuctions(config=config, context=context, 
-                                       threads=threads, 
-                                       nbr_auction_pages=nbr_auction_pages)
+    crawl = StepCrawlingAuctions(config=config, 
+                                context=context, 
+                                threads=threads,
+                                seller=seller,
+                                start_date= start_date,
+                                end_date = end_date,
+                                mode=crawling_mode)
 
     # get crawling_function 
-    crawl.run(crawl.get_auctions_urls_to_wrawl(), crawl.crawling_list_auctions_function)
+    crawl.run(crawl.get_auctions_urls_to_crawl(), crawl.crawling_auctions_iteratively)
 
-    #python -m src datacrawl step-crawling-drouot-auctions -t 1
+    #python -m src datacrawl step-crawling-auctions -t 1 --seller sothebys --start-date "2024-03-01" --crawling-mode new
+
 
 @cli.command(
-    help="Crawling SOTHEBYS AUCTIONS",
+    help="Crawling ITEMS for any seller",
     help_priority=3,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-@click.option(*NBR_AUCTION_PAGES_ARGS, **NBR_AUCTION_PAGES_KWARGS)
-def step_crawling_sothebys_auctions(
-    config_path, threads : int, nbr_auction_pages : int 
+@click.option(*SELLER_ARGS, **SELLER_KWARGS)
+@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
+def step_crawling_items(
+    config_path, threads : int, seller: str, crawling_mode : str 
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingSothebysAuctions(config=config, context=context, 
-                                       threads=threads)
+    crawl = StepCrawlingItems(config=config, 
+                              context=context, 
+                            threads=threads,
+                            seller=seller,
+                            mode=crawling_mode)
 
     # get crawling_function 
-    crawl.run(crawl.get_auctions_urls_to_wrawl(), crawl.crawling_list_auctions_function)
+    crawl.run(crawl.get_list_items_to_crawl(), crawl.crawl_items_iteratively)
 
-    #python -m src datacrawl step-crawling-sothebys-auctions -t 1
-
-@cli.command(
-    help="Crawling Chrysties Auctions",
-    help_priority=3,
-)
-@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_chrysties_auctions(
-    config_path, threads : int
-):
-    
-    config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingChristiesAuctions(config=config, context=context, 
-                                            threads=threads)
-
-    # get crawling_function 
-    crawl.run(crawl.get_auctions_urls_to_wrawl(), 
-              crawl.crawling_list_auctions_function)
-    #python -m src datacrawl step-crawling-chrysties-auctions -t 1
-
+    #python -m src datacrawl step-crawling-items -t 1 --seller sothebys  --crawling-mode new
 
 @cli.command(
-    help="Crawling DROUOT ITEMS",
-    help_priority=3,
-)
-@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
-@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_drouot_items(
-    config_path, threads : int, object : str 
-):
-    
-    config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingDrouotItems(config=config, context=context, 
-                                    threads=threads, object=object)
-
-    # get crawling_function 
-    crawl.run(crawl.get_urls(), crawl.crawling_function)
-
-    #python -m src datacrawl step-crawling-drouot-items -t 1
-
-
-@cli.command(
-    help="Crawling Chrysties",
-    help_priority=4,
-)
-@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_chrysties_items(
-    config_path, threads : int
-):
-    
-    config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingChristiesItems(config=config, context=context, 
-                                        threads=threads)
-
-    # get crawling_function 
-    crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)
-    #python -m src datacrawl step-crawling-chrysties-items -t 1
-
-@cli.command(
-    help="Crawling Chrysties",
-    help_priority=5,
-)
-@click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-def step_crawling_sothebys_items(
-    config_path, threads : int
-):
-    
-    config, context = get_config_context(config_path, use_cache = False, save=False)
-    crawl = StepCrawlingSothebysItems(config=config, context=context, 
-                                        threads=threads)
-
-    # get crawling_function 
-    crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_list_items_function)
-    #python -m src datacrawl step-crawling-sothebys-items -t 1 
-
-
-@cli.command(
-    help="Crawling detail of url",
+    help="Crawling details for any seller",
     help_priority=6,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
@@ -184,22 +116,24 @@ def step_crawling_sothebys_items(
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
 @click.option(*QUEUE_SIZE_ARGS, **QUEUE_SIZE_KWARGS)
 @click.option(*TEXT_ONLY_ARGS, **TEXT_ONLY_KWARGS)
+@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
 def step_crawling_detailed(
-    config_path, threads : int, seller : str, save_queue_size : int, text_only : bool
+    config_path, threads : int, seller : str, save_queue_size : int, text_only : bool, crawling_mode : str 
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     crawl = StepCrawlingDetailed(config=config, context=context, 
                                 threads=threads, seller=seller, 
                                 save_queue_size=save_queue_size,
-                                text_only=text_only)
+                                text_only=text_only,
+                                mode=crawling_mode)
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 --text-only True
+    # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 --text-only True --crawling-mode new
 
 
 @cli.command(
-    help="Crawling Chrysties",
+    help="Crawling Pictures for any seller",
     help_priority=5,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
@@ -219,7 +153,7 @@ def step_crawling_pictures(
     # python -m src datacrawl step-crawling-pictures -t 5 --seller drouot
 
 @cli.command(
-    help="Crawling Chrysties",
+    help="Crawling Artist list",
     help_priority=5,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)

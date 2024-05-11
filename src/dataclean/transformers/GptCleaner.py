@@ -6,7 +6,7 @@ from src.context import Context
 from nltk.tokenize import word_tokenize
 from src.utils.utils_dataframe import remove_punctuation
 
-from src.datacrawl.transformers.TextCleaner import TextCleaner
+from src.dataclean.transformers.TextCleaner import TextCleaner
 from omegaconf import DictConfig
 
 
