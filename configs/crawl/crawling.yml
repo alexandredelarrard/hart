@@ -39,10 +39,9 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: etudeVente
         items:
-            liste_elements : 
-                by_type: CLASS_NAME
-                value_css: Lot
-            per_element:
+            functions:
+                - 'self.scrowl_driver(driver, Y=200)'
+            global_element:
                 DATE:
                     by_type: CLASS_NAME
                     value_css: capitalize-fl
@@ -58,6 +57,10 @@ crawling:
                 HOUSE:
                     by_type: CLASS_NAME
                     value_css: etudeVente
+            liste_elements : 
+                by_type: CLASS_NAME
+                value_css: Lot
+            per_element:
                 LOT_NUMBER:
                     by_type: CLASS_NAME
                     value_css: lotNumListe
@@ -92,12 +95,16 @@ crawling:
                 DETAIL:
                     by_type : XPATH
                     value_css : //div[@class='lotDescriptionFiche']/h2
-                PICTURES_URL:
+                URL_PICTURE:
                     liste_elements : 
                         by_type: CLASS_NAME
                         value_css: thumbPreview
                     per_element : 
                         value_of_css_element: background
+                URL_PICTURE_CANVAS:
+                    by_type: TAG_NAME
+                    value_css: canvas
+                    is_canvas: True
     christies: 
         history_start_year: 1999
         webpage_url : https://www.christies.com/en/auction/
@@ -291,8 +298,8 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: card-title
                 URL_FULL_DETAIL:
-                    by_type: XPATH
-                    value_css: //h5[@class='card-title']/a
+                    by_type : CLASS_NAME
+                    value_css : card-image
                     attribute: href
                 LOT:
                     by_type: CLASS_NAME

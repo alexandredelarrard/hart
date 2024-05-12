@@ -10,7 +10,8 @@ from src.utils.timing import timing
 from src.constants.variables import localisation, currencies, date_format
 
 from src.utils.utils_crawler import (read_crawled_csvs,
-                                     read_crawled_pickles)
+                                     read_crawled_pickles,
+                                     define_save_paths)
 
 from omegaconf import DictConfig
 
@@ -26,10 +27,8 @@ class StepTextCleanSothebys(TextCleaner):
         locale.setlocale(locale.LC_ALL, 'en')
 
         self.seller = seller
-        self.infos_data_path = self._config.crawling[self.seller].save_data_path
-        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
-        self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
-        
+        self.paths = define_save_paths(config, self.seller)
+
         self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
         self.auctions_col_names= self.name.dict_rename_auctions()
@@ -39,7 +38,7 @@ class StepTextCleanSothebys(TextCleaner):
     @timing
     def run(self):
 
-        df = read_crawled_csvs(path= self.infos_data_path)
+        df = read_crawled_csvs(path= self.paths["infos"])
         df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.extract_hour_infos(df)
         df = self.clean_id_picture(df)
@@ -53,7 +52,7 @@ class StepTextCleanSothebys(TextCleaner):
                                         self.name.brut_result])
 
         #merge with items 
-        df_detailed = read_crawled_pickles(path=self.details_data_path)
+        df_detailed = read_crawled_pickles(path=self.paths["details"])
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.complement_with_condition(df_detailed)
         df_detailed = self.clean_detail_infos(df_detailed)

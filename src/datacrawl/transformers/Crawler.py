@@ -1,9 +1,7 @@
 import time
-import os 
 import tqdm
 import logging
-import pandas as pd
-from datetime import datetime
+import base64
 from typing import List, Dict
 from queue import Queue
 from threading import Thread
@@ -13,14 +11,12 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from src.constants.variables import date_format
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
 from src.utils.utils_crawler import (encode_file_name,
-                                     save_queue_to_file,
-                                     check_path_exist)
+                                     save_queue_to_file)
 
 
 class StepCrawling(Step):
@@ -102,10 +98,10 @@ class StepCrawling(Step):
         options = Options()
 
         prefs = {
-                'disk-cache-size': 16000,
+                'disk-cache-size': 8000,
                 "profile.default_content_setting_values.notifications":2,
                 "profile.managed_default_content_settings.stylesheets":2,
-                "profile.managed_default_content_settings.cookies" : 2,
+                # "profile.managed_default_content_settings.cookies" : 2,
                 "profile.managed_default_content_settings.plugins":2,
                 "profile.managed_default_content_settings.geolocation":2,
                 "profile.managed_default_content_settings.media_stream":2,
@@ -126,9 +122,10 @@ class StepCrawling(Step):
         options.add_argument("--incognito")
         options.add_argument('--no-sandbox') # Bypass OS security model
         options.add_argument('--disable-gpu')  # applicable to windows os only
-        # options.add_argument('start-maximized') 
+        # # options.add_argument('start-maximized') 
 
         options.add_argument('disable-infobars')
+        options.add_argument("--disable-web-security")
         options.add_argument("--disable-extensions")
         options.add_argument("--enable-javascript")
 
@@ -213,7 +210,6 @@ class StepCrawling(Step):
                                                 path=self.save_queue_path +
                                                 f"/{file_name}.pickle")
 
-                driver.delete_all_cookies()
                 queues["drivers"].put(driver)
                 queue_url.task_done()
                 
@@ -275,6 +271,14 @@ class StepCrawling(Step):
         except Exception:
             return []
         
+    def get_picture_url_from_canvas(self, element, attribute, attribute_desc):
+        try:
+            canvas = self.get_solo_element(element, attribute, attribute_desc)
+            canvas64 = element.execute_script("return arguments[0].toDataURL('image/png', 1.0).substring(21);", canvas)
+            return base64.b64decode(canvas64)
+        except Exception:
+            return ""
+        
     def get_info_from_step_value(self, element, step_values):
 
         if "by_type" not in step_values.keys():
@@ -291,6 +295,11 @@ class StepCrawling(Step):
                                     step_values["by_type"], 
                                     step_values["value_css"],
                                     key=step_values["value_of_css_element"])
+                
+            elif "is_canvas" in step_values.keys():
+                info = self.get_picture_url_from_canvas(element, 
+                                    step_values["by_type"], 
+                                    step_values["value_css"])
                 
             elif "attribute" in step_values.keys():
                 info = self.get_element_infos(element, 
@@ -337,49 +346,23 @@ class StepCrawling(Step):
         for lot in tqdm.tqdm(liste_lots):
 
             lot_info = {} 
-            
+
             try:
+                # global info from driver level
+                if "global_element" in config.keys():
+                    new_info = self.extract_element_infos(driver, config.global_element)
+                    lot_info.update(new_info)
+            
                 if "functions" in config.keys():
                     for function in config.functions:
                         eval(function)
 
                 new_info = self.extract_element_infos(lot, config.per_element)
                 lot_info.update(new_info)
+                lot_info["CURRENT_URL"] = driver.current_url
                 list_infos.append(lot_info)
             
             except Exception as e:
                 self._log.warning(f"ERROR happened for URL {driver.current_url} - {e}")
 
         return list_infos
-    
-    def define_save_paths(self, seller, mode="history"):
-
-        root_path = self._config.crawling.root_path
-
-        if mode=="new":
-            new_path = self._config.crawling.path_new
-        elif mode=="history":
-            new_path = ""
-        else:
-            raise Exception(f"Must declare a valid mode of savepath : new or history. Got {mode}")
-        
-        self._log.info(f"CRAWLING WITH MODE = {mode}")
-        self.pictures_data_path = f"{root_path}/{seller}/{self._config.crawling.picture_path}"
-        self.details_data_path = f"{root_path}/{seller}/{new_path}/{self._config.crawling.details_path}"
-        self.infos_data_path = f"{root_path}/{seller}/{new_path}/{self._config.crawling.infos_path}"
-        self.auctions_data_path = f"{root_path}/{seller}/{new_path}/{self._config.crawling.auctions_path}"
-
-        for path in [self.pictures_data_path, self.details_data_path, self.infos_data_path, self.auctions_data_path]:
-            check_path_exist(path)
-
-    def define_end_date(self, end_date):
-        if end_date:
-            return pd.to_datetime(end_date, format=date_format)
-        else:
-            return datetime.today()
-    
-    def define_start_date(self, start_date, history_start_year):
-        if start_date:
-            return pd.to_datetime(start_date, format=date_format)
-        else:
-            return pd.to_datetime(history_start_year, format="%Y")

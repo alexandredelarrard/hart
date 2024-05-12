@@ -4,7 +4,8 @@ from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
 from src.utils.utils_crawler import (read_crawled_csvs, 
                                     read_crawled_pickles,
-                                    keep_files_to_do)
+                                    keep_files_to_do,
+                                    define_save_paths)
 
 class StepCrawlingDetailed(StepCrawling):
     
@@ -22,19 +23,24 @@ class StepCrawlingDetailed(StepCrawling):
                          save_queue_size_step=save_queue_size)
 
         self.seller = seller
-        self.define_save_paths(self.seller, mode=mode)
+        self.paths = define_save_paths(config, self.seller, mode=mode)
 
+        self.recrawl_pictures = False
         self.per_element = self._config.crawling[self.seller].detailed.per_element
     
     # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
 
-        df = read_crawled_csvs(path=self.infos_data_path)
+        # get detail urls to crawl
+        df = read_crawled_csvs(path=self.paths["infos"])
         to_crawl = df.loc[df[self.name.url_full_detail].notnull(), 
                             self.name.url_full_detail].drop_duplicates().tolist()
-        df_crawled = read_crawled_pickles(path=self.details_data_path)
-
+        
+        # get already crawled urls 
+        df_crawled = read_crawled_pickles(path=self.paths["details"])
         if df_crawled.shape[0] != 0:
+            if self.recrawl_pictures:
+                df_crawled = df_crawled.loc[df_crawled[self.name.url_picture].notnull()]
             already_crawled = df_crawled[self.name.url_detail].tolist()
         else:
             already_crawled = []

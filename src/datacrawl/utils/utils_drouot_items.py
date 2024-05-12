@@ -14,6 +14,8 @@ class DrouotItems(StepCrawling):
 
         super().__init__(context=context, config=config, threads=1)
         self.to_replace=()
+        self.mdp = os.environ["DROUOT_MDP"]
+        self.email = os.environ["DROUOT_EMAIL"]
 
         # TODO: handle pdfs downloading and extraction ... Low prio
 
@@ -27,31 +29,27 @@ class DrouotItems(StepCrawling):
 
     def check_loggedin(self, driver, counter=0):
 
-        mdp = os.environ[f"{self.seller.upper()}_MDP"]
-        email = os.environ[f"{self.seller.upper()}_EMAIL"]
+        header = self.get_element_infos(driver, "TAG_NAME", "header")
+        if "Mon profil" not in header:
+            self.click_element(driver, "XPATH", "//div[@class='floatRight alignRight noPaddingRight']/div[2]")
+            time.sleep(1)
 
-        if "Abonnez-vous" in self.get_element_infos(driver, "TAG_NAME", "header"):
-            time.sleep(3)
-            self.click_element(driver, "CLASS_NAME", "menuLinkConnection")
-            time.sleep(2)
-
-            self.send_keys_element(driver, "ID", "authenticate-email", email)
-            time.sleep(2)
-            self.send_keys_element(driver, "ID", "password", mdp)
+            self.send_keys_element(driver, "ID", "authenticate-email", self.email)
+            time.sleep(1)
+            self.send_keys_element(driver, "ID", "password", self.mdp)
             time.sleep(1)
 
             self.click_element(driver, "ID", "menuLoginButton0")
-            time.sleep(3)
+            time.sleep(2)
 
-            if "Le Magazine" in self.get_element_infos(driver, "TAG_NAME", "header"):
+            if counter < 2:
+                driver = self.check_loggedin(driver, counter+1)
                 return driver
-            else:
-                if counter < 2:
-                    self.check_loggedin(driver, counter+1)
-                else: 
-                    raise Exception("CANNOT LOG IN TO DROUOT")
+            else: 
+                raise Exception("CANNOT LOG IN TO DROUOT")
 
         else:
+            self._log.debug("LOGGED IN TO DROUOT")
             return driver
         
     def get_page_number(self, driver):
@@ -59,10 +57,11 @@ class DrouotItems(StepCrawling):
         page_nbr = self.get_element_infos(driver, "CLASS_NAME", "fontRadikalBold")
 
         if len(page_nbr) != 0:
-            page_nbr = int(page_nbr) // 50 + 1
+            page_nbr = (int(page_nbr) // 50) + 1
         else:
             page_nbr = 0
 
+        self._log.debug(f"{page_nbr} to crawl")
         return page_nbr
 
 
@@ -70,21 +69,18 @@ class DrouotItems(StepCrawling):
 
         # log in if necessary
         url = driver.current_url.split("?controller=")[0]
-
-        # crawl infos 
-        list_infos = []
         
         driver = self.check_loggedin(driver)
         page_nbr = self.get_page_number(driver)
 
-        for i, new_url in enumerate([url + f"?page={x}" for x in range(1, page_nbr+1)]):
-            if i != 1:
-                self.get_url(driver, new_url)
+        # crawl infos 
+        list_infos = []
+        for new_url in [url + f"?page={x}" for x in range(1, page_nbr + 1)]:
+            
+            self.get_url(driver, new_url)
+            time.sleep(0.3)
                 
             new_infos = self.crawl_iteratively(driver, config)
             list_infos = list_infos + new_infos
-
-            # url_picture = re.findall(r'\((.*?)\)', style_tagname_pict)[-1]
-            # return eval(str(url_picture))
 
         return list_infos

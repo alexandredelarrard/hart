@@ -13,7 +13,8 @@ from src.utils.utils_crawler import (read_crawled_csvs,
                                     get_files_already_done, 
                                     keep_files_to_do,
                                     encode_file_name,
-                                    save_infos)
+                                    save_infos,
+                                    define_save_paths)
 
 class StepCrawlingItems(StepCrawling):
     
@@ -29,7 +30,7 @@ class StepCrawlingItems(StepCrawling):
         self.seller = seller.lower()
         self.today = datetime.today()
         
-        self.define_save_paths(self.seller, mode=mode)
+        self.paths = define_save_paths(config, self.seller, mode=mode)
         self.root_url = self._config.crawling[self.seller].webpage_url
         
         self.crawler_infos = self._config.crawling[self.seller]["items"]
@@ -39,11 +40,11 @@ class StepCrawlingItems(StepCrawling):
     def get_list_items_to_crawl(self):
 
         # AUCTIONS
-        df_auctions = read_crawled_csvs(path=self.auctions_data_path)
+        df_auctions = read_crawled_csvs(path=self.paths["auctions"])
         to_crawl = self.seller_utils.urls_to_crawl(df_auctions)
 
         # ITEMS crawled
-        df_infos = read_crawled_csvs(path=self.infos_data_path)
+        df_infos = read_crawled_csvs(path=self.paths["infos"])
         already_crawled = get_files_already_done(df=df_infos, 
                                                 url_path=self.root_url,
                                                 to_replace=self.seller_utils.to_replace)
@@ -60,6 +61,6 @@ class StepCrawlingItems(StepCrawling):
         list_infos = self.seller_utils.crawl_iteratively_seller(driver, self.crawler_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        save_infos(df_infos, path=self.infos_data_path + f"/{query}.csv")
+        save_infos(df_infos, path=self.paths["infos"] + f"/{query}.csv")
 
         return driver, list_infos

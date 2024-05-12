@@ -1,5 +1,6 @@
 import pandas as pd 
 from glob import glob
+from datetime import datetime
 import os 
 from tqdm import tqdm
 import urllib
@@ -8,6 +9,9 @@ import logging
 import hashlib
 import json 
 import shutil
+
+from omegaconf import DictConfig
+from src.constants.variables import date_format
 
 def read_crawled_csvs(path : str):
 
@@ -141,3 +145,38 @@ def keep_files_to_do(to_crawl, already_crawled):
 def check_path_exist(path):
     if not os.path.isdir(path):
         os.makedirs(path)
+
+def define_save_paths(config : DictConfig, seller, mode="history"):
+
+    paths = {}
+    root_path = config.crawling.root_path
+
+    if mode=="new":
+        new_path = config.crawling.path_new
+    elif mode=="history":
+        new_path = ""
+    else:
+        raise Exception(f"Must declare a valid mode of savepath : new or history. Got {mode}")
+    
+    logging.info(f"CRAWLING WITH MODE = {mode}")
+    paths["pictures"] = f"{root_path}/{seller}/{config.crawling.picture_path}"
+    paths["details"] = f"{root_path}/{seller}/{new_path}/{config.crawling.details_path}"
+    paths["infos"] = f"{root_path}/{seller}/{new_path}/{config.crawling.infos_path}"
+    paths["auctions"] = f"{root_path}/{seller}/{new_path}/{config.crawling.auctions_path}"
+
+    for _, path in paths.items():
+        check_path_exist(path)
+
+    return paths
+
+def define_end_date(end_date):
+    if end_date:
+        return pd.to_datetime(end_date, format=date_format)
+    else:
+        return pd.to_datetime(datetime.today())
+
+def define_start_date(start_date, history_start_year):
+    if start_date:
+        return pd.to_datetime(start_date, format=date_format)
+    else:
+        return pd.to_datetime(history_start_year, format="%Y")

@@ -9,7 +9,8 @@ from src.constants.variables import date_format
 
 from src.utils.utils_crawler import (read_crawled_csvs,
                                      read_pickle,
-                                     read_crawled_pickles)
+                                     read_crawled_pickles,
+                                     define_save_paths)
 
 from omegaconf import DictConfig
 
@@ -23,11 +24,9 @@ class StepTextCleanChristies(TextCleaner):
         super().__init__(context=context, config=config)
 
         self.seller = "christies"
-        self.info_path = self._config.crawling[self.seller].save_data_path
-        self.auctions_data_path = self._config.crawling[self.seller].save_data_path_auctions
         self.webpage_url = self._config.crawling[self.seller].webpage_url
         self.correction_urls_auction = self._config.crawling[self.seller].correction_urls_auction
-        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
+        self.paths = define_save_paths(config, self.seller)
 
         self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
@@ -39,13 +38,13 @@ class StepTextCleanChristies(TextCleaner):
     def run(self):
         
         # CLEAN AUCTIONS
-        df_auctions = read_crawled_csvs(path=self.auctions_data_path)
+        df_auctions = read_crawled_csvs(path=self.paths["auctions"])
         df_auctions = self.renaming_dataframe(df_auctions, mapping_names=self.auctions_col_names)
         mapping_corr_urls_auction = read_pickle(path=self.correction_urls_auction)
         df_auctions = self.clean_auctions(df_auctions, mapping_corr_urls_auction)
 
         # # CLEAN ITEMS
-        df = read_crawled_csvs(path= self.info_path)
+        df = read_crawled_csvs(path=self.paths["infos"])
         df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.clean_items_per_auction(df)
         df = self.clean_id_picture(df) # 33% no pict
@@ -61,7 +60,7 @@ class StepTextCleanChristies(TextCleaner):
         df = self.extract_infos(df)
 
         # CLEAN DETAILED ITEM DATA
-        df_detailed = read_crawled_pickles(path=self.details_data_path)
+        df_detailed = read_crawled_pickles(path=self.paths["details"])
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.clean_detail_infos(df_detailed)
 

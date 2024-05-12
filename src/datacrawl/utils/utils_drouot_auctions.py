@@ -1,6 +1,6 @@
 from typing import Dict
 from omegaconf import DictConfig
-import pandas as pd 
+from datetime import datetime
 import tqdm
 
 from src.context import Context
@@ -22,7 +22,19 @@ class DrouotAuctions(StepCrawling):
         return to_crawl
 
     def define_auction_url(self, start_date, end_date, url_auctions):
-        if start_date.year != self.history_start_year:
+
+        if isinstance(start_date, datetime):
+            year_start = start_date.year
+            start_date = start_date.strftime("%d/%m/%Y")
+        else:
+            raise Exception("start date must be a datetime format")
+        
+        if isinstance(end_date, datetime):
+            end_date = end_date.strftime("%d/%m/%Y")
+        else:
+            raise Exception("start date must be a datetime format")
+
+        if year_start != self.history_start_year:
             url_auctions = url_auctions + f"""&actuDatefilter={start_date}+-+{end_date}&""".replace("/","%2F")
         return url_auctions
 

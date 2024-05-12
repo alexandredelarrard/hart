@@ -35,8 +35,8 @@ if __name__ == "__main__":
 
     # self = StepTextCleanSothebys(context=context, config=config)
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot")
-    self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="millon")
-    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="millon")
+    # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="drouot")
+    self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot", mode="new")
     # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
     # crawl.run(crawl.get_urls(), crawl.crawling_function)
 

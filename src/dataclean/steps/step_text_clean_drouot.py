@@ -11,7 +11,8 @@ from src.utils.timing import timing
 from src.constants.variables import date_format
 
 from src.utils.utils_crawler import (read_crawled_csvs,
-                                    read_crawled_pickles)
+                                    read_crawled_pickles,
+                                    define_save_paths)
 
 from omegaconf import DictConfig
 
@@ -27,8 +28,7 @@ class StepTextCleanDrouot(TextCleaner):
         locale.setlocale(locale.LC_ALL, 'fr_FR')
 
         self.seller = seller
-        self.infos_data_path = self._config.crawling[self.seller].save_data_path
-        self.details_data_path = self._config.crawling[self.seller].save_data_path_details
+        self.paths = define_save_paths(config, seller)
         
         self.details_col_names = self.name.dict_rename_detail()
         self.items_col_names= self.name.dict_rename_items()
@@ -38,7 +38,7 @@ class StepTextCleanDrouot(TextCleaner):
     @timing
     def run(self):
 
-        df = read_crawled_csvs(path= self.infos_data_path)
+        df = read_crawled_csvs(path=self.paths["infos"])
         df = self.renaming_dataframe(df, mapping_names=self.items_col_names)
         df = self.extract_hour_infos(df)
         df = self.handle_type_of_sale(df)
@@ -53,7 +53,7 @@ class StepTextCleanDrouot(TextCleaner):
         df = self.extract_infos(df)
 
         #merge with items 
-        df_detailed = read_crawled_pickles(path=self.details_data_path)
+        df_detailed = read_crawled_pickles(path=self.paths["details"])
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.clean_detail_infos(df_detailed)
         df_detailed = self.clean_pictures_url(df_detailed)
@@ -186,3 +186,4 @@ class StepTextCleanDrouot(TextCleaner):
         df[self.name.id_picture] = np.where(exists_pict, df[self.name.id_picture], np.nan)
         
         return df
+    
