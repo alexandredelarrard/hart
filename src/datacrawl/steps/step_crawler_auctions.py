@@ -5,7 +5,6 @@ import pandas as pd
 
 from src.context import Context
 
-from src.constants.variables import date_format
 from src.datacrawl.transformers.Crawler import StepCrawling
 from src.datacrawl.utils.utils_drouot_auctions import DrouotAuctions
 from src.datacrawl.utils.utils_christies_auctions import ChristiesAuctions

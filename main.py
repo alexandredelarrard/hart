@@ -8,7 +8,7 @@ from src.datacrawl.steps.step_crawler_items import StepCrawlingItems
 from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 
 from src.dataclean.steps.step_text_clean_drouot import StepTextCleanDrouot
-from src.dataclean.steps.step_text_clean_christies import StepTextCleanChristies
+from src.dataclean.steps.step_text_clean_crawling import StepTextCleanChristies
 from src.dataclean.steps.step_text_clean_sothebys import StepTextCleanSothebys
 from src.dataclean.steps.step_text_clean_artists import StepTextCleanArtists
 from src.dataclean.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos

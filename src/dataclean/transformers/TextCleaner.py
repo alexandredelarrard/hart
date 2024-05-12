@@ -12,6 +12,21 @@ from omegaconf import DictConfig
 
 from src.utils.utils_crawler import encode_file_name
 
+LISTE_WORDS_REMOVE = ["--> ce lot se trouve au depot", "retrait",
+                    "lot non venu", ".",
+                    "aucune désignation", "withdrawn", "pas de lot",
+                    "no lot", "retiré",
+                    "pas venu", "40", "lot retiré", "20", "test", 
+                    "300", "non venu", "--> ce lot se trouve au depôt",
+                    "hors catalogue", '()',"1 ^,,^^,,^", "estimate", "sans titre", "untitled",
+                    "2 ^,,^^,,^", "3 ^,,^^,,^", "1 ^,,^", "6 ^,,^", "4 ^,,^",
+                    "5 ^,,^",  ".", "", " ", ". ", 'non venu',
+                    'aucune désignation', "retrait", "no lot",
+                    "--> ce lot se trouve au depot", "pas de lot",
+                    "withdrawn", "--> ce lot se trouve au depôt",
+                    "pas de lot", "lot non venu", ""]
+
+
 class TextCleaner(Step):
     
     def __init__(self, 
@@ -87,7 +102,7 @@ class TextCleaner(Step):
 
         if self.check_cols_exists(important_cols, df.columns):
             for col in important_cols:
-                df[col] = np.where(df[col].isin(liste_exceptions), 
+                df[col] = np.where(df[col].apply(lambda x: x.strip().lower()).isin(liste_exceptions), 
                                     np.nan, df[col])
                 df[col] = df[col].astype(float)
             
@@ -99,6 +114,30 @@ class TextCleaner(Step):
         else:
             missing_cols = set(important_cols) - set(df.columns)
             raise Exception(f"FOLLOWING COLUMN(S) IS MISSING {missing_cols}")
+        
+    @timing
+    def extract_currency(self, df):
+        currency_brut_estimate = self.get_list_element_from_text(df[self.name.brut_estimate])
+        df[self.name.currency] = np.where(currency_brut_estimate.str.lower().isin(["estimation : manquante",
+                                                                        "this lot has been withdrawn from auction", 
+                                                                        "estimate on request",
+                                                                        "no reserve", 
+                                                                        "estimate upon request", 
+                                                                        "estimate unknown"]), 
+                                            np.nan,
+                                            currency_brut_estimate)
+        return df
+    
+    @timing
+    def extract_infos(self, df):
+
+        # drop duplicates url full detail 
+        df = df.drop_duplicates(self.name.url_full_detail).reset_index(drop=True)
+
+        for col in [self.name.item_title, self.name.item_description]:
+            df[col] = np.where(df[col].str.lower().isin(LISTE_WORDS_REMOVE), np.nan, df[col])
+        
+        return df
         
     @timing
     def add_complementary_variables(self, df, seller):
@@ -125,24 +164,35 @@ class TextCleaner(Step):
             df = df.drop(list(to_drop), axis=1)
         return df
     
+    
+    @timing
+    def extract_estimates(self, df):
+        df[self.name.item_result] = self.get_estimate(df[self.name.brut_result], min_max="min")
+        df[self.name.min_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="min")
+        df[self.name.max_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="max")
+        df[self.name.max_estimate] = np.where(df[self.name.max_estimate].apply(lambda x: str(x).isdigit()), 
+                                        df[self.name.max_estimate], 
+                                        df[self.name.min_estimate])
+        return df
+    
     @timing
     def concatenate_detail(self, df, df_detailed):
         return df.merge(df_detailed, how="left", on=self.name.url_full_detail, 
                         validate="1:1", suffixes=("", "_DETAIL"))
     
     @timing
+    def concatenate_auctions(self, df, df_auctions):
+        return df.merge(df_auctions, how="left", on=self.name.id_auction, 
+                        validate="m:1", suffixes=("", "_AUCTION"))
+    
+    @timing
     def clean_detail_infos(self, df_detailed):
         lowered= df_detailed[self.name.detailed_description].str.lower()
         lowered= lowered.str.strip()
-        df_detailed[self.name.detailed_description] = np.where(lowered.isin(["retiré", ".", "", " ", ". ", 'lot non venu', 'non venu',
-                                                                            'aucune désignation', "retrait", "no lot",
-                                                                            "--> ce lot se trouve au depot", "pas de lot",
-                                                                            "withdrawn", "--> ce lot se trouve au depôt",
-                                                                            "pas de lot", "lot non venu", ""]), 
+        df_detailed[self.name.detailed_description] = np.where(lowered.isin(LISTE_WORDS_REMOVE), 
                                                                 np.nan,
                                                                df_detailed[self.name.detailed_description])
         df_detailed = df_detailed.drop_duplicates([self.name.url_full_detail])
-        
         return df_detailed
     
     def remove_dates_in_parenthesis(self, x):
