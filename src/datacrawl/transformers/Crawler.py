@@ -27,7 +27,8 @@ class StepCrawling(Step):
                  threads : int, 
                  text_only : bool = False,
                  save_in_queue : bool = False,
-                 save_queue_size_step : int = 100):
+                 save_queue_size_step : int = 100,
+                 save_queue_path: str = None):
 
         super().__init__(context=context, config=config)
         
@@ -36,10 +37,13 @@ class StepCrawling(Step):
         self.save_in_queue = save_in_queue
         self.save_queue_size_step = save_queue_size_step
         self.save_queue_path = self._config.crawling.root_path
+        if save_queue_path:
+            self.save_queue_path = save_queue_path
         self.count_to_restart_driver = 7000//threads
 
         self.missed_urls = []
         self.queues = {"drivers": Queue(), "urls" :  Queue(), "results": Queue(), "count": Queue()}
+        self._log.debug(f"SAVE QUEUE: {save_in_queue} | QUEUE SIZE SAVE {save_queue_size_step} | QUEUE PATH SAVE {save_queue_path}")
 
     @timing
     def run(self, liste_urls : List, function_crawling):
@@ -101,7 +105,6 @@ class StepCrawling(Step):
                 'disk-cache-size': 8000,
                 "profile.default_content_setting_values.notifications":2,
                 "profile.managed_default_content_settings.stylesheets":2,
-                # "profile.managed_default_content_settings.cookies" : 2,
                 "profile.managed_default_content_settings.plugins":2,
                 "profile.managed_default_content_settings.geolocation":2,
                 "profile.managed_default_content_settings.media_stream":2,
@@ -195,13 +198,6 @@ class StepCrawling(Step):
                 driver = self.get_url(driver, url)
                 driver, information = function(driver, *args)
 
-                queues["count"].put(information)
-
-                if queues["count"].qsize() % self.count_to_restart_driver ==0:
-                    driver= self.restart_driver(driver)
-                    with queues["count"].mutex:
-                        queues["count"].queue.clear()
-
                 if self.save_in_queue:
                     queues["results"].put(information)
                     if queues["results"].qsize() == self.save_queue_size_step:
@@ -209,6 +205,13 @@ class StepCrawling(Step):
                         save_queue_to_file(queues["results"], 
                                                 path=self.save_queue_path +
                                                 f"/{file_name}.pickle")
+                        
+                queues["count"].put(information)
+
+                if queues["count"].qsize() % self.count_to_restart_driver ==0:
+                    driver= self.restart_driver(driver)
+                    with queues["count"].mutex:
+                        queues["count"].queue.clear()
 
                 queues["drivers"].put(driver)
                 queue_url.task_done()
@@ -310,16 +313,15 @@ class StepCrawling(Step):
                 info = self.get_element_infos(element, 
                                     step_values["by_type"], 
                                     step_values["value_css"])
-            
-        if "replace" in step_values.keys():
-            info = info.replace(step_values["replace"][0], 
-                                step_values["replace"][1]).strip()
-        
         if "split" in step_values.keys():
             info = info.split(step_values["split"]["character"])
 
-            if step_values["replace"]["id_split"]:
+            if step_values["split"]["id_split"]:
                 info = info[step_values["split"]["id_split"]]
+
+        if "replace" in step_values.keys():
+            info = info.replace(step_values["replace"][0], 
+                                step_values["replace"][1]).strip()
 
         return info
     
@@ -327,10 +329,19 @@ class StepCrawling(Step):
     def extract_element_infos(self, lot, config):
 
         lot_info = {}
-
-        # get infos 
+        
         for step, step_values in config.items(): 
-            lot_info[step] = self.get_info_from_step_value(lot, step_values)
+            self._log.debug(f"EXTRACT VALUE: {step_values}")
+            
+            if "liste_elements" in step_values.keys():
+                liste_lots = self.get_elements(lot, 
+                                                step_values.liste_elements.by_type, 
+                                                step_values.liste_elements.value_css)
+                lot_info[step] = []
+                for sub_lot in liste_lots:
+                    lot_info[step].append(self.get_info_from_step_value(sub_lot, step_values.per_element))
+            else:
+                lot_info[step] = self.get_info_from_step_value(lot, step_values)
         
         return lot_info
     
@@ -339,9 +350,16 @@ class StepCrawling(Step):
                           config : DictConfig):
 
         list_infos = []
-        liste_lots = self.get_elements(driver, 
-                                       config.liste_elements.by_type, 
-                                       config.liste_elements.value_css)
+        liste_lots = []
+
+        if "liste_elements" in config.keys():
+            liste_lots = self.get_elements(driver, 
+                                        config.liste_elements.by_type, 
+                                        config.liste_elements.value_css)
+        # at least one run
+        if len(liste_lots) ==0:
+            liste_lots = [self.get_solo_element(driver, "TAG_NAME", "body")]
+
         # save pict
         for lot in tqdm.tqdm(liste_lots):
 
@@ -357,8 +375,10 @@ class StepCrawling(Step):
                     for function in config.functions:
                         eval(function)
 
-                new_info = self.extract_element_infos(lot, config.per_element)
-                lot_info.update(new_info)
+                if "per_element" in config.keys():
+                    new_info = self.extract_element_infos(lot, config.per_element)
+                    lot_info.update(new_info)
+                    
                 lot_info["CURRENT_URL"] = driver.current_url
                 list_infos.append(lot_info)
             

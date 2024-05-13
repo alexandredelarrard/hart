@@ -3,7 +3,6 @@ import os
 from io import StringIO
 import sys 
 from logging.config import dictConfig 
-import chromadb
 from sqlalchemy import create_engine
 
 from dotenv import load_dotenv, find_dotenv
@@ -60,10 +59,6 @@ class Context:
         # connection 
         db = DBeaver(config)
         self.db_con = db.init_db()
-
-        # embedding db 
-        self.chroma_db = chromadb.HttpClient(host='localhost', 
-                                             port=8000)
 
     @property
     def config(self) -> DictConfig:

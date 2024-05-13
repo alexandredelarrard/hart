@@ -18,12 +18,13 @@ class StepCleanCrawling(TextCleaner):
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 seller: str):
+                 seller: str,
+                 mode: str = "history"):
 
         super().__init__(context=context, config=config)
 
         self.seller = seller
-        self.paths = define_save_paths(config, self.seller)
+        self.paths = define_save_paths(config, self.seller, mode=mode)
         self.webpage_url = self._config.crawling[self.seller].webpage_url
 
         self.details_col_names = self.name.dict_rename_detail()

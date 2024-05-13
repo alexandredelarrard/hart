@@ -46,8 +46,8 @@ class StepCrawlingItems(StepCrawling):
         # ITEMS crawled
         df_infos = read_crawled_csvs(path=self.paths["infos"])
         already_crawled = get_files_already_done(df=df_infos, 
-                                                url_path=self.root_url,
-                                                to_replace=self.seller_utils.to_replace)
+                                                to_replace=self.seller_utils.to_replace,
+                                                split=self.seller_utils.to_split)
         
         # TO CRAWL
         liste_urls = keep_files_to_do(to_crawl, already_crawled)

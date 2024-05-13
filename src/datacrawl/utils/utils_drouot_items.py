@@ -14,6 +14,7 @@ class DrouotItems(StepCrawling):
 
         super().__init__(context=context, config=config, threads=1)
         self.to_replace=()
+        self.to_split=["?page", 0]
         self.mdp = os.environ["DROUOT_MDP"]
         self.email = os.environ["DROUOT_EMAIL"]
 
@@ -28,6 +29,9 @@ class DrouotItems(StepCrawling):
         return to_crawl
 
     def check_loggedin(self, driver, counter=0):
+
+        if "/catalogue/resultats/" in driver.current_url:
+            return driver
 
         header = self.get_element_infos(driver, "TAG_NAME", "header")
         if "Mon profil" not in header:
@@ -75,7 +79,7 @@ class DrouotItems(StepCrawling):
 
         # crawl infos 
         list_infos = []
-        for new_url in [url + f"?page={x}" for x in range(1, page_nbr + 1)]:
+        for new_url in [url + f"?page={x}" for x in range(1, max(page_nbr, 1) + 1)]:
             
             self.get_url(driver, new_url)
             time.sleep(0.3)

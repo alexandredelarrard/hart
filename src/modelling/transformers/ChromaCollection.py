@@ -1,4 +1,5 @@
 from typing import List, Dict
+import chromadb
 import pandas as pd 
 import numpy as np
 from src.context import Context
@@ -28,9 +29,13 @@ class ChromaCollection(Step):
 
         super().__init__(context=context, config=config)
 
+        # embedding db 
+        chroma_db = chromadb.HttpClient(host='localhost', 
+                                        port=8000)
+
         self.n_top_results = n_top_results
         self.step_size = 41000 # max batch size collection step size
-        self.collection = self._context.chroma_db.get_or_create_collection(
+        self.collection = chroma_db.get_or_create_collection(
                                                     name = data_name,
                                                     metadata={"hnsw:space": "cosine"})
 

@@ -7,9 +7,7 @@ from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
 from src.datacrawl.steps.step_crawler_items import StepCrawlingItems
 from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 
-from src.dataclean.steps.step_text_clean_drouot import StepTextCleanDrouot
-from src.dataclean.steps.step_text_clean_crawling import StepTextCleanChristies
-from src.dataclean.steps.step_text_clean_sothebys import StepTextCleanSothebys
+from src.dataclean.steps.step_text_clean_crawling import StepCleanCrawling
 from src.dataclean.steps.step_text_clean_artists import StepTextCleanArtists
 from src.dataclean.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
 
@@ -34,9 +32,9 @@ if __name__ == "__main__":
     # self = StepTextCleanArtists(context=context, config=config)
 
     # self = StepTextCleanSothebys(context=context, config=config)
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot")
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot", mode="new")
     # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="drouot")
-    self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot", mode="new")
+    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot", mode="new")
     # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
     # crawl.run(crawl.get_urls(), crawl.crawling_function)
 
@@ -47,12 +45,7 @@ if __name__ == "__main__":
 
     # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="drouot")
 
-    # self = StepTextCleanDrouot(context=context, config=config)
-    # self.run()
-
-    # self = StepTextCleanChristies(context=context, config=config)
-
-    # self = StepTextCleanSothebys(context=context, config=config)
+    self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="new")
     # self.run()
 
     # self = StepTextClustering(context=context, config=config)

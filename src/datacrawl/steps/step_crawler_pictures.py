@@ -1,15 +1,15 @@
 from datetime import datetime
-import pandas as pd 
 import glob
 import os 
 from omegaconf import DictConfig
 
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.utils.utils_pictures import PicturesUtils
 from src.utils.utils_crawler import (save_picture_crawled,
+                                     save_canvas_picture,
                                      keep_files_to_do,
                                      define_save_paths,
-                                     read_crawled_csvs,
                                      read_crawled_pickles)
 
 class StepCrawlingPictures(StepCrawling):
@@ -25,8 +25,10 @@ class StepCrawlingPictures(StepCrawling):
 
         self.seller = seller
         self.today = datetime.today()
-        self.paths = define_save_paths(config, self.seller, mode=mode) # independant from mode 
+        self.paths = define_save_paths(config, self.seller, mode=mode)
+        self.crawler_infos = self._config.crawling[self.seller]
         
+        self.utils = PicturesUtils(context=context, config=config)
         self.per_element = self._config.crawling[self.seller].detailed.per_element
     
     # second crawling step  to get list of pieces per auction 
@@ -34,12 +36,7 @@ class StepCrawlingPictures(StepCrawling):
 
         # extract all picture urls to crawl from details dataframes 
         df_details = read_crawled_pickles(path=self.paths["details"])
-        df_details = df_details.explode(self.name.url_picture)
-        df_details = df_details.loc[df_details[self.name.url_picture].notnull()]
-        df_details[self.name.url_picture] = df_details[self.name.url_picture].apply(lambda x: 
-                                                str(x).split("url(")[-1].split(")")[0].replace("\"", "").replace("size=small", "size=phare"))
-        df_details[self.name.id_picture] = df_details[self.name.url_picture].apply(lambda x: os.path.basename(x))
-        df_details = df_details.loc[df_details[self.name.url_picture] != "nan"]
+        df_details = eval(f"self.utils.get_pictures_url_{self.seller}(df_details)")
          
         # picture id done 
         done = glob.glob(self.paths["pictures"] + "/*.jpg")
@@ -61,5 +58,20 @@ class StepCrawlingPictures(StepCrawling):
 
         # save pictures & infos
         message = save_picture_crawled(url, self.paths["pictures"], picture_id)
+
+        return driver, message
+    
+    def crawling_canvas(self, driver):
+
+        # crawl detail of one url  
+        url = driver.current_url
+        picture_id = os.path.basename(url)
+
+        if "pictures" not in self.crawler_infos.keys():
+            raise Exception("Need to provide crawling infos on picture when using mode canvas")
+
+        # save pictures & infos
+        list_infos = self.seller_utils.crawl_iteratively(driver, self.crawler_infos["pictures"])
+        message = save_canvas_picture(list_infos["URL_PICTURE_CANVAS"], self.paths["pictures"], picture_id)
 
         return driver, message

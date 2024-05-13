@@ -15,6 +15,7 @@ class SothebysItems(StepCrawling):
         super().__init__(context=context, config=config, threads=1)
         self.root_url = self._config.crawling["sothebys"].webpage_url
         self.to_replace=(self.root_url, '')
+        self.to_split=[]
 
         # weird webpage format regarding F1
         # TODO: include the F1 webpage formating from sothebys*

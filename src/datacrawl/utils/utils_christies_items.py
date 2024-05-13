@@ -17,6 +17,7 @@ class ChristiesItems(StepCrawling):
         super().__init__(context=context, config=config, threads=1)
         self.correction_urls_auction = self._config.crawling["christies"].correction_urls_auction
         self.to_replace = ('&page=2&sortby=lotnumber','/?loadall=true')
+        self.to_split=[]
         
         # TODO: recrawl SSO urls redirected because only first page was 
         # crawled because missing ?loadall=true after rediction

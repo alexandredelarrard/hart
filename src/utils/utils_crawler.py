@@ -59,6 +59,8 @@ def read_crawled_pickles(path : str):
             not_read.append(file)
 
     df = pd.DataFrame(liste_dfs)
+    if df.shape[1] == 1:
+        df = pd.DataFrame(df[0].tolist())
 
     logging.info(f"RECORDINGS : {df.shape[0]}")
     logging.info(f"Missing reads of files : {len(not_read)}")
@@ -95,6 +97,19 @@ def save_picture_crawled(url_picture, image_path, picture_id):
         pass
     return message
 
+
+def save_canvas_picture(picture, image_path, picture_id):
+    message = ""
+    try:
+        if picture != "" and not os.path.isfile(image_path + f"/{picture_id}.jpg"):
+            with open(image_path + f"/{picture_id}.jpg", "wb") as f:
+                f.write(picture)
+    except Exception as e:
+        logging.error(f"SAVING PICTURE FAILED : {e}")
+        message= e
+        pass
+    return message
+
 def save_queue_to_file(queue, path):
         infos = []
         while queue.qsize() !=0:
@@ -124,12 +139,17 @@ def move_picture(path_from, path_to):
 def encode_file_name(file):
     return hashlib.sha256(str.encode(file)).hexdigest()
 
-def get_files_already_done(df, url_path, to_replace=()):
+def get_files_already_done(df, to_replace=(), split = []):
+
+    current_url = df["CURRENT_URL"].drop_duplicates()
     if df.shape[0] !=0:
+        if len(split) !=0:
+            current_url = current_url.apply(lambda x: x.split(split[0])[split[1]]).drop_duplicates()
+
         if not to_replace:
-            return df["FILE"].apply(lambda x: url_path + x.replace(".csv",""))
+            return current_url.apply(lambda x: x.replace(".csv",""))
         else:
-            return df["FILE"].apply(lambda x: url_path + x.replace(".csv","").replace(to_replace[0], to_replace[1]))
+            return current_url.apply(lambda x: x.replace(".csv","").replace(to_replace[0], to_replace[1]))
     else:
         return []
     

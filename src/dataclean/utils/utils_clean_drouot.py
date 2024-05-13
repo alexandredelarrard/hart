@@ -69,8 +69,8 @@ class CleanDrouot(TextCleaner):
     def clean_pictures_url(self, df_detailed):
         col_list_urls = self.name.pictures_list_url
         df_detailed[col_list_urls] = np.where(df_detailed[col_list_urls].notnull(),
-                                            df_detailed[col_list_urls].apply(lambda x: 
-                                                [str(a).split("url(")[-1].split(")")[0].replace("\"", "").replace("size=small", "size=phare") for a in x]),
+                                            df_detailed[col_list_urls].apply(lambda x: [a for c in [re.findall("url\(\"(.+?)\"\)", str(a)).replace("size=small", "size=phare") for a in x] for a in c]),
+                                                # [str(a).split("url(")[-1].split(")")[0].replace("\"", "").replace("size=small", "size=phare") for a in x]),
                                             np.nan)
         df_detailed[col_list_urls] = df_detailed[col_list_urls].apply(lambda x: np.nan if len(x)==0 else x)
         return df_detailed

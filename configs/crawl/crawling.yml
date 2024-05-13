@@ -87,8 +87,12 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: imgLot
                     value_of_css_element: background-image
-        detailed : 
+        detailed: 
             per_element : 
+                URL_AUCTION:
+                    by_type : CLASS_NAME
+                    value_css : breadcumTitreVente
+                    attribute: href
                 TITLE:
                     by_type : CLASS_NAME
                     value_css : lotArtisteFiche
@@ -101,6 +105,8 @@ crawling:
                         value_css: thumbPreview
                     per_element : 
                         value_of_css_element: background
+        pictures:
+            global_element: 
                 URL_PICTURE_CANVAS:
                     by_type: TAG_NAME
                     value_css: canvas

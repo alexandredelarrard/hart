@@ -82,13 +82,17 @@ class Naming:
     def dict_rename_items(self):
         return {**self.root_dict, **{"TITLE" : self.item_title,
                                     "SALE" : self.brut_estimate,
+                                    "CURRENT_URL": self.url_auction,
                                     "INFOS" :self.item_infos,
                                     "FILE" : self.item_file, 
+                                    "URL_FULL_DETAIL": self.url_full_detail,
                                     "DESCRIPTION": self.item_description}}
     
     def dict_rename_detail(self):
         return {**self.root_dict, **{"URL" : self.url_full_detail,
+                                    "CURRENT_URL": self.url_full_detail,
                                     "URL_DETAIL" : self.url_full_detail,
+                                    "URL_FULL_DETAIL": self.url_full_detail,
                                     "DETAIL" : self.detailed_description,
                                     "TITLE" : self.item_title,
                                     "DESCRIPTION": self.detailed_description,
