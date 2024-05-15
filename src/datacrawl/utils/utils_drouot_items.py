@@ -55,19 +55,6 @@ class DrouotItems(StepCrawling):
         else:
             self._log.debug("LOGGED IN TO DROUOT")
             return driver
-        
-    def get_page_number(self, driver):
-        # get page number
-        page_nbr = self.get_element_infos(driver, "CLASS_NAME", "fontRadikalBold")
-
-        if len(page_nbr) != 0:
-            page_nbr = (int(page_nbr) // 50) + 1
-        else:
-            page_nbr = 0
-
-        self._log.debug(f"{page_nbr} to crawl")
-        return page_nbr
-
 
     def crawl_iteratively_seller(self, driver, config: Dict):
 
@@ -75,16 +62,12 @@ class DrouotItems(StepCrawling):
         url = driver.current_url.split("?controller=")[0]
         
         driver = self.check_loggedin(driver)
-        page_nbr = self.get_page_number(driver)
+        page_nbr = self.get_page_number(driver, "CLASS_NAME", "fontRadikalBold", divider=50)
 
         # crawl infos 
         list_infos = []
         for new_url in [url + f"?page={x}" for x in range(1, max(page_nbr, 1) + 1)]:
-            
             self.get_url(driver, new_url)
-            time.sleep(0.3)
-                
             new_infos = self.crawl_iteratively(driver, config)
             list_infos = list_infos + new_infos
-
         return list_infos

@@ -2,6 +2,7 @@ import time
 import tqdm
 import logging
 import base64
+import re
 from typing import List, Dict
 import os 
 import stem.process
@@ -259,6 +260,20 @@ class StepCrawling(Step):
 
     def scrowl_driver(self, driver, Y):
         driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")
+
+    def get_page_number(self, driver, by_type, value_css, divider):
+
+        page_nbr = self.get_element_infos(driver, by_type, value_css)
+        count_pages = 1
+
+        if page_nbr != "":
+            page_nbr = re.findall("(\\d+)", page_nbr)
+            if len(page_nbr) !=0:
+                page_nbr = page_nbr[0]
+                count_pages = (int(page_nbr) // divider) + 1
+
+        self._log.debug(f"{count_pages} to crawl")
+        return count_pages
 
     def get_element_infos(self, element, attribute, attribute_desc, type="text"):
         try: 

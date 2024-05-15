@@ -22,6 +22,7 @@ class SothebysItems(StepCrawling):
         self.to_split=["?p=", 0]
         
         # TODO: include the F1 webpage formating from sothebys # weird webpage format regarding F1
+        # TODO: refacto check logged in and click page and cookies
         # weird formating: https://www.sothebys.com/en/buy/auction/2021/a-brilliant-menagerie
     
     def urls_to_crawl(self, df_auctions):
@@ -30,27 +31,9 @@ class SothebysItems(StepCrawling):
                             self.name.url_auction]
                             .drop_duplicates()
                             .tolist())
-        to_crawl = [x for x in to_crawl if "/en/auctions" in x or "/en/buy/" in x]
+        to_crawl = [x for x in to_crawl if "/en/auctions" in x or "/en/buy/" in x] # no F1 and catalogue urls
         return to_crawl
-    
-    def get_number_pages_auctions(self, driver):
-        
-        nbr_lots =self.get_element_infos(driver, "CLASS_NAME", "AuctionsModule-lotsCount")
-        if nbr_lots != "":
-            nbr_lots = re.findall("(\\d+)", nbr_lots)[0]
-            return int(nbr_lots) // 12 + 1
-        else:
-            return 2
-
-    def get_number_pages_buy(self, driver):
-     
-        nbr_lots = self.get_element_infos(driver, "CLASS_NAME", "css-1xtedx2")  
-        if nbr_lots != "":
-            nbr_lots = re.findall("(\\d+)", nbr_lots)[0]
-            return int(nbr_lots) // 50 + 1
-        else:
-            return 1
-
+ 
     def check_loggedin(self, driver, counter=0):
         driver_log = self.get_element_infos(driver, "CLASS_NAME", "AuctionsModule-auction-info-total")
         if driver_log == "":
@@ -118,7 +101,7 @@ class SothebysItems(StepCrawling):
 
     def crawl_auction_pages(self, driver, config, url):
         list_infos = []
-        pages = self.get_number_pages_auctions(driver)
+        pages = self.get_page_number(driver, "CLASS_NAME", "AuctionsModule-lotsCount", divider=12)
 
         for new_url in [url + f"?p={x}" for x in range(1, max(1, pages)+1)]:
             self.get_url(driver, new_url)
@@ -129,7 +112,7 @@ class SothebysItems(StepCrawling):
     def crawl_buy_pages(self, driver, config, url):
         list_infos = []
         self.get_url(driver, url)
-        pages = self.get_number_pages_buy(driver)
+        pages = self.get_page_number(driver, "CLASS_NAME", "css-1xtedx2", divider=48)
  
         for position in range(1, max(1, pages)+1):
             self.click_page(driver, position)

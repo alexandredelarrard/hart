@@ -20,7 +20,7 @@ crawling:
             browser : chrome 
             nodes : 1
             retry : 1
-    drouot: 
+    drouot: # 3.3M
         history_start_year: 2000
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
         auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?isForAgenda=true&typeName=passees
@@ -117,7 +117,7 @@ crawling:
                     by_type: TAG_NAME
                     value_css: canvas
                     is_canvas: True
-    christies: 
+    christies: # 2M
         history_start_year: 1999
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
@@ -181,7 +181,7 @@ crawling:
                 DETAIL:
                     by_type : CLASS_NAME
                     value_css : chr-lot-section__accordion--text
-    sothebys: 
+    sothebys: # 1.5M
         history_start_year: 2007
         webpage_url : https://www.sothebys.com/en/buy/auction
         auctions_url : https://www.sothebys.com/en/results? #6581
@@ -258,23 +258,40 @@ crawling:
                         by_type: CLASS_NAME
                         value_css: estimate
         detailed : 
-            per_element : 
-                URL_AUCTION: 
-                    by_type: XPATH
-                    value_css: //div[@class='LotPage-breadcrumbs-breadcrumb']/a
-                    attribute: href
-                DETAIL:
-                    by_type : CLASS_NAME
-                    value_css : LotPage-details
-                URL_PICTURE:
-                    by_type: TAG_NAME
-                    value_css: img
-                    attribute: src
-    artus: # TODO 2003-2024 - merdique vend de l'industriel ...
-        history_start_year: 2003
-        webpage_url : https://www.artus-encheres.fr/ventes-passees
-        auctions_url: https://www.artus-encheres.fr/ventes-passees
-    millon: 
+            buy_url:
+                per_element : 
+                    TITLE:
+                        by_type: XPATH
+                        value_css: //div[data-cy='lot-title']
+                    URL_AUCTION: 
+                        by_type: XPATH
+                        value_css: //div[class='css-2v1h2i']/nav/span
+                        attribute: href
+                    DETAIL:
+                        by_type : ID
+                        value_css : "LotDetails"
+                    URL_PICTURE:
+                        liste_elements : 
+                            by_type: XPATH
+                            value_css: //ul[@class='slider animated']/li
+                        per_element : 
+                            by_type: TAG_NAME
+                            value_css: img
+                            attribute: srcset
+            auctions_url:
+                per_element : 
+                    URL_AUCTION: 
+                        by_type: XPATH
+                        value_css: //div[@class='LotPage-breadcrumbs-breadcrumb']/a
+                        attribute: href
+                    DETAIL:
+                        by_type : CLASS_NAME
+                        value_css : LotPage-details
+                    URL_PICTURE:
+                        by_type: TAG_NAME
+                        value_css: img
+                        attribute: src
+    millon: # 0.2M
         history_start_year: 2012
         webpage_url: https://www.millon.com/catalogue/ventes-passees/
         auctions_url: https://www.millon.com/catalogue/ventes-passees/
@@ -348,10 +365,16 @@ crawling:
                         by_type: TAG_NAME
                         value_css: img
                         attribute: src
-    agutes: # TODO: 2003-2024
-        auctions_url: https://www.aguttes.com/resultats-des-ventes
+    bonhams: # 2M
+        auctions_url: https://www.bonhams.com/fr/auctions/results/
     artcurial: #TODO:
         auctions_url: https://www.artcurial.com/resultats-ventes-aux-encheres
+    artus: # TODO 2003-2024 - merdique vend de l'industriel ...
+        history_start_year: 2003
+        webpage_url : https://www.artus-encheres.fr/ventes-passees
+        auctions_url: https://www.artus-encheres.fr/ventes-passees
+    agutes: # TODO: 2003-2024
+        auctions_url: https://www.aguttes.com/resultats-des-ventes
     tajan:
         auctions_url: https://www.tajan.com/fr/past/?pg=1
     ivoire:

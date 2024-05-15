@@ -1,8 +1,9 @@
 from typing import Dict
 import pandas as pd 
 import time
-import os
+from datetime import timedelta
 
+from src.constants.variables import date_format
 from omegaconf import DictConfig
 from src.context import Context
 from src.datacrawl.transformers.Crawler import StepCrawling
@@ -14,30 +15,38 @@ class SothebysAuctions(StepCrawling):
                  config : DictConfig):
 
         super().__init__(context=context, config=config, threads=1)
-        self.history_start_year = self._config.crawling["sothebies"].history_start_year
+        self.history_start_year = self._config.crawling["sothebys"].history_start_year
+        self.ref = {"date": pd.to_datetime("2006-01-01", format=date_format), "value": 1136156400000, "step_size": 86400000}
+
+    def get_url_ref(self, date):
+        nbr_days = (date - self.ref["date"]).days 
+        return self.ref["value"] + nbr_days*self.ref["step_size"]
 
     def urls_to_crawl(self, start_date, end_date, url_auctions):
 
         start_year = max(start_date.year, self.history_start_year)
         to_crawl = []
-        step = 2505600000
-        start = 1709269200000 # for 1 march 2024
 
-        for year in range(end_date.year, start_year - 1, -1):
+        for year in range(start_year, end_date.year +1):
 
             if year == end_date.year:
-                end_month = end_date.month # current month even if no results 
-                start_month = 0
+                end_month = end_date.month 
+                start_month = 1
             else:
-                end_month=12
-                start_month=0
+                end_month=13
+                start_month=1
             
             if year == start_year:
                 start_month = start_date.month
 
-            for month in range(end_month, start_month, -1):
-                to_crawl.append(url_auctions + f"from={month}%2F{1}%2F{year}&to={month}%2F{31}%2F{year}&f0={start}-{start+step}&q=")
-                start = start - step # decrease starting point 
+            for month in range(start_month, end_month):
+                start_date_range = pd.to_datetime(f"{year}-{month}-01", format=date_format)
+                end_date_range = start_date_range + timedelta(days=31)
+                lower_ref = self.get_url_ref(start_date_range)
+                higher_ref = self.get_url_ref(end_date_range)
+                start_date_range = end_date_range.strftime("%m-%d-%Y").replace("-", "%2F")
+                end_date_range = end_date_range.strftime("%m-%d-%Y").replace("-", "%2F")
+                to_crawl.append(url_auctions + f"from={end_date_range}&to={start_date_range}&f0={lower_ref}-{higher_ref}&q=")
 
         return to_crawl
     
