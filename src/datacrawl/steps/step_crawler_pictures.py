@@ -10,7 +10,8 @@ from src.utils.utils_crawler import (save_picture_crawled,
                                      save_canvas_picture,
                                      keep_files_to_do,
                                      define_save_paths,
-                                     read_crawled_pickles)
+                                     read_crawled_pickles,
+                                     encode_file_name)
 
 class StepCrawlingPictures(StepCrawling):
     
@@ -32,18 +33,18 @@ class StepCrawlingPictures(StepCrawling):
         self.per_element = self._config.crawling[self.seller].detailed.per_element
     
     # second crawling step  to get list of pieces per auction 
-    def get_list_items_to_crawl(self):
+    def get_list_items_to_crawl(self, mode=None):
 
         # extract all picture urls to crawl from details dataframes 
         df_details = read_crawled_pickles(path=self.paths["details"])
-        df_details = eval(f"self.utils.get_pictures_url_{self.seller}(df_details)")
-         
+        df_details = eval(f"self.utils.get_pictures_url_{self.seller}(df_details, mode)")
+        
         # picture id done 
         done = glob.glob(self.paths["pictures"] + "/*.jpg")
         done = [os.path.basename(x).replace(".jpg","") for x in done]
 
         # KEEP THE ONES TO CRAWL
-        liste_ids = keep_files_to_do(df_details[self.name.id_picture].tolist(), done)
+        liste_ids = keep_files_to_do(df_details[self.name.id_picture].unique(), done)
         df_details = df_details.loc[df_details[self.name.id_picture].isin(liste_ids)].drop_duplicates(self.name.id_picture)
         liste_urls = df_details[self.name.url_picture].tolist()
         self._log.info(f"NUMBER PICTURES TO CRAWL = {len(liste_urls)}")
@@ -64,8 +65,7 @@ class StepCrawlingPictures(StepCrawling):
     def crawling_canvas(self, driver):
 
         # crawl detail of one url  
-        url = driver.current_url
-        picture_id = os.path.basename(url)
+        picture_id = encode_file_name(os.path.basename(driver.current_url))
 
         if "pictures" not in self.crawler_infos.keys():
             raise Exception("Need to provide crawling infos on picture when using mode canvas")

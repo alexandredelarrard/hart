@@ -4,11 +4,21 @@ cleaning:
   artists: 
     origine_table_name: ARTISTS_DB_PRICE
   drouot : 
-    origine_table_name: DROUOT_202403
+    origine_table_name: 
+      history: DROUOT_202403
+      new: DROUOT_NEW
   christies : 
-    origine_table_name: CHRISTIES_202403
+    origine_table_name: 
+      history: CHRISTIES_202403
+      new: CHRISTIES_NEW
   sothebys : 
-    origine_table_name: SOTHEBYS_202403
+    origine_table_name: 
+      history: SOTHEBYS_202403
+      new: SOTHEBYS_NEW
+  millon : 
+    origine_table_name: 
+      history: MILLON_202405
+      new: MILLON_NEW
   mapping:
     localisation: {
         "london" : ['online', 'onlineonly.christies.com', "londres", "london (south kensigton)", 

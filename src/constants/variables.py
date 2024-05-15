@@ -24,7 +24,7 @@ class Naming:
         self.url_auction = "URL_AUCTION"
         self.url_item = "URL_ITEM"
         self.url_picture = "URL_PICTURE"
-        self.pictures_list_url = "PICTURES_URL"
+        self.is_picture = "IS_PICTURE"
 
         self.min_estimate = "MIN_ESTIMATION"
         self.eur_min_estimate = "EUR_MIN_ESTIMATION"
@@ -109,7 +109,7 @@ class Artists:
 date_format = "%Y-%m-%d"
 
 #for data cleaning
-currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB'
+currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB|TRY|SEK|ZAR'
 localisation = "London|New York|Hong Kong|Paris|Geneva|Milan|Amsterdam|Zurich|Toronto|Dubai|Doha|Beijing|Mumbai|Derbyshire|Miami|Palm Beach|Chatsworth|Tel Aviv|Singapore|San Francisco|Monaco"
 
 fixed_eur_rate = {"NLG" : 1/2.20371,

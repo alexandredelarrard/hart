@@ -1,4 +1,10 @@
 crawling:
+    tor_config:
+        SocksPort : 9050
+        EntryNodes : '{FR},{ES},{IT},{DE}'
+        ExitNodes : '{FR},{ES},{PT},{IT},{DE},{UK},{BE},{SW}'
+        CookieAuthentication : '1'
+        MaxCircuitDirtiness : '600'
     root_path: D:/data
     path_new: new
     picture_path: pictures
@@ -197,41 +203,47 @@ crawling:
                 TYPE_SALE:
                     by_type : CLASS_NAME
                     value_css : Card-category
-        items:
+        items: #NEED TO ADD A LINK TO AUCTIONS
             buy_url:
+                global_element:
+                    DATE:
+                        by_type: CLASS_NAME
+                        value_css: css-19ct9dd
+                    AUCTION_TITLE:
+                        by_type: XPATH
+                        value_css: //h1[@data-testid='header-desktop']
                 liste_elements : 
                     by_type: XPATH
                     value_css: //div[@aria-label='List of lots']/div/div
                 per_element:
-                    DATE:
-                        by_type : CLASS_NAME
-                        value_css : css-1bnt3nz
                     URL_FULL_DETAIL:
-                        by_type: CLASS_NAME
-                        value_css: css-1ivophs
+                        by_type: TAG_NAME
+                        value_css: a
                         attribute: href
-                    BRUT_RESULT:
-                        by_type: TAG_NAME
-                        value_css: span
-                    URL_PICTURE:
-                        by_type: TAG_NAME
-                        value_css: img
-                        attribute: src
-                        replace:
-                            - "extra_small"
-                            - "small"
-                    ITEM_INFOS: text
+                    TITLE:
+                        by_type: XPATH
+                        value_css: a/div/div[2]/div/div[1]
+                    RESULT:
+                        by_type: XPATH
+                        value_css: a/div/div[2]/div/span[2]
+                    ESTIMATE:
+                        by_type: XPATH
+                        value_css: a/div/div[2]/div/span[1]
             auctions_url:
+                global_element:
+                    DATE:
+                        by_type: CLASS_NAME
+                        value_css: AuctionsModule-auction-info
+                    AUCTION_TITLE:
+                        by_type: CLASS_NAME
+                        value_css: AuctionsModule-auction-title
                 liste_elements : 
                     by_type: CLASS_NAME
                     value_css: AuctionsModule-results-item
                 per_element:
-                    DATE:
-                        by_type : CLASS_NAME
-                        value_css : AuctionsModule-auction-info
                     URL_FULL_DETAIL:
-                        by_type: XPATH
-                        value_css: //div[@class='image']/a
+                        by_type: TAG_NAME
+                        value_css: a
                         attribute: href
                     ITEM_TITLE:
                         by_type: CLASS_NAME
@@ -239,33 +251,25 @@ crawling:
                     ITEM_INFOS:
                         by_type: CLASS_NAME
                         value_css: description
-                    BRUT_RESULT:
+                    RESULT:
+                        by_type: CLASS_NAME
+                        value_css: info
+                    ESTIMATE:
                         by_type: CLASS_NAME
                         value_css: estimate
-                    URL_PICTURE:
-                        by_type: TAG_NAME
-                        value_css: img
-                        attribute: src
-                        replace:
-                            - "extra_small"
-                            - "small"
         detailed : 
             per_element : 
-                ARTIST:
-                    by_type : CLASS_NAME
-                    value_css : LotPage-artistName
-                TITLE:
-                    by_type : CLASS_NAME
-                    value_css : LotPage-pieceTitle
+                URL_AUCTION: 
+                    by_type: XPATH
+                    value_css: //div[@class='LotPage-breadcrumbs-breadcrumb']/a
+                    attribute: href
                 DETAIL:
                     by_type : CLASS_NAME
-                    value_css : LotPage-lotDetails  
-                CONDITION:
-                    by_type : CLASS_NAME
-                    value_css : LotPage-lotDescription
-                NOTE_CATALOGUE :
-                    by_type: CLASS_NAME
-                    value_css : LotPage-lotDescription 
+                    value_css : LotPage-details
+                URL_PICTURE:
+                    by_type: TAG_NAME
+                    value_css: img
+                    attribute: src
     artus: # TODO 2003-2024 - merdique vend de l'industriel ...
         history_start_year: 2003
         webpage_url : https://www.artus-encheres.fr/ventes-passees
@@ -316,6 +320,34 @@ crawling:
                 FINAL_RESULT:
                     by_type: CLASS_NAME
                     value_css: estimation
+        detailed: 
+            per_element : 
+                AUCTION_DATE:
+                    by_type: CLASS_NAME
+                    value_css: sale--info
+                AUCTION_TITLE:
+                    by_type: XPATH
+                    value_css: //p[@class='sale--info']/a
+                ESTIMATE:
+                    by_type: CLASS_NAME
+                    value_css: box-estimation
+                RESULT:
+                    by_type: CLASS_NAME
+                    value_css: box-awarded
+                TITLE:
+                    by_type : CLASS_NAME
+                    value_css : wrap-title
+                DETAIL:
+                    by_type : XPATH
+                    value_css : //div[@class='detail']/div[1]
+                URL_PICTURE:
+                    liste_elements : 
+                        by_type: XPATH
+                        value_css: //div[@class='slider__bottom slick-slider']/div
+                    per_element : 
+                        by_type: TAG_NAME
+                        value_css: img
+                        attribute: src
     agutes: # TODO: 2003-2024
         auctions_url: https://www.aguttes.com/resultats-des-ventes
     artcurial: #TODO:

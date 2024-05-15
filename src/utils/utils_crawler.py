@@ -141,8 +141,9 @@ def encode_file_name(file):
 
 def get_files_already_done(df, to_replace=(), split = []):
 
-    current_url = df["CURRENT_URL"].drop_duplicates()
     if df.shape[0] !=0:
+        current_url = df["CURRENT_URL"].drop_duplicates()
+        
         if len(split) !=0:
             current_url = current_url.apply(lambda x: x.split(split[0])[split[1]]).drop_duplicates()
 

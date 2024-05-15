@@ -38,7 +38,7 @@ class StepCrawlingItems(StepCrawling):
     
     # second crawling step  to get list of pieces per auction 
     def get_list_items_to_crawl(self):
-
+        
         # AUCTIONS
         df_auctions = read_crawled_csvs(path=self.paths["auctions"])
         to_crawl = self.seller_utils.urls_to_crawl(df_auctions)

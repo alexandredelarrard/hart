@@ -105,7 +105,7 @@ def step_crawling_items(
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawl_items_iteratively)
 
-    #python -m src datacrawl step-crawling-items -t 1 --seller drouot --crawling-mode new
+    #python -m src datacrawl step-crawling-items -t 1 --seller sothebys --crawling-mode new
 
 @cli.command(
     help="Crawling details for any seller",
@@ -129,7 +129,7 @@ def step_crawling_detailed(
                                 mode=crawling_mode)
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-detailed -t 5 -s drouot -sqs 500 --text-only True --crawling-mode new
+    # python -m src datacrawl step-crawling-detailed -t 2 -s millon -sqs 500 --text-only True --crawling-mode new
 
 
 @cli.command(
@@ -139,17 +139,23 @@ def step_crawling_detailed(
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
+@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
 def step_crawling_pictures(
-    config_path, threads : int, seller: str
+    config_path, threads : int, seller: str, mode: str
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     crawl = StepCrawlingPictures(config=config, context=context, 
                                     threads=threads,
-                                    seller=seller,)
+                                    seller=seller,
+                                    mode=mode)
 
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_picture)
+
+    if seller == "drouot":
+        crawl.run(crawl.get_list_items_to_crawl(mode="canvas"), crawl.crawling_canvas)
+        
     # python -m src datacrawl step-crawling-pictures -t 5 --seller drouot
 
 @cli.command(

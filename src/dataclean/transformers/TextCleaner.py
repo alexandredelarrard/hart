@@ -1,8 +1,9 @@
 from typing import List
 import pandas as pd 
-
+import os 
 import re
 import numpy as np
+
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
@@ -13,7 +14,7 @@ from omegaconf import DictConfig
 from src.utils.utils_crawler import encode_file_name
 
 LISTE_WORDS_REMOVE = ["--> ce lot se trouve au depot", "retrait",
-                    "lot non venu", ".",
+                    "lot non venu", ".", "",
                     "aucune désignation", "withdrawn", "pas de lot",
                     "no lot", "retiré",
                     "pas venu", "40", "lot retiré", "20", "test", 
@@ -22,9 +23,11 @@ LISTE_WORDS_REMOVE = ["--> ce lot se trouve au depot", "retrait",
                     "2 ^,,^^,,^", "3 ^,,^^,,^", "1 ^,,^", "6 ^,,^", "4 ^,,^",
                     "5 ^,,^",  ".", "", " ", ". ", 'non venu',
                     'aucune désignation', "retrait", "no lot",
+                    '2 ^,,^', '3 ^,,^', '1 ^"^^"^','1 ^,,^^,,^ per dozen',
+                    '5 ^,,^^,,^', '4 ^,,^^,,^','10 ^,,^^,,^',
                     "--> ce lot se trouve au depot", "pas de lot",
                     "withdrawn", "--> ce lot se trouve au depôt",
-                    "pas de lot", "lot non venu", ""]
+                    "pas de lot", "lot non venu"]
 
 
 class TextCleaner(Step):
@@ -34,12 +37,16 @@ class TextCleaner(Step):
                  config : DictConfig):
 
         super().__init__(context=context, config=config)
+        self.root_path = self._config.crawling.root_path
 
-    def get_sql_db_name(self, seller : str):
+    def get_sql_db_name(self, seller : str, mode: str = "history"):
         try:
-            return self._config.cleaning[seller].origine_table_name
+            if mode == "history":
+                return self._config.cleaning[seller].origine_table_name.history
+            else:
+                return self._config.cleaning[seller].origine_table_name.new
         except Exception as e:
-            raise Exception(f"SELLER not found in config embedding_history : {seller} - {e}")
+            raise Exception(f"SELLER not found in config cleaning : {seller} - {e}")
 
     def get_list_element_from_text(self, variable, liste=currencies):
         return variable.apply(lambda x : re.findall(liste, str(x))[0] if 
@@ -56,7 +63,11 @@ class TextCleaner(Step):
             raise Exception("EITHER MIN OR MAX value for min_max")
 
     def get_splitted_infos(self, variable, index, sep='\n'):
-        return  pd.DataFrame(variable.str.split(sep).tolist(), index=index)
+        return  pd.DataFrame(variable.fillna("").str.split(sep).tolist(), index=index)
+    
+    @timing
+    def clean_auctions(self, df_auctions):
+        return df_auctions
     
     @timing
     def remove_missing_values(self, df, important_cols : List = []):
@@ -84,13 +95,22 @@ class TextCleaner(Step):
             raise Exception(f"FOLLOWING COLUMN(S) IS MISSING {missing_cols}")
         
     @timing
-    def clean_id_picture(self, df : pd.DataFrame, limite : int =100):
+    def clean_id_picture(self, df : pd.DataFrame, limite : int =100, seller : str = "drouot"):
         liste_pictures_missing = df[self.name.id_picture].value_counts().loc[
             df[self.name.id_picture].value_counts() > limite].index
         self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} picts having more than {limite} picts")
         
         df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
                                               "FAKE_PICTURE", df[self.name.id_picture])
+        
+        # keep ID picture when picture is available for drouot ~2.3M
+        picture_path = df[self.name.id_picture].apply(lambda x : f"{self.root_path}/{seller}/pictures/{x}.jpg")
+        df[self.name.is_picture] = picture_path.swifter.apply(lambda x : os.path.isfile(x))
+
+        return df
+    
+    @timing
+    def explode_df_per_picture(self, df):
         return df
 
     @timing
@@ -102,14 +122,14 @@ class TextCleaner(Step):
 
         if self.check_cols_exists(important_cols, df.columns):
             for col in important_cols:
-                df[col] = np.where(df[col].apply(lambda x: x.strip().lower()).isin(liste_exceptions), 
+                df[col] = np.where(df[col].apply(lambda x: str(x).strip().lower()).isin(liste_exceptions), 
                                     np.nan, df[col])
                 df[col] = df[col].astype(float)
             
             df[self.name.is_item_result] = 1*(df[self.name.item_result].notnull())
             df[self.name.item_result] = np.where(df[self.name.item_result].isnull(), 
-                                        df[[self.name.min_estimate, self.name.max_estimate]].mean(axis=1), 
-                                        df[self.name.item_result])
+                                                df[[self.name.min_estimate, self.name.max_estimate]].mean(axis=1), 
+                                                df[self.name.item_result])
             return df
         else:
             missing_cols = set(important_cols) - set(df.columns)
@@ -117,7 +137,12 @@ class TextCleaner(Step):
         
     @timing
     def extract_currency(self, df):
-        currency_brut_estimate = self.get_list_element_from_text(df[self.name.brut_estimate])
+
+        currency_col = self.name.brut_estimate
+        if sum(df[self.name.min_estimate].isnull()) > sum(df[self.name.item_result].isnull()):
+            currency_col = self.name.brut_result
+
+        currency_brut_estimate = self.get_list_element_from_text(df[currency_col])
         df[self.name.currency] = np.where(currency_brut_estimate.str.lower().isin(["estimation : manquante",
                                                                         "this lot has been withdrawn from auction", 
                                                                         "estimate on request",
@@ -164,10 +189,10 @@ class TextCleaner(Step):
             df = df.drop(list(to_drop), axis=1)
         return df
     
-    
     @timing
     def extract_estimates(self, df):
         df[self.name.item_result] = self.get_estimate(df[self.name.brut_result], min_max="min")
+
         df[self.name.min_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="min")
         df[self.name.max_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="max")
         df[self.name.max_estimate] = np.where(df[self.name.max_estimate].apply(lambda x: str(x).isdigit()), 
@@ -187,12 +212,14 @@ class TextCleaner(Step):
     
     @timing
     def clean_detail_infos(self, df_detailed):
-        lowered= df_detailed[self.name.detailed_description].str.lower()
-        lowered= lowered.str.strip()
+        lowered= df_detailed[self.name.detailed_description].str.strip().str.lower()
         df_detailed[self.name.detailed_description] = np.where(lowered.isin(LISTE_WORDS_REMOVE), 
                                                                 np.nan,
                                                                df_detailed[self.name.detailed_description])
-        df_detailed = df_detailed.drop_duplicates([self.name.url_full_detail])
+        if self.name.url_picture in df_detailed.columns:
+            df_detailed = df_detailed.sort_values(self.name.url_picture)
+            
+        df_detailed = df_detailed.drop_duplicates(self.name.url_full_detail)
         return df_detailed
     
     def remove_dates_in_parenthesis(self, x):

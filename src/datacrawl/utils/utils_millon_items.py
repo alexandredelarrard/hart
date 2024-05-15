@@ -12,6 +12,7 @@ class MillonItems(StepCrawling):
 
         super().__init__(context=context, config=config, threads=1)
         self.to_replace=()
+        self.to_split = ["/page", 0]
 
     def urls_to_crawl(self, df_auctions) -> List[str]:
         
@@ -41,11 +42,8 @@ class MillonItems(StepCrawling):
         page_nbr = self.get_page_number(driver)
         url = driver.current_url
 
-        for i in range(1, page_nbr+1):
-            if i == 1:
-                url = url + "/page1"
-            if i != 1:
-                self.get_url(driver, url.replace(f"/page{i-1}", f"/page{i}"))
+        for new_url in [url + f"/page{x}" for x in range(1, max(page_nbr, 1) + 1)]:
+            self.get_url(driver, new_url)
                 
             new_infos = self.crawl_iteratively(driver, config)
             list_infos = list_infos + new_infos

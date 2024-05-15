@@ -12,14 +12,14 @@ from src.utils.utils_crawler import read_pickle
 from omegaconf import DictConfig
 
 
-class CleanChristies(TextCleaner):
+class CleanMillon(TextCleaner):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig):
 
         super().__init__(context=context, config=config)
-        self.correction_urls_auction = self._config.crawling["christies"].correction_urls_auction
+        
    
     @timing
     def clean_auctions(self, df_auctions):

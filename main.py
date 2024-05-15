@@ -23,52 +23,38 @@ from src.modelling.steps.step_text_classification import StepTextClassification
 from src.modelling.steps.step_fill_chroma_pictures import StepFillChromaPictures
 
 from src.modelling.transformers.TextModel import TextModel
+from src.datacrawl.transformers.Crawler import StepCrawling
 
 if __name__ == "__main__":
 
     config, context = get_config_context('./configs', use_cache = False, save=False)
 
+    # self = StepCrawling(context=context, config=config, threads=1, text_only=True)
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
-    # self = StepTextCleanArtists(context=context, config=config)
-
-    # self = StepTextCleanSothebys(context=context, config=config)
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot", mode="new")
+    
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="sothebys", mode="history", recrawl_pictures=True)
     # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="drouot")
-    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot", mode="new")
-    # self = StepCrawlingDrouotItems(context=context, config=config, threads=4)
-    # crawl.run(crawl.get_urls(), crawl.crawling_function)
-
-    # self = StepCrawlingChristiesAuctions(context=context, config=config, threads=1, mode="new", start_date="2024-03-01")
-    # self = StepCrawlingChristiesItems(context=context, config=config, threads=1)
-    # self.run(self.get_auctions_urls_to_wrawl(), self.crawling_list_auctions_function)
-    # self.run(self.get_list_items_to_crawl(), self.crawling_list_items_function)
-
+    self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="history")
     # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="drouot")
 
-    self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="new")
+    # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="new")
+    # self = StepTextCleanArtists(context=context, config=config)
+    # self = StepAgglomerateTextInfos(context=context, config=config)
     # self.run()
 
     # self = StepTextClustering(context=context, config=config)
-
     # self = StepFillChromaPictures(context=context, config=config)
-
-    # self = StepAgglomerateTextInfos(context=context, config=config)
-    # self.run()
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
     # self = StepPictureClassification(context=context, config=config)
-    # self.predicting()
-
     # self = StepTextClassification(context=context, config=config)
 
     # self = StepTextInferenceGpt(context=context, config=config)
-
     # self = StepCleanGptInference(context=context, config=config)
     
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()
 
     # self = StepKNNPriceEvaluator(context=context, config=config, category="vase")
-
     # self = TextModel(context=context, config=config, model_name="meta-llama/Meta-Llama-3-8B-Instruct") #="D:/data/models/llm/Meta-Llama-3-8B-Instruct_fine_tuned_merged_model" "mistralai/Mistral-7B-Instruct-v0.2"

@@ -3,6 +3,8 @@ import tqdm
 import logging
 import base64
 from typing import List, Dict
+import os 
+import stem.process
 from queue import Queue
 from threading import Thread
 from omegaconf import DictConfig
@@ -28,17 +30,23 @@ class StepCrawling(Step):
                  text_only : bool = False,
                  save_in_queue : bool = False,
                  save_queue_size_step : int = 100,
-                 save_queue_path: str = None):
+                 save_queue_path: str = None,
+                 proxy: bool = False):
 
         super().__init__(context=context, config=config)
         
+        self.proxy = proxy
         self.threads = threads
         self.text_only = text_only
         self.save_in_queue = save_in_queue
         self.save_queue_size_step = save_queue_size_step
         self.save_queue_path = self._config.crawling.root_path
+        self.tor_path = os.environ["TOR_PATH"]
+        
         if save_queue_path:
             self.save_queue_path = save_queue_path
+        # if self.proxy:
+        #     self.launch_tor()
         self.count_to_restart_driver = 7000//threads
 
         self.missed_urls = []
@@ -101,6 +109,13 @@ class StepCrawling(Step):
         
         options = Options()
 
+        if self.proxy:
+            PROXIES = {
+                    'http': 'socks5://localhost:9050',
+                    'https': 'socks5://localhost:9050'
+                }
+            # options.add_argument('--proxy-server=%s' % '127.0.0.1:8118')
+
         prefs = {
                 'disk-cache-size': 8000,
                 "profile.default_content_setting_values.notifications":2,
@@ -111,8 +126,8 @@ class StepCrawling(Step):
                 }
         
         if self.text_only:
-            prefs["profile.managed_default_content_settings.cookies"] = 2
-            prefs["profile.managed_default_content_settings.javascript"] = 2
+            # prefs["profile.managed_default_content_settings.cookies"] = 2
+            # prefs["profile.managed_default_content_settings.javascript"] = 2
             prefs["profile.managed_default_content_settings.images"] = 2
             prefs["profile.managed_default_content_settings.css"] = 2
             prefs["profile.managed_default_content_settings.popups"] = 2
@@ -125,18 +140,29 @@ class StepCrawling(Step):
         options.add_argument("--incognito")
         options.add_argument('--no-sandbox') # Bypass OS security model
         options.add_argument('--disable-gpu')  # applicable to windows os only
-        # # options.add_argument('start-maximized') 
-
-        options.add_argument('disable-infobars')
+        options.add_argument('--disable-infobars')
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-extensions")
         options.add_argument("--enable-javascript")
+        options.add_argument("--window-size=1125,955")
+        # # options.add_argument('start-maximized') 
 
         driver = webdriver.Chrome(options=options)
         driver.delete_all_cookies()
         driver.set_page_load_timeout(300) 
 
         return driver
+    
+    def launch_tor(self):
+        tor_process = stem.socket.launch_tor_with_config(
+            config={
+            'SocksPort' : str(self._config.crawling.tor_config.SocksPort),
+            'EntryNodes' : self._config.crawling.tor_config.EntryNodes,
+            'ExitNodes' : self._config.crawling.tor_config.ExitNodes,
+            'CookieAuthentication' : self._config.crawling.tor_config.CookieAuthentication,
+            'MaxCircuitDirtiness' : self._config.crawling.tor_config.MaxCircuitDirtiness
+            },
+            tor_cmd = self.tor_path)
 
     def delete_driver(self, driver):
         driver.close()
@@ -179,6 +205,7 @@ class StepCrawling(Step):
 
         try:
             driver.get(url)
+            time.sleep(0.1)
         except Exception:
             pass
         
@@ -325,14 +352,12 @@ class StepCrawling(Step):
 
         return info
     
-    
     def extract_element_infos(self, lot, config):
 
         lot_info = {}
         
         for step, step_values in config.items(): 
             self._log.debug(f"EXTRACT VALUE: {step_values}")
-            
             if "liste_elements" in step_values.keys():
                 liste_lots = self.get_elements(lot, 
                                                 step_values.liste_elements.by_type, 
@@ -345,7 +370,6 @@ class StepCrawling(Step):
         
         return lot_info
     
-
     def crawl_iteratively(self, driver, 
                           config : DictConfig):
 

@@ -5,6 +5,7 @@ from src.utils.timing import timing
 from src.dataclean.utils.utils_clean_christies import CleanChristies
 from src.dataclean.utils.utils_clean_drouot import CleanDrouot
 from src.dataclean.utils.utils_clean_sothebys import CleanSothebys
+from src.dataclean.utils.utils_clean_millon import CleanMillon
 
 from src.utils.utils_crawler import (read_crawled_csvs,
                                      read_crawled_pickles,
@@ -31,7 +32,7 @@ class StepCleanCrawling(TextCleaner):
         self.items_col_names= self.name.dict_rename_items()
         self.auctions_col_names= self.name.dict_rename_auctions()
         
-        self.sql_table_name = self.get_sql_db_name(self.seller)
+        self.sql_table_name = self.get_sql_db_name(self.seller, mode)
         self.seller_utils = eval(f"Clean{self.seller.capitalize()}(context=context, config=config)")
         
 
@@ -42,6 +43,7 @@ class StepCleanCrawling(TextCleaner):
         df_auctions = read_crawled_csvs(path=self.paths["auctions"])
         df_auctions = self.renaming_dataframe(df_auctions, mapping_names=self.auctions_col_names)
         df_auctions = self.seller_utils.clean_auctions(df_auctions)
+        df_auctions = df_auctions.loc[df_auctions[self.name.id_auction]!="MISSING_URL_AUCTION"]
 
         # # CLEAN ITEMS
         df = read_crawled_csvs(path=self.paths["infos"])
@@ -62,22 +64,32 @@ class StepCleanCrawling(TextCleaner):
         # CLEAN DETAILED ITEM DATA
         df_detailed = read_crawled_pickles(path=self.paths["details"])
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
-        df_detailed = self.seller_utils.clean_detail_infos(df_detailed)
+        df_detailed = self.clean_detail_infos(df_detailed)
         df_detailed = self.remove_features(df_detailed, ["NOTE_CATALOGUE", 
                                                          "ARTIST"])
 
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
-        df = self.seller_utils.clean_id_picture(df)
+        df = self.seller_utils.explode_df_per_picture(df)
+        df = self.clean_id_picture(df, seller=self.seller)
 
         #MERGE ITEM & AUCTIONS
         df = self.concatenate_auctions(df, df_auctions)
         df = self.remove_features(df, [self.name.item_infos, 
-                                    self.name.brut_estimate, 
-                                    self.name.brut_result,
-                                    self.name.pictures_list_url,
-                                    self.name.detail_file])
-        df = df.loc[df[self.name.detailed_description].notnull()]
+                                        self.name.brut_estimate, 
+                                        self.name.brut_result,
+                                        self.name.detail_file,
+                                        self.name.item_title, 
+                                        self.name.item_file,
+                                        self.name.url_picture + "_DETAIL",
+                                        self.name.auction_file,
+                                        self.name.date + "_AUCTION",
+                                        self.name.auction_title + "_AUCTION",
+                                        self.name.url_auction + "_AUCTION",
+                                        self.name.place + "_AUCTION",
+                                        self.name.house + "_AUCTION",
+                                        self.name.type_sale + "_AUCTION"])
+        df = df.drop_duplicates(self.name.url_full_detail)
     
         # SAVE ITEMS ENRICHED
         self.write_sql_data(dataframe=df,
