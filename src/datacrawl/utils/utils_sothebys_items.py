@@ -18,7 +18,7 @@ class SothebysItems(StepCrawling):
         self.email = os.environ["SOTHEBYS_EMAIL"]
 
         self.root_url = self._config.crawling["sothebys"].webpage_url
-        self.to_replace=(self.root_url, '')
+        self.to_replace=("?lotFilter=AllLots","")
         self.to_split=["?p=", 0]
         
         # TODO: include the F1 webpage formating from sothebys # weird webpage format regarding F1
@@ -58,7 +58,8 @@ class SothebysItems(StepCrawling):
                 driver = self.check_loggedin(driver, counter+1)
                 return driver
             else: 
-                raise Exception("CANNOT LOG IN TO SOTHEBYS")
+                self._log.warning("CANNOT LOG IN TO SOTHEBYS")
+                return driver
 
         else:
             self._log.debug("LOGGED IN TO SOTHEBYS")
