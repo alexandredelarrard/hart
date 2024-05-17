@@ -6,9 +6,9 @@ from datetime import timedelta
 from src.constants.variables import date_format
 from omegaconf import DictConfig
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
-class SothebysAuctions(StepCrawling):
+class SothebysAuctions(Crawling):
     
     def __init__(self, 
                  context : Context,

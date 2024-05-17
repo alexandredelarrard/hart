@@ -70,7 +70,7 @@ class StepCleanCrawling(TextCleaner):
 
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
-        df = self.seller_utils.explode_df_per_picture(df)
+        df = self.seller_utils.clean_details_per_item(df)
         df = self.clean_id_picture(df, seller=self.seller)
 
         #MERGE ITEM & AUCTIONS
@@ -82,6 +82,7 @@ class StepCleanCrawling(TextCleaner):
                                         self.name.item_title, 
                                         self.name.item_file,
                                         self.name.url_picture + "_DETAIL",
+                                        self.name.brut_result + "_DETAIL",
                                         self.name.auction_file,
                                         self.name.date + "_AUCTION",
                                         self.name.auction_title + "_AUCTION",
@@ -89,8 +90,8 @@ class StepCleanCrawling(TextCleaner):
                                         self.name.place + "_AUCTION",
                                         self.name.house + "_AUCTION",
                                         self.name.type_sale + "_AUCTION"])
-        df = df.drop_duplicates(self.name.url_full_detail)
-    
+        df = self.create_unique_id(df)
+
         # SAVE ITEMS ENRICHED
         self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,

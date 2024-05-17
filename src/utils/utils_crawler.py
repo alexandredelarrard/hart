@@ -136,8 +136,8 @@ def move_picture(path_from, path_to):
         os.mkdir(path_to)
     shutil.move(path_from, path_to)
 
-def encode_file_name(file):
-    return hashlib.sha256(str.encode(file)).hexdigest()
+def encode_file_name(x):
+    return hashlib.sha256(str.encode(x)).hexdigest()
 
 def get_files_already_done(df, to_replace=(), split = []):
 

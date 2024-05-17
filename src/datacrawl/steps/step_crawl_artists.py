@@ -5,10 +5,10 @@ import os
 from omegaconf import DictConfig
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 from src.utils.utils_crawler import (save_infos)
 
-class StepCrawlingArtists(StepCrawling):
+class StepCrawlingArtists(Crawling):
     
     def __init__(self, 
                  context : Context,

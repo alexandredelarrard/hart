@@ -6,15 +6,15 @@ import pickle
 import time
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
-class ChristiesItems(StepCrawling):
+class ChristiesItems(Crawling):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig):
 
-        super().__init__(context=context, config=config, threads=1)
+        super().__init__(context=context, config=config)
         self.correction_urls_auction = self._config.crawling["christies"].correction_urls_auction
         self.to_replace = ('&page=2&sortby=lotnumber','/?loadall=true')
         self.to_split=[]

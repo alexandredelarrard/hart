@@ -5,9 +5,9 @@ import os
 from typing import Dict
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
-class SothebysItems(StepCrawling):
+class SothebysItems(Crawling):
     
     def __init__(self, 
                  context : Context,

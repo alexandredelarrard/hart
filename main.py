@@ -23,7 +23,7 @@ from src.modelling.steps.step_text_classification import StepTextClassification
 from src.modelling.steps.step_fill_chroma_pictures import StepFillChromaPictures
 
 from src.modelling.transformers.TextModel import TextModel
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
 if __name__ == "__main__":
 
@@ -32,15 +32,15 @@ if __name__ == "__main__":
     # self = StepCrawling(context=context, config=config, threads=1, text_only=True)
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
     
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="sothebys", mode="history", recrawl_pictures=True)
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="sothebys", mode="history")
     # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="sothebys", start_date="2024-03-01", end_date="2024-05-01")
-    self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="history")
-    # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="drouot")
+    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="history")
+    # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="millon")
 
-    # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="new")
+    self = StepCleanCrawling(context=context, config=config, seller="millon", mode="history")
     # self = StepTextCleanArtists(context=context, config=config)
     # self = StepAgglomerateTextInfos(context=context, config=config)
-    # self.run()
+    self.run()
 
     # self = StepTextClustering(context=context, config=config)
     # self = StepFillChromaPictures(context=context, config=config)

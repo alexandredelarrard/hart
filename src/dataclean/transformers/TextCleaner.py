@@ -14,7 +14,7 @@ from omegaconf import DictConfig
 from src.utils.utils_crawler import encode_file_name
 
 LISTE_WORDS_REMOVE = ["--> ce lot se trouve au depot", "retrait",
-                    "lot non venu", ".", "",
+                    "lot non venu", ".", "","cb",
                     "aucune désignation", "withdrawn", "pas de lot",
                     "no lot", "retiré",
                     "pas venu", "40", "lot retiré", "20", "test", 
@@ -96,12 +96,20 @@ class TextCleaner(Step):
         
     @timing
     def clean_id_picture(self, df : pd.DataFrame, limite : int =100, seller : str = "drouot"):
+
+        if self.name.url_picture not in df.columns:
+            raise Exception(f"{self.name.url_picture} not in df, cannot continue to clean {self.name.id_picture}")
+        
+        if self.name.id_picture not in df.columns:
+            df[self.name.id_picture] = df[self.name.url_picture].swifter.apply(lambda x: os.path.basename(str(x)))
+
         liste_pictures_missing = df[self.name.id_picture].value_counts().loc[
             df[self.name.id_picture].value_counts() > limite].index
         self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} picts having more than {limite} picts")
         
-        df[self.name.id_picture] = np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
-                                              "FAKE_PICTURE", df[self.name.id_picture])
+        df[self.name.id_picture] = np.where(df[self.name.id_picture].isnull(), "NO_PICTURE",
+                                   np.where(df[self.name.id_picture].isin(list(liste_pictures_missing)), 
+                                              "FAKE_PICTURE", df[self.name.id_picture]))
         
         # keep ID picture when picture is available for drouot ~2.3M
         picture_path = df[self.name.id_picture].apply(lambda x : f"{self.root_path}/{seller}/pictures/{x}.jpg")
@@ -110,7 +118,7 @@ class TextCleaner(Step):
         return df
     
     @timing
-    def explode_df_per_picture(self, df):
+    def clean_details_per_item(self, df):
         return df
 
     @timing
@@ -160,8 +168,10 @@ class TextCleaner(Step):
         df = df.drop_duplicates(self.name.url_full_detail).reset_index(drop=True)
 
         for col in [self.name.item_title, self.name.item_description]:
-            df[col] = np.where(df[col].str.lower().isin(LISTE_WORDS_REMOVE), np.nan, df[col])
-        
+            if col in df.columns:
+                df[col] = np.where(df[col].str.lower().isin(LISTE_WORDS_REMOVE), np.nan, df[col])
+            else:
+                self._log.debug(f"MISSING COL {col} in df for extract infos cleaning")
         return df
         
     @timing
@@ -191,8 +201,20 @@ class TextCleaner(Step):
     
     @timing
     def extract_estimates(self, df):
+
+        if self.name.brut_estimate not in df.columns and self.name.brut_result not in df.columns:
+            raise Exception(f"Need to provide either {self.name.brut_estimate} or {self.name.brut_result} in the dataframe toe deduce price estimate")
+
+        if self.name.brut_result not in df.columns:
+            self._log.warning(f"{self.name.brut_result} not in df columns, will take {self.name.brut_estimate} as proxy for price estimate")
+            df[self.name.brut_result] = df[self.name.brut_estimate]
+            
         df[self.name.item_result] = self.get_estimate(df[self.name.brut_result], min_max="min")
 
+        if self.name.brut_estimate not in df.columns:
+            self._log.warning(f"{self.name.brut_estimate} not in df columns, will take {self.name.brut_result} as proxy for price estimate")
+            df[self.name.brut_estimate] = df[self.name.brut_result]
+        
         df[self.name.min_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="min")
         df[self.name.max_estimate] = self.get_estimate(df[self.name.brut_estimate], min_max="max")
         df[self.name.max_estimate] = np.where(df[self.name.max_estimate].apply(lambda x: str(x).isdigit()), 
@@ -221,6 +243,14 @@ class TextCleaner(Step):
             
         df_detailed = df_detailed.drop_duplicates(self.name.url_full_detail)
         return df_detailed
+    
+    @timing
+    def create_unique_id(self, df):
+        df = df.sort_values([self.name.url_full_detail, self.name.id_picture], ascending=[0,0])
+        df = df.drop_duplicates(self.name.url_full_detail)
+        df[self.name.id_unique] = (df[self.name.id_item] + "_"+ df[self.name.id_picture]).apply(lambda x: encode_file_name(x))
+        assert max(df[self.name.id_unique].value_counts()) == 1
+        return df
     
     def remove_dates_in_parenthesis(self, x):
         pattern = re.compile(r'\([0-9-]+\)')

@@ -4,8 +4,7 @@ from omegaconf import DictConfig
 import pandas as pd 
 
 from src.context import Context
-
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 from src.datacrawl.utils.utils_drouot_auctions import DrouotAuctions
 from src.datacrawl.utils.utils_christies_auctions import ChristiesAuctions
 from src.datacrawl.utils.utils_sothebys_auctions import SothebysAuctions
@@ -17,7 +16,7 @@ from src.utils.utils_crawler import (get_files_done_from_path,
                                     define_start_date,
                                     define_end_date)
 
-class StepCrawlingAuctions(StepCrawling):
+class StepCrawlingAuctions(Crawling):
     
     def __init__(self, 
                  context : Context,

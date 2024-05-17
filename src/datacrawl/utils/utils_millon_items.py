@@ -2,15 +2,15 @@ from typing import List
 from omegaconf import DictConfig
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
-class MillonItems(StepCrawling):
+class MillonItems(Crawling):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig):
 
-        super().__init__(context=context, config=config, threads=1)
+        super().__init__(context=context, config=config)
         self.to_replace=()
         self.to_split = ["/page", 0]
 

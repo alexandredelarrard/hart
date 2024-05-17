@@ -4,15 +4,15 @@ from datetime import datetime
 import tqdm
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
-class DrouotAuctions(StepCrawling):
+class DrouotAuctions(Crawling):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig):
         
-        super().__init__(context=context, config=config, threads=1)
+        super().__init__(context=context, config=config)
         self.history_start_year = self._config.crawling["drouot"].history_start_year
 
     def urls_to_crawl(self, start_date, end_date, url_auctions):

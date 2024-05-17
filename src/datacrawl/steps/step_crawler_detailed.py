@@ -1,15 +1,17 @@
 from omegaconf import DictConfig
 import numpy as np
+import time
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 from src.dataclean.transformers.TextCleaner import TextCleaner
+from src.datacrawl.utils.utils_details import DetailsUtils
 from src.utils.utils_crawler import (read_crawled_csvs, 
                                     read_crawled_pickles,
                                     keep_files_to_do,
                                     define_save_paths)
 
-class StepCrawlingDetailed(StepCrawling):
+class StepCrawlingDetailed(Crawling):
     
     def __init__(self, 
                  context : Context,
@@ -23,6 +25,7 @@ class StepCrawlingDetailed(StepCrawling):
 
         self.seller = seller
         self.paths = define_save_paths(config, self.seller, mode=mode)
+        self.utils = DetailsUtils(context=context, config=config, seller=seller)
         self.sql_table_name = TextCleaner(context=context, config=config).get_sql_db_name(self.seller, mode)
 
         # initialize crawler as queue saving 
@@ -45,6 +48,7 @@ class StepCrawlingDetailed(StepCrawling):
         # get detail urls to crawl
         df = read_crawled_csvs(path=self.paths["infos"])
         df = df.rename(columns=self.items_col_names)
+        df = df.sort_values([self.name.url_full_detail, self.name.brut_result],ascending=[0,0])
         to_crawl = df.loc[df[self.name.url_full_detail].notnull(), 
                             self.name.url_full_detail].drop_duplicates().tolist()
         
@@ -61,10 +65,6 @@ class StepCrawlingDetailed(StepCrawling):
         liste_urls = keep_files_to_do(to_crawl, already_crawled)
         return liste_urls
     
-    def crawling_details_function(self, driver):
-        infos = self.crawl_iteratively(driver, self.crawler_infos)
-        return driver, infos
-    
     def recrawl_pictures_missing(self, df_crawled):
         # remove crawled having url picture missing
         if self.name.url_picture in df_crawled.columns:
@@ -78,4 +78,8 @@ class StepCrawlingDetailed(StepCrawling):
 
         return df_crawled
         
+    def crawling_details_function(self, driver):
+        driver, infos = self.utils.crawling_details_function(driver, self.crawler_infos)
+        self._log.debug(infos)
+        return driver, infos
         

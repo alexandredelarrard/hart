@@ -129,7 +129,7 @@ def step_crawling_detailed(
                                 mode=crawling_mode)
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-detailed -t 2 -s millon -sqs 500 --text-only True --crawling-mode new
+    # python -m src datacrawl step-crawling-detailed -t 7 -s sothebys -sqs 500 --text-only True --crawling-mode new
 
 
 @cli.command(
@@ -141,14 +141,14 @@ def step_crawling_detailed(
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
 @click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
 def step_crawling_pictures(
-    config_path, threads : int, seller: str, mode: str
+    config_path, threads : int, seller: str, crawling_mode: str
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     crawl = StepCrawlingPictures(config=config, context=context, 
                                     threads=threads,
                                     seller=seller,
-                                    mode=mode)
+                                    mode=crawling_mode)
 
     # get crawling_function 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_picture)

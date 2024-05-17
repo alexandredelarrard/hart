@@ -53,6 +53,7 @@ class Naming:
         self.id_picture = "ID_PICTURE"
         self.id_item = "ID_ITEM"
         self.id_auction = "AUCTION_ID"
+        self.id_unique = "ID_UNIQUE"
 
         self.category = "CATEGORY"
         self.prompt_description = "PROMPT"

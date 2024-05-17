@@ -2,15 +2,15 @@
 from omegaconf import DictConfig
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 
-class MillonAuctions(StepCrawling):
+class MillonAuctions(Crawling):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig):
 
-        super().__init__(context=context, config=config, threads=1)
+        super().__init__(context=context, config=config)
         self.history_start_year = self._config.crawling["millon"].history_start_year
 
     def urls_to_crawl(self, start_date, end_date, url_auctions):

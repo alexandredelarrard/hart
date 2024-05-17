@@ -79,7 +79,7 @@ class CleanDrouot(TextCleaner):
         return df
     
     @timing
-    def explode_df_per_picture(self, df):
+    def clean_details_per_item(self, df):
 
         df[self.name.url_picture] = np.where(df[self.name.url_picture + "_DETAIL"].isnull(),
                                              df[self.name.url_picture].apply(lambda x: [x]),

@@ -181,7 +181,7 @@ crawling:
                 DETAIL:
                     by_type : CLASS_NAME
                     value_css : chr-lot-section__accordion--text
-    sothebys: # 1.5M
+    sothebys: # 0.8M
         history_start_year: 2007
         webpage_url : https://www.sothebys.com/en/buy/auction
         auctions_url : https://www.sothebys.com/en/results? #6581
@@ -261,11 +261,11 @@ crawling:
             buy_url:
                 per_element : 
                     TITLE:
-                        by_type: XPATH
-                        value_css: //div[data-cy='lot-title']
+                        by_type: CLASS_NAME
+                        value_css: css-542wex
                     URL_AUCTION: 
                         by_type: XPATH
-                        value_css: //div[class='css-2v1h2i']/nav/span
+                        value_css: //div[@class='css-2v1h2i']/nav/span
                         attribute: href
                     DETAIL:
                         by_type : ID
@@ -288,9 +288,9 @@ crawling:
                         by_type : CLASS_NAME
                         value_css : LotPage-details
                     URL_PICTURE:
-                        by_type: TAG_NAME
-                        value_css: img
-                        attribute: src
+                        by_type: XPATH
+                        value_css: //div[@class='VerticalNavGallerySlide-mediaContent']/picture/img
+                        attribute: srcset
     millon: # 0.2M
         history_start_year: 2012
         webpage_url: https://www.millon.com/catalogue/ventes-passees/

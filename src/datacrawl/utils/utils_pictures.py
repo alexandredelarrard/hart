@@ -1,5 +1,6 @@
 from omegaconf import DictConfig
 import os
+import numpy as np
 
 from src.context import Context
 from src.utils.step import Step 
@@ -34,4 +35,19 @@ class PicturesUtils(Step):
         return df_details
     
     def get_pictures_url_sothebys(self, df_details, mode):
+        return df_details
+    
+    def get_pictures_url_millon(self, df_details, mode):
+        df_details = df_details.explode(self.name.url_picture)
+        
+        df_details[self.name.url_picture] = np.where(df_details[self.name.url_picture].apply(lambda x: str(x) == "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%201%201'%2F%3E"),
+                                                    np.nan, df_details[self.name.url_picture])
+        df_details = df_details.loc[df_details[self.name.url_picture].notnull()]
+        
+        df_details[self.name.id_picture] = df_details[self.name.url_picture].apply(lambda x: os.path.basename(str(x)))
+        for col in [self.name.url_picture, self.name.id_picture]:
+            df_details[col] = np.where(df_details[col].apply(lambda x: str(x) == "nan"), 
+                                       np.nan, 
+                                       df_details[col])
+       
         return df_details

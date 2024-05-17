@@ -4,7 +4,7 @@ from omegaconf import DictConfig
 import pandas as pd 
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 from src.datacrawl.utils.utils_drouot_items import DrouotItems
 from src.datacrawl.utils.utils_christies_items import ChristiesItems
 from src.datacrawl.utils.utils_sothebys_items import SothebysItems
@@ -16,7 +16,7 @@ from src.utils.utils_crawler import (read_crawled_csvs,
                                     save_infos,
                                     define_save_paths)
 
-class StepCrawlingItems(StepCrawling):
+class StepCrawlingItems(Crawling):
     
     def __init__(self, 
                  context : Context,

@@ -4,7 +4,7 @@ import os
 from omegaconf import DictConfig
 
 from src.context import Context
-from src.datacrawl.transformers.Crawler import StepCrawling
+from src.datacrawl.transformers.Crawling import Crawling
 from src.datacrawl.utils.utils_pictures import PicturesUtils
 from src.utils.utils_crawler import (save_picture_crawled,
                                      save_canvas_picture,
@@ -13,7 +13,7 @@ from src.utils.utils_crawler import (save_picture_crawled,
                                      read_crawled_pickles,
                                      encode_file_name)
 
-class StepCrawlingPictures(StepCrawling):
+class StepCrawlingPictures(Crawling):
     
     def __init__(self, 
                  context : Context,

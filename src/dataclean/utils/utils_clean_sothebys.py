@@ -21,7 +21,6 @@ class CleanSothebys(TextCleaner):
 
         super().__init__(context=context, config=config)
         locale.setlocale(locale.LC_ALL, 'en')
-
         self.webpage_url = "https://www.sothebys.com/"
   
     @timing
@@ -76,7 +75,7 @@ class CleanSothebys(TextCleaner):
         return df
 
     @timing
-    def explode_df_per_picture(self, df):
+    def clean_details_per_item(self, df):
         df["CONDITION"] = np.where(df["CONDITION"] == "", np.nan, df["CONDITION"])
         df[self.name.detailed_description] = np.where(df[self.name.detailed_description] == "", np.nan, df[self.name.detailed_description])
         df[self.name.detailed_description] = np.where(df["CONDITION"].notnull()&df[self.name.detailed_description].notnull(),
