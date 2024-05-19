@@ -5,6 +5,10 @@ from omegaconf import DictConfig
 
 from src.context import Context
 from src.datacrawl.transformers.Crawling import Crawling
+from src.dataclean.utils.utils_clean_sothebys import CleanSothebys
+from src.dataclean.utils.utils_clean_christies import CleanChristies
+from src.dataclean.utils.utils_clean_drouot import CleanDrouot
+from src.dataclean.utils.utils_clean_millon import CleanMillon
 from src.utils.utils_crawler import (save_picture_crawled,
                                      save_canvas_picture,
                                      keep_files_to_do,
