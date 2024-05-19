@@ -53,12 +53,15 @@ class TextCleaner(Step):
                                              len(re.findall(liste, str(x))) > 0 else np.nan)
 
     def get_estimate(self, variable, min_max : str = "min"):
+        def clean_thousands(x):
+            return str(x).replace(" ","").replace(",","").replace("\u202f","")
+
         if min_max.lower() == "min":
-            return variable.apply(lambda x : re.findall(r"\d+", str(x).replace(" ","").replace(",",""))[0] 
-                                           if len(re.findall(r"\d+", str(x).replace(" ","").replace(",",""))) > 0 else np.nan)
+            return variable.apply(lambda x : re.findall("\\d+", clean_thousands(x))[0] 
+                                           if len(re.findall("\\d+", clean_thousands(x))) > 0 else np.nan)
         elif min_max.lower() == "max":
-            return variable.apply(lambda x : re.findall(r"\d+", str(x).replace(" ","").replace(",",""))[1] 
-                                           if len(re.findall(r"\d+", str(x).replace(" ","").replace(",",""))) > 1 else np.nan)
+            return variable.apply(lambda x : re.findall("\\d+", clean_thousands(x))[1] 
+                                           if len(re.findall("\\d+", clean_thousands(x))) > 1 else np.nan)
         else: 
             raise Exception("EITHER MIN OR MAX value for min_max")
 
@@ -97,12 +100,14 @@ class TextCleaner(Step):
     @timing
     def clean_id_picture(self, df : pd.DataFrame, limite : int =100, seller : str = "drouot"):
 
-        if self.name.url_picture not in df.columns:
+        if self.name.id_picture not in df.columns:
             raise Exception(f"{self.name.url_picture} not in df, cannot continue to clean {self.name.id_picture}")
         
-        if self.name.id_picture not in df.columns:
-            df[self.name.id_picture] = df[self.name.url_picture].swifter.apply(lambda x: os.path.basename(str(x)))
-
+        for col in [self.name.url_picture, self.name.id_picture]:
+            df[col] = np.where(df[col].apply(lambda x: str(x) == "nan" or str(x) == ""), 
+                                np.nan, 
+                                df[col])
+        
         liste_pictures_missing = df[self.name.id_picture].value_counts().loc[
             df[self.name.id_picture].value_counts() > limite].index
         self._log.info(f"SET PICTURES ID TO MISSING FOR {len(liste_pictures_missing)} picts having more than {limite} picts")
@@ -239,7 +244,7 @@ class TextCleaner(Step):
                                                                 np.nan,
                                                                df_detailed[self.name.detailed_description])
         if self.name.url_picture in df_detailed.columns:
-            df_detailed = df_detailed.sort_values(self.name.url_picture)
+            df_detailed = df_detailed.sort_values(self.name.url_picture, ascending=False)
             
         df_detailed = df_detailed.drop_duplicates(self.name.url_full_detail)
         return df_detailed
@@ -247,9 +252,13 @@ class TextCleaner(Step):
     @timing
     def create_unique_id(self, df):
         df = df.sort_values([self.name.url_full_detail, self.name.id_picture], ascending=[0,0])
-        df = df.drop_duplicates(self.name.url_full_detail)
         df[self.name.id_unique] = (df[self.name.id_item] + "_"+ df[self.name.id_picture]).apply(lambda x: encode_file_name(x))
+        
+        shape_0 = df.shape[0]
+        df = df.drop_duplicates(self.name.id_unique)
+        self._log.info(f"DROPPING {shape_0-df.shape[0]} rows due to duplicate {self.name.id_unique}")
         assert max(df[self.name.id_unique].value_counts()) == 1
+        
         return df
     
     def remove_dates_in_parenthesis(self, x):

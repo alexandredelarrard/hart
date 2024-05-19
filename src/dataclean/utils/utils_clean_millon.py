@@ -23,7 +23,6 @@ class CleanMillon(TextCleaner):
 
         super().__init__(context=context, config=config)
         locale.setlocale(locale.LC_ALL, 'fr_FR')
-        
    
     @timing
     def clean_auctions(self, df_auctions):
@@ -85,12 +84,21 @@ class CleanMillon(TextCleaner):
                                 self.name.max_estimate + "_DETAIL": self.name.max_estimate})
         df = self.extract_estimates(df) # text cleaner
 
-        df[self.name.url_picture] = np.where(df[self.name.url_picture].isnull(),
-                                             df[self.name.url_picture].apply(lambda x: [x]),
-                                             df[self.name.url_picture])
-        
-        df = df.explode(self.name.url_picture) # from 3.3 to 10.8M rows
+        #URL picture
+        df = self.get_pictures_url_millon(df)
+
+        # DROP extrac cols
         df = df.drop([self.name.date, self.name.auction_title], axis=1)
         
-
         return df 
+    
+    def get_pictures_url_millon(self, df_details, mode=None):
+        df_details = df_details.explode(self.name.url_picture)
+        
+        df_details[self.name.url_picture] = np.where(df_details[self.name.url_picture].apply(lambda x: str(x) == "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%201%201'%2F%3E"),
+                                                    np.nan, df_details[self.name.url_picture])
+        df_details[self.name.id_picture] = df_details[self.name.url_picture].apply(lambda x: self.naming_picture_millon(x))
+        return df_details
+    
+    def naming_picture_millon(self, x):
+        return os.path.basename(str(x))

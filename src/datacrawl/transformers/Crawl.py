@@ -123,8 +123,8 @@ class Crawl(Step):
         
         if self.text_only:
             prefs["profile.managed_default_content_settings.cookies"] = 2
-            # prefs["profile.managed_default_content_settings.javascript"] = 2
-            # prefs["profile.managed_default_content_settings.images"] = 2
+            prefs["profile.managed_default_content_settings.javascript"] = 2
+            prefs["profile.managed_default_content_settings.images"] = 2
             prefs["profile.managed_default_content_settings.css"] = 2
             prefs["profile.managed_default_content_settings.popups"] = 2
             

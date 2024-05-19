@@ -8,10 +8,20 @@ import re
 from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.context import Context
 from src.utils.timing import timing
-from src.constants.variables import localisation, currencies, date_format
+from src.constants.variables import localisation, date_format
+from src.utils.utils_crawler import encode_file_name
 
 from omegaconf import DictConfig
 
+def get_max_def(x): 
+    liste = x.split("\n")
+    if len(liste) == 1:
+        return x.replace("2880w", "").strip()
+    df = dict()
+    for value in liste:
+        df[int(value.split(" ")[1].replace(",", "").replace("w", ""))] = value.split(" ")[0].strip()
+    df = dict(sorted(df.items()))
+    return df[list(df.keys())[-1]]
 
 class CleanSothebys(TextCleaner):
     
@@ -63,11 +73,6 @@ class CleanSothebys(TextCleaner):
 
         # add hour cleaning info 
         df = self.extract_hour_infos(df)
-
-        # clean url picture : 
-        df[self.name.url_picture] = np.where(df[self.name.url_picture].apply(lambda x: "data:image/svg+xml;base64," in x),
-                                             np.nan, 
-                                             df[self.name.url_picture])
         
         # add ID AUCTION 
         df[self.name.id_auction] = df[self.name.date].str[:4] + "-" + df[self.name.item_file]
@@ -76,6 +81,8 @@ class CleanSothebys(TextCleaner):
 
     @timing
     def clean_details_per_item(self, df):
+
+        # CLEAN CONDITION
         df["CONDITION"] = np.where(df["CONDITION"] == "", np.nan, df["CONDITION"])
         df[self.name.detailed_description] = np.where(df[self.name.detailed_description] == "", np.nan, df[self.name.detailed_description])
         df[self.name.detailed_description] = np.where(df["CONDITION"].notnull()&df[self.name.detailed_description].notnull(),
@@ -84,5 +91,20 @@ class CleanSothebys(TextCleaner):
                                                 df["CONDITION"],
                                                 df[self.name.detailed_description]))
         del df["CONDITION"]
+
+        # clean url picture & and create ID PICTURE
+        df= self.get_pictures_url_sothebys(df)
+
         return df
+    
+    def get_pictures_url_sothebys(self, df_details, mode=None):
+        df_details = df_details.explode(self.name.url_picture)
+        df_details[self.name.url_picture] = np.where(df_details[self.name.url_picture].apply(lambda x: str(x) == "" or str(x) == "nan"),
+                                                    np.nan, df_details[self.name.url_picture])
+        df_details[self.name.url_picture] = df_details[self.name.url_picture].apply(lambda x: get_max_def(x))
+        df_details[self.name.id_picture] = df_details[self.name.url_picture].apply(lambda x: self.naming_picture_sothebys(x))
+        return df_details
+    
+    def naming_picture_sothebys(self, x):
+        return encode_file_name(os.path.basename(str(x)))
     

@@ -59,3 +59,14 @@ class CleanChristies(TextCleaner):
         df[self.name.item_description] = sale[2]
 
         return df
+    
+    @timing
+    def clean_details_per_item(self, df_details):
+        df_details = df_details.explode(self.name.url_picture)
+        df_details[self.name.url_picture] = np.where(df_details[self.name.url_picture].apply(lambda x: str(x) == "" or str(x) == "nan"),
+                                                    np.nan, df_details[self.name.url_picture])
+        df_details[self.name.id_picture] = df_details[self.name.url_picture].apply(lambda x: self.naming_picture_christies(x))
+        return df_details
+
+    def naming_picture_christies(self, x):
+        return os.path.basename(str(x))

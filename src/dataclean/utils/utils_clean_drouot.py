@@ -9,6 +9,7 @@ from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.context import Context
 from src.utils.timing import timing
 from src.constants.variables import date_format
+from src.utils.utils_crawler import encode_file_name
 
 from omegaconf import DictConfig
 
@@ -85,14 +86,25 @@ class CleanDrouot(TextCleaner):
                                              df[self.name.url_picture].apply(lambda x: [x]),
                                              df[self.name.url_picture+ "_DETAIL"])
         
-        df = df.explode(self.name.url_picture) # from 3.3 to 10.8M rows
-
-        df[self.name.url_picture] = df[self.name.url_picture].apply(lambda x: clean_url_picture_list(x))
-
-        # rename picture_ids based on url path
-        df[self.name.id_picture] = df[self.name.url_picture].swifter.apply(lambda x: os.path.basename(str(x)))
-        df = df.replace("nan", np.nan)
+        df = self.get_pictures_url_drouot(df)
         
         return df
+    
+    def naming_picture_drouot(self, x):
+        return os.path.basename(str(x))
+
+    def get_pictures_url_drouot(self, df_details, mode=None):
+
+        if mode != "canvas":
+            df_details = df_details.explode(self.name.url_picture)
+            df_details[self.name.url_picture] = df_details[self.name.url_picture].apply(lambda x: clean_url_picture_list(x))
+            df_details[self.name.id_picture] = df_details[self.name.url_picture].apply(lambda x: self.naming_picture_drouot(x))
+        else:
+            df_details = df_details.drop_duplicates("CURRENT_URL")
+            df_details = df_details.loc[df_details[self.name.url_picture].isin([[]])]
+            df_details[self.name.id_picture] = df_details["CURRENT_URL"].apply(lambda x: encode_file_name(os.path.basename(x)))
+            df_details[self.name.url_picture] = df_details["CURRENT_URL"]
+
+        return df_details[[self.name.id_picture, self.name.url_picture]]
 
     

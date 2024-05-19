@@ -54,6 +54,9 @@ def read_crawled_pickles(path : str):
                 df_file["FILE"] = os.path.basename(file)
                 liste_dfs.append(df_file)
             elif isinstance(df_file, list):
+                if len(df_file) !=0:
+                    if isinstance(df_file[0], list):
+                        df_file = [x[0] for x in df_file]
                 liste_dfs += df_file
         except Exception:
             not_read.append(file)
@@ -96,7 +99,6 @@ def save_picture_crawled(url_picture, image_path, picture_id):
         message= e
         pass
     return message
-
 
 def save_canvas_picture(picture, image_path, picture_id):
     message = ""
