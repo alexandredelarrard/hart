@@ -33,15 +33,4 @@ class ChristiesAuctions(Crawling):
             for month in range(start_month, end_month):
                 to_crawl.append(url_auctions + f"month={month}&year={year}")
         return to_crawl
-    
-    def handle_signups(self, driver):
 
-        # check signup
-        try:
-            signup = self.get_elements(driver, "CLASS_NAME", 'fsu--wrapper')
-            if len(signup) !=0:
-                self.click_element(signup[0], "CLASS_NAME", "closeiframe")
-                time.sleep(0.5)
-
-        except Exception:
-            pass

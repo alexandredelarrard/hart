@@ -85,7 +85,7 @@ class CleanDrouot(TextCleaner):
         df[self.name.url_picture] = np.where(df[self.name.url_picture + "_DETAIL"].isnull(),
                                              df[self.name.url_picture].apply(lambda x: [x]),
                                              df[self.name.url_picture+ "_DETAIL"])
-        
+        # create id picture
         df = self.get_pictures_url_drouot(df)
         
         return df

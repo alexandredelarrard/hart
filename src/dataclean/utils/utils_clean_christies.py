@@ -6,8 +6,8 @@ from src.context import Context
 from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.utils.timing import timing
 from src.constants.variables import date_format
-
-from src.utils.utils_crawler import read_pickle
+from src.utils.utils_crawler import (read_pickle,
+                                    encode_file_name)
 
 from omegaconf import DictConfig
 
@@ -61,7 +61,7 @@ class CleanChristies(TextCleaner):
         return df
     
     @timing
-    def clean_details_per_item(self, df_details):
+    def clean_details_per_item(self, df_details, mode=None):
         df_details = df_details.explode(self.name.url_picture)
         df_details[self.name.url_picture] = np.where(df_details[self.name.url_picture].apply(lambda x: str(x) == "" or str(x) == "nan"),
                                                     np.nan, df_details[self.name.url_picture])
@@ -69,4 +69,4 @@ class CleanChristies(TextCleaner):
         return df_details
 
     def naming_picture_christies(self, x):
-        return os.path.basename(str(x))
+        return encode_file_name(os.path.basename(str(x)))

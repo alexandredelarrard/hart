@@ -25,7 +25,11 @@ class StepCrawlingItems(Crawling):
                  seller: str,
                  mode : str = "history"):
         
-        super().__init__(context=context, config=config, threads=threads)
+        kwargs = {}
+        if "crawler_infos" in config.crawling[self.seller].items.keys():
+            kwargs = config.crawling[self.seller].items["crawler_infos"]
+        
+        super().__init__(context=context, config=config, threads=threads, kwargs=kwargs)
 
         self.seller = seller.lower()
         self.today = datetime.today()
@@ -33,7 +37,7 @@ class StepCrawlingItems(Crawling):
         self.paths = define_save_paths(config, self.seller, mode=mode)
         self.root_url = self._config.crawling[self.seller].webpage_url
         
-        self.crawler_infos = self._config.crawling[self.seller]["items"]
+        self.items_infos = self._config.crawling[self.seller]["items"]
         self.seller_utils = eval(f"{self.seller.capitalize()}Items(context=context, config=config)")
     
     # second crawling step  to get list of pieces per auction 
@@ -57,8 +61,8 @@ class StepCrawlingItems(Crawling):
     def crawl_items_iteratively(self, driver):
 
         # crawl infos 
-        query = encode_file_name(os.path.basename(driver.current_url))
-        list_infos = self.seller_utils.crawl_iteratively_seller(driver, self.crawler_infos)
+        query = encode_file_name(driver.current_url)
+        list_infos = self.seller_utils.crawl_iteratively_seller(driver, self.items_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         save_infos(df_infos, path=self.paths["infos"] + f"/{query}.csv")

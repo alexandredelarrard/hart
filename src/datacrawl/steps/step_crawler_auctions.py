@@ -26,11 +26,14 @@ class StepCrawlingAuctions(Crawling):
                  start_date: str = None,
                  end_date: str = None,
                  mode: str= "history"):
+        
+        kwargs = {}
+        if "crawler_infos" in config.crawling[self.seller].auctions.keys():
+            kwargs = config.crawling[self.seller].auctions["crawler_infos"]
+
+        super().__init__(context=context, config=config, threads=threads, kwargs=kwargs)
 
         self.seller = seller.lower()
-        super().__init__(context=context, config=config, threads=threads)
-
-        self.seller_utils = eval(f"{self.seller.capitalize()}Auctions(context=context, config=config)")
         self.paths = define_save_paths(config, self.seller, mode=mode)
 
         self.url_auctions = self._config.crawling[self.seller].auctions_url
@@ -38,8 +41,8 @@ class StepCrawlingAuctions(Crawling):
         self.start_date = define_start_date(start_date, history_start_year)
         self.end_date = define_end_date(end_date)
 
-        self.crawler_infos = self._config.crawling[self.seller]["auctions"]
-
+        self.auctions_infos = self._config.crawling[self.seller]["auctions"]
+        self.seller_utils = eval(f"{self.seller.capitalize()}Auctions(context=context, config=config)")
 
     # first crawling level # list of auctions in the past to get urls 
     def get_auctions_urls_to_crawl(self) -> List[str]:
@@ -59,7 +62,7 @@ class StepCrawlingAuctions(Crawling):
 
         # crawl infos 
         query = driver.current_url.replace(self.url_auctions, "").replace("results?", "").replace("%2F", "-")
-        list_infos = self.seller_utils.crawl_iteratively(driver, self.crawler_infos)
+        list_infos = self.seller_utils.crawl_iteratively(driver, self.auctions_infos)
 
         df_infos = pd.DataFrame().from_dict(list_infos)
         save_infos(df_infos, path=self.paths["auctions"] + f"/{query}.csv")

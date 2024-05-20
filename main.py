@@ -32,10 +32,10 @@ if __name__ == "__main__":
     # self = StepCrawling(context=context, config=config, threads=1, text_only=True)
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
     
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="sothebys", mode="history")
-    # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="sothebys", start_date="2024-03-01", end_date="2024-05-01")
-    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="history")
-    self = StepCrawlingPictures(context=context, config=config, threads=1, seller="sothebys", mode="history")
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="christies", mode="new")
+    # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="christies", start_date="2024-03-01", end_date="2024-05-01")
+    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="christies", mode="new")
+    self = StepCrawlingPictures(context=context, config=config, threads=1, seller="christies", mode="new")
 
     # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="new")
     # self = StepTextCleanArtists(context=context, config=config)

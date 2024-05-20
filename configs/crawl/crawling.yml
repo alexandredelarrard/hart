@@ -123,9 +123,15 @@ crawling:
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
         correction_urls_auction : D:/data/christies/auctions/correction_urls_auctions.pickle
         auctions:
+            crawler_infos:
+                url_sleep: 1
+                is_picture: True
+                is_cookie: True
+                is_javascript: True
             functions:
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'banner-actions-container', 'ID', 'onetrust-reject-all-handler')" # cookie
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'fsu--wrapper', 'CLASS_NAME', 'closeiframe')" # signup
                 - 'self.scrowl_driver(driver, Y=150)'
-                - 'self.seller_utils.handle_signups(driver)'
             liste_elements : 
                 by_type: XPATH
                 value_css: '//ul[@aria-labelledby="calendar-tab-undefined"]/li'
@@ -133,6 +139,7 @@ crawling:
                 URL_AUCTION:
                     by_type : CLASS_NAME
                     value_css : chr-event-tile__title
+                    attribute: href
                 AUCTION_TITLE:
                     by_type : CLASS_NAME
                     value_css : chr-event-tile__title
@@ -140,12 +147,18 @@ crawling:
                     by_type : CLASS_NAME
                     value_css : chr-label-s
         items:
+            crawler_infos:
+                url_sleep: 0.5
+                is_picture: False
+                is_cookie: True
+                is_javascript: True
             functions:
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'banner-actions-container', 'ID', 'onetrust-reject-all-handler')" # cookie
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'fsu--wrapper', 'CLASS_NAME', 'closeiframe')" # signup
                 - 'self.scrowl_driver(driver, Y=150)'
-                - 'self.seller_utils.handle_signups(driver)'
             liste_elements : 
-                by_type: CLASS_NAME
-                value_css: chr-browse-lot-tile-wrapper
+                by_type: XPATH
+                value_css: //div[@class='container-fluid']/ul/li
             per_element:
                 URL_FULL_DETAIL:
                     by_type: CLASS_NAME
@@ -163,15 +176,20 @@ crawling:
                 RESULT:
                     by_type: CLASS_NAME
                     value_css: chr-lot-tile__dynamic-price
-                URL_PICTURE:
-                    by_type: TAG_NAME
-                    value_css: img
-                    attribute: src
-                    split:
-                        character: "?"
-                        id_split: 0
         detailed : 
+            crawler_infos:
+                url_sleep: 0.2
+                is_picture: True
+                is_cookie: True
+                is_javascript: True
+            functions:
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'banner-actions-container', 'ID', 'onetrust-reject-all-handler')" # cookie
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'fsu--wrapper', 'CLASS_NAME', 'closeiframe')" # signup
             per_element : 
+                URL_AUCTION:
+                    by_type: CLASS_NAME
+                    value_css: chr-breadcrumb__link 
+                    attribute: href
                 ARTIST:
                     by_type : CLASS_NAME
                     value_css : chr-lot-header__artist-name
@@ -181,6 +199,16 @@ crawling:
                 DETAIL:
                     by_type : CLASS_NAME
                     value_css : chr-lot-section__accordion--text
+                URL_PICTURE:
+                    functions:
+                        - "self.click_element(driver, 'CLASS_NAME', 'chr-lot-header__image-container')"
+                    liste_elements : 
+                        by_type: CLASS_NAME
+                        value_css: chr-gallery__slide
+                    per_element : 
+                        by_type: TAG_NAME
+                        value_css: img
+                        attribute: src
     sothebys: # 0.8M
         history_start_year: 2007
         webpage_url : https://www.sothebys.com/en/buy/auction

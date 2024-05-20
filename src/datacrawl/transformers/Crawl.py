@@ -1,6 +1,6 @@
 import time
 import logging
-from typing import List
+from typing import List, Dict
 import os 
 import stem.process
 from queue import Queue
@@ -23,24 +23,30 @@ class Crawl(Step):
                  context : Context,
                  config : DictConfig,
                  threads : int = 1, 
-                 text_only : bool = False,
                  save_in_queue : bool = False,
                  save_queue_size_step : int = 100,
                  save_queue_path: str = None,
-                 proxy: bool = False):
+                 **kwargs: Dict):
 
         super().__init__(context=context, config=config)
         
-        self.proxy = proxy
         self.threads = threads
-        self.text_only = text_only
+       
         self.save_in_queue = save_in_queue
         self.save_queue_size_step = save_queue_size_step
         self.save_queue_path = self._config.crawling.root_path
         self.tor_path = os.environ["TOR_PATH"]
+
+        # kwargs args
+        self._log.info(f"KWARGS = {kwargs}")
+        self.proxy = kwargs["kwargs"].get('proxy', False)
+        self.is_picture = kwargs["kwargs"].get('is_picture', True)
+        self.is_cookie = kwargs["kwargs"].get('is_cookie', True)
+        self.is_javascript = kwargs["kwargs"].get('is_javascript', True)
         
         if save_queue_path:
             self.save_queue_path = save_queue_path
+            
         # if self.proxy:
         #     self.launch_tor()
         self.count_to_restart_driver = 8000//threads
@@ -119,15 +125,20 @@ class Crawl(Step):
                 "profile.managed_default_content_settings.plugins":2,
                 "profile.managed_default_content_settings.geolocation":2,
                 "profile.managed_default_content_settings.media_stream":2,
+                "profile.managed_default_content_settings.popups":2,
                 }
         
-        if self.text_only:
-            prefs["profile.managed_default_content_settings.cookies"] = 2
+        if not self.is_javascript:
             prefs["profile.managed_default_content_settings.javascript"] = 2
-            prefs["profile.managed_default_content_settings.images"] = 2
             prefs["profile.managed_default_content_settings.css"] = 2
-            prefs["profile.managed_default_content_settings.popups"] = 2
-            
+
+        if not self.is_picture:
+            prefs["profile.managed_default_content_settings.images"] = 2
+
+        if not self.is_cookie:
+            prefs["profile.managed_default_content_settings.cookies"] = 2
+
+
         options.add_experimental_option("prefs", prefs)
 
         # if self.text_only:

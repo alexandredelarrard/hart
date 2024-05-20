@@ -29,6 +29,7 @@ class ChristiesItems(Crawling):
 
         # AUCTIONS
         mapping_urls = self.create_mapping_dynamic_auction_url(df_auctions)
+        self._log.debug(mapping_urls)
         df_auctions[self.name.url_auction] = np.where(df_auctions[self.name.url_auction].apply(lambda x : "sso?" in x),
                                df_auctions[self.name.url_auction].map(mapping_urls),
                                df_auctions[self.name.url_auction])
@@ -51,7 +52,7 @@ class ChristiesItems(Crawling):
 
         for url in tqdm.tqdm(sub_auctions[self.name.url_auction].tolist()):
             driver.get(url)
-            time.sleep(0.4)
+            time.sleep(0.3)
             mapping_dynamic_urls[url] = driver.current_url
         
         with open(self.correction_urls_auction, "wb") as f:
@@ -60,18 +61,6 @@ class ChristiesItems(Crawling):
         driver.close()
 
         return mapping_dynamic_urls
-    
-    def handle_signups(self, driver):
-
-        # check signup
-        try:
-            signup = self.get_elements(driver, "CLASS_NAME", 'fsu--wrapper')
-            if len(signup) !=0:
-                self.click_element(signup[0], "CLASS_NAME", "closeiframe")
-                time.sleep(0.5)
-
-        except Exception:
-            pass
-
+   
     def crawl_iteratively_seller(self, driver, config: Dict):
-        return self.crawl_iteratively(driver, config)
+        return super().crawl_iteratively(driver, config)

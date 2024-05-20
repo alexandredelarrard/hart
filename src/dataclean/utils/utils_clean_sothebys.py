@@ -14,9 +14,9 @@ from src.utils.utils_crawler import encode_file_name
 from omegaconf import DictConfig
 
 def get_max_def(x): 
-    liste = x.split("\n")
+    liste = str(x).split("\n")
     if len(liste) == 1:
-        return x.replace("2880w", "").strip()
+        return str(x).replace("2880w", "").strip()
     df = dict()
     for value in liste:
         df[int(value.split(" ")[1].replace(",", "").replace("w", ""))] = value.split(" ")[0].strip()

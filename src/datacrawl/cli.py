@@ -115,21 +115,20 @@ def step_crawling_items(
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
 @click.option(*QUEUE_SIZE_ARGS, **QUEUE_SIZE_KWARGS)
-@click.option(*TEXT_ONLY_ARGS, **TEXT_ONLY_KWARGS)
 @click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
 def step_crawling_detailed(
-    config_path, threads : int, seller : str, save_queue_size : int, text_only : bool, crawling_mode : str 
+    config_path, threads : int, seller : str, save_queue_size : int, crawling_mode : str 
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
     crawl = StepCrawlingDetailed(config=config, context=context, 
-                                threads=threads, seller=seller, 
+                                threads=threads, 
+                                seller=seller, 
                                 save_queue_size=save_queue_size,
-                                text_only=text_only,
                                 mode=crawling_mode)
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-detailed -t 7 -s sothebys -sqs 500 --text-only True --crawling-mode new
+    # python -m src datacrawl step-crawling-detailed -t 1 -s christies -sqs 10 --crawling-mode new
 
 
 @cli.command(

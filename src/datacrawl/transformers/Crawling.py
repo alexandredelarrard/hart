@@ -1,7 +1,8 @@
 import tqdm
 import base64
+import time
 import re
-from typing import List
+from typing import List, Dict
 from omegaconf import DictConfig
 
 from selenium.webdriver.common.by import By
@@ -14,23 +15,30 @@ class Crawling(Crawl):
                  context : Context,
                  config : DictConfig,
                  threads : int = 1, 
-                 text_only : bool = False,
                  save_in_queue : bool = False,
                  save_queue_size_step : int = 100,
                  save_queue_path: str = None,
-                 proxy: bool = False):
+                 **kwargs: Dict):
 
         super().__init__(context=context, 
                          config=config, 
                          threads=threads, 
-                         text_only=text_only, 
                          save_in_queue=save_in_queue, 
                          save_queue_size_step=save_queue_size_step,
                          save_queue_path=save_queue_path,
-                         proxy=proxy)
-
+                         kwargs=kwargs["kwargs"])
+    
     def scrowl_driver(self, driver, Y):
         driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")
+
+    def handle_click_element(self, driver, ident_type, ident_css, value_type, value_css):
+        try:
+            action = self.get_elements(driver, ident_type, ident_css)
+            if len(action) !=0:
+                self.click_element(action[0], value_type, value_css)
+                time.sleep(0.25)
+        except Exception:
+            pass
 
     def get_page_number(self, driver, by_type, value_css, divider):
 
@@ -138,21 +146,26 @@ class Crawling(Crawl):
 
         return info
     
-    def extract_element_infos(self, lot, config):
+    def extract_element_infos(self, driver, config):
 
         lot_info = {}
         
         for step, step_values in config.items(): 
             self._log.debug(f"EXTRACT VALUE: {step_values}")
+
+            if "functions" in step_values.keys():
+                for function in step_values.functions:
+                    eval(function)
+
             if "liste_elements" in step_values.keys():
-                liste_lots = self.get_elements(lot, 
+                liste_lots = self.get_elements(driver, 
                                                 step_values.liste_elements.by_type, 
                                                 step_values.liste_elements.value_css)
                 lot_info[step] = []
                 for sub_lot in liste_lots:
                     lot_info[step].append(self.get_info_from_step_value(sub_lot, step_values.per_element))
             else:
-                lot_info[step] = self.get_info_from_step_value(lot, step_values)
+                lot_info[step] = self.get_info_from_step_value(driver, step_values)
         
         return lot_info
     
@@ -161,6 +174,10 @@ class Crawling(Crawl):
 
         list_infos = []
         liste_lots = []
+
+        if "crawler_infos" in config.keys():
+            if "url_sleep" in config.crawler_infos.keys():
+                time.sleep(config.crawler_infos.url_sleep)
 
         if "liste_elements" in config.keys():
             liste_lots = self.get_elements(driver, 

@@ -24,12 +24,18 @@ class StepCrawlingPictures(Crawling):
                  seller : str = "christies",
                  mode: str = "history"):
 
-        super().__init__(context=context, config=config, threads=threads, save_in_queue=False, text_only=True)
+        kwargs = {"is_picture": False,
+                  "is_javascript": False,
+                  "is_cookie" : False}
+        # if "crawler_infos" in config.crawling[self.seller].pictures.keys():
+            # kwargs = config.crawling[self.seller].pictures["crawler_infos"]
+
+        super().__init__(context=context, config=config, threads=threads, save_in_queue=False, kwargs=kwargs)
 
         self.seller = seller
         self.today = datetime.today()
         self.paths = define_save_paths(config, self.seller, mode=mode)
-        self.crawler_infos = self._config.crawling[self.seller]
+        self._infos = self._config.crawling[self.seller]
         
         self.utils = eval(f"Clean{self.seller.capitalize()}(context=context, config=config)")
     
@@ -69,11 +75,11 @@ class StepCrawlingPictures(Crawling):
         # crawl detail of one url  
         picture_id = eval(f"self.utils.naming_picture_{self.seller}(url)")
 
-        if "pictures" not in self.crawler_infos.keys():
+        if "pictures" not in self._infos.keys():
             raise Exception("Need to provide crawling infos on picture when using mode canvas")
 
         # save pictures & infos
-        list_infos = self.seller_utils.crawl_iteratively(driver, self.crawler_infos["pictures"])
+        list_infos = self.seller_utils.crawl_iteratively(driver, self._infos["pictures"])
         message = save_canvas_picture(list_infos["URL_PICTURE_CANVAS"], self.paths["pictures"], picture_id)
 
         return driver, message
