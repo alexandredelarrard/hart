@@ -43,7 +43,7 @@ class StepTextClassification(Step):
         self.today = datetime.today().strftime("%d_%m_%Y")
 
     def create_testing_data(self):
-        df = self.read_sql_data("SELECT \"ID_ITEM\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS_202403\" ORDER BY RANDOM() LIMIT 50000")
+        df = self.read_sql_data("SELECT \"ID_ITEM\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS\" ORDER BY RANDOM() LIMIT 50000")
         df = df.loc[df[self.name.total_description].apply(lambda x: len(x))> 100]
         df.rename(columns={"TOTAL_DESCRIPTION": "text"}, inplace=True)
         df.to_csv("D:/data/prediction_classif.csv", index=False, sep=";")

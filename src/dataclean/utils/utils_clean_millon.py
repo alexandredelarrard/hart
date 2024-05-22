@@ -83,6 +83,7 @@ class CleanMillon(TextCleaner):
                                 self.name.min_estimate +"_DETAIL": self.name.min_estimate,
                                 self.name.max_estimate + "_DETAIL": self.name.max_estimate})
         df = self.extract_estimates(df) # text cleaner
+        df = self.clean_estimations(df) # text cleaner
 
         #URL picture
         df = self.get_pictures_url_millon(df)

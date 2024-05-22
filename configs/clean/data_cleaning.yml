@@ -1,6 +1,6 @@
 cleaning:
   path_mapping_country: D:/data/default/mapping_country.json
-  full_data_auction_houses : ALL_ITEMS_202403
+  full_data_auction_houses : ALL_ITEMS
   artists: 
     origine_table_name: ARTISTS_DB_PRICE
   drouot : 

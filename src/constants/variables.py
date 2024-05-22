@@ -55,6 +55,8 @@ class Naming:
         self.id_auction = "AUCTION_ID"
         self.id_unique = "ID_UNIQUE"
 
+        # RUN INFO 
+        self.executed_time= "DATE_EXECUTION"
         self.category = "CATEGORY"
         self.prompt_description = "PROMPT"
 
@@ -122,7 +124,8 @@ fixed_eur_rate = {"NLG" : 1/2.20371,
 
 liste_currency_paires = ["USDEUR", "GBPEUR", "CHFEUR", "SEKEUR", "INREUR",
                         "PLNEUR", "CADEUR", "AEDEUR", "HKDEUR", "SGDEUR",
-                        "MADEUR", "AUDEUR", "CNYEUR", "JPYEUR", "TWDEUR"]
+                        "MADEUR", "AUDEUR", "CNYEUR", "JPYEUR", "TWDEUR",
+                        "TRYEUR", "ZAREUR"]
 
 # for steps 
 list_sellers = ["sothebys", "drouot", "christies"]

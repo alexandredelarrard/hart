@@ -19,6 +19,7 @@ class StepFillChromaPictures(Step):
                  config : DictConfig):
 
         super().__init__(context=context, config=config)
+        self.full_data = self._config.cleaning.full_data_auction_houses
 
         self.vector = "PICTURES"
         self.step_embedding = StepEmbedding(context=context, config=config, 
@@ -32,7 +33,7 @@ class StepFillChromaPictures(Step):
     def run(self):
 
         # exrtract data from dbeaver, ensure not done and sample to test
-        df_desc = self.data_retreiver.get_all_pictures(data_name="ALL_ITEMS_202403")
+        df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data)
         df_desc = df_desc.sample(frac=0.5)
         df_desc = self.filter_out_embeddings_done(df_desc)
         df_desc = self.check_is_file(df_desc)

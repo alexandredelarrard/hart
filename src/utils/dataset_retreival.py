@@ -70,7 +70,43 @@ class DatasetRetreiver(Step):
                     "drouot_name": self._config.cleaning.drouot.origine_table_name.history,
                     "christies_name": self._config.cleaning.christies.origine_table_name.history,
                     "sothebys_name": self._config.cleaning.sothebys.origine_table_name.history,
-                    "millon_name": self._config.cleaning.sothebys.origine_table_name.history,
+                    "millon_name": self._config.cleaning.millon.origine_table_name.history,
+                    "id_unique": self.name.id_unique,
+                    "id_item": self.name.id_item,
+                    "id_picture": self.name.id_picture,
+                    "url_full_detail": self.name.url_full_detail,
+                    "url_auction": self.name.url_auction,
+                    "lot": self.name.lot,
+                    "date": self.name.date,
+                    "localisation": self.name.localisation,
+                    "house": self.name.house,
+                    "type_sale": self.name.type_sale,
+                    "auction_title": self.name.auction_title,
+                    "detailed_title": self.name.detailed_title,
+                    "total_description": self.name.total_description,
+                    "min_estimate": self.name.min_estimate,
+                    "max_estimate": self.name.max_estimate,
+                    "item_result": self.name.item_result,
+                    "currency": self.name.currency,
+                    "is_item_result": self.name.is_item_result,
+                    "is_picture":  self.name.is_picture
+                },
+            )
+
+        # 3. Fetch results
+        self._log.info(formatted_query)
+        return self.read_sql_data(formatted_query)
+    
+    @timing
+    def get_all_new_dataframes(self)-> pd.DataFrame:
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_sellers_new_dataframe"))
+        formatted_query = self.sql_queries.format_query(
+                raw_query,
+                {
+                    "drouot_name": self._config.cleaning.drouot.origine_table_name.new,
+                    "christies_name": self._config.cleaning.christies.origine_table_name.new,
+                    "sothebys_name": self._config.cleaning.sothebys.origine_table_name.new,
+                    "millon_name": self._config.cleaning.sothebys.origine_table_name.new,
                     "id_unique": self.name.id_unique,
                     "id_item": self.name.id_item,
                     "id_picture": self.name.id_picture,
@@ -100,7 +136,7 @@ class DatasetRetreiver(Step):
     def get_all_pictures(self, data_name:str=None):
 
         if data_name==None:
-            data_name="ALL_ITEMS_202403"
+            data_name= self._config.cleaning.full_data_auction_houses
 
         raw_query = str.lower(getattr(self.sql_queries.SQL, "get_all_pictures_and_infos"))
         formatted_query = self.sql_queries.format_query(

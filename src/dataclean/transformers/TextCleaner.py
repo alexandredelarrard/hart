@@ -135,7 +135,7 @@ class TextCleaner(Step):
         return df
 
     @timing
-    def clean_estimations(self, df : pd.DataFrame, liste_exceptions : List):
+    def clean_estimations(self, df : pd.DataFrame, liste_exceptions : List = []):
 
         important_cols = [self.name.item_result, 
                         self.name.min_estimate, 

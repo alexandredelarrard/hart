@@ -47,7 +47,7 @@ class SqlHelper:
             row_count = self.get_table_rows_count(table_name)
 
             if if_exists:
-                self._log.info(f"TABLE EXISTS AND WILL BE REPLACED INTO SQL : {table_name} ......")
+                self._log.info(f"TABLE EXISTS AND WILL BE {if_exists.upper()} INTO SQL : {table_name} ......")
                 self.write_to_sql(dataframe, table_name, if_exists=if_exists)
                 self._log.info(f"WRITTEN INTO SQL : {table_name}")
             else:
@@ -65,3 +65,12 @@ class SqlHelper:
             self._log.info(f"WRITTING INTO SQL : {table_name} ......")
             self.write_to_sql(dataframe, table_name)
             self._log.info(f"WRITTEN INTO SQL : {table_name}")
+
+    @timing
+    def remove_rows_sql_data(self, values, column, table_name):
+        nbr_elements = pd.read_sql(f"SELECT \"{column}\" FROM \"{table_name}\" WHERE \"{column}\" IN {str(values)}", 
+                                   con=self._context.db_con)
+        with self._context.db_con.connect() as conn:
+            conn.execute(text(f"""DELETE FROM \"{table_name}\"
+                              WHERE \"{column}\" IN {str(values)}"""))
+        self._log.info(f"REMOVED {nbr_elements.shape} OBS FROM TABLE {table_name}")
