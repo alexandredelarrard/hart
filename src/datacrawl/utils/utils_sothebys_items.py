@@ -14,6 +14,7 @@ class SothebysItems(Crawling):
                  config : DictConfig):
 
         super().__init__(context=context, config=config, threads=1)
+
         self.mdp = os.environ["SOTHEBYS_MDP"]
         self.email = os.environ["SOTHEBYS_EMAIL"]
 
@@ -22,7 +23,6 @@ class SothebysItems(Crawling):
         self.to_split=["?p=", 0]
         
         # TODO: include the F1 webpage formating from sothebys # weird webpage format regarding F1
-        # TODO: refacto check logged in and click page and cookies
         # weird formating: https://www.sothebys.com/en/buy/auction/2021/a-brilliant-menagerie
     
     def urls_to_crawl(self, df_auctions):

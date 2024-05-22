@@ -1,6 +1,6 @@
 from omegaconf import DictConfig
 import numpy as np
-import time
+import re
 
 from src.context import Context
 from src.datacrawl.transformers.Crawling import Crawling
@@ -50,27 +50,50 @@ class StepCrawlingDetailed(Crawling):
         # get detail urls to crawl
         df = read_crawled_csvs(path=self.paths["infos"])
         df = df.rename(columns=self.items_col_names)
+        df = self.specificity_seller(df)
         df = df.sort_values([self.name.url_full_detail, self.name.brut_result],ascending=[0,0])
         to_crawl = df.loc[df[self.name.url_full_detail].notnull(), 
                             self.name.url_full_detail].drop_duplicates().tolist()
         
         # get already crawled urls 
         df_crawled = read_crawled_pickles(path=self.paths["details"])
+        already_crawled = self.extract_valid_crawled(df_crawled)
+
+        # to do vs done  = rest to do
+        liste_urls = keep_files_to_do(to_crawl, already_crawled)
+        return liste_urls
+    
+    def specificity_seller(self, df):
+
+        if len(df[self.name.item_title].shape) ==2:
+            title = df[self.name.item_title].fillna("").apply(lambda x: " ".join(x), axis=1)
+            df = df.drop(self.name.item_title, axis=1)
+            df[self.name.item_title] = title  
+
+        df[self.name.lot] = df[self.name.item_title].apply(lambda x: str(x).split(".")[0].replace("No reserve\n", ""))
+
+        #error of url full detail need to be corrected 
+        df = df.loc[df[self.name.url_full_detail].notnull()]
+        df[self.name.url_full_detail] = df[[self.name.url_full_detail, self.name.lot]].apply(lambda x : 
+                    re.sub("lot.(\\d+)+", f"lot.{x[self.name.lot]}", str(x[self.name.url_full_detail])), axis=1)
+        
+        return df
+    
+    def extract_valid_crawled(self, df_crawled):
         df_crawled = df_crawled.rename(columns=self.details_col_names)
         if df_crawled.shape[0] != 0:
+            df_crawled = df_crawled.loc[df_crawled[self.name.detailed_description].notnull()]
             if self.recrawl_pictures:
                 df_crawled = self.recrawl_pictures_missing(df_crawled)
             already_crawled = df_crawled[self.name.url_full_detail].drop_duplicates().tolist()
         else:
             already_crawled = []
-
-        liste_urls = keep_files_to_do(to_crawl, already_crawled)
-        return liste_urls
+        return already_crawled
     
     def recrawl_pictures_missing(self, df_crawled):
         # remove crawled having url picture missing
         if self.name.url_picture in df_crawled.columns:
-            df_crawled[self.name.url_picture] = np.where(df_crawled[self.name.url_picture].apply(lambda x: "data:image/svg+xml;base64," in x),
+            df_crawled[self.name.url_picture] = np.where(df_crawled[self.name.url_picture].apply(lambda x: "data:image/svg+xml;base64," in x or x == []),
                                         np.nan, 
                                         df_crawled[self.name.url_picture])
             df_crawled = df_crawled.loc[df_crawled[self.name.url_picture].notnull()]

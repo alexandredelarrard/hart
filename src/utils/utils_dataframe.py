@@ -59,3 +59,88 @@ def map_value_to_key(x, mapping_dict):
                 return key
             
     return x
+
+# utils functions
+def clean_useless_text(x):
+    x = str(x)
+    x = x.replace("Lot Details\n", "")
+    x = x.replace("Description\n", "")
+    x = x.replace("Authenticity guaranteed", "")
+    x = x.replace("Photo non contractuelle", "")
+    x = x.replace("No reserve\n", "")
+    x = x.replace("DETAILS\n", "")
+    return x
+
+def remove_dates_in_parenthesis(x):
+    pattern = re.compile(r'\([0-9-]+\)')
+    return re.sub(pattern, '',  x)
+
+def clean_dimensions(x):
+    pattern1 = re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+[ xX]+\d+.?\d+)")
+    origin = re.findall(pattern1, x)
+    if len(origin) == 1:
+        origin = origin[0]
+        numbers = origin.lower().split("x")
+        if len(numbers) == 3:
+            new = f" hauteur: {numbers[0].strip()}; largeur: {numbers[1].strip()}; profondeur: {numbers[2].strip()}"
+            return x.replace(origin, new)
+        
+    pattern2= re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+)")
+    origin = re.findall(pattern2, x)
+    if len(origin) == 1:
+        origin = origin[0]
+        numbers = origin.lower().split("x")
+        if len(numbers) == 2:
+            new = f" longueur: {numbers[0].strip()}; largeur: {numbers[1].strip()}"
+            return x.replace(origin, new)
+    return x 
+
+def clean_quantity(x):
+    x = re.sub(r"(H[\s.:])[\s.:\d+]", " hauteur ", x, flags=re.I)
+    x = re.sub(r"(L[\s.:])[\s.:\d+]", " longueur ", x, flags=re.I)
+    x = re.sub(r"(Q[\s.:])[\s.:\d+]", " quantite ", x, flags=re.I)
+    return x
+
+def clean_shorten_words(x):
+    x = re.sub(r"[\s\d+\s](B)\s", " bouteille ", x, flags=re.I, count=1)
+    x = re.sub(" bout. ", " bouteille ", x, flags=re.I, count=1)
+    x = re.sub(" bt. ", " bouteille ", x, flags=re.I, count=1)
+    x = re.sub("(bt)", " bouteille ", x, flags=re.I, count=1)
+    x = re.sub("(mag)", " magnum ", x, flags=re.I, count=1)
+    x = re.sub("@", "a", x)
+    x = re.sub("n°", " numéro ", x)
+    x = re.sub(" in. ", " inch ", x, flags=re.I)
+    x = re.sub(" ft. ", " feet ", x, flags=re.I)
+    x = re.sub(" approx. ", " approximativement ", x)
+    x = re.sub(" g. ", " gramme ", x, flags=re.I)
+    x = re.sub(" gr. ", " gramme ", x, flags=re.I)
+    x = re.sub(" diam. ", " diametre ", x, flags=re.I)
+    x = x.replace("¾", "3/4")
+    x = x.replace("¼", "3/4")
+    x = x.replace("⅐", "1/7")
+    x = x.replace("½", "1/2")
+    return x
+
+def remove_spaces(x):
+    x = str(x).strip()
+    x = re.sub(" +", " ", x)
+    return x
+
+def remove_lot_number(x):
+    return re.sub(r"^(\d+\. )", '', str(x))
+
+def remove_rdv(x):
+    x = str(x).split("\nEstimate")[0]
+    x = str(x).split("\nSans rendez-vous")[0]
+    x = str(x).split("\nCondition Report\nProvenance")[0]
+    x = str(x).split("\nProvenance")[0]
+    x = str(x).split("Les rapports de condition sont")[0]
+    x = str(x).split("Le meuble ne peut être vu")[0]
+    x = str(x).split("A lire attentivement :")[0]
+    x = str(x).split("voir la suite de la description sur le certificat")[0]
+    x = str(x).split("Pour enchérir, veuillez consulter la section")[0]
+    x = str(x).split("Catalogue Note\n")[0]
+    x = str(x).split("\nCondition Report")[0]
+    x = str(x).split("\nAdditional Notices")[0]
+    x = str(x).split("\nPROVENANCE")[0]
+    return x

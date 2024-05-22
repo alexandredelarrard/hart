@@ -3,6 +3,7 @@ import numpy as np
 import os 
 import locale
 import re
+import swifter
 
 
 from src.dataclean.transformers.TextCleaner import TextCleaner
@@ -32,11 +33,18 @@ class CleanSothebys(TextCleaner):
         super().__init__(context=context, config=config)
         locale.setlocale(locale.LC_ALL, 'en')
         self.webpage_url = "https://www.sothebys.com/"
+
+    def get_id_auction(self, df):
+        return df[self.name.url_auction].apply(lambda x: str(x).split("auction/")[-1]
+                                                                      .split("auctions/")[-1]
+                                                                      .split(".html")[0]
+                                                                      .replace("/", "-")
+                                                                      .replace("?lotFilter=AllLots", ""))
   
     @timing
     def clean_auctions(self, df_auctions):
         df_auctions = df_auctions.drop_duplicates(self.name.url_auction)
-        df_auctions[self.name.id_auction] = df_auctions[self.name.url_auction].str.replace(self.webpage_url, "").apply(lambda x: "-".join(str(x).split("/")[-2:]).replace(".html", ""))
+        df_auctions[self.name.id_auction] = self.get_id_auction(df_auctions)
         df_auctions[self.name.type_sale] = df_auctions[self.name.type_sale].str.replace("CATEGORY:\n", "").str.lower()
         return df_auctions
     
@@ -54,12 +62,19 @@ class CleanSothebys(TextCleaner):
     
     @timing
     def clean_items_per_auction(self, df):
-        
-        df[self.name.item_description] = df[self.name.item_infos]
+
+        # crawling issue regarding naming
+        if len(df[self.name.item_title].shape) == 2:
+            title = df[self.name.item_title].fillna("").apply(lambda x: " ".join(x), axis=1)
+            df = df.drop(self.name.item_title, axis=1)
+            df[self.name.item_title] = title  
+
+        df[self.name.item_description] = df[self.name.item_title]
         df[self.name.item_file] = df[self.name.item_file].str.replace(".csv","")
-        df[self.name.lot] = df[self.name.item_description].apply(lambda x: x.split(".")[0].replace("No reserve\n", ""))
+        df[self.name.lot] = df[self.name.item_description].apply(lambda x: str(x).split(".")[0].replace("No reserve\n", ""))
 
         #error of url full detail need to be corrected 
+        df = df.loc[df[self.name.url_full_detail].notnull()]
         df[self.name.url_full_detail] = df[[self.name.url_full_detail, self.name.lot]].apply(lambda x : 
                     re.sub("lot.(\\d+)+", f"lot.{x[self.name.lot]}", str(x[self.name.url_full_detail])), axis=1)
 
@@ -68,35 +83,28 @@ class CleanSothebys(TextCleaner):
 
         # missing auction title 
         df[self.name.auction_title] = df[self.name.item_file].apply(lambda x: " ".join(x.split("-")[:-1]))
-        df = df.rename(columns={self.name.brut_result : self.name.brut_estimate})
-        df[self.name.brut_result] = np.nan
+        
+        if self.name.brut_result not in df.columns:
+            df[self.name.brut_result] = np.nan
 
         # add hour cleaning info 
         df = self.extract_hour_infos(df)
+
+        # add type sale 
+        df[self.name.type_sale]=0
         
         # add ID AUCTION 
-        df[self.name.id_auction] = df[self.name.date].str[:4] + "-" + df[self.name.item_file]
+        df[self.name.id_auction] = self.get_id_auction(df)
 
         return df
 
     @timing
     def clean_details_per_item(self, df):
-
-        # CLEAN CONDITION
-        df["CONDITION"] = np.where(df["CONDITION"] == "", np.nan, df["CONDITION"])
-        df[self.name.detailed_description] = np.where(df[self.name.detailed_description] == "", np.nan, df[self.name.detailed_description])
-        df[self.name.detailed_description] = np.where(df["CONDITION"].notnull()&df[self.name.detailed_description].notnull(),
-                                                df[self.name.detailed_description]+  ". Other description : " +  df["CONDITION"],
-                                            np.where(df["CONDITION"].notnull()&df[self.name.detailed_description].isnull(),
-                                                df["CONDITION"],
-                                                df[self.name.detailed_description]))
-        del df["CONDITION"]
-
         # clean url picture & and create ID PICTURE
-        df= self.get_pictures_url_sothebys(df)
-
+        df = self.get_pictures_url_sothebys(df)
         return df
     
+    @timing
     def get_pictures_url_sothebys(self, df_details, mode=None):
         df_details = df_details.explode(self.name.url_picture)
         df_details[self.name.url_picture] = np.where(df_details[self.name.url_picture].apply(lambda x: str(x) == "" or str(x) == "nan"),

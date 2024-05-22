@@ -1,10 +1,8 @@
 from typing import Dict
 import numpy as np
 import pandas as pd 
-from typing import List
 from datetime import datetime
 import swifter
-import re 
 import langid
 
 from src.context import Context
@@ -15,7 +13,6 @@ from src.constants.variables import (liste_currency_paires,
 
 from src.dataclean.transformers.TextCleaner import TextCleaner
 from src.utils.utils_dataframe import (remove_accents,
-                                       remove_punctuation,
                                        flatten_dict)
 from src.utils.utils_currencies import extract_currencies
 from src.utils.dataset_retreival import DatasetRetreiver
@@ -27,27 +24,27 @@ class StepAgglomerateTextInfos(TextCleaner):
     
     def __init__(self, 
                  context : Context,
-                 config : DictConfig):
+                 config : DictConfig,
+                 mode: str = "history"):
 
         super().__init__(context=context, config=config)
 
         self.sql_table_name = self._config.cleaning.full_data_auction_houses
         self.country_mapping  = self._config.cleaning.mapping.country
         self.localisation_mapping = self._config.cleaning.mapping.localisation
+        self.mode = mode
         self.data_retreiver =  DatasetRetreiver(context=context, config=config)
 
         self.today = datetime.today().strftime(date_format)
 
     @timing
     def run(self):
-
-        df = self.data_retreiver.get_all_dataframes()
+        
+        df = self.read_data()
         df = self.homogenize_localisation(df)
         df = self.deduce_country(df)
-        df = self.homogenize_text(df)
-        df = self.create_total_description(df)
         df = self.remove_missing_values(df, important_cols=[self.name.total_description])
-        df = self.deduce_language(df)
+        # df = self.deduce_language(df)
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)
@@ -55,12 +52,30 @@ class StepAgglomerateTextInfos(TextCleaner):
                                                     min_date=df[self.name.date].min())
         df = self.homogenize_currencies(df, df_currencies)
         df = self.remove_features(df, ["OPEN", "CLOSE"])
-
-        self.write_sql_data(dataframe=df,
-                            table_name=self.sql_table_name,
-                            if_exists="replace")
+        df = self.write_data(df)
         
         return df
+    
+    def read_data(self):
+        if self.mode == "history":
+            df = self.data_retreiver.get_all_dataframes()
+        elif self.mode == "new":
+            df = self.data_retreiver.get_all_new_dataframes()
+        else:
+            raise Exception("EITHER NEW OR HISTORY MODE AVAILABLE")
+        return df
+    
+    def write_data(self, df):
+        if self.mode == "history":
+            self.write_sql_data(dataframe=df,
+                            table_name=self.sql_table_name,
+                            if_exists="replace")
+        elif self.mode == "new":
+            self.write_sql_data(dataframe=df,
+                            table_name=self.sql_table_name,
+                            if_exists="append")
+        else:
+            raise Exception("EITHER NEW OR HISTORY MODE AVAILABLE")
 
     @timing
     def concatenate_currencies(self, dict_currencies: Dict, 
@@ -150,70 +165,9 @@ class StepAgglomerateTextInfos(TextCleaner):
                                 np.where(df[self.name.currency] == "EUR", "FRANCE", np.nan))))))))
 
         return df
-
-    @timing
-    def homogenize_text(self, df: pd.DataFrame) -> pd.DataFrame:
-
-        # detailed description cleaning 
-        for col in [self.name.item_description, self.name.detailed_description,
-                    self.name.item_title, self.name.detailed_title]:
-            df[col] = np.where(df[col].str.lower().isin([
-                                    '', '1 ^,,^^,,^','2 ^,,^^,,^','1 ^"^^"^',
-                                    '1 ^,,^', '3 ^,,^^,,^','6 ^,,^','2 ^,,^',
-                                    '3 ^,,^','5 ^,,^^,,^', '4 ^,,^^,,^',
-                                    '4 ^,,^', 'size 52.', '1 ^,,^^,,^ per dozen',
-                                    '10 ^,,^^,,^', 'non venu', '.']), np.nan, 
-                            df[col])
-            
-            df[col] = df[col].swifter.apply(lambda x: self.clean_description(x))
-            df[col] = np.where(df[col].isin(["None","", "nan"]), np.nan, df[col])
-        
-        return df
     
     def deduce_language(self, df: pd.DataFrame) -> pd.DataFrame: # takes 4h....
         df["LANGUE"] = df[self.name.total_description].swifter.apply(lambda x: 
                                                     langid.classify(str(x)))
         df["TEXT_LEN"] = df[self.name.total_description].apply(lambda x: len(str(x)))
         return df
-    
-    @timing
-    def create_total_description(self, df: pd.DataFrame) -> pd.DataFrame:
-
-        df[self.name.total_description] = np.where(df[self.name.detailed_description].notnull(),
-                                                   df[self.name.detailed_description],
-                                                   df[self.name.item_description])
-        
-        df[self.name.total_description] = np.where(df[self.name.total_description].isnull(),
-                                                   df[self.name.item_description],
-                                                   df[self.name.total_description])
-        
-        df[self.name.total_description] = np.where(df[self.name.total_description].isnull(),
-                                                   df[self.name.item_title],
-                                                   df[self.name.total_description])
-
-        # add title to desc if not in desc
-        function_clean = lambda x: remove_punctuation(re.sub(" +", " ", str(x).lower().replace("\n"," "))).strip()
-        # item_desc_in_desc =  df[[self.name.item_description, 
-        #                    self.name.total_description]].swifter.apply(lambda x: function_clean(x[0]) in function_clean(x[1]), axis=1)
-        
-        title_in_desc = df[[self.name.item_title, 
-                           self.name.total_description]].swifter.apply(lambda x: function_clean(x[0]) in function_clean(x[1]), axis=1)
-        df[self.name.total_description] = np.where((~title_in_desc)&(df[self.name.item_title].notnull()),
-                                                   df[self.name.item_title] + ". " + df[self.name.total_description].fillna(""),
-                                                   df[self.name.total_description])
-
-        return df 
-    
-    
-    def clean_description(self, x :str) -> str :
-    
-        x = self.remove_lot_number(x)
-        x = self.remove_estimate(x)
-        x = self.remove_dates_in_parenthesis(x)
-        # x = self.clean_dimensions(x)
-        x = self.clean_hight(x)
-        x = self.clean_shorten_words(x)
-        x = self.remove_spaces(x)
-        x = self.remove_rdv(x)
-
-        return x

@@ -47,11 +47,19 @@ class CleanChristies(TextCleaner):
     @timing
     def clean_items_per_auction(self, df):
 
+        df = df.loc[df[self.name.url_full_detail].notnull()]
         df[self.name.item_file] = df[self.name.item_file].apply(lambda x : str(x).split("&")[0].replace(".csv", ""))
         df[self.name.lot] = df[self.name.lot].str.replace("LOT ","")
-        df[self.name.id_auction] = df[self.name.item_file].apply(lambda x : str(x).split("-")[-1])
+        df[self.name.url_auction] = df[self.name.url_auction].apply(lambda x: x.split("/?loadall")[0])
+        df[self.name.url_auction] = list(map(lambda x: x[:-1] if x[-1] == "/" else x,  df[self.name.url_auction].tolist()))
+        df[self.name.url_auction] = list(map(lambda x: os.path.basename(x),  df[self.name.url_auction].tolist()))
+        df[self.name.id_auction] = df[self.name.url_auction].apply(lambda x : str(x).split("-")[-1])
         
         assert df[self.name.item_file].nunique() == df[self.name.id_auction].nunique()
+
+        # type sale
+        if self.name.type_sale not in df.columns:
+            df[self.name.type_sale] = 0
 
         # date, place, maison
         sale = self.get_splitted_infos(df[self.name.item_infos].fillna(""), index=df.index, sep="\n") 

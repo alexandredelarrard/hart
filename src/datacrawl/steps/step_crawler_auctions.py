@@ -26,15 +26,15 @@ class StepCrawlingAuctions(Crawling):
                  start_date: str = None,
                  end_date: str = None,
                  mode: str= "history"):
-        
+
+        self.seller = seller.lower()
+        self.paths = define_save_paths(config, self.seller, mode=mode)
+
         kwargs = {}
         if "crawler_infos" in config.crawling[self.seller].auctions.keys():
             kwargs = config.crawling[self.seller].auctions["crawler_infos"]
 
-        super().__init__(context=context, config=config, threads=threads, kwargs=kwargs)
-
-        self.seller = seller.lower()
-        self.paths = define_save_paths(config, self.seller, mode=mode)
+        super().__init__(context=context, config=config, threads=threads, save_queue_path=self.paths["auctions"], kwargs=kwargs)
 
         self.url_auctions = self._config.crawling[self.seller].auctions_url
         history_start_year = self._config.crawling[self.seller].history_start_year

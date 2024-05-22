@@ -25,16 +25,16 @@ class StepCrawlingItems(Crawling):
                  seller: str,
                  mode : str = "history"):
         
-        kwargs = {}
-        if "crawler_infos" in config.crawling[self.seller].items.keys():
-            kwargs = config.crawling[self.seller].items["crawler_infos"]
-        
-        super().__init__(context=context, config=config, threads=threads, kwargs=kwargs)
-
         self.seller = seller.lower()
+        self.paths = define_save_paths(config, self.seller, mode=mode)
+        kwargs = {}
+        if "crawler_infos" in config.crawling[self.seller]["items"].keys():
+            kwargs = config.crawling[self.seller]["items"]["crawler_infos"]
+        
+        super().__init__(context=context, config=config, threads=threads, save_queue_path=self.paths["infos"], kwargs=kwargs)
+        
         self.today = datetime.today()
         
-        self.paths = define_save_paths(config, self.seller, mode=mode)
         self.root_url = self._config.crawling[self.seller].webpage_url
         
         self.items_infos = self._config.crawling[self.seller]["items"]

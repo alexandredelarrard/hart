@@ -198,7 +198,7 @@ crawling:
                     value_css : chr-lot-header__title
                 DETAIL:
                     by_type : CLASS_NAME
-                    value_css : chr-lot-section__accordion--text
+                    value_css: chr-accordion
                 URL_PICTURE:
                     functions:
                         - "self.click_element(driver, 'CLASS_NAME', 'chr-lot-header__image-container')"
@@ -231,7 +231,12 @@ crawling:
                 TYPE_SALE:
                     by_type : CLASS_NAME
                     value_css : Card-category
-        items: #NEED TO ADD A LINK TO AUCTIONS
+        items: 
+            crawler_infos:
+                url_sleep: 1.5
+                is_picture: False
+                is_cookie: True
+                is_javascript: True
             buy_url:
                 global_element:
                     DATE:
@@ -248,7 +253,7 @@ crawling:
                         by_type: TAG_NAME
                         value_css: a
                         attribute: href
-                    TITLE:
+                    ITEM_TITLE:
                         by_type: XPATH
                         value_css: a/div/div[2]/div/div[1]
                     RESULT:

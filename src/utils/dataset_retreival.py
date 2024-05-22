@@ -67,27 +67,29 @@ class DatasetRetreiver(Step):
         formatted_query = self.sql_queries.format_query(
                 raw_query,
                 {
-                    "drouot_name": self._config.cleaning.drouot.origine_table_name,
-                    "christies_name": self._config.cleaning.christies.origine_table_name,
-                    "sothebys_name": self._config.cleaning.sothebys.origine_table_name,
+                    "drouot_name": self._config.cleaning.drouot.origine_table_name.history,
+                    "christies_name": self._config.cleaning.christies.origine_table_name.history,
+                    "sothebys_name": self._config.cleaning.sothebys.origine_table_name.history,
+                    "millon_name": self._config.cleaning.sothebys.origine_table_name.history,
+                    "id_unique": self.name.id_unique,
                     "id_item": self.name.id_item,
                     "id_picture": self.name.id_picture,
+                    "url_full_detail": self.name.url_full_detail,
+                    "url_auction": self.name.url_auction,
                     "lot": self.name.lot,
                     "date": self.name.date,
                     "localisation": self.name.localisation,
-                    "seller": self.name.seller,
+                    "house": self.name.house,
                     "type_sale": self.name.type_sale,
-                    "url_full_detail": self.name.url_full_detail,
                     "auction_title": self.name.auction_title,
-                    "item_title": self.name.item_title,
                     "detailed_title": self.name.detailed_title,
-                    "item_description": self.name.item_description,
-                    "detailed_description": self.name.detailed_description,
+                    "total_description": self.name.total_description,
                     "min_estimate": self.name.min_estimate,
                     "max_estimate": self.name.max_estimate,
                     "item_result": self.name.item_result,
+                    "currency": self.name.currency,
                     "is_item_result": self.name.is_item_result,
-                    "currency": self.name.currency
+                    "is_picture":  self.name.is_picture
                 },
             )
 

@@ -73,5 +73,5 @@ class SothebysAuctions(Crawling):
 
     def crawl_iteratively(self, driver, config : Dict):
         self.load_all_page(driver, config)
-        list_infos = self.crawl_iteratively(driver, config)
+        list_infos = super().crawl_iteratively(driver, config)
         return list_infos

@@ -24,19 +24,19 @@ class StepCrawlingPictures(Crawling):
                  seller : str = "christies",
                  mode: str = "history"):
 
+        self.seller = seller
+        self.paths = define_save_paths(config, self.seller, mode=mode)
         kwargs = {"is_picture": False,
                   "is_javascript": False,
                   "is_cookie" : False}
-        # if "crawler_infos" in config.crawling[self.seller].pictures.keys():
-            # kwargs = config.crawling[self.seller].pictures["crawler_infos"]
-
-        super().__init__(context=context, config=config, threads=threads, save_in_queue=False, kwargs=kwargs)
-
-        self.seller = seller
-        self.today = datetime.today()
-        self.paths = define_save_paths(config, self.seller, mode=mode)
-        self._infos = self._config.crawling[self.seller]
+        super().__init__(context=context, config=config, 
+                         threads=threads, 
+                         save_queue_path=self.paths["pictures"], 
+                         save_in_queue=False, 
+                         kwargs=kwargs)
         
+        self.today = datetime.today()
+        self._infos = self._config.crawling[self.seller]
         self.utils = eval(f"Clean{self.seller.capitalize()}(context=context, config=config)")
     
     # second crawling step  to get list of pieces per auction 

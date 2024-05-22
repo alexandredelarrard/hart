@@ -105,6 +105,6 @@ class CleanDrouot(TextCleaner):
             df_details[self.name.id_picture] = df_details["CURRENT_URL"].apply(lambda x: encode_file_name(os.path.basename(x)))
             df_details[self.name.url_picture] = df_details["CURRENT_URL"]
 
-        return df_details[[self.name.id_picture, self.name.url_picture]]
+        return df_details
 
     

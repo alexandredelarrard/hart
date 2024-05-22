@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Dict
 import pandas as pd 
 import os 
 import re
 import numpy as np
+import swifter
 
 from src.context import Context
 from src.utils.step import Step
@@ -12,6 +13,14 @@ from src.constants.variables import currencies
 from omegaconf import DictConfig
 
 from src.utils.utils_crawler import encode_file_name
+from src.utils.utils_dataframe import (clean_useless_text,
+                                       remove_lot_number,
+                                       remove_dates_in_parenthesis,
+                                       clean_shorten_words,
+                                       remove_spaces,
+                                       remove_rdv,
+                                       clean_quantity,
+                                       clean_dimensions)
 
 LISTE_WORDS_REMOVE = ["--> ce lot se trouve au depot", "retrait",
                     "lot non venu", ".", "","cb",
@@ -29,7 +38,6 @@ LISTE_WORDS_REMOVE = ["--> ce lot se trouve au depot", "retrait",
                     "withdrawn", "--> ce lot se trouve au depôt",
                     "pas de lot", "lot non venu"]
 
-
 class TextCleaner(Step):
     
     def __init__(self, 
@@ -37,7 +45,6 @@ class TextCleaner(Step):
                  config : DictConfig):
 
         super().__init__(context=context, config=config)
-        self.root_path = self._config.crawling.root_path
 
     def get_sql_db_name(self, seller : str, mode: str = "history"):
         try:
@@ -76,8 +83,8 @@ class TextCleaner(Step):
     def remove_missing_values(self, df, important_cols : List = []):
         
         if len(important_cols) ==0:
-            important_cols = [self.name.url_full_detail, 
-                              self.name.item_infos]
+            important_cols = [self.name.url_full_detail,
+                              self.name.item_result]
 
         if self.check_cols_exists(important_cols, df.columns):
             shape_0 = df.shape[0]
@@ -91,20 +98,21 @@ class TextCleaner(Step):
             shape_1 = df.shape[0]
             self._log.info(f"REMOVING {shape_0 - shape_1} \
                         ({(shape_0-shape_1)*100/shape_0:.2f}%) OBS due to lack of curcial infos")
-            
             return df 
         else:
             missing_cols = set(important_cols) - set(df.columns)
             raise Exception(f"FOLLOWING COLUMN(S) IS MISSING {missing_cols}")
         
     @timing
-    def clean_id_picture(self, df : pd.DataFrame, limite : int =100, seller : str = "drouot"):
+    def clean_id_picture(self, df : pd.DataFrame, limite : int =100, paths : Dict = {}):
 
-        if self.name.id_picture not in df.columns:
-            raise Exception(f"{self.name.url_picture} not in df, cannot continue to clean {self.name.id_picture}")
-        
         for col in [self.name.url_picture, self.name.id_picture]:
-            df[col] = np.where(df[col].apply(lambda x: str(x) == "nan" or str(x) == ""), 
+            if col not in df.columns:
+                raise Exception(f"{col} not in df, cannot continue to clean {self.name.id_picture}")
+            
+        for col in [self.name.url_picture, self.name.id_picture]:
+            df[col] = np.where(df[col].apply(lambda x: str(x) == "nan" or 
+                                             str(x) == "9b2d5b4678781e53038e91ea5324530a03f27dc1d0e5f6c9bc9d493a23be9de0"), 
                                 np.nan, 
                                 df[col])
         
@@ -117,7 +125,7 @@ class TextCleaner(Step):
                                               "FAKE_PICTURE", df[self.name.id_picture]))
         
         # keep ID picture when picture is available for drouot ~2.3M
-        picture_path = df[self.name.id_picture].apply(lambda x : f"{self.root_path}/{seller}/pictures/{x}.jpg")
+        picture_path = df[self.name.id_picture].apply(lambda x : f"{paths["pictures"]}/{x}.jpg")
         df[self.name.is_picture] = picture_path.swifter.apply(lambda x : os.path.isfile(x))
 
         return df
@@ -155,15 +163,34 @@ class TextCleaner(Step):
         if sum(df[self.name.min_estimate].isnull()) > sum(df[self.name.item_result].isnull()):
             currency_col = self.name.brut_result
 
-        currency_brut_estimate = self.get_list_element_from_text(df[currency_col])
-        df[self.name.currency] = np.where(currency_brut_estimate.str.lower().isin(["estimation : manquante",
+        df[self.name.currency] = self.get_list_element_from_text(df[currency_col])
+        df = self.filter_wrong_currency(df)
+        
+        if currency_col == self.name.brut_estimate and self.name.brut_result in df.columns:
+            currency_brut_result = self.get_list_element_from_text(df[self.name.brut_result])
+            df[self.name.currency] = np.where(df[self.name.currency].isnull(),
+                                              currency_brut_result,
+                                              df[self.name.currency])
+            
+        if currency_col == self.name.brut_result and self.name.brut_estimate in df.columns:
+            currency_brut_estimate = self.get_list_element_from_text(df[self.name.brut_estimate])
+            df[self.name.currency] = np.where(df[self.name.currency].isnull(),
+                                              currency_brut_estimate,
+                                              df[self.name.currency])
+        df = self.filter_wrong_currency(df)
+        
+        return df
+    
+    def filter_wrong_currency(self, df):
+        df[self.name.currency] = np.where(df[self.name.currency].str.lower().isin(["estimation : manquante",
                                                                         "this lot has been withdrawn from auction", 
                                                                         "estimate on request",
+                                                                        "no result",
                                                                         "no reserve", 
                                                                         "estimate upon request", 
                                                                         "estimate unknown"]), 
                                             np.nan,
-                                            currency_brut_estimate)
+                                            df[self.name.currency])
         return df
     
     @timing
@@ -244,8 +271,11 @@ class TextCleaner(Step):
                                                                 np.nan,
                                                                df_detailed[self.name.detailed_description])
         if self.name.url_picture in df_detailed.columns:
-            df_detailed = df_detailed.sort_values(self.name.url_picture, ascending=False)
-            
+            try:
+                df_detailed = df_detailed.sort_values(self.name.url_picture, ascending=False)
+            except Exception: # can bug if mix of string and list
+                pass
+
         df_detailed = df_detailed.drop_duplicates(self.name.url_full_detail)
         return df_detailed
     
@@ -261,56 +291,43 @@ class TextCleaner(Step):
         
         return df
     
-    def remove_dates_in_parenthesis(self, x):
-        pattern = re.compile(r'\([0-9-]+\)')
-        return re.sub(pattern, '',  x)
+    @timing
+    def homogenize_lot_number(self, df):
+        df = df.sort_values([self.name.url_auction, self.name.lot])
+        df["ONE"] = 1 
+        min_lot = df[[self.name.url_auction, self.name.id_item, "ONE"]].drop_duplicates()
+        min_lot[self.name.lot] = min_lot[[self.name.url_auction, "ONE"]].groupby(self.name.url_auction).cumsum()
+        df = df.merge(min_lot, on=[self.name.url_auction, self.name.id_item], how="left", validate="m:1", suffixes=("_ORIGIN", ""))
+        return df
+    
+    @timing
+    def clean_text_description(self, df):
 
-    def clean_dimensions(self, x):
-        pattern = re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+)")
-        origin = re.findall(pattern, x)
-        if len(origin) == 1:
-            origin = origin[0]
-            numbers = origin.lower().split("x")
-            if len(numbers) == 2:
-                new = f" longueur: {numbers[0].strip()} largeur: {numbers[1].strip()}"
-                return x.replace(origin, new)
-        return x 
-    
-    def clean_hight(self, x):
-        x = re.sub(r"(H[\s.:])[\s.:\d+]", " hauteur ", x, flags=re.I)
-        x = re.sub(r"(L[\s.:])[\s.:\d+]", " longueur ", x, flags=re.I)
-        x = re.sub(r"(Q[\s.:])[\s.:\d+]", " quantite ", x, flags=re.I)
-        return x
-    
-    def clean_shorten_words(self, x):
-        x = re.sub(r"[\s\d+\s](B)\s", " bouteille ", x, flags=re.I, count=1)
-        x = re.sub(" bout. ", " bouteille ", x, flags=re.I, count=1)
-        x = re.sub(" bt. ", " bouteille ", x, flags=re.I, count=1)
-        x = re.sub("@", "a", x)
-        x = re.sub("n°", " numéro ", x)
-        x = re.sub(" in. ", " inch ", x, flags=re.I)
-        x = re.sub(" ft. ", " feet ", x, flags=re.I)
-        x = re.sub(" approx. ", " approximativement ", x)
-        x = re.sub(" g. ", " gramme ", x, flags=re.I)
-        x = re.sub(" gr. ", " gramme ", x, flags=re.I)
-        x = re.sub(" diam. ", " diametre ", x, flags=re.I)
-        x = x.replace("Photo non contractuelle", "")
-        x = x.replace("Pour enchérir, veuillez consulter la section « Informations de vente »", "")
+        # fill title with item title first then detailed title 
+        df[self.name.detailed_title] = np.where(df[self.name.item_title].isnull(),
+                                                df[self.name.detailed_title],
+                                                df[self.name.item_title])
 
-        return x
+        #fill description with detailed desc then item desc 
+        df[self.name.total_description] = np.where(df[self.name.detailed_description].isnull(),
+                                            df[self.name.item_description],
+                                            df[self.name.detailed_description])
+        
+        # clean both
+        for col in [self.name.detailed_title, self.name.total_description]:
+            df[col] = df[col].swifter.apply(lambda x: self.clean_description(x))
+            df[col] = np.where(df[col].isin(["None","", "nan"]), np.nan, df[col])
+        return df
+
+    def clean_description(self, x :str) -> str :
     
-    def remove_spaces(self, x):
-        x = str(x).strip()
-        x = re.sub(" +", " ", x)
-        return x
-    
-    def remove_lot_number(self, x):
-        return re.sub(r"^(\d+\. )", '', str(x))
-    
-    def remove_estimate(self, x):
-        return str(x).split("\nEstimate")[0]
-    
-    def remove_rdv(self, x):
-        x = str(x).split("\nSans rendez-vous")[0]
-        x = str(x).split("\nProvenance")[0]
+        x = clean_useless_text(x)
+        x = remove_lot_number(x)
+        x = remove_dates_in_parenthesis(x)
+        x = clean_dimensions(x)
+        x = clean_quantity(x)
+        x = clean_shorten_words(x)
+        x = remove_spaces(x)
+        x = remove_rdv(x)
+
         return x

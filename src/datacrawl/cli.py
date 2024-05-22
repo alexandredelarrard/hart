@@ -80,7 +80,7 @@ def step_crawling_auctions(
     # get crawling_function 
     crawl.run(crawl.get_auctions_urls_to_crawl(), crawl.crawling_auctions_iteratively)
 
-    #python -m src datacrawl step-crawling-auctions -t 1 --seller drouot --start-date "2024-03-01" --crawling-mode new
+    #python -m src datacrawl step-crawling-auctions -t 1 --seller sothebys --start-date "2024-03-01" --crawling-mode new
 
 
 @cli.command(

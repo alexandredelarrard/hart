@@ -34,7 +34,6 @@ class StepCleanCrawling(TextCleaner):
         
         self.sql_table_name = self.get_sql_db_name(self.seller, mode)
         self.seller_utils = eval(f"Clean{self.seller.capitalize()}(context=context, config=config)")
-        
 
     @timing
     def run(self):
@@ -56,6 +55,7 @@ class StepCleanCrawling(TextCleaner):
                                         "estimate on request", 
                                         "estimate unknown",
                                         "price realised", 
+                                        "estimate upon request",
                                         "résultat : non communiqué", 
                                         'estimation : manquante']) # text cleaner
         df = self.remove_missing_values(df) # text cleaner
@@ -65,32 +65,39 @@ class StepCleanCrawling(TextCleaner):
         df_detailed = read_crawled_pickles(path=self.paths["details"])
         df_detailed = self.renaming_dataframe(df_detailed, mapping_names=self.details_col_names)
         df_detailed = self.clean_detail_infos(df_detailed)
-        df_detailed = self.remove_features(df_detailed, ["NOTE_CATALOGUE", 
-                                                         "ARTIST"])
 
         # MERGE DETAILED ITEM DATA 
         df = self.concatenate_detail(df, df_detailed)
         df = self.seller_utils.clean_details_per_item(df)
-        df = self.clean_id_picture(df, seller=self.seller)
+        df = self.clean_id_picture(df, paths=self.paths)
 
         #MERGE ITEM & AUCTIONS
         df = self.concatenate_auctions(df, df_auctions)
-        df = self.remove_features(df, [self.name.item_infos, 
-                                        self.name.brut_estimate, 
-                                        self.name.brut_result,
-                                        self.name.detail_file,
-                                        self.name.item_title, 
-                                        self.name.item_file,
-                                        self.name.url_picture + "_DETAIL",
-                                        self.name.brut_result + "_DETAIL",
-                                        self.name.auction_file,
-                                        self.name.date + "_AUCTION",
-                                        self.name.auction_title + "_AUCTION",
-                                        self.name.url_auction + "_AUCTION",
-                                        self.name.place + "_AUCTION",
-                                        self.name.house + "_AUCTION",
-                                        self.name.type_sale + "_AUCTION"])
+        df = self.homogenize_lot_number(df)
+        df = self.clean_text_description(df)
         df = self.create_unique_id(df)
+
+        # keep important cols
+        df = df[[self.name.id_unique,
+                self.name.id_item,
+                self.name.id_picture,
+                self.name.date, 
+                self.name.localisation, 
+                self.name.lot,
+                self.name.seller,
+                self.name.house, 
+                self.name.type_sale,
+                self.name.url_auction, 
+                self.name.url_full_detail,
+                self.name.auction_title,
+                self.name.detailed_title,
+                self.name.total_description,
+                self.name.currency,
+                self.name.item_result,
+                self.name.min_estimate,
+                self.name.max_estimate,
+                self.name.is_item_result,
+                self.name.is_picture]]
 
         # SAVE ITEMS ENRICHED
         self.write_sql_data(dataframe=df,

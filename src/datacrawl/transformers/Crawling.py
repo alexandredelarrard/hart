@@ -19,6 +19,9 @@ class Crawling(Crawl):
                  save_queue_size_step : int = 100,
                  save_queue_path: str = None,
                  **kwargs: Dict):
+        
+        if "kwargs" in kwargs.keys():
+            kwargs = kwargs["kwargs"]
 
         super().__init__(context=context, 
                          config=config, 
@@ -26,7 +29,7 @@ class Crawling(Crawl):
                          save_in_queue=save_in_queue, 
                          save_queue_size_step=save_queue_size_step,
                          save_queue_path=save_queue_path,
-                         kwargs=kwargs["kwargs"])
+                         kwargs=kwargs)
     
     def scrowl_driver(self, driver, Y):
         driver.execute_script(f"window.scrollTo(0, window.scrollY + {Y});")
