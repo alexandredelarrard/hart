@@ -14,6 +14,7 @@ class DatasetRetreiver(Step):
             context : Context, 
     ):
         super().__init__(config=config, context=context)
+        self.root = self._config.crawling.root_path
 
     def get_text_to_cluster(self, data_name:str=None):
 
@@ -79,6 +80,7 @@ class DatasetRetreiver(Step):
                     "lot": self.name.lot,
                     "date": self.name.date,
                     "localisation": self.name.localisation,
+                    "seller": self.name.seller,
                     "house": self.name.house,
                     "type_sale": self.name.type_sale,
                     "auction_title": self.name.auction_title,
@@ -115,6 +117,7 @@ class DatasetRetreiver(Step):
                     "lot": self.name.lot,
                     "date": self.name.date,
                     "localisation": self.name.localisation,
+                    "seller": self.name.seller,
                     "house": self.name.house,
                     "type_sale": self.name.type_sale,
                     "auction_title": self.name.auction_title,
@@ -133,37 +136,36 @@ class DatasetRetreiver(Step):
         self._log.info(formatted_query)
         return self.read_sql_data(formatted_query)
     
-    def get_all_pictures(self, data_name:str=None):
+    def get_all_pictures(self, data_name:str=None, vector:str="PICTURES", limit:int=None):
 
         if data_name==None:
             data_name= self._config.cleaning.full_data_auction_houses
+        
+        if not limit:
+            limit = 1e11
 
-        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_all_pictures_and_infos"))
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_all_pictures"))
         formatted_query = self.sql_queries.format_query(
                 raw_query,
                 {
                     "table_name": data_name,
+                    "id_unique": self.name.id_unique,
                     "id_item": self.name.id_item,
                     "id_picture": self.name.id_picture,
-                    "date": self.name.date,
-                    "localisation": self.name.localisation,
                     "seller": self.name.seller,
-                    "type_sale": self.name.type_sale,
-                    "url_full_detail": self.name.url_full_detail,
-                    "auction_title": self.name.auction_title,
+                    "is_picture": self.name.is_picture,
+                    "pict_path": vector,
                     "total_description": self.name.total_description,
-                    "min_estimate": self.name.min_estimate,
-                    "max_estimate": self.name.max_estimate,
-                    "item_result": self.name.item_result,
-                    "eur_min_estimate": self.name.eur_min_estimate,
-                    "eur_max_estimate": self.name.eur_max_estimate,
-                    "eur_item_result": self.name.eur_item_result,
-                    "is_item_result": self.name.is_item_result,
-                    "currency": self.name.currency,
-                    "country": self.name.country
+                    "base_path":self.root,
+                    "limite": limit
                 },
             )
 
         # 3. Fetch results
         logging.info(formatted_query)
-        return self.read_sql_data(formatted_query)
+        df = self.read_sql_data(formatted_query)
+        df[vector] = df[[self.name.id_picture, self.name.seller]].apply(lambda x: "/".join([self.root, x[self.name.seller], 
+                                                                                            "pictures", x[self.name.id_picture] + ".jpg"]), 
+                                                                                            axis=1)
+        logging.info(f"GETTING {df.shape}")
+        return df

@@ -1,0 +1,28 @@
+.upload-form-container {
+    width: 75%;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+.result-container {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+}
+
+.image-container {
+width: 45%;
+}
+
+.text-container {
+width: 45%;
+}
+
+.image-container img {
+max-width: 100%;
+height: auto;
+}
+
+.text-container p {
+white-space: pre-wrap; /* To preserve text formatting */
+}

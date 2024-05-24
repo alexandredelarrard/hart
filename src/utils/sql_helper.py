@@ -70,7 +70,7 @@ class SqlHelper:
     def remove_rows_sql_data(self, values, column, table_name):
         nbr_elements = pd.read_sql(f"SELECT \"{column}\" FROM \"{table_name}\" WHERE \"{column}\" IN {str(values)}", 
                                    con=self._context.db_con)
-        with self._context.db_con.connect() as conn:
+        with self._context.db_con.begin() as conn:
             conn.execute(text(f"""DELETE FROM \"{table_name}\"
-                              WHERE \"{column}\" IN {str(values)}"""))
+                            WHERE \"{column}\" IN {str(values)}"""))
         self._log.info(f"REMOVED {nbr_elements.shape} OBS FROM TABLE {table_name}")

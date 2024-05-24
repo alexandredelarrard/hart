@@ -1,0 +1,70 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "test@db.com",
+      "password": "password"
+    },
+    {
+      "id": "bb01",
+      "email": "test@db.com",
+      "password": "password"
+    },
+    {
+      "id": "b6c2",
+      "email": "test@db.com",
+      "password": "password"
+    },
+    {
+      "id": "4c17",
+      "email": "password@aea.com",
+      "password": "password"
+    },
+    {
+      "id": "4433",
+      "email": "f@eee",
+      "password": "f"
+    },
+    {
+      "id": "817a",
+      "email": "ee@eaea",
+      "password": "ee"
+    },
+    {
+      "id": "e3c4",
+      "email": "dfbf@aefeaf",
+      "password": "dbdbffd"
+    },
+    {
+      "id": "e1f4",
+      "email": "avae@aevava",
+      "password": "aveva"
+    },
+    {
+      "id": "a90d",
+      "email": "evzze@vaveaev",
+      "password": "vevavae"
+    },
+    {
+      "id": "f53d",
+      "email": "sdbsbs@zzbbz",
+      "password": "abrrabra"
+    },
+    {
+      "id": "b2e7",
+      "email": "aevaevae@aevavae",
+      "password": "aeveavav"
+    },
+    {
+      "id": "bb4c",
+      "email": "avavea@aevav",
+      "password": "vezvava"
+    },
+    {
+      "id": "f5bc",
+      "email": "svvsvs@aveva",
+      "password": "avaev"
+    }
+  ],
+  "uploads": []
+}

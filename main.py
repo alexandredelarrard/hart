@@ -37,13 +37,13 @@ if __name__ == "__main__":
     # self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="new")
     # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="christies", mode="new")
 
-    # self = StepCleanCrawling(context=context, config=config, seller="millon", mode="history")
+    # self = StepCleanCrawling(context=context, config=config, seller="sothebys", mode="history")
     # self = StepTextCleanArtists(context=context, config=config)
-    self = StepAgglomerateTextInfos(context=context, config=config, mode="new")
-    self.run() 
+    # self = StepAgglomerateTextInfos(context=context, config=config, mode="new")
+    # self.run() 
 
     # self = StepTextClustering(context=context, config=config)
-    # self = StepFillChromaPictures(context=context, config=config)
+    self = StepFillChromaPictures(context=context, config=config)
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 

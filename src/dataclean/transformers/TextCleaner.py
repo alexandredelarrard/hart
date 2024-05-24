@@ -287,6 +287,7 @@ class TextCleaner(Step):
         shape_0 = df.shape[0]
         df = df.drop_duplicates(self.name.id_unique)
         self._log.info(f"DROPPING {shape_0-df.shape[0]} rows due to duplicate {self.name.id_unique}")
+        
         assert max(df[self.name.id_unique].value_counts()) == 1
         
         return df

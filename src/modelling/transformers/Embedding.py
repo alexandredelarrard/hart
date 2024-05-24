@@ -26,7 +26,7 @@ class StepEmbedding(Step):
 
         super().__init__(context=context, config=config)
         self.params = self._config.embedding.dim_reduc.params
-        self.default_picture_path = self._config.picture_classification.default_picture_path
+        self.default_picture_path = self._config.picture_classification.default_image_path
         
         if type == "text":
             self.batch_size = self._config.embedding.text.batch_size

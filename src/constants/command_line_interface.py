@@ -148,3 +148,14 @@ CRAWLING_MODE_KWARGS= {
         "Either history or new depending if want to crawl all or append to existing values"
     )
 }
+
+OBJECT_ARGS=("--object", "-obj", "object")
+OBJECT_KWARGS= {
+    "type" : str, 
+    "default" : None,
+    "required" : False,
+    "show_default" : True,
+    "help": (
+        "Kind of art object to create embedding & co"
+    )
+}

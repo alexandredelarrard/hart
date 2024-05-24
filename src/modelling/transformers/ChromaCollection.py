@@ -46,7 +46,6 @@ class ChromaCollection(Step):
         nbr_steps = df_desc.shape[0] //self.step_size + 1
 
         for i in range(nbr_steps):
-
             self._log.info(f"[DB EMBEDDING] : adding batch {i+1} / {nbr_steps} to chromadb")
             sub_df = df_desc.iloc[i*self.step_size:(i+1)*self.step_size]
 
