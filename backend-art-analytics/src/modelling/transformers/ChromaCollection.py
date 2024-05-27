@@ -53,7 +53,7 @@ class ChromaCollection(Step):
                 embeddings=embeddings[i*self.step_size:(i+1)*self.step_size],
                 documents=sub_df[self.name.total_description].tolist(),
                 metadatas=recreate_dict(sub_df),
-                ids=sub_df[self.name.id_picture].tolist()
+                ids=sub_df[self.name.id_unique].tolist()
             )
     
     @timing

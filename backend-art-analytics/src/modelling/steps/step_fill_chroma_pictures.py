@@ -34,16 +34,15 @@ class StepFillChromaPictures(Step):
     def run(self):
 
         # exrtract data from dbeaver, ensure not done and sample to test # 11+ M picts
-        for limit in tqdm(range(1, 12000, 300)):
-            df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data, vector=self.vector, limit=limit*1000)
-            
-            df_desc = self.filter_out_embeddings_done(df_desc)
+        df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data, vector=self.vector, limit=3000000)
+        df_desc = df_desc.drop_duplicates(self.name.id_unique)
+        df_desc = self.filter_out_embeddings_done(df_desc)
 
-            # create text embedding
-            self.embeddings = self.step_embedding.get_picture_embedding(df_desc[self.vector].tolist())
+        # create text embedding
+        self.embeddings = self.step_embedding.get_picture_embedding(df_desc[self.vector].tolist())
 
-            #save to chroma db
-            self.chroma_collection.save_collection(df_desc.fillna(""), self.embeddings)
+        #save to chroma db
+        self.chroma_collection.save_collection(df_desc.fillna(""), self.embeddings)
 
     def read_data_trained(self):
         df_desc = self.data_retreiver.get_text_to_cluster(data_name= "PICTURES_CATEGORY_20_04_2024")
