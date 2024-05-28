@@ -3,11 +3,5 @@ server:
   database: postgres
   port: 5432
 
-email:
-  MAIL_SERVER: smtp.gmail.com
-  MAIL_PORT: 465
-  MAIL_USE_TLS: False
-  MAIL_USE_SSL: True
-
 front_end:
   server: 'http://localhost:3000'
