@@ -1,0 +1,138 @@
+2024-05-27 12:00:09 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:00:09 - INFO - starting step <__main__.App object at 0x0000019856D692B0>
+2024-05-27 12:01:20 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:01:20 - INFO - starting step <__main__.App object at 0x000001776722E0F0>
+2024-05-27 12:01:44 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:01:44 - INFO - starting step <__main__.App object at 0x0000016FE83B85F0>
+2024-05-27 12:32:38 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:34:00 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:34:01 - INFO - starting step <__main__.App object at 0x000001F5F54CE8D0>
+2024-05-27 12:34:01 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8888
+ * Running on http://172.20.10.10:8888
+2024-05-27 12:34:01 - INFO - [33mPress CTRL+C to quit[0m
+2024-05-27 12:34:01 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:34:01 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:34:02 - INFO - starting step <__main__.App object at 0x000001A1BCDFCCE0>
+2024-05-27 12:34:02 - WARNING -  * Debugger is active!
+2024-05-27 12:34:02 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:34:10 - INFO - 127.0.0.1 - - [27/May/2024 12:34:10] "[33mGET / HTTP/1.1[0m" 404 -
+2024-05-27 12:34:11 - INFO - 127.0.0.1 - - [27/May/2024 12:34:11] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-05-27 12:34:32 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:34:32 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:34:32 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:34:32 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:34:32 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:34:33 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:34:34 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:34:34 - INFO - starting step <__main__.App object at 0x000001B34ADECCE0>
+2024-05-27 12:34:34 - WARNING -  * Debugger is active!
+2024-05-27 12:34:34 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:37:01 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:37:01 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:37:01 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:37:01 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:37:01 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:37:01 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:37:02 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:37:02 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:49:47 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:49:47 - INFO - starting step <__main__.App object at 0x000001518116A0C0>
+2024-05-27 12:49:47 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8888
+ * Running on http://172.20.10.10:8888
+2024-05-27 12:49:47 - INFO - [33mPress CTRL+C to quit[0m
+2024-05-27 12:49:47 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:49:48 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:49:49 - INFO - starting step <__main__.App object at 0x00000251344F79B0>
+2024-05-27 12:49:49 - WARNING -  * Debugger is active!
+2024-05-27 12:49:49 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:50:25 - INFO - 127.0.0.1 - - [27/May/2024 12:50:25] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:50:30 - INFO - 127.0.0.1 - - [27/May/2024 12:50:30] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:50:33 - INFO - 127.0.0.1 - - [27/May/2024 12:50:33] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:50:52 - INFO -  * Detected change in 'C:\\Users\\alarr\\anaconda3\\envs\\art_env\\Lib\\site-packages\\flask\\__init__.py', reloading
+2024-05-27 12:50:52 - INFO -  * Detected change in 'C:\\Users\\alarr\\anaconda3\\envs\\art_env\\Lib\\site-packages\\flask\\app.py', reloading
+2024-05-27 12:50:52 - INFO -  * Detected change in 'C:\\Users\\alarr\\anaconda3\\envs\\art_env\\Lib\\site-packages\\flask\\sansio\\app.py', reloading
+2024-05-27 12:50:52 - INFO -  * Detected change in 'C:\\Users\\alarr\\anaconda3\\envs\\art_env\\Lib\\site-packages\\flask\\sansio\\scaffold.py', reloading
+2024-05-27 12:50:53 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:50:53 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:50:54 - INFO - starting step <__main__.App object at 0x0000025BFDDEE420>
+2024-05-27 12:50:54 - WARNING -  * Debugger is active!
+2024-05-27 12:50:54 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:51:02 - INFO - 127.0.0.1 - - [27/May/2024 12:51:02] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:53:16 - INFO - 127.0.0.1 - - [27/May/2024 12:53:16] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:53:25 - INFO - 127.0.0.1 - - [27/May/2024 12:53:25] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:54:02 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:54:02 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:54:03 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:54:03 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:54:04 - INFO - starting step <__main__.App object at 0x00000251FF746750>
+2024-05-27 12:54:04 - WARNING -  * Debugger is active!
+2024-05-27 12:54:04 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:54:07 - INFO - 127.0.0.1 - - [27/May/2024 12:54:07] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:54:18 - INFO -  * Detected change in 'C:\\Users\\alarr\\anaconda3\\envs\\art_env\\Lib\\site-packages\\langchain\\__init__.py', reloading
+2024-05-27 12:54:18 - INFO -  * Detected change in 'C:\\Users\\alarr\\anaconda3\\envs\\art_env\\Lib\\locale.py', reloading
+2024-05-27 12:54:18 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:54:19 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:54:19 - INFO - starting step <__main__.App object at 0x00000125DE2EE420>
+2024-05-27 12:54:19 - WARNING -  * Debugger is active!
+2024-05-27 12:54:19 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:54:21 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:54:21 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:54:21 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:54:22 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:54:23 - INFO - starting step <__main__.App object at 0x000002180401E420>
+2024-05-27 12:54:23 - WARNING -  * Debugger is active!
+2024-05-27 12:54:23 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:54:23 - INFO - 127.0.0.1 - - [27/May/2024 12:54:23] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:54:46 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:54:46 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:54:46 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:54:47 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:54:47 - INFO - starting step <__main__.App object at 0x000001C08ED1E060>
+2024-05-27 12:54:47 - WARNING -  * Debugger is active!
+2024-05-27 12:54:47 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:54:48 - INFO - 127.0.0.1 - - [27/May/2024 12:54:48] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:55:30 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:55:30 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:55:30 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:55:30 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 12:55:30 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:55:31 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:55:32 - INFO - starting step <__main__.App object at 0x00000231E9940EC0>
+2024-05-27 12:55:32 - WARNING -  * Debugger is active!
+2024-05-27 12:55:32 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:56:21 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:56:21 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\app.py', reloading
+2024-05-27 12:56:21 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:56:22 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:56:22 - INFO - starting step <__main__.App object at 0x000001340BBA79B0>
+2024-05-27 12:56:22 - WARNING -  * Debugger is active!
+2024-05-27 12:56:22 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:56:49 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\context.py', reloading
+2024-05-27 12:56:49 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\context.py', reloading
+2024-05-27 12:56:50 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:58:23 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:58:24 - INFO - starting step <__main__.App object at 0x0000015D99B8A660>
+2024-05-27 12:58:24 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8888
+ * Running on http://172.20.10.10:8888
+2024-05-27 12:58:24 - INFO - [33mPress CTRL+C to quit[0m
+2024-05-27 12:58:24 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 12:58:25 - INFO - Dot env file has been loaded C:\Users\alarr\Documents\repos\hart\api-art-analytics\app\.env
+2024-05-27 12:58:25 - INFO - starting step <__main__.App object at 0x0000023323EAE240>
+2024-05-27 12:58:25 - WARNING -  * Debugger is active!
+2024-05-27 12:58:25 - INFO -  * Debugger PIN: 427-362-561
+2024-05-27 12:58:33 - INFO - 127.0.0.1 - - [27/May/2024 12:58:33] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:58:34 - INFO - 127.0.0.1 - - [27/May/2024 12:58:34] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:58:45 - INFO - 127.0.0.1 - - [27/May/2024 12:58:45] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 12:58:55 - INFO - 127.0.0.1 - - [27/May/2024 12:58:55] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 13:03:24 - INFO - 127.0.0.1 - - [27/May/2024 13:03:24] "[33mOPTIONS /api/authorization HTTP/1.1[0m" 404 -
+2024-05-27 13:05:22 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 13:05:22 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 13:05:22 - INFO -  * Detected change in 'C:\\Users\\alarr\\Documents\\repos\\hart\\api-art-analytics\\app\\src\\blueprints\\authorization\\routes.py', reloading
+2024-05-27 13:05:23 - INFO -  * Restarting with watchdog (windowsapi)
+2024-05-27 13:06:14 - INFO -  * Restarting with watchdog (windowsapi)

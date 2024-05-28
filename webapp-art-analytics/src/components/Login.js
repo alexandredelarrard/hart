@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {URL_API, URL_LOGIN} from '../utils/constants';
 import '../css/Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    setError(''); // Clear any previous error
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/users', { email, password });
+      const response = await axios.post(URL_API + URL_LOGIN, { email, password }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       // Save token to localStorage and redirect to upload page
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('token', response.data.access_token);
+      setMessage(response.data.message);
       navigate('/');
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -54,6 +62,8 @@ function Login() {
           </div>
           <button type="submit" className="login-button">Login</button>
         </form>
+        {message && <p className="message">{message}</p>}
+        {error && <p className="error">{error}</p>}
       </div>
     </div>
   );

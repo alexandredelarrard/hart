@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Login from './components/Login';
-import Signup from './components/Signup';
 import Sidebar from './components/Sidebar';
 import UploadForm from './components/UploadForm';
 import Result from './components/Result';
@@ -26,7 +25,6 @@ function App() {
         <Header />
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
           <Route
             path="/"
             element={

@@ -1,0 +1,23 @@
+#Use the python container image
+FROM python:3.12
+
+#Set the working directory to app
+WORKDIR .
+
+# Copy the current directory contents into the container at /app
+COPY . / 
+
+WORKDIR /
+RUN apt-get update &&\
+    apt-get install -y apt-utils &&\
+    apt-get install -y gcc
+    # apt-get install -y wkhtmltopdf  &&\
+        # apt-get install --no-install-recommends -y \
+        # biber=2.12-2 \
+        # latexmk=1:4.61-0.1 \
+        # texlive-full=2018.20190227-2
+        #rm -rf /var/lib/apt/lists/*
+
+#Install requirements
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt

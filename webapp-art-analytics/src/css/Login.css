@@ -18,10 +18,18 @@
   margin-bottom: 1rem;
 }
 
-.error-message {
-  color: red;
-  margin-bottom: 1rem;
+.message {
+  color: green;
+  margin-top: 20x;
+  text-align: center;
 }
+
+.error {
+  color: red;
+  margin-top: 20px;
+  text-align: center;
+}
+
 
 .form-group {
   margin-bottom: 1rem;

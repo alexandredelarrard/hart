@@ -17,8 +17,6 @@ function Header() {
       <nav>
         {!token ? (
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Signup</Link>
           </>
         ) : (
           <button onClick={handleLogout}>Logout</button>
