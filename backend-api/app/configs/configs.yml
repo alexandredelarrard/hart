@@ -1,0 +1,16 @@
+server:
+  host: host.docker.internal #postgres_db
+  database: postgres
+  port: 5432
+
+email:
+  MAIL_SERVER: smtp.gmail.com
+  MAIL_PORT: 465
+  MAIL_USE_TLS: False
+  MAIL_USE_SSL: True
+
+celery:
+  url: "redis://redis:6379/0"
+
+front_end:
+  server: 'http://localhost:3000'
