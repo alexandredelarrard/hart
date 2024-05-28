@@ -12,7 +12,7 @@ from src.extensions import front_server
 # authentification
 # =============================================================================
 @authorization_blueprint.route('/login', methods=['POST', 'OPTIONS'])
-@cross_origin(origin=front_server)
+@cross_origin(origins=front_server)
 def login():
     if request.method == 'OPTIONS':
         return jsonify({'message': 'Options request handled'}), 200
@@ -34,7 +34,7 @@ def login():
        
 # Route to handle logout
 @authorization_blueprint.route('/logout', methods=['POST'])
-@cross_origin(origin=front_server)
+@cross_origin(origins=front_server)
 @jwt_required()
 def logout():
     response = jsonify({'message': 'Logout successful'})
@@ -43,7 +43,7 @@ def logout():
 
 # Route to check if user is logged in
 @authorization_blueprint.route('/protected', methods=['GET'])
-@cross_origin(origin=front_server)
+@cross_origin(origins=front_server)
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()

@@ -32,7 +32,7 @@ class App(Step):
 		app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 		app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
 		app.config['CORS_HEADERS'] = 'Content-Type'
-		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 24}
+		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 3}
 		app.config["JWT_REFRESH_LIFESPAN"] = {'days': 1}
 		app.config.update(self._context.email_config)
 
