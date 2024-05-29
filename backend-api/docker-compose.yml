@@ -1,38 +1,37 @@
-version: '3.7'
-
 services:
-  back_app:
-    build: 
-      context: ./app
-      dockerfile: dockerfile
-    volumes:
-      - .:/app
-    environment:
-      - FLASK_ENV=development
-    depends_on:
-      - redis
-    expose:
-      - 5000
-    command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
-    env_file:
-      - ./app/.env
-    restart: always
-
-  worker:
-    build: .
-    command: celery -A app.tasks worker --loglevel=info
-    depends_on:
-      - redis
-  nginx:
+    back_app:
+        container_name: backend_api
+        build: 
+            context: ./app
+            dockerfile: dockerfile
+        expose:
+            - 5000
+        command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
+        environment:
+            - FLASK_ENV=development
+        env_file:
+            - ./app/.env
+        restart: always
+    nginx:
         image: nginx:latest
-        container_name: nginx
+        container_name: back_nginx
         ports:    
-          - 2000:2000
+            - 2000:2000
         volumes:
-          - ./nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
         restart: always
         depends_on: 
-          - back_app
-
-  redis:
-    image: "redis:alpine"
+            - back_app
+    celery:
+        build:
+            context: ./app
+            dockerfile: dockerfile
+        user: celeryuser
+        volumes:
+            - ./app:/app
+            - ./app/celeryconfig.py:/app/celeryconfig.py
+        command: celery -A src.backend.tasks worker --loglevel=info
+        depends_on:
+            - redis
+    redis:
+        image: "redis:alpine"

@@ -1,15 +1,11 @@
-from tqdm import tqdm
-
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from src.modelling.transformers.Embedding import StepEmbedding
-from src.utils.utils_crawler import move_picture
 from src.utils.dataset_retreival import DatasetRetreiver
 from src.modelling.transformers.ChromaCollection import ChromaCollection
 
 from src.constants.variables import (CHROMA_PICTURE_DB_NAME)
-
 from omegaconf import DictConfig
 
 class StepFillChromaPictures(Step):
@@ -34,7 +30,7 @@ class StepFillChromaPictures(Step):
     def run(self):
 
         # exrtract data from dbeaver, ensure not done and sample to test # 11+ M picts
-        df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data, vector=self.vector, limit=300000)
+        df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data, vector=self.vector, limit=1301000)
         df_desc = df_desc.drop_duplicates(self.name.id_unique)
         df_desc = self.filter_out_embeddings_done(df_desc)
 
@@ -51,6 +47,6 @@ class StepFillChromaPictures(Step):
     def filter_out_embeddings_done(self, df_desc):
         collection_infos = self.chroma_collection.collection.get()
         done_ids = collection_infos["ids"]
-        df_desc = df_desc.loc[~df_desc[self.name.id_picture].isin(done_ids)]
+        df_desc = df_desc.loc[~df_desc[self.name.id_unique].isin(done_ids)]
         self._log.info(f"DONE IDS in CHROMA DB = {len(done_ids)}")
         return df_desc

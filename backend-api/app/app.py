@@ -46,14 +46,16 @@ class App(Step):
 	def make_celery(self, app):
 		celery = Celery(
 			app.import_name,
-			broker=app.config['CELERY_BROKER_URL']
+			broker=app.config['CELERY_BROKER_URL'],
+			broker_connection_retry_on_startup=True
 		)
 		celery.conf.update(app.config)
 		return celery
 
+# accessible variables
 app_step = App(config=config, context=context)
 app = app_step.create_app()
+celery = app_step.make_celery(app)
 
 if __name__ == '__main__':
-    celery = app_step.make_celery(app)
     app.run(host='0.0.0.0', port=5000)

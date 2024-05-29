@@ -5,5 +5,4 @@ config, context = get_config_context(config_path="./configs",
 									 save=False)
 
 db = context.flask_db
-jwt = context.jwt
 front_server= config.front_end.server
