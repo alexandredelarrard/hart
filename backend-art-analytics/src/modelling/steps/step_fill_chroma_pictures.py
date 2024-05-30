@@ -30,7 +30,7 @@ class StepFillChromaPictures(Step):
     def run(self):
 
         # exrtract data from dbeaver, ensure not done and sample to test # 11+ M picts
-        df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data, vector=self.vector, limit=1301000)
+        df_desc = self.data_retreiver.get_all_pictures(data_name=self.full_data, vector=self.vector, limit=800000)
         df_desc = df_desc.drop_duplicates(self.name.id_unique)
         df_desc = self.filter_out_embeddings_done(df_desc)
 

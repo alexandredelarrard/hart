@@ -1,5 +1,4 @@
 from flask import request, jsonify
-import logging
 from . import closest_blueprint
 from src.backend.tasks import process_request
 
@@ -15,8 +14,9 @@ def process():
     # Read the file content
     image = image.read()
 
-    if not image or not text:
-        return jsonify({"error": "Missing image or text"}), 400
+    if not image and not text:
+        return jsonify({"error": "Missing image and text"}), 400
 
     task = process_request.apply_async(args=[image, text])
+
     return jsonify({"task_id": task.id}), 202

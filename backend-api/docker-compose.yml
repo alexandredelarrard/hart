@@ -7,11 +7,15 @@ services:
         expose:
             - 5000
         command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
+        volumes: 
+            - ./app:/app
         environment:
-            - FLASK_ENV=development
+            - FLASK_ENV=production
         env_file:
             - ./.env
         restart: always
+        depends_on: 
+            - chromadb
     nginx:
         image: nginx:latest
         container_name: back_nginx
@@ -24,14 +28,47 @@ services:
             - back_app
     celery:
         build:
-            context: ./app
+            context: ./celery
             dockerfile: dockerfile
-        user: celeryuser
+        # user: celeryuser
         volumes:
             - ./app:/app
-            - ./app/celeryconfig.py:/app/celeryconfig.py
-        command: celery -A src.backend.tasks worker --loglevel=info
+            - ./celery/celeryconfig.py:/app/celeryconfig.py
+            - D:/data/models:/data/models
+            - D:/data/default:/data/default
+        command: celery -A src.backend.tasks worker --pool=solo --loglevel=debug --concurrency=1
         depends_on:
             - redis
+            - chromadb
+        env_file:
+            - ./.env
+        environment:
+            - FLASK_ENV=celery_worker
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: 1
+                          capabilities: [gpu]
     redis:
         image: "redis:alpine"
+    chromadb:
+        build:
+            context: ./app
+            dockerfile: dockerfile
+        ports:
+            - "8000:8000"
+        volumes:
+            - D:/data/chroma_db/chroma_data:/data/chroma_data
+        command: chroma run --path "/data/chroma_data"
+        healthcheck: 
+            test: curl localhost:8000/api/v1/heartbeat || exit 1
+            interval: 1000s
+            retries: 2
+            start_period: 5s
+            timeout: 10s
+
+networks:
+  default:
+    driver: bridge

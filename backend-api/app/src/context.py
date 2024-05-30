@@ -1,5 +1,6 @@
 import logging 
 import os 
+from chromadb import Settings, HttpClient
 from io import StringIO
 import sys 
 from logging.config import dictConfig 
@@ -68,6 +69,16 @@ class Context:
 
         # Cors policy
         self.cors = CORS(resources={r"/*": {"origins": self._config.front_end.server}})
+
+        # chromadb 
+        self.chroma_client = HttpClient(
+                host=self._config.chroma_db.host,
+                port=self._config.chroma_db.port,
+                settings=Settings(
+                    allow_reset=True,
+                    anonymized_telemetry=False
+                )
+            )
 
     @property
     def config(self) -> DictConfig:

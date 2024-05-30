@@ -1,21 +1,19 @@
 import numpy as np
 from typing import List
-
-from tqdm import tqdm
-import PIL
+import logging
+import io
 from PIL import Image
+
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
 
 from src.utils.utils_crawler import read_json
-from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
-
-import torch 
-import torchvision.transforms as T
-
+from src.transformers.PictureModel import PictureModel, ArtDataset
 from omegaconf import DictConfig
+import torch
+import torchvision.transforms as T
 
 class StepEmbedding(Step):
     
@@ -53,8 +51,7 @@ class StepEmbedding(Step):
                                             device=self._config.embedding.device,
                                             classes=self.classes_2id,
                                             model_path=self.fine_tuned_model)
-            self.pict_transformer = self.picture_model.load_trained_model(model_path=self.fine_tuned_model)
-            
+            self.picture_model.load_trained_model(model_path=self.fine_tuned_model)
         else:
             raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
 
@@ -82,50 +79,6 @@ class StepEmbedding(Step):
         
         return np.concatenate(candidate_subset_emb)
     
-    @timing
-    def loop_manually_per_batch(self, images : List[str]):
-        steps = len(images) // self.batch_size 
-
-        for i in tqdm(range(steps+1)):
-            sub_images= images[i*self.batch_size:(i+1)*self.batch_size]
-            pils_images = self.read_images(sub_images)
-            extract = self.get_picture_embeddings(pils_images).numpy()
-
-            if i == 0:
-                candidate_subset_emb = extract
-            else:
-                candidate_subset_emb = np.concatenate((candidate_subset_emb, extract))
-
-        return candidate_subset_emb
-    
-    @timing
-    def get_picture_embeddings(self, images : List[PIL.Image]):
-
-        # `transformation_chain` is a compostion of preprocessing
-        # transformations we apply to the input images to prepare them
-        # for the model.
-
-        # normalize picture
-        transformation_chain = T.Compose(
-            [
-                # We first resize the input image to 256x256 and then we take center crop.
-                T.Resize(int((256 / 224) * self.extractor.size["height"])),
-                T.CenterCrop(self.extractor.size["height"]),
-                T.ToTensor(),
-                T.Normalize(mean=self.extractor.image_mean, std=self.extractor.image_std),
-            ]
-        )
-        
-        image_batch_transformed = torch.stack(
-            [transformation_chain(image) for image in images]
-        )
-
-        new_batch = {"pixel_values": image_batch_transformed.to(self.model.device)}
-        with torch.no_grad():
-            embeddings = self.model(**new_batch).last_hidden_state[:, 0].cpu()
-
-        return embeddings
-    
     def text_to_embedding(self, query_text):
 
         if isinstance(query_text, str):
@@ -138,7 +91,7 @@ class StepEmbedding(Step):
             raise Exception(f"Text need to be str or List[str] to be embedded intead of {query_text.dtype}")
 
         query_embedded = self.get_text_embeddings(query_text, 
-                                        prompt_name=self.prompt_name)
+                                                prompt_name=self.prompt_name)
         return query_embedded
     
     def read_images(self, images : List[str]):
@@ -170,6 +123,10 @@ class StepEmbedding(Step):
 
         return self.get_batched_picture_embeddings(picture_path)
     
+    def get_fast_picture_embedding(self, image):
+        image = Image.open(io.BytesIO(image))
+        return self.picture_model.one_embedding_on_the_fly(image)
+    
     def get_text_embedding(self, query_text, prompt_name):
 
         if isinstance(query_text, str):
@@ -181,6 +138,4 @@ class StepEmbedding(Step):
         else:
             raise Exception(f"Text need to be str or List[str] to be embedded intead of {query_text.dtype}")
 
-        query_embedded = self.get_text_embeddings(query_text, 
-                                                prompt_name=prompt_name)
-        return query_embedded
+        return self.get_text_embeddings(query_text, prompt_name=prompt_name)

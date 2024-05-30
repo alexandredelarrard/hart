@@ -5,6 +5,13 @@ from src.blueprints.closest import closest_blueprint
 from src.utils.step import Step
 from src.extensions import config, context
 
+def worker_init():
+	from torch.multiprocessing import set_start_method
+	try:
+		set_start_method('spawn', force=True)
+	except RuntimeError:
+		pass
+
 class App(Step):
 
 	def __init__(self, config, context):
@@ -50,6 +57,14 @@ class App(Step):
 			broker_connection_retry_on_startup=True
 		)
 		celery.conf.update(app.config)
+
+		class ContextTask(celery.Task):
+			def __call__(self, *args, **kwargs):
+				with app.app_context():
+					return self.run(*args, **kwargs)
+    
+		celery.Task = ContextTask
+		celery.conf.task_worker_init = worker_init
 		return celery
 
 # accessible variables

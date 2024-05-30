@@ -14,3 +14,7 @@ celery:
 
 front_end:
   server: 'http://localhost:3000'
+
+chroma_db:
+  host: host.docker.internal #chromadb
+  port: 8000
