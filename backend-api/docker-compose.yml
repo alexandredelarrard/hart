@@ -33,10 +33,10 @@ services:
         # user: celeryuser
         volumes:
             - ./app:/app
-            - ./celery/celeryconfig.py:/app/celeryconfig.py
+            - ./app/celeryconfig.py:/app/celeryconfig.py
             - D:/data/models:/data/models
             - D:/data/default:/data/default
-        command: celery -A src.backend.tasks worker --pool=solo --loglevel=debug --concurrency=1
+        command: celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1
         depends_on:
             - redis
             - chromadb

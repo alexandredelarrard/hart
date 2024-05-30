@@ -72,3 +72,9 @@ Modeles :
 - Prédire le prix d'une oeuvre à partir de text + image 
 - Prédire la description d'une image à partir d'une paire image, text 
 - Chatbot qui donne l'estimation d'une oeuvre à travers un chat
+
+# TODO: 
+- Flower pour celery / redis pour suivre les calculs 
+- multi worker pour celery 
+- chromadb dabs le même conteneur que les autres 
+- images sur S3 et y accéder 

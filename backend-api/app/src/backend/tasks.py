@@ -21,7 +21,6 @@ if os.getenv('FLASK_ENV') == 'celery_worker':
 def process_request(image, text):
     results = {"image" : None, "text": None}
     if image:
-        logging.info("going to image")
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
         results['image'] = step_chromadb.query_collection(pict_embedding)
     # if text:

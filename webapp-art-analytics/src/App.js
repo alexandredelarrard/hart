@@ -12,13 +12,14 @@ import './css/packages/bootstrap.min.css';
 function App() {
   const [file, setFile] = useState(null);
   const [text, setText] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [taskId, setTaskId] = useState(null);
 
-  const handleSubmission = (file, text) => {
+  const handleTaskSubmit = (taskId, file, text) => {
     setFile(file);
     setText(text);
-    setSubmitted(true);
+    setTaskId(taskId);
   };
+
   return (
     <Router>
       <div>
@@ -30,8 +31,8 @@ function App() {
             element={
               <PrivateRoute>
                 <div style={{ display: 'flex' }}>
-                  <Sidebar onSubmit={handleSubmission} />
-                  <UploadForm file={file} text={text} submitted={submitted} />
+                  <Sidebar onTaskSubmit={handleTaskSubmit} />
+                  <UploadForm taskId={taskId} file={file} text={text} />
                 </div>
               </PrivateRoute>
             }

@@ -54,7 +54,8 @@ class App(Step):
 		celery = Celery(
 			app.import_name,
 			broker=app.config['CELERY_BROKER_URL'],
-			broker_connection_retry_on_startup=True
+			broker_connection_retry_on_startup=True,
+			backend=app.config['CELERY_RESULT_BACKEND']
 		)
 		celery.conf.update(app.config)
 
