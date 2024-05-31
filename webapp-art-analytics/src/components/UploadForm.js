@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../css/UploadForm.css';
 import Card from './Card';
 import { Pie } from 'react-chartjs-2';
-import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO} from '../utils/constants';
+import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE} from '../utils/constants';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -19,6 +19,7 @@ function UploadForm({ taskId, file, text }) {
   const [additionalData, setAdditionalData] = useState(null);
   const [avgEstimates, setAvgEstimates] = useState(0);
   const [avgFinalResult, setAvgFinalResult] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -37,6 +38,7 @@ function UploadForm({ taskId, file, text }) {
           if (response.data.state === 'SUCCESS') {
             setResult(response.data.result);
             clearInterval(interval);
+            console.log(response.data)
           }
         } catch (error) {
           console.error('Error fetching task result', error);
@@ -50,11 +52,10 @@ function UploadForm({ taskId, file, text }) {
     if (result && result.image && result.image.ids) {
       const fetchData = async () => {
         try {
-          // Assuming the API endpoint to fetch additional data is `/api/additional-data`
           const ids = result.image.ids.flat();
-          const response = await axios.get(URL_API + URL_GET_IDS_INFO, {
-            params: { ids: ids.join(',') }  
-          });
+          const response = await axios.post(URL_API + URL_GET_IDS_INFO, 
+              {'ids': ids});
+
           // Ensure response.data is an array
           if (Array.isArray(response.data)) {
 
@@ -123,6 +124,17 @@ function UploadForm({ taskId, file, text }) {
     }
   }, [result]);
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const paginatedData = additionalData.slice(
+    (currentPage - 1) * CARDS_PER_PAGE,
+    currentPage * CARDS_PER_PAGE
+  );
+
+  const totalPages = Math.ceil(additionalData.length / CARDS_PER_PAGE);
+
   return (
     <div className="upload-form-container">
       {!taskId ? (
@@ -142,19 +154,47 @@ function UploadForm({ taskId, file, text }) {
               <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
             </div>
             <div className="right">
-              <Pie data={chartData} />
+              {chartData.labels.length > 0 ? (
+                <Pie data={chartData} />
+              ) : (
+                <p>No data available for chart</p>
+              )}
             </div>
           </div>
-          {additionalData && (
+          <div className="pagination">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+          {additionalData.length > 0 ? (
             <div className="additional-data">
               <h3>Sold past Lot</h3>
               <div className="card-container">
-                {additionalData.map((item, index) => (
+                {paginatedData.map((item, index) => (
                   <Card key={index} item={item} />
                 ))}
               </div>
             </div>
+          ) : (
+            <p>No additional data available</p>
           )}
+          <div className="pagination">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

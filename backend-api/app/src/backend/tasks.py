@@ -1,4 +1,3 @@
-import logging
 import os 
 from celery import Celery
 from src.extensions import config, context
@@ -15,7 +14,7 @@ if os.getenv('FLASK_ENV') == 'celery_worker':
 
     # embeddings 
     step_embedding = StepEmbedding(context=context, config=config, 
-                                    type="picture")
+                                    type=["text", "picture"])
 
 @celery.task
 def process_request(image, text):
@@ -23,7 +22,7 @@ def process_request(image, text):
     if image:
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
         results['image'] = step_chromadb.query_collection(pict_embedding)
-    # if text:
-    #     text_embedding = step_embedding.get_text_embedding(text)
-    #     results['text'] = step_chromadb.query_collection(text_embedding)
+    if text:
+        text_embedding = step_embedding.get_text_embedding(text, prompt_name=config.embedding.prompt_name)
+        results['text'] = step_chromadb.query_collection(text_embedding)
     return results  

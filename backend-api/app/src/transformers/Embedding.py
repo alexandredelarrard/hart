@@ -1,6 +1,5 @@
 import numpy as np
 from typing import List
-import logging
 import io
 from PIL import Image
 
@@ -8,37 +7,33 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from sentence_transformers import SentenceTransformer
-
 from src.utils.utils_crawler import read_json
 from src.transformers.PictureModel import PictureModel, ArtDataset
 from omegaconf import DictConfig
-import torch
-import torchvision.transforms as T
 
 class StepEmbedding(Step):
     
     def __init__(self, 
                  context : Context,
                  config : DictConfig, 
-                 type : str = "text"):
+                 type : List[str] = ["text", "picture"]):
 
         super().__init__(context=context, config=config)
         self.params = self._config.embedding.dim_reduc.params
         self.default_picture_path = self._config.picture_classification.default_image_path
         
-        if type == "text":
-            self.batch_size = self._config.embedding.text.batch_size
+        if "text" in type:
+            self.text_batch_size = self._config.embedding.text.batch_size
             
             self.prompt = {}
             for k, v in self._config.embedding.prompt.items():
                 self.prompt[k] = v
 
-            self.model = SentenceTransformer(self._config.embedding.text_model,
+            self.text_model = SentenceTransformer(self._config.embedding.text_model,
                                             prompts=self.prompt,
                                             device=self._config.embedding.device)
             
-        elif type=="picture":
-            self.batch_size = self._config.embedding.picture.batch_size
+        if "picture" in type:
             self.fine_tuned_model =self._config.embedding.picture_model
 
             # get and shape data to pytorc
@@ -53,7 +48,7 @@ class StepEmbedding(Step):
                                             model_path=self.fine_tuned_model)
             self.picture_model.load_trained_model(model_path=self.fine_tuned_model)
         else:
-            raise Exception("Can only handle TEXT or PICTURE so far. No Audio & co as embeddings")
+            raise Exception("Can only handle text or picture so far. No Audio & co as embeddings")
 
 
     def get_text_embeddings(self, input_texts : List, prompt_name : str):
@@ -61,8 +56,8 @@ class StepEmbedding(Step):
             raise Exception(f"prompt name is not part of possible prompts from config which are : \n \
                             {self.prompt.keys()}")
 
-        return self.model.encode(input_texts, 
-                                 batch_size=self.batch_size,
+        return self.text_model.encode(input_texts, 
+                                 batch_size=self.text_batch_size,
                                  normalize_embeddings=False,
                                  prompt_name=prompt_name)
     

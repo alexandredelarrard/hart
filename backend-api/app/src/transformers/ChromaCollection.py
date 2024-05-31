@@ -24,12 +24,11 @@ class ChromaCollection(Step):
     
     def __init__(self, 
                  context : Context,
-                 config : DictConfig,
-                 n_top_results: int = 48):
+                 config : DictConfig):
 
         super().__init__(context=context, config=config)
 
-        self.n_top_results = n_top_results
+        self.n_top_results = self._config.embedding.n_top_neighbors
         self.step_size = 41000 # max batch size collection step size
         self.text_collection = context.chroma_client.get_or_create_collection(
                                                     name = CHROMA_TEXT_DB_NAME,

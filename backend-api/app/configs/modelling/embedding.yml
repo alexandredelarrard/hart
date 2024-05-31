@@ -1,6 +1,7 @@
 embedding:
   manual_cluster: /data/default/manuel_cluster_mapping_word.json
   device: cuda
+  n_top_neighbors: 96
   text_model: 'intfloat/multilingual-e5-large-instruct'
   picture_model: /data/models/peft_block23_vit_large_patch14_clip_224_280416
   prompt_name : clustering
