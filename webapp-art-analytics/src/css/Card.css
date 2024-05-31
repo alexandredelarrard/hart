@@ -1,0 +1,204 @@
+.upload-form-container {
+  width: 85%;
+  padding: 1rem;
+  margin-left: 15%; /* Ensure it does not overlap with the fixed sidebar */
+  box-sizing: border-box;
+}
+
+.result-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.summary-area {
+  display: flex;
+  width: 100%;
+  height: 500px;
+  margin-bottom: 1rem;
+  background: #fff;
+  border-radius: 10px; /* Rounded corners for a modern look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  overflow: hidden;
+}
+
+.summary-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+}
+
+.summary-area .left, .summary-area .middle, .summary-area .right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.summary-area .middle {
+  padding: 1rem 2rem; /* Extra padding for the middle section */
+}
+
+.summary-area .right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.summary-area .middle p {
+  margin: 0.5rem 0; /* Consistent spacing between elements */
+  font-size: 1.1rem; /* Slightly larger font for readability */
+}
+
+.image-container {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.text-container {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.image-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+.text-container p {
+  white-space: pre-wrap; /* To preserve text formatting */
+}
+
+.analysis-result, .additional-data {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 1rem;
+  flex: 1 1 calc(20% - 2rem);
+  display: flex;
+  flex-direction: column;
+  height: 450px; /* Ensure each card has the same height */
+  transition: box-shadow 0.3s ease-in-out; /* Transition for hover effect */
+}
+
+@media (max-width: 1200px) {
+  .card {
+    flex: 1 1 calc(25% - 2rem); /* 3 cards per row */
+  }
+}
+
+@media (max-width: 900px) {
+  .card {
+    flex: 1 1 calc(33.33% - 2rem); /* 2 cards per row */
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    flex: 1 1 calc(50% - 2rem); /* 1 card per row */
+  }
+}
+
+@media (max-width: 400px) {
+  .card {
+    flex: 1 1 calc(100% - 2rem); /* 1 card per row */
+  }
+}
+
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 1rem; /* Slightly reduced padding */
+  font-size: 0.8rem;
+  color: #777;
+  white-space: nowrap;
+}
+
+.card-house, .card-localisation, .card-date {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.card-house {
+  max-width: 30%;
+}
+
+.card-localisation {
+  max-width: 20%;
+}
+
+.card-date {
+  max-width: 40%;
+}
+.card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Hover effect with soft shadows */
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover; /* Ensure the image is resized to cover the entire area */
+  object-position: center; /* Center the image and show the top half */
+}
+
+.card-content {
+  padding: 0.8rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  overflow: hidden;
+  margin: 0.3rem 0; /* Slightly reduced margin */
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Show at most 2 lines */
+  -webkit-box-orient: vertical;
+  max-height: 3.2em; /* Adjust based on line height to ensure 2 lines are shown */
+  line-height: 1.5em; /* Adjust line height as necessary */
+}
+
+.card-description {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.8rem; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Show at most 3 lines before truncating */
+  -webkit-box-orient: vertical;
+  max-height: 4.8em; /* Adjust based on line height to ensure 3 lines are shown */
+  line-height: 1.6em; /* Adjust line height as necessary */
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-price, .card-result {
+  font-size: 0.9rem;
+  color: #333;
+}

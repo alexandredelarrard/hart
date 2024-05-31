@@ -6,6 +6,8 @@ services:
             dockerfile: dockerfile
         expose:
             - 8888
+        volumes:
+            - ./app:/app
         command: gunicorn --bind 0.0.0.0:8888 --workers 4 --threads 4 --timeout 120 app:app
         environment:
             - FLASK_ENV=development

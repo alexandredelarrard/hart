@@ -7,12 +7,15 @@ import logging
 
 @closest_blueprint.route('/process', methods=['POST'])
 def process():
-
-    if 'file' not in request.files or 'text' not in request.form:
-        return jsonify({"error": "Missing file or text"}), 400
+    
+    text = None
+    if 'file' not in request.files:
+        return jsonify({"error": "Missing picture"}), 400
 
     image = request.files['file']
-    text = request.form['text']
+
+    if 'text' in request.form:
+        text = request.form['text']
 
     # Read the file content
     image = image.read()

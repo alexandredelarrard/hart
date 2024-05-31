@@ -1,17 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../css/UploadForm.css';
-import {URL_API_BACK, URL_GET_TASK} from '../utils/constants';
+import Card from './Card';
+import { Pie } from 'react-chartjs-2';
+import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO} from '../utils/constants';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function UploadForm({ taskId, file, text }) {
   const [result, setResult] = useState(null);
+  const [additionalData, setAdditionalData] = useState(null);
+  const [avgEstimates, setAvgEstimates] = useState(0);
+  const [avgFinalResult, setAvgFinalResult] = useState(0);
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        backgroundColor: []
+      }
+    ]
+  });
 
   useEffect(() => {
     if (taskId) {
       const interval = setInterval(async () => {
         try {
           const response = await axios.get(URL_API_BACK + URL_GET_TASK + '/' + taskId);
-          console.log(response)
           if (response.data.state === 'SUCCESS') {
             setResult(response.data.result);
             clearInterval(interval);
@@ -24,6 +46,83 @@ function UploadForm({ taskId, file, text }) {
     }
   }, [taskId]);
 
+  useEffect(() => {
+    if (result && result.image && result.image.ids) {
+      const fetchData = async () => {
+        try {
+          // Assuming the API endpoint to fetch additional data is `/api/additional-data`
+          const ids = result.image.ids.flat();
+          const response = await axios.get(URL_API + URL_GET_IDS_INFO, {
+            params: { ids: ids.join(',') }  
+          });
+          // Ensure response.data is an array
+          if (Array.isArray(response.data)) {
+
+            setAdditionalData(response.data);
+
+            // Calculate averages
+            const avgEstimates = response.data.reduce((acc, item) => acc + (item.estimate_min + item.estimate_max) / 2, 0) / response.data.length;
+            const avgFinalResult = response.data.reduce((acc, item) => acc + item.final_result, 0) / response.data.length;
+            console.log(avgFinalResult)
+
+            setAvgEstimates(avgEstimates);
+            setAvgFinalResult(avgFinalResult);
+
+            // Prepare chart data
+             // Prepare chart data
+             const localizationCounts = response.data.reduce((acc, item) => {
+              acc[item.localisation] = (acc[item.localisation] || 0) + 1;
+              return acc;
+            }, {});
+
+            // Sort locations by count
+            const sortedLocations = Object.entries(localizationCounts).sort(
+              (a, b) => b[1] - a[1]
+            );
+
+            // Limit to top 5 locations and group the rest as "Other"
+            const topLocations = sortedLocations.slice(0, 7);
+            const otherLocations = sortedLocations.slice(7);
+
+            const topLabels = topLocations.map((location) => location[0]);
+            const topData = topLocations.map((location) => location[1]);
+
+            if (otherLocations.length > 0) {
+              topLabels.push('Other');
+              topData.push(
+                otherLocations.reduce((acc, location) => acc + location[1], 0)
+              );
+            }
+
+            const newChartData = {
+              labels: topLabels,
+              datasets: [
+                {
+                  data: topData,
+                  backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40'
+                  ]
+                }
+              ]
+            };
+
+            setChartData(newChartData);
+          } else {
+            console.error('Unexpected response format:', response.data);
+          }
+        } catch (error) {
+          console.error('Error fetching additional data', error);
+        }
+      };
+      fetchData();
+    }
+  }, [result]);
+
   return (
     <div className="upload-form-container">
       {!taskId ? (
@@ -33,16 +132,27 @@ function UploadForm({ taskId, file, text }) {
         </div>
       ) : (
         <div className="result-container">
-          <div className="image-container">
-            {file && <img src={URL.createObjectURL(file)} alt="Uploaded" />}
+          <div className="summary-area">
+            <div className="left">
+              {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
+            </div>
+            <div className="middle">
+              {text && <p>{text}</p>}
+              <p><strong>Average Estimate:</strong> {avgEstimates.toFixed(2)}</p>
+              <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
+            </div>
+            <div className="right">
+              <Pie data={chartData} />
+            </div>
           </div>
-          <div className="text-container">
-            {text && <p>{text}</p>}
-          </div>
-          {result && (
-            <div className="analysis-result">
-              <h3>Analysis Result</h3>
-              <pre>{JSON.stringify(result, null, 2)}</pre>
+          {additionalData && (
+            <div className="additional-data">
+              <h3>Sold past Lot</h3>
+              <div className="card-container">
+                {additionalData.map((item, index) => (
+                  <Card key={index} item={item} />
+                ))}
+              </div>
             </div>
           )}
         </div>

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import UploadForm from './components/UploadForm';
-import Result from './components/Result';
 import PrivateRoute from './components/PrivateRoute';
 
 import './css/packages/bootstrap.min.css';
@@ -23,7 +21,6 @@ function App() {
   return (
     <Router>
       <div>
-        <Header />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
@@ -34,14 +31,6 @@ function App() {
                   <Sidebar onTaskSubmit={handleTaskSubmit} />
                   <UploadForm taskId={taskId} file={file} text={text} />
                 </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/result"
-            element={
-              <PrivateRoute>
-                <Result />
               </PrivateRoute>
             }
           />

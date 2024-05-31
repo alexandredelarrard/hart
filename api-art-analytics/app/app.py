@@ -1,5 +1,6 @@
 from flask import Flask
 from src.blueprints.authorization import authorization_blueprint
+from src.blueprints.retreiver_infos import infos_blueprint
 from src.utils.step import Step
 from src.extensions import config, context
 
@@ -23,6 +24,7 @@ class App(Step):
 
 		# Import parts of our application
 		app.register_blueprint(authorization_blueprint, url_prefix="/")
+		app.register_blueprint(infos_blueprint, url_prefix="/")
 
 		return app
 
