@@ -1,0 +1,37 @@
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ROOT_PICTURE } from '../utils/constants';
+
+import '../css/CardDetail.css';
+
+function CardDetail() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const item = location.state?.item; // Use optional chaining to safely access item
+
+  if (!item) {
+    return <div>Item not found</div>;
+  }
+
+  return (
+    <div className="card-detail-container">
+      <button className="back-button" onClick={() => navigate(-1)}>Back</button>
+      <div className="card-detail">
+        <div className="card-detail-image">
+          <img src={`${ROOT_PICTURE}/${item.seller}/pictures/${item.id_picture}.jpg`} alt={item.title} />
+        </div>
+        <div className="card-detail-info">
+          <h2>{item.title}</h2>
+          <p><strong>Description:</strong> {item.description}</p>
+          <p><strong>Localisation:</strong> {item.localisation}</p>
+          <p><strong>House:</strong> {item.house}</p>
+          <p><strong>Date:</strong> {item.date}</p>
+          <p><strong>Estimate:</strong> {item.estimate_min} - {item.estimate_max} €</p>
+          <p><strong>Final Result:</strong> {item.final_result} €</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default CardDetail;

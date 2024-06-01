@@ -1,0 +1,54 @@
+.card-detail-container {
+    padding: 1rem;
+  }
+  
+  .back-button {
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    background-color: #012041;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #154d89;
+  }
+  
+  .card-detail {
+    display: flex;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .card-detail-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f3f3f3;
+  }
+  
+  .card-detail-image img {
+    max-width: 100%;
+    height: auto;
+    border-right: 1px solid #ddd;
+  }
+  
+  .card-detail-info {
+    flex: 2;
+    padding: 1rem;
+  }
+  
+  .card-detail-info h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+  }
+  
+  .card-detail-info p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }

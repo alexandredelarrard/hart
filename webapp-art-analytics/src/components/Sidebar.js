@@ -55,7 +55,7 @@ function Sidebar({ onTaskSubmit }) {
   return (
     <aside className="sidebar">
     <div className="login-area">
-      <img src="/path/to/avatar.jpg" alt="Avatar" className="avatar" />
+      <FontAwesomeIcon icon={faUserCircle} className="avatar"/>
       <div className="user-info">
         <p className="user-name">Janet Williams</p>
       </div>

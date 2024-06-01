@@ -1,87 +1,22 @@
-.upload-form-container {
-  width: 85%;
-  padding: 1rem;
-  margin-left: 15%; /* Ensure it does not overlap with the fixed sidebar */
-  box-sizing: border-box;
-}
-
-.result-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.summary-area {
-  display: flex;
-  width: 100%;
-  height: 500px;
-  margin-bottom: 1rem;
-  background: #fff;
-  border-radius: 10px; /* Rounded corners for a modern look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  overflow: hidden;
-}
-
-.summary-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
-}
-
-.summary-area .left, .summary-area .middle, .summary-area .right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-}
-
-.summary-area .middle {
-  padding: 1rem 2rem; /* Extra padding for the middle section */
-}
-
-.summary-area .right {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.summary-area .middle p {
-  margin: 0.5rem 0; /* Consistent spacing between elements */
-  font-size: 1.1rem; /* Slightly larger font for readability */
-}
-
-.image-container {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.text-container {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.image-container img {
-  max-width: 100%;
-  height: auto;
-}
-
-.text-container p {
-  white-space: pre-wrap; /* To preserve text formatting */
-}
-
-.analysis-result, .additional-data {
-  width: 100%;
-  margin-top: 1rem;
-}
-
 .card-container {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
+
+.card-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.card-link:focus {
+  outline: none;
+}
+
 
 .card {
   background-color: #fff;
@@ -150,31 +85,6 @@
 }
 .card:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Hover effect with soft shadows */
-}
-
-.pagination {
-  display: flex;
-  margin: 1rem 0;
-  justify-content: center; /* Center the pagination controls horizontally */
-}
-
-.pagination-button {
-  padding: 0.75rem 1.5rem; /* Increase padding by 30% */
-  margin: 0 0.25rem;
-  border: none;
-  background-color: #012041;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.pagination-button:hover {
-  background-color: #154d89;
-}
-
-.pagination-button.active {
-  background-color: #154d89;
 }
 
 .card-image {

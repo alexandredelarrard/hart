@@ -21,7 +21,7 @@ def post_ids_infos():
         if not ids:
             return jsonify({"error": "No IDs provided"}), 400
         
-        if isinstance(ids, List[str]):
+        if isinstance(ids, List):
             try:
                 result = AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
                 output = [item.to_dict() for item in result]

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../css/UploadForm.css';
 import Card from './Card';
 import { Pie } from 'react-chartjs-2';
 import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE} from '../utils/constants';
@@ -11,14 +10,24 @@ import {
   Legend
 } from 'chart.js';
 
+import '../css/UploadForm.css';
+
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function UploadForm({ taskId, file, text }) {
-  const [result, setResult] = useState(null);
-  const [additionalData, setAdditionalData] = useState(null);
-  const [avgEstimates, setAvgEstimates] = useState(0);
-  const [avgFinalResult, setAvgFinalResult] = useState(0);
+function UploadForm({
+  taskId,
+  file,
+  text,
+  result,
+  setResult,
+  additionalData,
+  setAdditionalData,
+  avgEstimates,
+  setAvgEstimates,
+  avgFinalResult,
+  setAvgFinalResult
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -161,20 +170,20 @@ function UploadForm({ taskId, file, text }) {
               )}
             </div>
           </div>
-          <div className="pagination">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
           {additionalData.length > 0 ? (
             <div className="additional-data">
               <h3>Sold past Lot</h3>
+              <div className="pagination">
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+                    onClick={() => handlePageChange(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
               <div className="card-container">
                 {paginatedData.map((item, index) => (
                   <Card key={index} item={item} />

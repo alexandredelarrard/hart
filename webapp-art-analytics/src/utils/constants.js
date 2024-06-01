@@ -5,4 +5,4 @@ export const URL_UPLOAD='/process';
 export const URL_GET_TASK='/task_status';
 export const URL_GET_IDS_INFO='/ids_infos';
 export const ROOT_PICTURE='http://localhost:4000';
-export const CARDS_PER_PAGE=48;
+export const CARDS_PER_PAGE=24;
