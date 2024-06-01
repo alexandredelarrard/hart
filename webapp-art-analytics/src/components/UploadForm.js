@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card';
-import { Pie } from 'react-chartjs-2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE} from '../utils/constants';
 import {
   Chart as ChartJS,
@@ -29,15 +30,8 @@ function UploadForm({
   setAvgFinalResult
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [
-      {
-        data: [],
-        backgroundColor: []
-      }
-    ]
-  });
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
 
   useEffect(() => {
     if (taskId) {
@@ -62,8 +56,11 @@ function UploadForm({
       const fetchData = async () => {
         try {
           const ids = result.image.ids.flat();
+          const distances = result.image.distances.flat();
           const response = await axios.post(URL_API + URL_GET_IDS_INFO, 
-              {'ids': ids});
+              {'ids': ids,
+                'distances': distances
+              });
 
           // Ensure response.data is an array
           if (Array.isArray(response.data)) {
@@ -78,50 +75,6 @@ function UploadForm({
             setAvgEstimates(avgEstimates);
             setAvgFinalResult(avgFinalResult);
 
-            // Prepare chart data
-             // Prepare chart data
-             const localizationCounts = response.data.reduce((acc, item) => {
-              acc[item.localisation] = (acc[item.localisation] || 0) + 1;
-              return acc;
-            }, {});
-
-            // Sort locations by count
-            const sortedLocations = Object.entries(localizationCounts).sort(
-              (a, b) => b[1] - a[1]
-            );
-
-            // Limit to top 5 locations and group the rest as "Other"
-            const topLocations = sortedLocations.slice(0, 7);
-            const otherLocations = sortedLocations.slice(7);
-
-            const topLabels = topLocations.map((location) => location[0]);
-            const topData = topLocations.map((location) => location[1]);
-
-            if (otherLocations.length > 0) {
-              topLabels.push('Other');
-              topData.push(
-                otherLocations.reduce((acc, location) => acc + location[1], 0)
-              );
-            }
-
-            const newChartData = {
-              labels: topLabels,
-              datasets: [
-                {
-                  data: topData,
-                  backgroundColor: [
-                    '#FF6384',
-                    '#36A2EB',
-                    '#FFCE56',
-                    '#4BC0C0',
-                    '#9966FF',
-                    '#FF9F40'
-                  ]
-                }
-              ]
-            };
-
-            setChartData(newChartData);
           } else {
             console.error('Unexpected response format:', response.data);
           }
@@ -144,6 +97,23 @@ function UploadForm({
 
   const totalPages = Math.ceil(additionalData.length / CARDS_PER_PAGE);
 
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const newMessage = { sender: 'user', text: chatInput };
+    setChatMessages([...chatMessages, newMessage]);
+    setChatInput('');
+
+    try {
+      const response = await axios.post(URL_API_BACK + '/chatbot', { message: chatInput });
+      const botMessage = { sender: 'bot', text: response.data.reply };
+      setChatMessages((prevMessages) => [...prevMessages, botMessage]);
+    } catch (error) {
+      console.error('Error sending message to chatbot', error);
+    }
+  };
+
   return (
     <div className="upload-form-container">
       {!taskId ? (
@@ -154,20 +124,42 @@ function UploadForm({
       ) : (
         <div className="result-container">
           <div className="summary-area">
-            <div className="left">
-              {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
+          <div className="part1">
+              <div className="part-header">
+                  <h2>Estimation</h2>
+              </div>
+              <div className="left">
+                {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
+              </div>
+              <div className="middle">
+                {text && <p>{text}</p>}
+                <p><strong>Average Estimate:</strong> {avgEstimates.toFixed(2)}</p>
+                <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
+              </div>
             </div>
-            <div className="middle">
-              {text && <p>{text}</p>}
-              <p><strong>Average Estimate:</strong> {avgEstimates.toFixed(2)}</p>
-              <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
-            </div>
-            <div className="right">
-              {chartData.labels.length > 0 ? (
-                <Pie data={chartData} />
-              ) : (
-                <p>No data available for chart</p>
-              )}
+            <div className="part2">
+              <div className="chatbot-area">
+                <div className="chatbot-header">
+                  <h2>Designation</h2>
+                </div>
+                <div className="chatbot-messages">
+                  {chatMessages.map((msg, index) => (
+                    <div key={index} className={`chat-message ${msg.sender}`}>
+                      {msg.sender === 'bot' && <FontAwesomeIcon icon={faUserCircle} className="avatar"/>}
+                      <div className="chat-text">{msg.text}</div>
+                    </div>
+                  ))}
+                </div>
+                <form className="chatbot-form" onSubmit={handleChatSubmit}>
+                  <textarea
+                    className="chatbot-input"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Type your message..."
+                  />
+                  <button type="submit" className="chatbot-submit">Send</button>
+                </form>
+              </div>
             </div>
           </div>
           {additionalData.length > 0 ? (

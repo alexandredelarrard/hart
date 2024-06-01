@@ -14,6 +14,8 @@ class AllItems(db.Model):
         return {
             'id_unique': self.ID_UNIQUE,
             'id_picture': self.ID_PICTURE,
+            'id_item': self.ID_ITEM,
+            'url_full_detail': self.URL_FULL_DETAILS,
             'estimate_min': self.EUR_MIN_ESTIMATION,
             'estimate_max': self.EUR_MAX_ESTIMATION,
             "final_result": self.EUR_FINAL_RESULT,

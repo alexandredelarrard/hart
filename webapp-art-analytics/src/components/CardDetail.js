@@ -28,6 +28,11 @@ function CardDetail() {
           <p><strong>Date:</strong> {item.date}</p>
           <p><strong>Estimate:</strong> {item.estimate_min} - {item.estimate_max} €</p>
           <p><strong>Final Result:</strong> {item.final_result} €</p>
+          {item.url_full_detail && (
+            <p><a href={item.url_full_detail} target="_blank" rel="noopener noreferrer" className="card-link-detail">
+                <strong>URL:</strong> View Full Details
+              </a></p>
+            )}
         </div>
       </div>
     </div>

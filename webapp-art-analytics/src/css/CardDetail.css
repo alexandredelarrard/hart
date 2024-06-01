@@ -52,3 +52,15 @@
     margin: 0.5rem 0;
     font-size: 1rem;
   }
+
+  .card-link-detail {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .card-link-detail:hover {
+    text-decoration: underline;
+  }
