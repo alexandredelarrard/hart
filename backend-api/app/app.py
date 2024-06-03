@@ -2,6 +2,7 @@ from flask import Flask
 from celery import Celery
 
 from src.blueprints.closest import closest_blueprint
+from src.blueprints.chatbot import chatbot_blueprint
 from src.utils.step import Step
 from src.extensions import config, context
 
@@ -11,6 +12,9 @@ def worker_init():
 		set_start_method('spawn', force=True)
 	except RuntimeError:
 		pass
+
+CELERY_QUEUE_DEFAULT = 'default'
+CELERY_QUEUE_OTHER = 'other'
 
 class App(Step):
 
@@ -30,6 +34,7 @@ class App(Step):
 
 		# Import parts of our application
 		app.register_blueprint(closest_blueprint, url_prefix="/")
+		app.register_blueprint(chatbot_blueprint, url_prefix="/")
 
 		return app
 
@@ -55,7 +60,7 @@ class App(Step):
 			app.import_name,
 			broker=app.config['CELERY_BROKER_URL'],
 			broker_connection_retry_on_startup=True,
-			backend=app.config['CELERY_RESULT_BACKEND']
+			# backend=app.config['CELERY_RESULT_BACKEND']
 		)
 		celery.conf.update(app.config)
 

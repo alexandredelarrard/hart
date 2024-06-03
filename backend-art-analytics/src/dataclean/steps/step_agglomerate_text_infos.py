@@ -30,6 +30,7 @@ class StepAgglomerateTextInfos(TextCleaner):
         super().__init__(context=context, config=config)
 
         self.sql_table_name = self._config.cleaning.full_data_auction_houses
+        self.sql_table_name_per_item = self.sql_table_name + "_per_item"
         self.country_mapping  = self._config.cleaning.mapping.country
         self.localisation_mapping = self._config.cleaning.mapping.localisation
         self.localisation_mapping = flatten_dict(self.localisation_mapping)
@@ -55,10 +56,12 @@ class StepAgglomerateTextInfos(TextCleaner):
         df = self.homogenize_currencies(df, df_currencies)
         df = self.remove_features(df, ["OPEN", "CLOSE"])
         df = self.add_execution_time(df)
-        df = self.write_data(df)
+        self.write_data(df)
+
+        # save per_item same data 
+        df = self.reduce_dim_to_per_item(df)
+        self.write_data_per_item(df)
         
-        return df
-    
     def read_data(self):
         if self.mode == "history":
             df = self.data_retreiver.get_all_dataframes()
@@ -73,6 +76,7 @@ class StepAgglomerateTextInfos(TextCleaner):
             self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
                             if_exists="replace")
+            
         elif self.mode == "new":
             self._log.info(f"Appending {df.shape} to the already existing history table {self.sql_table_name}")
             sql_values = tuple(df[self.name.id_unique].tolist())
@@ -82,7 +86,26 @@ class StepAgglomerateTextInfos(TextCleaner):
             self.write_sql_data(dataframe=df,
                             table_name=self.sql_table_name,
                             if_exists="append")
+
             # TODO: remove files from auctions, detailed / items in new after all is appended
+        else:
+            raise Exception("EITHER NEW OR HISTORY MODE AVAILABLE")
+        
+    def write_data_per_item(self, df):
+        if self.mode == "history":
+            self.write_sql_data(dataframe=df,
+                            table_name=self.sql_table_name_per_item,
+                            if_exists="replace")
+            
+        elif self.mode == "new":
+            self._log.info(f"Appending {df.shape} to the already existing history table {self.sql_table_name_per_item}")
+            sql_values = tuple(df[self.name.id_item].tolist())
+            self.remove_rows_sql_data(values=sql_values,
+                                      column=self.name.id_item,
+                                      table_name=self.sql_table_name_per_item)
+            self.write_sql_data(dataframe=df,
+                            table_name=self.sql_table_name_per_item,
+                            if_exists="append")
         else:
             raise Exception("EITHER NEW OR HISTORY MODE AVAILABLE")
 
@@ -193,3 +216,18 @@ class StepAgglomerateTextInfos(TextCleaner):
     def add_execution_time(self, df: pd.DataFrame) -> pd.DataFrame:
         df[self.name.executed_time] = self.now 
         return df
+    
+    @timing
+    def reduce_dim_to_per_item(self, df):
+        serie_list_pict = df[[self.name.id_item, self.name.id_picture]].groupby(self.name.id_item)[self.name.id_picture].apply(list)
+        new_df = df.drop_duplicates(self.name.id_item)
+        new_df = (
+            new_df
+                  .drop([self.name.id_unique, self.name.id_picture], axis=1)
+                  .merge(serie_list_pict, 
+                         left_on=self.name.id_item, 
+                         right_index=True, 
+                         how="left", 
+                         validate="1:1")
+                )
+        return new_df

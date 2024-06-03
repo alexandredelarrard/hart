@@ -22,6 +22,8 @@ function UploadForm({
   text,
   result,
   setResult,
+  botresult,
+  setBotResult,
   additionalData,
   setAdditionalData,
   avgEstimates,
@@ -31,7 +33,7 @@ function UploadForm({
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState('');
+  const [chatInput, setChatInput] = useState('Can you describe the art piece ?');
 
   useEffect(() => {
     if (taskId) {
@@ -101,14 +103,17 @@ function UploadForm({
     e.preventDefault();
     if (!chatInput.trim()) return;
 
+    const art_pieces = result.image.documents.flat();
+    console.log(art_pieces)
     const newMessage = { sender: 'user', text: chatInput };
     setChatMessages([...chatMessages, newMessage]);
     setChatInput('');
-
+    
     try {
-      const response = await axios.post(URL_API_BACK + '/chatbot', { message: chatInput });
+      const response = await axios.post(URL_API_BACK + '/chatbot', {art_pieces: art_pieces, question: chatInput });
       const botMessage = { sender: 'bot', text: response.data.reply };
       setChatMessages((prevMessages) => [...prevMessages, botMessage]);
+      setBotResult(botMessage)
     } catch (error) {
       console.error('Error sending message to chatbot', error);
     }
@@ -124,24 +129,26 @@ function UploadForm({
       ) : (
         <div className="result-container">
           <div className="summary-area">
-          <div className="part1">
-              <div className="part-header">
-                  <h2>Estimation</h2>
-              </div>
-              <div className="left">
-                {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
-              </div>
-              <div className="middle">
-                {text && <p>{text}</p>}
-                <p><strong>Average Estimate:</strong> {avgEstimates.toFixed(2)}</p>
-                <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
-              </div>
+            <div className="part1">
+                <div className="part-header common-title">
+                    <h2>Estimation</h2>
+                </div>
+                <div className="part-content">
+                  <div className="left">
+                    {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
+                  </div>
+                  <div className="middle">
+                    {text && <p>{text}</p>}
+                    <p><strong>Average Estimate:</strong> {avgEstimates.toFixed(2)}</p>
+                    <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
+                  </div>
+                </div>
             </div>
             <div className="part2">
               <div className="chatbot-area">
-                <div className="chatbot-header">
-                  <h2>Designation</h2>
-                </div>
+                <div className="chatbot-header common-title">
+                    <h2>Designation</h2>
+                  </div>
                 <div className="chatbot-messages">
                   {chatMessages.map((msg, index) => (
                     <div key={index} className={`chat-message ${msg.sender}`}>
@@ -162,9 +169,9 @@ function UploadForm({
               </div>
             </div>
           </div>
+          <div className="delimiter-line"></div>
           {additionalData.length > 0 ? (
             <div className="additional-data">
-              <h3>Sold past Lot</h3>
               <div className="pagination">
                 {Array.from({ length: totalPages }, (_, index) => (
                   <button

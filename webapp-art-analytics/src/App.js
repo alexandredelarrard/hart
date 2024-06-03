@@ -12,6 +12,7 @@ function App() {
   const [text, setText] = useState('');
   const [taskId, setTaskId] = useState(null);
   const [result, setResult] = useState(null);
+  const [botresult, setBotResult] = useState(null);
   const [additionalData, setAdditionalData] = useState([]);
   const [avgEstimates, setAvgEstimates] = useState(0);
   const [avgFinalResult, setAvgFinalResult] = useState(0);
@@ -43,6 +44,8 @@ function App() {
                     text={text}
                     result={result}
                     setResult={setResult}
+                    botresult={botresult}
+                    setBotResult={setBotResult}
                     additionalData={additionalData}
                     setAdditionalData={setAdditionalData}
                     avgEstimates={avgEstimates}

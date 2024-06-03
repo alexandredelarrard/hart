@@ -1,8 +1,11 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROOT_PICTURE } from '../utils/constants';
+import Carousel from 'react-bootstrap/Carousel';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/CardDetail.css';
+
 
 function CardDetail() {
   const navigate = useNavigate();
@@ -17,8 +20,19 @@ function CardDetail() {
     <div className="card-detail-container">
       <button className="back-button" onClick={() => navigate(-1)}>Back</button>
       <div className="card-detail">
-        <div className="card-detail-image">
-          <img src={`${ROOT_PICTURE}/${item.seller}/pictures/${item.id_picture}.jpg`} alt={item.title} />
+        <div className="card-detail-images">
+        <Carousel>
+            {item.pictures[0].replace("{", '').replace("}", '').split(",").map((pictureId, index) => (
+              <Carousel.Item key={index}>
+                <div className="card-detail-image">
+                  <img
+                    src={`${ROOT_PICTURE}/${item.seller}/pictures/${pictureId}.jpg`}
+                    alt={item.title}
+                  />
+                </div>
+              </Carousel.Item>
+            ))}
+          </Carousel>
         </div>
         <div className="card-detail-info">
           <h2>{item.title}</h2>

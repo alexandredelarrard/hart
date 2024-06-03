@@ -4,6 +4,11 @@ broker_url = 'redis://redis:6379/0'
 # Backend settings.
 result_backend = 'redis://redis:6379/0'
 
+# celery_task_routes = {
+#     'app.src.backend.tasks.process_request': {'queue': 'embedding-queue'},
+#     'app.src.backend.tasks.chat_request': {'queue': 'chat-queue'},
+# }
+
 # Task serialization and deserialization settings.
 task_serializer = 'json'
 result_serializer = 'json'
