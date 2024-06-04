@@ -16,5 +16,5 @@ front_end:
   server: 'http://localhost:3000'
 
 chroma_db:
-  host: host.docker.internal #chromadb
+  host: localhost #chromadb #host.docker.internal #
   port: 8000

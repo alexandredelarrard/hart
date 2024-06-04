@@ -8,7 +8,6 @@ celery.config_from_object('celeryconfig')
 if os.getenv('FLASK_ENV') == 'celery_worker':
     from src.transformers.ChromaCollection import ChromaCollection
     from src.transformers.Embedding import StepEmbedding
-    
 
     # initialize gpu consumptions steps for celery workers only
     step_chromadb = ChromaCollection(context=context, config=config)
@@ -16,7 +15,6 @@ if os.getenv('FLASK_ENV') == 'celery_worker':
     # embeddings 
     step_embedding = StepEmbedding(context=context, config=config, 
                                     type=["text", "picture"])
-    
     
 @celery.task
 def process_request(image, text):

@@ -1,6 +1,8 @@
 from typing import List, Dict
 import pandas as pd 
 import numpy as np
+import os 
+from chromadb import Settings, HttpClient
 from src.context import Context
 from src.utils.timing import timing
 from src.utils.constants import (CHROMA_PICTURE_DB_NAME, 
@@ -28,13 +30,23 @@ class ChromaCollection(Step):
 
         super().__init__(context=context, config=config)
 
+         # chromadb connexion
+        chroma_client = HttpClient(
+            host=os.getenv("DB_HOST"), #self._config.chroma_db.host
+            port=config.chroma_db.port,
+            settings=Settings(
+                allow_reset=True,
+                anonymized_telemetry=False
+            )
+        )
+
         self.n_top_results = self._config.embedding.n_top_neighbors
         self.step_size = 41000 # max batch size collection step size
-        self.text_collection = context.chroma_client.get_or_create_collection(
+        self.text_collection = chroma_client.get_or_create_collection(
                                                     name = CHROMA_TEXT_DB_NAME,
                                                     metadata={"hnsw:space": "cosine"})
         
-        self.picture_collection = context.chroma_client.get_or_create_collection(
+        self.picture_collection = chroma_client.get_or_create_collection(
                                                     name = CHROMA_PICTURE_DB_NAME,
                                                     metadata={"hnsw:space": "cosine"})
 
