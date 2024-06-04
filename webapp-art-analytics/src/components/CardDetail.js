@@ -22,7 +22,7 @@ function CardDetail() {
       <div className="card-detail">
         <div className="card-detail-images">
         <Carousel>
-            {item.pictures[0].replace("{", '').replace("}", '').split(",").map((pictureId, index) => (
+            {item.pictures.replace("{", '').replace("}", '').split(",").map((pictureId, index) => (
               <Carousel.Item key={index}>
                 <div className="card-detail-image">
                   <img

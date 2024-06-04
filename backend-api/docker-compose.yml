@@ -10,7 +10,7 @@ services:
         volumes: 
             - ./app:/app
         environment:
-            - FLASK_ENV=production
+            - FLASK_ENV=flask_worker
         env_file:
             - ./.env
         restart: always

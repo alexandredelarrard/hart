@@ -24,14 +24,14 @@ class GptChat(Step):
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model[methode]
         self.introduction = self._config.gpt.introduction
+        self.question = self._config.gpt.question
+        self.temperature = self._config.gpt.temperature
         self.get_api_keys()
 
         # initialize chatbot
         self.client = self.initialize_client()
         self.prompt = self.create_prompt()
-        self.chain = ConversationChain(llm=self.client,
-                                        verbose=True, 
-                                        combine_docs_chain_kwargs={"prompt": self.prompt}) 
+        self.chain = self.prompt | self.client 
 
     def initialize_client(self):
         if self.methode == "open_ai":
@@ -65,7 +65,7 @@ class GptChat(Step):
     def initialize_client_open_ai(self):
         client = ChatOpenAI(openai_api_key=self.api_keys["openai"][0],
                             model=self.llm_model,
-                            temperature=0.2,
+                            temperature=self.temperature,
                             seed=self.seed) 
         self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
@@ -74,7 +74,7 @@ class GptChat(Step):
         client = ChatOpenAI(base_url="http://localhost:1234/v1", 
                             openai_api_key="lm-studio",
                             model=self.llm_model,
-                            temperature=0.2,
+                            temperature=self.temperature,
                             seed=self.seed) 
         self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
@@ -82,7 +82,7 @@ class GptChat(Step):
     def initialize_client_groq(self):
         client = ChatGroq(groq_api_key=self.api_keys["groq"][0],
                         model=self.llm_model,
-                        temperature=0,
+                        temperature=self.temperature,
                         max_tokens=512,
                         seed=self.seed) 
         self._log.info(f"Run with API key : {client.groq_api_key}")
@@ -101,18 +101,17 @@ class GptChat(Step):
     
     def invoke_llm(self, art_pieces, question):
         if self.methode == "open_ai":
-            message_content = self.chain.predict(art_pieces=art_pieces, question= question)
-            print(message_content)
-            # message_content = message_content.content
+            message_content = self.chain.invoke({'art_pieces': art_pieces, 'question': question})
+            message_content = message_content.content
         else:
             raise Exception(f"wrong methode {self.methode}")
         return message_content
 
-    def get_answer(self, art_pieces, question):
+    def get_answer(self, art_pieces):
         
         message_content = ""
         try:
-            message_content = self.invoke_llm(art_pieces, question)
+            message_content = self.invoke_llm(art_pieces, self.question)
             query_status = "200"
             self._log.info(message_content)
         except Exception as e:

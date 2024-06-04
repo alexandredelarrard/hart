@@ -6,3 +6,7 @@ export const getBase64 = (file) => {
       reader.onerror = (error) => reject(error);
     });
   };
+
+export function roundOff(num){
+    return (10 - (num%10)) + num
+ }

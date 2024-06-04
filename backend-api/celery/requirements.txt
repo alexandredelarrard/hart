@@ -9,10 +9,6 @@ psycopg2
 pandas 
 sqlparse
 numpy
-langchain
-langchain_core
-langchain_openai
-langchain_groq
 torch==2.2.1
 torchvision==0.17.1
 peft==0.10.0

@@ -2,10 +2,17 @@ gpt:
   save_path: D:/data/llm_extracts/llama3_extract_paintings/
   llm_model: 
     groq: llama3-70b-8192
-    open_ai: gpt-4o
+    open_ai: gpt-3.5-turbo-0125 #gpt-4o
     local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
   seed: 1234
-  introduction: "You are an art expert helping other art experts to describe an art piece for next auction.\
-                  The piece you need to describe is very close from art piece descriptions below.\
-                  You will have first to describe the art piece the same way than in examples, then to answer following questions.\
-                  Do not create fake answers when ensure."
+  temperature: 0.1
+  introduction: "You are an art expert helping counterparts to describe an art piece for next auction.\
+                  The piece you need to describe is very close from art pieces described blow. 
+                  They are sorted by proximity to the object."
+  question: "Can you write an art piece description the same way than above ?\
+              Make the art description as clear and detailed as possible. Make the description in fewer than 4 or 5 lines.\
+              Provide concise answers without additional explanations or apologies.\
+              Give me the information directly without any introductory sentences.\
+              Exclude any extra wording and just provide the essential answer.\
+              Do not write any provenance information or property information of the art piece.\
+              Write text with structured sentences, lower letters except names and first sentence letter."

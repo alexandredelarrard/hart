@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card';
+import '../utils/utils_knn';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE} from '../utils/constants';
+import { faSearch, faSort, faCalendarAlt, faDollarSign, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE, URL_UPLOAD} from '../utils/constants';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -17,6 +18,9 @@ import '../css/UploadForm.css';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function UploadForm({
+  setFile,
+  setText,
+  setTaskId,
   taskId,
   file,
   text,
@@ -24,34 +28,114 @@ function UploadForm({
   setResult,
   botresult,
   setBotResult,
+  chatBotResultFetched,
+  setChatBotResultFetched,
   additionalData,
   setAdditionalData,
-  avgEstimates,
-  setAvgEstimates,
+  avgMinEstimates,
+  avgMaxEstimates,
+  setAvgMaxEstimates,
+  setAvgMinEstimates,
   avgFinalResult,
   setAvgFinalResult
 }) {
+  
   const [currentPage, setCurrentPage] = useState(1);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState('Can you describe the art piece ?');
+  const [analysisInProgress, setAnalysisInProgress] = useState(false);
+  const [sortOrder, setSortOrder] = useState('distance');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
+  const handleSortChange = (newSortOrder) => {
+    setSortOrder(newSortOrder);
+    setDropdownOpen(false)
+  };
+
+  const sortData = (data, sortOrder) => {
+    switch (sortOrder) {
+      case 'date':
+        return data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      case 'final_price':
+        return data.sort((a, b) => b.final_result - a.final_result);
+      case 'distance':
+      default:
+        return data.sort((a, b) => a.distances - b.distances);
+    }
+  };
+
+  const sortedData = sortData([...additionalData], sortOrder);
+
+  const paginatedData = sortedData.slice(
+    (currentPage - 1) * CARDS_PER_PAGE,
+    currentPage * CARDS_PER_PAGE
+  );
+
+  const totalPages = Math.ceil(additionalData.length / CARDS_PER_PAGE);
+
+  const handleSearchFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSearchTextChange = (e) => {
+    setText(e.target.value);
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    if (file) {
+      formData.append('file', file);
+    }
+    if (text) {
+      formData.append('text', text);
+    }
+    
+    try {
+      const response = await axios.post(URL_API_BACK + URL_UPLOAD, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const task_id = response.data.task_id;
+      console.log(task_id);
+
+      setFile(file);
+      setText(text);
+      setBotResult(null)
+      setChatBotResultFetched(false);
+      setAnalysisInProgress(true);
+      setTaskId(task_id);
+      setResult(null);
+      setAdditionalData([]);
+      setAvgMinEstimates(0);
+      setAvgMaxEstimates(0);
+      setAvgFinalResult(0);
+    } catch (error) {
+      console.error('Error uploading file', error);
+    }
+  };
+  
   useEffect(() => {
-    if (taskId) {
+    if (taskId && analysisInProgress) {
       const interval = setInterval(async () => {
         try {
           const response = await axios.get(URL_API_BACK + URL_GET_TASK + '/' + taskId);
           if (response.data.state === 'SUCCESS') {
             setResult(response.data.result);
             clearInterval(interval);
+            setAnalysisInProgress(false);
             console.log(response.data)
           }
         } catch (error) {
           console.error('Error fetching task result', error);
         }
-      }, 1000); // Poll every X sec
+      }, 2000); // Poll every X sec
       return () => clearInterval(interval);
     }
-  }, [taskId]);
+  }, [taskId, analysisInProgress]);
 
   useEffect(() => {
     if (result && result.image && result.image.ids) {
@@ -65,17 +149,12 @@ function UploadForm({
               });
 
           // Ensure response.data is an array
-          if (Array.isArray(response.data)) {
+          if (Array.isArray(response.data.result)) {
 
-            setAdditionalData(response.data);
-
-            // Calculate averages
-            const avgEstimates = response.data.reduce((acc, item) => acc + (item.estimate_min + item.estimate_max) / 2, 0) / response.data.length;
-            const avgFinalResult = response.data.reduce((acc, item) => acc + item.final_result, 0) / response.data.length;
-            console.log(avgFinalResult)
-
-            setAvgEstimates(avgEstimates);
-            setAvgFinalResult(avgFinalResult);
+            setAdditionalData(response.data.result);
+            setAvgMinEstimates(response.data.min_estimate);
+            setAvgMaxEstimates(response.data.max_estimate);
+            setAvgFinalResult(response.data.final_result);
 
           } else {
             console.error('Unexpected response format:', response.data);
@@ -88,36 +167,21 @@ function UploadForm({
     }
   }, [result]);
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
-
-  const paginatedData = additionalData.slice(
-    (currentPage - 1) * CARDS_PER_PAGE,
-    currentPage * CARDS_PER_PAGE
-  );
-
-  const totalPages = Math.ceil(additionalData.length / CARDS_PER_PAGE);
-
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-
-    const art_pieces = result.image.documents.flat();
-    console.log(art_pieces)
-    const newMessage = { sender: 'user', text: chatInput };
-    setChatMessages([...chatMessages, newMessage]);
-    setChatInput('');
-    
-    try {
-      const response = await axios.post(URL_API_BACK + '/chatbot', {art_pieces: art_pieces, question: chatInput });
-      const botMessage = { sender: 'bot', text: response.data.reply };
-      setChatMessages((prevMessages) => [...prevMessages, botMessage]);
-      setBotResult(botMessage)
-    } catch (error) {
-      console.error('Error sending message to chatbot', error);
+  useEffect(() => {
+    if (result && result.image && result.image.documents && !chatBotResultFetched) {
+      const fetchLLM = async () => {
+        try {
+          const art_pieces = result.image.documents.flat();
+          const response = await axios.post(URL_API_BACK + '/chatbot', {art_pieces: art_pieces});
+          setBotResult(response.data.result)
+          setChatBotResultFetched(true);
+        } catch (error) {
+          console.error('Error fetching additional data', error);
+        }
+      };
+      fetchLLM(); 
     }
-  };
+  }, [result, chatBotResultFetched]);
 
   return (
     <div className="upload-form-container">
@@ -125,6 +189,24 @@ function UploadForm({
         <div>
           <h2>Welcome to Art Analytics</h2>
           <p>Our solution provides detailed analysis of artwork through image and text inputs.</p>
+            <div className="search-area">
+              <form onSubmit={handleSearchSubmit} className="search-form">
+                <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                <input 
+                  type="text" 
+                  value={text} 
+                  onChange={handleSearchTextChange} 
+                  placeholder="Enter description" 
+                  className="search-input" 
+                />
+                <input 
+                  type="file" 
+                  onChange={handleSearchFileChange} 
+                  className="search-file-input" 
+                />
+                <button type="submit" className="search-submit-button">Send for Analysis</button>
+              </form>
+            </div>
         </div>
       ) : (
         <div className="result-container">
@@ -138,35 +220,33 @@ function UploadForm({
                     {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
                   </div>
                   <div className="middle">
-                    {text && <p>{text}</p>}
-                    <p><strong>Average Estimate:</strong> {avgEstimates.toFixed(2)}</p>
-                    <p><strong>Average Final Result:</strong> {avgFinalResult.toFixed(2)}</p>
+                    {botresult &&<p><strong>Designation:</strong> {botresult}</p>}
+                    <div className="card-footer">
+                      <span className="card-price"><strong>Estimate:</strong> {avgMinEstimates}-{avgMaxEstimates} €</span>
+                      <span className="card-result"><strong>Final:</strong> {avgFinalResult} €</span>
+                    </div>
                   </div>
+                </div>
+                <div className="search-area">
+                  <form onSubmit={handleSearchSubmit} className="search-form">
+                    <FontAwesomeIcon icon={faSearch} className="search-icon" />
+                    <input 
+                      type="text" 
+                      value={text} 
+                      onChange={handleSearchTextChange} 
+                      placeholder="Enter description" 
+                      className="search-input" 
+                    />
+                    <input 
+                      type="file" 
+                      onChange={handleSearchFileChange} 
+                      className="search-file-input" 
+                    />
+                    <button type="submit" className="search-submit-button">Send for Analysis</button>
+                  </form>
                 </div>
             </div>
             <div className="part2">
-              <div className="chatbot-area">
-                <div className="chatbot-header common-title">
-                    <h2>Designation</h2>
-                  </div>
-                <div className="chatbot-messages">
-                  {chatMessages.map((msg, index) => (
-                    <div key={index} className={`chat-message ${msg.sender}`}>
-                      {msg.sender === 'bot' && <FontAwesomeIcon icon={faUserCircle} className="avatar"/>}
-                      <div className="chat-text">{msg.text}</div>
-                    </div>
-                  ))}
-                </div>
-                <form className="chatbot-form" onSubmit={handleChatSubmit}>
-                  <textarea
-                    className="chatbot-input"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Type your message..."
-                  />
-                  <button type="submit" className="chatbot-submit">Send</button>
-                </form>
-              </div>
             </div>
           </div>
           <div className="delimiter-line"></div>
@@ -182,6 +262,26 @@ function UploadForm({
                     {index + 1}
                   </button>
                 ))}
+                <div className="sort-buttons">
+                <div className="dropdown">
+                  <button onClick={() => setDropdownOpen(!dropdownOpen)} className="dropbtn">
+                    <FontAwesomeIcon icon={faSort} /> Sort
+                  </button>
+                  {dropdownOpen && (
+                    <div className="dropdown-content">
+                      <button onClick={() => handleSortChange('distance')} className={`sort-button ${sortOrder === 'distance' ? 'active' : ''}`}>
+                        <FontAwesomeIcon icon={faMapMarkerAlt} /> Relevance
+                      </button>
+                      <button onClick={() => handleSortChange('date')} className={`sort-button ${sortOrder === 'date' ? 'active' : ''}`}>
+                        <FontAwesomeIcon icon={faCalendarAlt} /> Date
+                      </button>
+                      <button onClick={() => handleSortChange('final_price')} className={`sort-button ${sortOrder === 'final_price' ? 'active' : ''}`}>
+                        <FontAwesomeIcon icon={faDollarSign} /> Final Price
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
               </div>
               <div className="card-container">
                 {paginatedData.map((item, index) => (

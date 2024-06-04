@@ -5,16 +5,16 @@ from operator import attrgetter
 from flask_cors import  cross_origin
 from src.schemas.user import AllItems, AllPerItem
 from sqlalchemy import and_
-from sqlalchemy.sql import func
 from src.extensions import db
+import numpy as np
 
 from . import infos_blueprint
 from src.extensions import front_server
 
-def add_distance(output, dict_distances):
+def add_distance(output, dict_distances, column, id):
     new_list = []
     for element in output:
-        element["distance"] = dict_distances[element["id_unique"]]
+        element[column] = dict_distances[element[id]]
         new_list.append(element)
     return new_list
 
@@ -28,7 +28,7 @@ def deduplicate_dicts(dict_list, unique_key):
 def reorder_output_on_dist(result, ids, distances):
     dict_id_dist = {ids[i] : distances[i] for i in range(len(ids))}
     output = [item.to_dict() for item in result]
-    new_output = add_distance(output, dict_id_dist)
+    new_output = add_distance(output, dict_id_dist, column="distance", id="id_unique")
     sorted_output = sorted(new_output, key=lambda x: x["distance"])
     return sorted_output
 
@@ -43,11 +43,7 @@ def fetch_filtered_items(output):
         )
     ).all()
 
-    # Aggregate ID_PICTURE per ID_ITEM
-    filtered_items.sort(key=attrgetter('ID_ITEM'))
-    grouped_items = {k: [item.ID_PICTURE for item in g] for k, g in groupby(filtered_items, key=attrgetter('ID_ITEM'))}
-    
-    return grouped_items
+    return [item.to_dict() for item in filtered_items]
 
 # =============================================================================
 # additonal infos
@@ -73,13 +69,22 @@ def post_ids_infos():
 
                 # Fetch filtered items in batches
                 # A refaire avec table indexee sur ID_ITEM
-                grouped_items = fetch_filtered_items(output)
+                grouped_items = fetch_filtered_items(deduplicated_output)
+                dict_items = {grouped_items[i]["id_item"] : grouped_items[i]["id_picture"] for i in range(len(grouped_items))}
 
                 # Add grouped pictures to the output
-                for item in output:
-                    item['pictures'] = grouped_items.get(item['id_item'], [])
+                deduplicated_output = add_distance(deduplicated_output, dict_items, column="pictures", id="id_item")
 
-                return jsonify(deduplicated_output), 200
+                # results 
+                min_estimate = np.round(np.median([x["estimate_min"] for x in deduplicated_output if isinstance(x["estimate_min"], float)])/10, 0)*10
+                max_estimate = np.round(np.median([x["estimate_max"] for x in deduplicated_output if isinstance(x["estimate_min"], float)])/10, 0)*10
+                final_result = np.round(np.median([x["final_result"] for x in deduplicated_output if isinstance(x["estimate_min"], float)])/10, 0)*10
+
+                return jsonify({"result": deduplicated_output, 
+                                "min_estimate": min_estimate,
+                                "max_estimate": max_estimate,
+                                "final_result": final_result}), 200
+            
             # except Exception as e:
             #     return jsonify({"error": str(e)}), 500
             
