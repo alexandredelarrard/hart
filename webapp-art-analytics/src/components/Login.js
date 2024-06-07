@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Header from "./landing_page/Header.js";
+import Footer from "./landing_page/Footer.js";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {URL_API, URL_LOGIN} from '../utils/constants';
@@ -23,7 +25,7 @@ function Login() {
       // Save token to localStorage and redirect to upload page
       localStorage.setItem('token', response.data.access_token);
       setMessage(response.data.message);
-      navigate('/');
+      navigate('/analytics');
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError('Invalid email or password');
@@ -36,34 +38,38 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-          <button type="submit" className="login-button">Login</button>
-        </form>
-        {message && <p className="message">{message}</p>}
-        {error && <p className="error">{error}</p>}
+    <div>
+      <Header />
+
+      <div className="login-container">
+        <div className="login-form">
+          <h2>Login</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Password:</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" className="login-button">Login</button>
+          </form>
+          {message && <p className="message">{message}</p>}
+          {error && <p className="error">{error}</p>}
+        </div>
       </div>
     </div>
   );

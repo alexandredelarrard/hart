@@ -1,15 +1,16 @@
 import os 
 from tqdm import tqdm
 from typing import List
+import pandas as pd
 
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from src.modelling.transformers.Clustering import TopicClustering
-from src.modelling.transformers.Embedding import StepEmbedding
-from src.utils.utils_crawler import move_picture
-from src.utils.dataset_retreival import DatasetRetreiver
+from src.utils.utils_crawler import copy_picture
+from src.modelling.transformers.ChromaCollection import ChromaCollection
 
+from src.constants.variables import (CHROMA_PICTURE_DB_NAME)
 from omegaconf import DictConfig
 
 class StepPictureClustering(Step):
@@ -29,32 +30,29 @@ class StepPictureClustering(Step):
         self.n_words_cluster = self.params.n_words_cluster
 
         self.step_cluster = TopicClustering(params=self.params)
-        self.step_embedding = StepEmbedding(context=context, config=config, 
-                                            type="picture")
-        self.data_retreiver = DatasetRetreiver(context=context, config=config)
-        
-        
+        self.chroma_collection = ChromaCollection(context=self._context,
+                                                 data_name=CHROMA_PICTURE_DB_NAME, 
+                                                 config=self._config)
+    
     @timing
     def run(self):
 
         # exrtract data from dbeaver
-        df_desc = self.data_retreiver.get_text_to_cluster(data_name="PICTURES_CATEGORY_20_04_2024")#get_all_pictures(data_name="ALL_ITEMS_202403")
-        df_desc= df_desc.loc[df_desc["TOP_0"].isin(["tableau moderne"])]
-        df_desc = self.check_is_file(df_desc)
-        # "tableau figuratif", "tableau nature_morte", "tableau religieux", "gravure", "dessin asiatique", "dessin" 
-        
-        # create text embedding
-        self.embeddings = self.get_picture_embedding(df_desc[self.vector].tolist())
+        collection_infos = self.chroma_collection.collection.get(include=['embeddings', "metadatas"], limit=100000)
+        df_desc = pd.DataFrame(collection_infos["ids"], columns=[self.name.id_unique])
+        self.embeddings = collection_infos['embeddings']
+        df_desc[self.name.cluster_id] = 0
+        df_desc["batch"]=0
+        df_desc["pict_path"] = [x["pict_path"] for x in collection_infos['metadatas']]
 
-        if self.reduce_dimension:
-            self.reduced_embedding = self.step_embedding.embedding_reduction(self.embeddings, 
-                                                                    method_dim_reduction="umap")
+        for i in range(100000//35000 + 1):
+            print(i)
+            # cluster it all
+            df_desc.iloc[i*35000:min((i+1)*35000, 100000), 1] = self.step_cluster.hdbscan_clustering(self.embeddings[i*35000:min((i+1)*35000, 100000)])
+            df_desc.iloc[i*35000:min((i+1)*35000, 100000), 2] = i
 
-            # get cluster 
-            df_desc[self.name.cluster_id] = self.step_cluster.hdbscan_clustering(self.reduced_embedding)
-
-        else:
-            df_desc[self.name.cluster_id] = self.step_cluster.hdbscan_clustering(self.embeddings)
+        df_desc = df_desc.loc[df_desc["label"] != -1]
+        df_desc[self.name.cluster_id] = df_desc[self.name.cluster_id].astype(str) + "_" + df_desc["batch"].astype(str)
 
         if self.save_pictures:
             self.save_clustered_pictures(df_desc)
@@ -65,11 +63,6 @@ class StepPictureClustering(Step):
             df_desc["x"], df_desc["y"] = zip(*plot_reduced_embedding)
             self.step_cluster.plot_clusters(df_desc)
 
-        return df_desc 
-    
-    def read_data_trained(self):
-        df_desc = self.data_retreiver.get_text_to_cluster(data_name= "TEST_0.05_06_04_2024_12_04_2024")
-        return df_desc
 
     def get_picture_embedding(self, picture_path):
          
@@ -98,4 +91,4 @@ class StepPictureClustering(Step):
         sub_df = sub_df.loc[sub_df[self.name.cluster_id] != -1]
         sub_df["TO"] = sub_df[self.name.cluster_id].apply(lambda x : f"D:/data/other/{str(x)}")
         for row in tqdm(sub_df.to_dict(orient="records")):
-            move_picture(row["PICTURES"], row["TO"])
+            copy_picture(row["pict_path"], row["TO"])

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login';
+import Signup from './components/Signup';
 import Sidebar from './components/Sidebar';
 import UploadForm from './components/UploadForm';
 import OptimizeSale from './components/OptimizeSale';
+import Home from './components/Home';
 import ArtIdentify from './components/ArtIdentify';
 import PrivateRoute from './components/PrivateRoute';
 import CardDetail from './components/CardDetail';
@@ -66,9 +68,11 @@ function App() {
     <Router>
       <div>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
-            path="/"
+            path="/analytics"
             element={
               <PrivateRoute>
                 <div style={{ display: 'flex' }}>
@@ -79,7 +83,7 @@ function App() {
             }
           />
            <Route
-            path="/card/:id"
+            path="/analytics/card/:id"
             element={
               <PrivateRoute>
                 <div style={{ display: 'flex' }}>

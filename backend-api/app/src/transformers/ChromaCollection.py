@@ -32,11 +32,11 @@ class ChromaCollection(Step):
 
          # chromadb connexion
         chroma_client = HttpClient(
-            host=os.getenv("DB_HOST"), #self._config.chroma_db.host
+            host=os.getenv("DB_HOST"),
             port=config.chroma_db.port,
             settings=Settings(
                 allow_reset=True,
-                anonymized_telemetry=False
+                anonymized_telemetry=False,
             )
         )
 

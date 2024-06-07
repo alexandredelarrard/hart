@@ -1,0 +1,54 @@
+/* New section for the background behind infoband */
+.background-section {
+    width: 100%;
+    background: linear-gradient(to bottom, #ddecef 50%, #fff 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+  }
+  
+  .info-band {
+    width: 70%;
+    background: #fff;
+    padding: 40px 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .info-band h2 {
+    font-size: 1.5em;
+    color: #777;
+    margin-bottom: 20px;
+  }
+  
+  .info-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    max-width: 300px;
+    text-align: left;
+  }
+  
+  .info-item .icon {
+    font-size: 2em;
+    margin-right: 10px;
+  }
+  
+  .info-item h3 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .info-item p {
+    font-size: 1em;
+    color: #555;
+  }

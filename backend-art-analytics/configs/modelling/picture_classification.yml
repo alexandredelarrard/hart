@@ -5,6 +5,6 @@ picture_classification:
   train_batch_size: 64
   test_batch_size: 128
   device : "cuda"
-  epochs : 5
+  epochs : 8
   default_image_path: D:/data/default/MISSING.jpg
-  fine_tuned_model : D:/data/models/peft_block23_vit_large_patch14_clip_224_280416
+  fine_tuned_model : D:/data/models/peft_block23_vit_large_patch14_clip_224_060624_286

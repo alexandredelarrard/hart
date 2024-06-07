@@ -1,0 +1,100 @@
+.firm-presentation {
+    font-family: "Arial", sans-serif;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: background 0.3s, height 0.3s;
+  }
+  
+  .navbar {
+    background: #ddecef;
+    height: 120px;
+  }
+  
+  .navbar-scrolled {
+    background: #fff;
+    height: 120px;
+    padding: .3rem 0.8rem;
+    /* position: relative; */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    margin-left: 45px;
+  }
+  
+  .logo img {
+    width: 100px;
+    height: auto;
+    transition: width 0.3s, transform 0.3s;
+  }
+  
+  .company-name {
+    margin-left: 10px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #154d89;
+    transition: font-size 0.3s;
+  }
+  
+  .company-name-scrolled {
+    font-size: 2em; /* Reduce font size when scrolled */
+  }
+  
+  /* .navbar-scrolled .logo img {
+    margin-left: 45px;
+    width: 100px; 
+  } */
+  
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    font-size: larger;
+    padding: 10px;  
+    flex: 1;
+    justify-content: center;
+  }
+    
+  
+  .nav-links a {
+    color: #154d89;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .nav-links a:hover,
+  .nav-links a:focus {
+    color: #00366e;
+    outline: none;
+  }
+  
+  .account-button {
+    background: white;
+    border: 2px solid #154d89;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-right: 15px;
+  }
+  
+  .account-button:hover {
+    background: #154d89;
+    color: white;
+  }

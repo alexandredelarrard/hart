@@ -16,7 +16,7 @@ if os.getenv('FLASK_ENV') == 'celery_worker':
     step_embedding = StepEmbedding(context=context, config=config, 
                                     type=["text", "picture"])
     
-@celery.task
+@celery.task(time_limit=300)
 def process_request(image, text):
     results = {"image" : None, "text": None}
     if image:

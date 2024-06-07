@@ -1,0 +1,60 @@
+.firm-presentation {
+  font-family: "Arial", sans-serif;
+}
+
+
+.main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 150px;
+  background: #ddecef; /* Same background color as navbar */
+  height: calc(82vh - 120px); /* Adjust height as needed */
+}
+
+.content {
+  flex: 1;
+  max-width: 50%;
+  padding-right: 20px; /* Space from the right border */
+  text-align: left; /* Left centered content */
+}
+
+.content h1 {
+  font-size: 4em; /* Very large title */
+  margin-bottom: 20px;
+}
+
+.content p {
+  font-size: 1.5em; /* Large text but smaller than title */
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.cta-button {
+  background: #154d89;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.cta-button:hover {
+  background: #01346b;
+}
+
+.illustration {
+  flex: 1;
+  max-width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.illustration img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5%; /* Rounded image */
+  background: #ddecef; /* Same background color as navbar */
+  padding: 20px; /* Optional padding to match the design */
+}

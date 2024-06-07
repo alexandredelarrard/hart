@@ -1,0 +1,53 @@
+services:
+    flower:
+        image: mher/flower:latest
+        container_name: flower
+        command: ['celery', '--broker=redis://redis:6379/0', 'flower', "--port=5555"]
+        expose:
+            - 5555
+        ports:
+            - 5555:5555
+        depends_on:
+            - redis
+        networks:
+            - shared_net
+        environment:
+            - FLOWER_UNAUTHENTICATED_API=true
+
+    flower-exporter:
+        build:
+            context: ./flower_exporter
+        container_name: flower_exporter
+        environment:
+            - URI=http://flower:5555/api/tasks
+        ports:
+            - 8001:8000
+        networks:
+            - shared_net
+
+    prometheus:
+        image: prom/prometheus
+        container_name: prometheus
+        volumes:
+            - ./prometheus.yml:/etc/prometheus/prometheus.yml
+        ports:
+            - 9090:9090
+        networks:
+            - shared_net
+
+    grafana:
+        image: grafana/grafana
+        container_name: grafana
+        depends_on:
+            - prometheus
+        ports:
+            - 3030:3000
+        environment:
+            - GF_SECURITY_ADMIN_USER=admin
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+        networks:
+            - shared_net
+
+networks:
+  shared_net:
+    external: true

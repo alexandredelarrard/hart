@@ -39,10 +39,11 @@ if __name__ == "__main__":
 
     # self = StepCleanCrawling(context=context, config=config, seller="sothebys", mode="history")
     # self = StepTextCleanArtists(context=context, config=config)
-    self = StepAgglomerateTextInfos(context=context, config=config, mode="new")
-    self.run() 
+    # self = StepAgglomerateTextInfos(context=context, config=config, mode="new")
+    # self.run() 
 
     # self = StepTextClustering(context=context, config=config)
+    self = StepPictureClustering(context=context, config=config)
     # self = StepFillChromaPictures(context=context, config=config)
 
     # self = StepManualCluster(context=context, config=config, database_name="all")

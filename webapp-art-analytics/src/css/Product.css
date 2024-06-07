@@ -1,0 +1,77 @@
+.product-container {
+    width: 60%;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 100px;
+  }
+  
+  .product-container h1 {
+    font-size: 4em;
+    margin-bottom: 20px;
+    text-align: center; /* Center the title */
+  }
+  
+  .product-container p {
+    font-size: 1.8em;
+    margin-bottom: 40px;
+  }
+  
+  .problematic-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    margin-top: 70px;
+    margin-bottom: 70px;
+  }
+  
+  .problematic-image {
+    flex: 1;
+    max-width: 45%;
+    padding-right: 20px;
+  }
+  
+  .problematic-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .problematic-text {
+    flex: 2;
+    max-width: 55%;
+  }
+  
+  .problematic-text h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    text-align: center; /* Center the title */
+  }
+  
+  .pain-solution-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .pain-points,
+  .solutions {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .pain,
+  .solution {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .pain p,
+  .solution p {
+    margin-left: 10px;
+    font-size: 1.1em;
+  }
+  
+  .faicon {
+    color: #154d89;
+  }

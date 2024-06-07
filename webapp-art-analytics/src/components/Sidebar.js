@@ -13,7 +13,7 @@ function Sidebar({ onMenuClick }) {
     // Clear the authentication token
     localStorage.removeItem('token');
     // Redirect to login page
-    navigate('/login');
+    navigate('/');
   };
 
   return (

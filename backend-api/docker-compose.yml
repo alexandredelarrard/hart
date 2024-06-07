@@ -1,12 +1,12 @@
-version: '3'
-
 services:
     chromadb:
         image: ghcr.io/chroma-core/chroma:latest
+        container_name: chromadb
         ports:
-            - 8000:8000
+            - "8000:8000"
         volumes:
             - D:/data/chroma_db/chroma_data:/chroma/chroma
+        # command: "--workers 1 --host 0.0.0.0 --port 8000"
         healthcheck: 
             test: curl localhost:8000/api/v1/heartbeat || exit 1
             interval: 1000s
@@ -14,7 +14,14 @@ services:
             start_period: 5s
             timeout: 10s
         networks:
-            - net
+            - shared_net
+        deploy:
+        mem_limit: 32g 
+        ulimits:
+            nofile:
+                soft: 1048576  # Set the soft limit for nofile
+                hard: 1048576  # Set the hard limit for nofile
+
     back_app:
         container_name: backend_api
         build: 
@@ -31,7 +38,7 @@ services:
             - ./.env
         restart: always
         networks:
-            - net
+            - shared_net
     nginx:
         image: nginx:latest
         container_name: back_nginx
@@ -42,13 +49,15 @@ services:
         restart: always
         depends_on: 
             - back_app
+            # - flower
         networks:
-            - net
+            - shared_net
     celery:
         build:
             context: ./celery
             dockerfile: dockerfile
         # user: celeryuser
+        container_name: celery
         volumes:
             - ./app:/app
             - D:/data/models:/data/models
@@ -56,12 +65,12 @@ services:
         command: celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1
         depends_on:
             - redis
-            - chromadb
+            # - chromadb
         env_file:
             - ./.env
         environment:
             - FLASK_ENV=celery_worker
-            - DB_HOST=chromadb
+            - DB_HOST=host.docker.internal #chromadb
         deploy:
             resources:
                 reservations:
@@ -70,40 +79,18 @@ services:
                           count: 1
                           capabilities: [gpu]
         networks:
-            - net
+            - shared_net
     redis:
         image: "redis:alpine"
+        container_name: redis
+        expose:
+            - 6379
         ports:
-            - 6379:6379
+            - "6379:6379"
         networks:
-            - net
-    # flower:
-    #     build: ./
-    #     command: celery -A tasks flower
-    #     volumes:
-    #         - ./examples:/data
-    #     working_dir: /data
-    #     ports:
-    #         - 5555:5555
-    #     environment:
-    #         CELERY_BROKER_URL: redis://redis
-    #         CELERY_RESULT_BACKEND: redis://redis
-    #     depends_on:
-    #         - celery
-    #         - redis
-    # prometheus:
-    #     image: prom/prometheus
-    #     volumes:
-    #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    #     ports:
-    #     - 9090:9090
-    # grafana:
-    #     image: grafana/grafana
-    #     depends_on:
-    #         - prometheus
-    #     ports:
-    #         - 3030:3030
+            - shared_net
 
-networks:
-  net:
+networks: 
+  shared_net:
     driver: bridge
+    # external: true

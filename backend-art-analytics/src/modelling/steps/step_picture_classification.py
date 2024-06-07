@@ -3,6 +3,7 @@ import os
 import random
 import numpy as np
 import shutil
+import pandas as pd
 import swifter
 from datetime import datetime
 
@@ -15,6 +16,9 @@ from src.utils.timing import timing
 from src.utils.utils_crawler import (read_json,
                                      save_json)
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
+from src.modelling.transformers.ChromaCollection import ChromaCollection
+
+from src.constants.variables import (CHROMA_PICTURE_DB_NAME)
 
 from omegaconf import DictConfig
 
@@ -42,6 +46,9 @@ class StepPictureClassification(Step):
         self.save_model = save_model
         self.today = datetime.today().strftime("%d_%m_%Y")
 
+        self.chroma_collection = ChromaCollection(context=self._context,
+                                                 data_name=CHROMA_PICTURE_DB_NAME, 
+                                                 config=self._config)
 
     @timing
     def training(self):
@@ -77,15 +84,23 @@ class StepPictureClassification(Step):
 
 
     @timing
-    def predicting(self, view_name="PICTURES_CATEGORY_20_04_2024"):
+    def predicting(self, view_name="PICTURES_CATEGORY_07_06_2024_286"):
 
         #get data
-        df = self.read_sql_data(f"SELECT \"TOTAL_DESCRIPTION\", \"SELLER\", \"ID_PICTURE\", \"ID_ITEM\" FROM \"{self.full_data}\" WHERE \"ID_PICTURE\" IS NOT NULL")
-        df_done = self.read_sql_data(view_name)
+        collection_infos = self.chroma_collection.collection.get(include=["metadatas"])
+        df_desc = pd.DataFrame(collection_infos["ids"], columns=[self.name.id_unique])
+        df_desc["pict_path"] = [x["pict_path"] for x in collection_infos['metadatas']]
+        df_desc[self.name.id_picture] = [x[self.name.id_picture] for x in collection_infos['metadatas']]
 
-        # ensure pictures available and subsample
-        df = self.clean_list_pictures(df, df_done)
-        df = self.check_is_file(df)
+        try:
+            # get done data 
+            df_done = self.read_sql_data(view_name)
+
+            # ensure pictures available and subsample
+            df_desc = self.clean_list_pictures(df_desc, df_done)
+
+        except Exception:
+            pass
 
         # get and shape data to pytorc
         self.classes_2id = read_json(path=self.fine_tuned_model + "/classes_2id.json")
@@ -99,7 +114,7 @@ class StepPictureClassification(Step):
                                      model_path=self.fine_tuned_model)
         
         pict_transformer = picture_model.load_trained_model(model_path=self.fine_tuned_model)
-        test_dataset = ArtDataset(df["from"].tolist(),
+        test_dataset = ArtDataset(df_desc["pict_path"].tolist(),
                                  self.classes_2id, 
                                  transform=pict_transformer,
                                  mode="test",
@@ -110,35 +125,24 @@ class StepPictureClassification(Step):
 
         # shape and save predictions
         answers = self.shape_answer(answers, picture_model.id2_classes)
-        answers["PICTURES"] = df["from"].tolist()
-        answers["ID_ITEM"] = df["ID_ITEM"].tolist()
-        answers['TOTAL_DESCRIPTION'] = df['TOTAL_DESCRIPTION'].tolist()
+        answers[self.name.id_unique] = df_desc[self.name.id_unique].tolist()
+        answers[self.name.id_picture] = df_desc[self.name.id_picture].tolist()
+        answers["PICTURES"] = df_desc["pict_path"].tolist()
 
         self.write_sql_data(dataframe=answers,
-                            table_name=view_name,# + "_" + self.today,
+                            table_name=view_name,
                             if_exists="append")
         
         return answers
-    
 
     def clean_list_pictures(self, df, df_done):
-
-        df["from"] = df[[self.name.seller, 
-                         self.name.id_picture]].apply(lambda x: 
-                                                      f"D:/data/{x['SELLER']}/pictures/{x['ID_PICTURE']}.jpg", 
-                                                      axis=1)
-        df = df.loc[df["ID_PICTURE"].notnull()]
-        df = df.loc[~df[self.name.id_item].isin(df_done[self.name.id_item].tolist())]
+        df = df.loc[df[self.name.id_unique].notnull()]
+        df = df.loc[~df[self.name.id_unique].isin(df_done[self.name.id_unique].tolist())]
         return df
     
-    def check_is_file(self, df):
-        exists_pict = df["from"].swifter.apply(lambda x : os.path.isfile(x))
-        df = df[exists_pict].reset_index(drop=True)
-        return df
     
     def save_pictures_to_folders(self, answers):
 
-        # sub_answers = answers.loc[answers["TOP_0"].isin(["cle"])]
         sub_answers = answers.loc[answers["PROBA_0"] >= 0.9 ]
         sub_answers["save_path"] = sub_answers["TOP_0"].apply(lambda x : f"D:/data/test/{x}")
 
