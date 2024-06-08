@@ -2,7 +2,6 @@
   font-family: "Arial", sans-serif;
 }
 
-
 .main-content {
   display: flex;
   justify-content: space-between;
@@ -16,12 +15,12 @@
   flex: 1;
   max-width: 50%;
   padding-right: 20px; /* Space from the right border */
-  text-align: left; /* Left centered content */
+  text-align: center; /* Left centered content */
 }
 
 .content h1 {
-  font-size: 4em; /* Very large title */
-  margin-bottom: 20px;
+  font-size: 3.5em; /* Very large title */
+  margin-bottom: 40px;
 }
 
 .content p {
@@ -30,17 +29,37 @@
   margin-bottom: 20px;
 }
 
-.cta-button {
-  background: #154d89;
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  font-size: 1em;
-  cursor: pointer;
+.contentainer-firm-presentation-button{
+  display: flex;
+  justify-content: center;
+  font-size: 1.1em;
+  margin-top:50px;
 }
 
-.cta-button:hover {
-  background: #01346b;
+.firm-presentation-cta-button {
+  border: 2px solid #154d89;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  font-weight: bold;
+  background: #154d89;
+  color: white;
+  align-items: center;
+  display: flex;
+}
+
+.firm-presentation-cta-button:hover {
+  background: white;
+  color:#154d89;
+}
+
+.button-arrow{
+  margin-left: 10px;
+  font-size: 1.5em;
 }
 
 .illustration {
@@ -57,4 +76,8 @@
   border-radius: 5%; /* Rounded image */
   background: #ddecef; /* Same background color as navbar */
   padding: 20px; /* Optional padding to match the design */
+}
+
+.blue{
+  color:#154d89;
 }

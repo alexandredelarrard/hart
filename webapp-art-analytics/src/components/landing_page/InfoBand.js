@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGavel, faHeartbeat, faMagnifyingGlassChart } from '@fortawesome/free-solid-svg-icons';
 import '../../css/InfoBand.css'; 
 
 const InfoBand = () => {
@@ -6,27 +8,27 @@ const InfoBand = () => {
         
         <section className="background-section">
             <div className='info-band'>
-                <h2>WE WANT YOU TO KNOW:</h2>
+                <h2>A qui s'adresse notre solution:</h2>
                 <div className="info-items">
                     <div className="info-item">
-                    <div className="icon">📦</div>
+                    <FontAwesomeIcon icon={faHeartbeat} className="icon" />
                     <div>
-                        <h3>1. Delivering eCommerce expertise</h3>
-                        <p>Since 2011, we've been gathering eCommerce expertise and delivering it to our clients</p>
+                        <h3>1. Les passionnés</h3>
+                        <p>Estimez en toute autonomie vos propres biens à partir d'une simple photo ou d'un descriptif</p>
                     </div>
                     </div>
                     <div className="info-item">
-                    <div className="icon">📈</div>
+                    <FontAwesomeIcon icon={faMagnifyingGlassChart} className="icon" />
                     <div>
-                        <h3>2. Helping win a race</h3>
-                        <p>Thanks to the expertise, the merchants leave their competitors behind and win the markets</p>
+                        <h3>2. Les experts de l'art</h3>
+                        <p>Comparez vos biens aux ventes passées en quelques secondes. Affinez vos recherche à partir de nos multiples critères</p>
                     </div>
                     </div>
                     <div className="info-item">
-                    <div className="icon">💲</div>
+                    <FontAwesomeIcon icon={faGavel} className="icon" />
                     <div>
-                        <h3>3. Making stores sell more</h3>
-                        <p>By winning the markets, our clients boost their sales and revenue</p>
+                        <h3>3. Les commissaires priseurs</h3>
+                        <p>Optimisez la répartition de vos lots afin de maximiser vos chances de ventes. Estimez les chances de succés de vente d'un lot. </p>
                     </div>
                     </div>
                 </div>

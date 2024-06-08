@@ -3,6 +3,7 @@ import FirmPresentation from "./landing_page/FirmPresentation.js";
 import Header from "./landing_page/Header.js";
 import Footer from "./landing_page/Footer.js";
 import Pricing from "./landing_page/Pricing.js";
+import Advantages from "./landing_page/Advantages.js";
 import Product from "./landing_page/Product.js";
 import InfoBand from "./landing_page/InfoBand.js";
 import Testimonials from "./landing_page/Testimonials.js"
@@ -20,9 +21,11 @@ const Home = () => {
       
       <Product/>
 
+      <Advantages/>
+
       <Pricing/>
 
-      <Testimonials/>
+      {/* <Testimonials/> */}
 
       <Footer/>
 

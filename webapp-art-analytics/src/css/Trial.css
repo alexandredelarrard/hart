@@ -1,0 +1,84 @@
+.trial-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 20px;
+    background: white;
+}
+
+.trial-header {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.trial-logo {
+    width: 100px;
+}
+
+.trial-form-section {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-top: 125px;
+}
+
+.trial-form-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #002955;
+}
+
+.trial-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.trial-button {
+    background: #002955;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.trial-button:hover {
+    background: #218838;
+}
+
+.trial-form-section p {
+    margin-top: 20px;
+    color: #002955;
+}
+
+.trial-form-section p a {
+    color: #205083;
+    text-decoration: none;
+}
+
+.trial-form-section p a:hover {
+    text-decoration: underline;
+}

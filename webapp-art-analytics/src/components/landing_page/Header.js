@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { COMPANY_NAME } from "../../utils/constants";
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.jpg';
+import logo_blanc from '../../assets/logo_fond_blanc.jpg';
 import '../../css/Header.css';
 
 const Header = () => {
@@ -23,17 +24,17 @@ const Header = () => {
         <header className={`${scrolled ? "navbar-scrolled" : "navbar"}`}>
             <div className="logo-container">
                 <a href="/" className="logo">
-                    <img src={logo} alt="Firm Logo" className="firm-logo"/>
+                    <img src={scrolled ? logo_blanc: logo} alt="Firm Logo" className="firm-logo"/>
                 </a>
                 <span className={`company-name ${scrolled ? "company-name-scrolled" : ""}`}>{COMPANY_NAME}</span>
             </div>
             <nav className="nav-links">
-                <a href="#product">Product</a>
-                <a href="#pricing">Pricing</a>
+                <a href="#product">Produits</a>
+                <a href="#pricing">Offres</a>
                 <a href="#blog">Blog</a>
             </nav>
             <Link to="/login">
-              <button className="account-button">My account</button>
+              <button className="account-button">Mon compte</button>
             </Link>
         </header>
     </div>);

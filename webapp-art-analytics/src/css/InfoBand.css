@@ -26,8 +26,9 @@
   .info-items {
     display: flex;
     justify-content: space-around;
-    align-items: center;
     width: 100%;
+    align-items: flex-start;
+    padding-top: 20px;
   }
   
   .info-item {
@@ -38,8 +39,12 @@
   }
   
   .info-item .icon {
-    font-size: 2em;
-    margin-right: 10px;
+    font-size: 2.1em;
+    margin-right: 15px;
+    color: #154d89;
+    background-color: #ececec;
+    border-radius: 10px;
+    padding: 8px;
   }
   
   .info-item h3 {

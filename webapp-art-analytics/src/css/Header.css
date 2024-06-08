@@ -12,7 +12,6 @@
     top: 0;
     width: 100%;
     z-index: 1000;
-    transition: background 0.3s, height 0.3s;
   }
   
   .navbar {
@@ -23,8 +22,7 @@
   .navbar-scrolled {
     background: #fff;
     height: 120px;
-    padding: .3rem 0.8rem;
-    /* position: relative; */
+    padding: .5rem 1rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

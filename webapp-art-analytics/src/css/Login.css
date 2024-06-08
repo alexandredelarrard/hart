@@ -63,3 +63,14 @@
 .login-button:hover {
   background-color: #0056b3;
 }
+
+.login-delimiter{
+  border: 1px solid #ddd;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.login-trial{
+  text-align: center;
+  color:gray
+}

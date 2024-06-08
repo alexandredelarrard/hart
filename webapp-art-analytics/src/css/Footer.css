@@ -1,0 +1,108 @@
+.footer-section {
+    background: white;
+    padding: 50px 20px;
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.footer-separator {
+    border: 1px solid #ddd;
+    margin-bottom: 40px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-column {
+    flex: 1;
+    margin: 0 20px;
+    min-width: 200px;
+}
+
+.footer-company-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.footer-logo {
+    width: 50px;
+    margin-right: 10px;
+}
+
+.footer-company-info div {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-company-info span,
+.footer-company-info address {
+    display: block;
+    font-size: 1.2em;
+    color: #002955;
+}
+
+.footer-social-links {
+    display: flex;
+    gap: 10px;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
+
+}
+
+.footer-social-links a {
+    color: #000;
+    font-size: 2.5em;
+}
+
+.footer-column h3 {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    color: #002955;
+}
+
+.footer-column a {
+    display: block;
+    color: #555;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.footer-column a:hover {
+    color: #002955;
+}
+
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.newsletter-form h4 {
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #002955;
+}
+
+.newsletter-form input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.newsletter-form button {
+    padding: 10px;
+    border: none;
+    background: #002955;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.newsletter-form button:hover {
+    background: #218838;
+}

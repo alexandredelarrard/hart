@@ -1,0 +1,105 @@
+.pricing-section {
+  background-color: #002955;
+  width: 100%;
+  padding: 150px 0;
+}
+
+.pricing-subsection {
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pricing-subsection h1 {
+  font-size: 4em;
+  margin-bottom: 60px;
+  color: white;
+}
+
+.pricing-cards {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pricing-card {
+  background-color: white;
+  border-radius: 10px;
+  width: 30%;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 500px;
+}
+
+.pricing-icon {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #002955;
+}
+
+.pricing-card h2 {
+  color: black;
+  margin-bottom: 10px;
+}
+
+.features-list {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+
+.features-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  margin-left: 40px;
+  font-size: large;
+}
+
+.green-icon {
+  color: #218838;
+  padding: 10px;
+}
+
+.red-icon {
+  color: #e74c3c;
+  padding: 10px;
+}
+
+.price-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.price-icon {
+  color: #002955;
+  margin-right: 10px;
+}
+
+.cta-button {
+  background: #002955;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.cta-button:hover {
+  background: #218838;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex: 1;
+}

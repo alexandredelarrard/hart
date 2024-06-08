@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import UploadForm from './components/UploadForm';
 import OptimizeSale from './components/OptimizeSale';
 import Home from './components/Home';
+import Trial from './components/Trial';
 import ArtIdentify from './components/ArtIdentify';
 import PrivateRoute from './components/PrivateRoute';
 import CardDetail from './components/CardDetail';
@@ -71,6 +72,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/trial" element={<Trial />} />
           <Route
             path="/analytics"
             element={

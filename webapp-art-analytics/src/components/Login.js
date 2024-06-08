@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Header from "./landing_page/Header.js";
-import Footer from "./landing_page/Footer.js";
+import { Link } from 'react-router-dom';
+import HeaderWhite from "./landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {URL_API, URL_LOGIN} from '../utils/constants';
@@ -39,8 +39,7 @@ function Login() {
 
   return (
     <div>
-      <Header />
-
+      <HeaderWhite/>
       <div className="login-container">
         <div className="login-form">
           <h2>Login</h2>
@@ -69,6 +68,10 @@ function Login() {
           </form>
           {message && <p className="message">{message}</p>}
           {error && <p className="error">{error}</p>}
+          <hr className="login-delimiter" />
+          <div className='login-trial'>
+            <p>Pas encore inscrit ? <Link to="/trial">Essayez gratuitement</Link>.</p>
+          </div>
         </div>
       </div>
     </div>

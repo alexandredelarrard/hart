@@ -1,0 +1,55 @@
+.testimonials-section {
+  padding: 100px 80px;
+  text-align: center;
+  background: linear-gradient(to bottom, #002955 50%, #f8f8f8 50%);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.testimonials-section h2 {
+  color: white;
+  margin-bottom: 40px;
+  font-size: 4em;
+}
+
+.testimonials-slider {
+  display: flex;
+  overflow: hidden;
+  animation: scroll 20s linear infinite;
+  padding: 20px 0;
+}
+
+.testimonials-slider .testimonial {
+  flex: 0 0 20%; /* Show 4 cards at a time */
+  margin: 0 10px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.testimonials-slider .testimonial img {
+  border-radius: 50%;
+  margin-bottom: 10px;
+  width: 80px;
+  height: 80px;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+
+.testimonials-slider::before,
+.testimonials-slider::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    z-index: 2;
+}
