@@ -14,21 +14,21 @@ const InfoBand = () => {
                     <FontAwesomeIcon icon={faHeartbeat} className="icon" />
                     <div>
                         <h3>1. Les passionnés</h3>
-                        <p>Estimez en toute autonomie vos propres biens à partir d'une simple photo ou d'un descriptif</p>
+                        <p>Particuliers curieux du monde de l'art, ayant des oeuvres à estimer en vue d'une acquisition prochaine ou d'une vente future potentielle.</p>
                     </div>
                     </div>
                     <div className="info-item">
                     <FontAwesomeIcon icon={faMagnifyingGlassChart} className="icon" />
                     <div>
                         <h3>2. Les experts de l'art</h3>
-                        <p>Comparez vos biens aux ventes passées en quelques secondes. Affinez vos recherche à partir de nos multiples critères</p>
+                        <p>Expert ou assureur voulant évaluer des oeuvres d'art, donner des points de référence à ses clients ou tout simplement valider ses estimations.</p>
                     </div>
                     </div>
                     <div className="info-item">
                     <FontAwesomeIcon icon={faGavel} className="icon" />
                     <div>
                         <h3>3. Les commissaires priseurs</h3>
-                        <p>Optimisez la répartition de vos lots afin de maximiser vos chances de ventes. Estimez les chances de succés de vente d'un lot. </p>
+                        <p>Commissaire priseur organisant des ventes aux enchères quelque soit le domaine d'objet d'art, voulant valider les esimations de sa vente et l'organiser au mieux. </p>
                     </div>
                     </div>
                 </div>

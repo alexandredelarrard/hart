@@ -1,0 +1,57 @@
+.about-container {
+    max-width: 800px;
+    margin: 150px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.about-container h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #002955;
+}
+
+.about-aim, .about-team, .about-backers {
+    margin-bottom: 40px;
+}
+
+.about-aim h2, .about-team h2, .about-backers h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #002955;
+}
+
+.about-aim p, .about-backers p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: left;
+}
+
+.about-team {
+    display: flex;
+    justify-content: space-around;
+    text-align: left;
+}
+
+.team-member {
+    max-width: 45%;
+}
+
+.team-member img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.team-member h3 {
+    font-size: 1.5em;
+    color: #002955;
+    margin-bottom: 10px;
+}
+
+.team-member p {
+    font-size: 1.2em;
+    color: #333;
+}

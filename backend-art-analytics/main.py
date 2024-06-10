@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # self.run() 
 
     # self = StepTextClustering(context=context, config=config)
-    self = StepPictureClustering(context=context, config=config)
+    # self = StepPictureClustering(context=context, config=config)
     # self = StepFillChromaPictures(context=context, config=config)
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
@@ -51,8 +51,8 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self = StepTextClassification(context=context, config=config)
 
-    # self = StepTextInferenceGpt(context=context, config=config)
-    # self = StepCleanGptInference(context=context, config=config)
+    self = StepTextInferenceGpt(context=context, config=config, methode=["groq"])
+    # self = StepCleanGptInference(context=context, config=config, category="painting")
     
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()

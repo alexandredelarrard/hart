@@ -1,5 +1,6 @@
 
 import click 
+from typing import List
 
 from src.constants.command_line_interface import (
     CONFIG_ARGS,
@@ -124,10 +125,10 @@ def step_inference_gpt(
                                           threads=threads, 
                                           save_queue_size=save_queue_size,
                                           object=object,
-                                          methode=methode)
+                                          methode=methode.split(","))
 
     # get crawling_function 
     step_inference.run()
 
-    #python -m src modelling step-inference-gpt -t 1 -sqs 50 --object painting --gpt-methode open_ai
+    #python -m src modelling step-inference-gpt -t 4 -sqs 50 --object painting --gpt-methode open_ai,local,groq,google
     

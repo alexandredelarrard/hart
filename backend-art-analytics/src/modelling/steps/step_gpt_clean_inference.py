@@ -20,11 +20,13 @@ class StepCleanGptInference(GPTCleaner):
 
     def __init__(self, 
                 context : Context,
-                config : DictConfig):
+                config : DictConfig,
+                category: str = "painting"):
 
         super().__init__(context=context, config=config)
 
-        self.save_queue_path= self._config.gpt.save_path
+        self.category= category.upper()
+        self.save_queue_path= "/".join([self._config.gpt.save_path, category])
         self.clean_info_with_mapping = self._config.evaluator.info_to_mapping
         self.mappings = self._config.evaluator.cleaning_mapping
         self.cols_to_cm = self._config.evaluator.handle_cm
@@ -35,19 +37,15 @@ class StepCleanGptInference(GPTCleaner):
         self.nlp = NLPToolBox()
 
     @timing
-    def run(self, category="painting"):
-
-        category="painting"
-        self.category= category.upper()
+    def run(self):
 
         # get category path
-        self._mapping_path = self._config.evaluator.mappings[category.lower()]
+        self._mapping_path = self._config.evaluator.mappings[self.category.lower()]
 
         # get col_mapping:
         self.col_mapping = read_json(self._mapping_path)
 
         df_done = read_crawled_pickles(path=self.save_queue_path)
-        del df_done["PROMPT"]
 
         df_done = self.eval_json(df_done)
         df_done = self.extract_features(df_done)
@@ -58,17 +56,29 @@ class StepCleanGptInference(GPTCleaner):
         df_done = self.clean_binary(df_done)
         df_done = self.clean_values(df_done)
 
-        self.write_sql_data(dataframe=df_done.drop(["PROMPT"], axis=1),
-                            table_name=f"{category.upper()}_GPT_FEATURES",
-                            if_exists="replace")
+        self.save_infos_to_tables(df_done)
 
-        return df_done
+    
+    def save_infos_to_tables(self, df_done):
+
+        # save a table mapping desc to specific category 
+        # any status KO will have to be redone with proper prompt
+        df_cat = df_done[[self.name.id_item, self.name.category, "NUMBER_OBJECTS_DESCRIBED"]]
+        df_cat["STATUS"] = np.where(df_cat[self.name.category] == self.category.lower(), "OK", "KO")
+        self.write_sql_data(dataframe=df_cat,
+                            table_name="CATEGORY_MAPPING_GPT",
+                            if_exists="append")
+        
+        # save the ones of proper category mapped to right prompt
+        self.write_sql_data(dataframe=df_done.loc[df_done["CLEAN_" + self.name.category] == self.category.lower()],
+                            table_name=f"GPT_FEATURES_{self.category}",
+                            if_exists="append")
 
     @timing
     def eval_json(self, df_done):
 
         # evaluate string to Dict or List
-        df_done["ANSWER"] = df_done[["ID_ITEM", "ANSWER"]].apply(lambda x : handle_answer(x), axis=1)
+        df_done["ANSWER"] = df_done[[self.name.id_item, "ANSWER"]].apply(lambda x : handle_answer(x), axis=1)
         df_done = df_done.loc[(df_done["ANSWER"] != "{}")&(df_done["ANSWER"].notnull())]
         
         # remove lots of too many different objects

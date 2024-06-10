@@ -9,6 +9,7 @@ const problematics = [
     {
         title: "Recherchez intelligemment vos oeuvres dans plus de 10 millions d'articles",
         description: "L'IA vous permet de rechercher en comparant l'image ou le texte de votre oeuvre avec celles de notre base de référence en cherchant une oeuvre, un artiste ou une vente.",
+        id:"product_1",
         painPoints: [
             { icon: faSearch, text: "Recherche limitée par mots clés"},
             { icon: faBullseye, text: "Recherche itérative lente"},
@@ -25,6 +26,7 @@ const problematics = [
     {
         title: "Estimez automatiquement vos oeuvres",
         description: "A partir d'une simple photo et sans connaissance de l'oeuvre, vous pouvez désormais observer toutes les ventes passées similaires. Vous pouvez contextualiser votre image par le texte pour ajuster l'estimation.",
+        id:"product_2",
         painPoints: [
             { icon: faClock, text: "Estimation manuelle" },
             { icon: faBullseye, text: "Aucune désigantion" },
@@ -39,24 +41,26 @@ const problematics = [
         ]
     },
     {
-        title: "Optimize Art Market Analysis",
-        description: "Use AI to gain insights into art market trends and pricing strategies.",
+        title: "Maximisez le CA de votre vente",
+        description: "Grâce à notre moteur d'optimisation, vous pouvez désormais optimiser l'organisation de vos lots au sein de la vente afin vendre au mieux chaque lot tout en minimisant le nombre de lots non vendus.",
+        id:"product_3",
         painPoints: [
-            { icon: faClock, text: "Outdated market data" },
-            { icon: faBullseye, text: "Inconsistent pricing" },
-            { icon: faUsers, text: "Identifying market trends" },
-            { icon: faGavel, text: "Evaluating art pieces" }
+            { icon: faClock, text: "Répartition des lots manuelle" },
+            { icon: faBullseye, text: "Volume de lots non vendus non négligeable" },
+            { icon: faUsers, text: "Vue limitée du potentiel de votre vente" },
+            { icon: faGavel, text: "Pas d'outil de suivi de vos ventes" }
         ],
         solutions: [
-            { icon: faCheck, text: "Up-to-date market data" },
-            { icon: faCheck, text: "Consistent pricing analysis" },
-            { icon: faCheck, text: "Accurate market trend identification" },
-            { icon: faCheck, text: "Comprehensive art evaluation" }
+            { icon: faCheck, text: "Outil d'organisation de vente pour maximiser votre CA" },
+            { icon: faCheck, text: "Minimisation du nombre de lots non vendus" },
+            { icon: faCheck, text: "Estimation statistique de ce que votre vente donnerait" },
+            { icon: faCheck, text: "Ajustement de l'optimiseur à partir du résultat de vos ventes passées" }
         ]
     },
     {
-        title: "Streamline Auction Preparations",
-        description: "AI helps streamline the preparation and execution of art auctions.",
+        title: "Authentification de vos oeuvres",
+        description: "Afin d'aider au mieux les expertises d'oeuvre d'art, nous avons développé un outil identifiant les signatures, sceaux ou signe distinctif d'authentification afin d'éviter toute vente de contrefaçon.",
+        id:"product_4",
         painPoints: [
             { icon: faClock, text: "Time-consuming preparation" },
             { icon: faBullseye, text: "Coordination challenges" },
@@ -75,14 +79,14 @@ const problematics = [
 const Product = () => {
     return (
         <div className="product-container" id="product">
-            <h1>Découvrez l'avenir de l'expertise artistique avec des solutions IA sur mesure, pour vous.</h1>
+            <h1>Une plateforme pour extraire le potentiel des données, de l'art et de l'IA</h1>
             <p>
                 Le marché de l'art est décentralisé. Les outils traditionnels ne suffisent plus. Seule l'intelligence artificielle vous permet de contextualiser rapidement une œuvre, de la comparer aux ventes récentes mondiales, d'interpréter son évaluation puis d'optimiser votre vente.
             </p>
             <hr className="delimiter" />
             {problematics.map((problem, index) => (
                 <React.Fragment key={index}>
-                    <div className={`problematic-area ${index % 2 === 1 ? "reverse" : ""}`}>
+                    <div className={`problematic-area ${index % 2 === 1 ? "reverse" : ""}`} id={problem.id}>
                         <div className="problematic-image">
                             <img src={problematicImage} alt="Problematic the startup is solving" />
                         </div>

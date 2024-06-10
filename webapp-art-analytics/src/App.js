@@ -10,7 +10,10 @@ import Trial from './components/Trial';
 import ArtIdentify from './components/ArtIdentify';
 import PrivateRoute from './components/PrivateRoute';
 import CardDetail from './components/CardDetail';
+import ContactUs from './components/ContactUs';
+
 import './css/packages/bootstrap.min.css';
+import About from './components/About';
 
 function App() {
   const [file, setFile] = useState(null);
@@ -73,6 +76,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/trial" element={<Trial />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/about" element={<About />} />
           <Route
             path="/analytics"
             element={

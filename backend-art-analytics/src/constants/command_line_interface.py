@@ -1,4 +1,5 @@
 import click
+from typing import List
 
 from src.utils.cli_helper import (
     assert_valid_url
@@ -110,7 +111,7 @@ GPT_METHODE_KWARGS={
     "type" : str, 
     "default" : "local", 
     "required" : True,
-    "show_default" : "local",
+    "show_default" : "local",  
     "help": (
         "which api to call for llm inference based on text. If local, need to start local server first with LM Studio"
     )

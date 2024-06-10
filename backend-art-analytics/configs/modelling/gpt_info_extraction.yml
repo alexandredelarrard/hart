@@ -1,8 +1,15 @@
 gpt:
-  save_path: D:/data/llm_extracts/llama3_extract_paintings/
+  save_path: D:/data/llm_extracts/extraction/
   llm_model: 
-    groq: llama3-70b-8192
-    open_ai: gpt-3.5-turbo-0125
+    groq: llama3-70b-8192 #llama3-8b-8192 free so no need of limiting - 30/Min
+    open_ai: gpt-3.5-turbo
     local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
+    google: gemini-1.5-flash
   seed: 1234
-  introduction: "You are an art expert. Extract features from the painting description with a JSON format below. Translate all JSON values in english and only english. Only return a valid json and nothing else. Never write 'Here is the extracted features in JSON'. If no value found, write an empty string ''. Never comment the JSON. JSON values must never be a List."
+  introduction: "You are an art document entity extraction specialist. \
+                Given an art description, your role is to extract all the text values of the JSON schema. \
+                - Before rendering the JSON, think step by step to make sure the entity name answers well the text value you will give. \
+                - If no value related to the field is found, then render 'None'. \
+                - Do not normalize any entity value.\
+                - Translate all values in english and only english. \
+                - Do not start your answer by Here is the extracted or Response, directly give the JSON output. Make sure all values are quoted."

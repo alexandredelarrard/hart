@@ -1,7 +1,8 @@
 from langchain_core.pydantic_v1 import BaseModel, Field
-from typing import List, Optional
+from typing import Optional
 
 class Painting(BaseModel):
+    object_category: str = Field(description="What kind of object this description is talking about? Be very specific in the object category. for instance: painting, table, chair, serigraphie, vase, lamp, etc.")
     artirst_surname : str = Field(description="Surname of the artist")
     artirst_name: str = Field(description="Name of the artist")
     painting_title: str = Field(description="Title of the painting")
@@ -18,7 +19,7 @@ class Painting(BaseModel):
     number_objects_described: str = Field(description="Number of objects described in the text. If only one element is described, answer '1'")
 
 class Sculpture(BaseModel):
-    is_a_sculpture: bool = Field(description="Do we describe a sculpture or something else ? False if this is a mask, a vase, etc.")
+    object_category: str = Field(description="What kind of object this description is talking about? Be very specific in the object category. for instance: Painting, table, chair, serigraphie, etc.")
     object_described: Optional[str] = Field(description="If the object described is not a sculpture, write what kind of object is described")
     artirst_surname : str = Field(description="Surname of the artist. Render the school of the sculpture if available")
     artirst_name: str = Field(description="Name of the artist")

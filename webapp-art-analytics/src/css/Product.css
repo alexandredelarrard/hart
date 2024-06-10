@@ -93,7 +93,8 @@
 
 .faicon {
   color: #154d89;
-  font-size: 1.5em; /* Larger icon size */
+  font-size: 2em; /* Larger icon size */
+  padding-right: 10px;
 }
 
 .faicon.green {

@@ -57,7 +57,7 @@ class Naming:
 
         # RUN INFO 
         self.executed_time= "DATE_EXECUTION"
-        self.category = "CATEGORY"
+        self.category = "OBJECT_CATEGORY"
         self.prompt_description = "PROMPT"
 
         # clustering variable

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopyright, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import logo from '../../assets/logo_fond_blanc.jpg';  // Placeholder for your company logo
 import '../../css/Footer.css';
 
 const Footer = () => {
@@ -23,7 +22,6 @@ const Footer = () => {
                 <div className="footer-column">
                     <div className="footer-company-info">
                         <FontAwesomeIcon icon={faCopyright} />  
-                        {/* <img src={logo} alt="Company Logo" className="footer-logo" /> */}
                         <div>
                             <span>   Artycs 2024</span>
                         </div>
@@ -43,19 +41,19 @@ const Footer = () => {
                 </div>
                 <div className="footer-column">
                     <h3>Product</h3>
-                    <Link to="/product1">Product 1</Link>
-                    <Link to="/product2">Product 2</Link>
-                    <Link to="/product3">Product 3</Link>
-                    <Link to="/product4">Product 4</Link>
-                    <Link to="/pricing">Pricing</Link>
+                    <a href="#product_1">Search</a>
+                    <a href="#product_2">Estimate</a>
+                    <a href="#product_3">Optimize sale</a>
+                    <a href="#product_4">Authenticate art piece</a>
+                    <a href="#pricing">Pricing</a>
                     <Link to="/legal">Legal</Link>
                 </div>
                 <div className="footer-column">
                     <h3>Artycs</h3>
-                    <Link to="/about">About</Link>
+                    <Link to="/about">About Artycs</Link>
                     <Link to="/contact">Contact Us</Link>
                     <Link to="/team">Team</Link>
-                    <Link to="/career">Career</Link>
+                    {/* <Link to="/career">Career</Link> */}
                 </div>
                 <div className="footer-column">
                     <h3>Community</h3>

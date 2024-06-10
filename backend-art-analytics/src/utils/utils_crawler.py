@@ -120,6 +120,9 @@ def save_queue_to_file(queue, path):
     
 def save_infos(df, path):
 
+    if not os.path.exists(os.path.dirname(path)):
+        os.mkdir(os.path.dirname(path))
+
     if ".csv" in path:
         df.to_csv(path, index=False, sep=";")
     elif ".txt" in path or ".pickle" in path:
