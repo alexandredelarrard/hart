@@ -1,9 +1,21 @@
-import React from "react";
+import React, { useState } from 'react';
 import "../../css/Pricing.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBuilding, faShieldAlt, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const Pricing = () => {
+    const [selectedPrice, setSelectedPrice] = useState({});
+
+    const handlePriceSelection = (category, priceType) => {
+        setSelectedPrice({ ...selectedPrice, [category]: priceType });
+    };
+
+    const handleSubmit = (category) => {
+        console.log(`Selected price for ${category}:`, selectedPrice[category]);
+        // Add logic for form submission, e.g., redirect to payment with selected price
+        window.location.href = '/enroll';
+    };
+
     return (
         <div>
             <section className="pricing-section" id="pricing">
@@ -12,76 +24,69 @@ const Pricing = () => {
                     <div className="pricing-cards">
                         <div className="pricing-card">
                             <FontAwesomeIcon icon={faUser} className="pricing-icon" />
-                            <h2>Individual art lover</h2>
-                            <p>Ideal for individual art lovers who want to track and analyze art market trends.</p>
+                            <h2>Passionnés d'art</h2>
+                            <p>Idéal pour les passionnés d'art, curieux d'un artiste ou de la valeur d'une oeuvre d'art</p>
                             <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 10 requests/month</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 5 price estimates/month</li>
-                                <li><FontAwesomeIcon icon={faTimes} className="red-icon" /> Auction optimizer</li>
-                                <li><FontAwesomeIcon icon={faTimes} className="red-icon" /> Signature authentication</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Recherches illimitées </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 20 estimations/mois </li>
                             </ul>
-                            <form className="pricing-form">
-                                <div className="price-option">
-                                    <FontAwesomeIcon icon={faUser} className="price-icon" />
-                                    <label>
-                                        <input type="radio" name="individual-price" value="monthly" />
-                                        Monthly Price: 10 euros
-                                    </label>
+                            <div className="price-options">
+                                <div className="price-column">
+                                    <h3>Mensuel</h3>
+                                    <div 
+                                        className={`price-option ${selectedPrice['individual'] === 'monthly' ? 'selected' : ''}`}
+                                        onClick={() => handlePriceSelection('individual', 'monthly')}
+                                    >
+                                        <span className="price-amount">19 €</span>
+                                    </div>
                                 </div>
-                                <div className="price-option">
-                                    <FontAwesomeIcon icon={faUser} className="price-icon" />
-                                    <label>
-                                        <input type="radio" name="individual-price" value="yearly" />
-                                        Yearly Subscription: 100 euros
-                                    </label>
+                                <div className="price-column">
+                                    <h3>Annuel</h3>
+                                    <div 
+                                        className={`price-option ${selectedPrice['individual'] === 'yearly' ? 'selected' : ''}`}
+                                        onClick={() => handlePriceSelection('individual', 'yearly')}
+                                    >
+                                        <span className="price-amount">199 €</span>
+                                    </div>
                                 </div>
-                            </form>
+                            </div>
                             <div className="button-container">
-                                <button className="cta-button" onClick={() => window.location.href='/payment'}>Get started</button>
+                                <button
+                                    className="firm-presentation-cta-button"
+                                    onClick={() => handleSubmit('individual')}
+                                >
+                                    S'abonner
+                                </button>
                             </div>
                         </div>
                         <div className="pricing-card">
                             <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
-                            <h2>Business art expert</h2>
-                            <p>Perfect for art businesses looking for deep market insights and trends.</p>
+                            <h2>Experts</h2>
+                            <p>Pour les experts devant évaluer ou authentifier des oeuvres d'art.</p>
                             <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 100 requests/month</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 50 price estimates/month</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Auction optimizer</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Signature authentication</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Recherches illimitées </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 200 estimations/mois</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Optimiseur de vente </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Outil d'authentification</li>
                             </ul>
-                            <form className="pricing-form">
-                                <div className="price-option">
-                                    <FontAwesomeIcon icon={faBuilding} className="price-icon" />
-                                    <label>
-                                        <input type="radio" name="business-price" value="monthly" />
-                                        Monthly Price: 50 euros
-                                    </label>
-                                </div>
-                                <div className="price-option">
-                                    <FontAwesomeIcon icon={faBuilding} className="price-icon" />
-                                    <label>
-                                        <input type="radio" name="business-price" value="yearly" />
-                                        Yearly Subscription: 500 euros
-                                    </label>
-                                </div>
-                            </form>
                             <div className="button-container">
-                                <button className="cta-button" onClick={() => window.location.href='/payment'}>Get started</button>
+                                <button className="firm-presentation-cta-button disabled-button" disabled>
+                                    Bientôt disponible
+                                </button>
                             </div>
                         </div>
                         <div className="pricing-card">
                             <FontAwesomeIcon icon={faShieldAlt} className="pricing-icon" />
-                            <h2>Insurers</h2>
-                            <p>Best for insurers who need comprehensive art market data and risk assessment.</p>
+                            <h2>Entreprises</h2>
+                            <p>Entreprises ayant des besoins importants requérant une offre à la carte.</p>
                             <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 200 requests/month</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 100 price estimates/month</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Auction optimizer</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Signature authentication</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Requêtes sans limite</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Limite d'estimations dédiée</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Support de ventes </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Authentification à la carte</li>
                             </ul>
                             <div className="button-container">
-                                <button className="cta-button" onClick={() => window.location.href='/contact'}>Contact us</button>
+                                <button className="firm-presentation-cta-button" onClick={() => window.location.href='/contact'}>Nous contacter</button>
                             </div>
                         </div>
                     </div>

@@ -59,19 +59,19 @@ const problematics = [
     },
     {
         title: "Authentification de vos oeuvres",
-        description: "Afin d'aider au mieux les expertises d'oeuvre d'art, nous avons développé un outil identifiant les signatures, sceaux ou signe distinctif d'authentification afin d'éviter toute vente de contrefaçon.",
+        description: "Afin d'éviter toute vente de contrefaçon et vous aider à les identifier, nous avons développé un outil de comparaison de signatures, sceaux, poinçons ou signe distinctif d'authentification.",
         id:"product_4",
         painPoints: [
-            { icon: faClock, text: "Time-consuming preparation" },
-            { icon: faBullseye, text: "Coordination challenges" },
-            { icon: faUsers, text: "Reaching potential buyers" },
-            { icon: faGavel, text: "Managing bids" }
+            { icon: faClock, text: "Authentification complexe, sous évaluant l'oeuvre" },
+            { icon: faBullseye, text: "Expertise difficile à construire" },
+            { icon: faUsers, text: "Ressources limitées d'identification" },
+            { icon: faGavel, text: "Au cas par cas" }
         ],
         solutions: [
-            { icon: faCheck, text: "Efficient auction preparation" },
-            { icon: faCheck, text: "Seamless coordination" },
-            { icon: faCheck, text: "Effective buyer outreach" },
-            { icon: faCheck, text: "Streamlined bid management" }
+            { icon: faCheck, text: "Authentification semi automatisée" },
+            { icon: faCheck, text: "Données visuelles pour +10 000 signes (marque, signature, etc.)" },
+            { icon: faCheck, text: "Données internationales centralisées, tout type d'objet" },
+            { icon: faCheck, text: "Premières analyses en quelques secondes" }
         ]
     }
 ];

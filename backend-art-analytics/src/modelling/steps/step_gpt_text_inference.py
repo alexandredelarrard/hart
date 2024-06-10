@@ -9,6 +9,8 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_google_vertexai import ChatVertexAI
+from google.oauth2.credentials import Credentials
+import vertexai
 
 from omegaconf import DictConfig
 from src.schemas.gpt_schemas import get_mapping_pydentic_object
@@ -68,6 +70,7 @@ class StepTextInferenceGpt(Step):
         # get parser 
         self.schema = get_mapping_pydentic_object(self.object)
         self.parser = PydanticOutputParser(pydantic_object=self.schema)
+        self.prompt = self.create_prompt()
 
         # initialize queue clients 
         self.initialize_queue_clients()
@@ -94,14 +97,8 @@ class StepTextInferenceGpt(Step):
             client = self.initialize_client_google()
         else:
             raise Exception("Please provide a method either in open_ai, groq or local")
+        self._log.info(f"INITIALIZED CLIENT {methode}")
         return client
-    
-    def create_prompt(self, methode):
-        if methode in ["open_ai", "local", "google"]:
-            prompt = self.create_prompt_openai()
-        else:
-            prompt = self.create_prompt_groq()
-        return prompt
 
     def get_api_keys(self):
         self.api_keys = {"openai": [], "groq": [], "google": []}
@@ -143,11 +140,8 @@ class StepTextInferenceGpt(Step):
         return client
     
     def initialize_client_google(self):
-        from google.oauth2.credentials import Credentials
-        import vertexai
         creds = Credentials.from_authorized_user_file(os.environ["GOOGLE_APPLICATION_CREDENTIALS"], SCOPES)
         vertexai.init(project=creds.quota_project_id, location="europe-west1", credentials=creds)
-        self._log.info(f"Credentials {creds}")
         client = ChatVertexAI(
                             credentials=creds,
                             model=self.llm_model["google"],
@@ -166,15 +160,7 @@ class StepTextInferenceGpt(Step):
                     self.name.total_description: row[self.name.total_description]}
             self.queues["descriptions"].put(item)
     
-    def create_prompt_openai(self):
-        prompt = PromptTemplate(
-            template=self.introduction + " \n Instructions: {format_instructions} \n User query: {query}",
-            input_variables=["query"],
-            partial_variables={"format_instructions": self.parser.get_format_instructions()},
-        )
-        return prompt
-    
-    def create_prompt_groq(self):
+    def create_prompt(self):
         prompt = PromptTemplate(
             template=self.introduction + " \n Instructions: {format_instructions} \n User query: {query}",
             input_variables=["query"],
@@ -213,9 +199,17 @@ class StepTextInferenceGpt(Step):
     def initialize_queue_clients(self):
         for methode in self.methode:
             client = self.initialize_client(methode)
-            self.prompt = self.create_prompt(methode)
             self.queues["clients"].put(self.prompt | client | self.parser)
-            self._log.info(f"INITIALIZED CLIENT {methode}")
+        
+        if self.threads > len(self.methode):
+            remaining = self.threads - len(self.methode)
+            for i in range(remaining):
+                if i%3==0:
+                   self.queues["clients"].put(self.prompt | self.initialize_client("open_ai") | self.parser)
+                elif i%2==0:
+                   self.queues["clients"].put(self.prompt | self.initialize_client("google") | self.parser) 
+                else:
+                    self.queues["clients"].put(self.prompt | self.initialize_client("groq") | self.parser)
         
     def queue_gpt(self, queues):
 

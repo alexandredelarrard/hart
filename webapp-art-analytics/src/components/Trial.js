@@ -41,17 +41,22 @@ const Trial = () => {
                         <label>Métier</label>
                         <select required>
                             <option value="">Sélectionnez...</option>
-                            <option value="collector">Collector</option>
-                            <option value="dealer">Dealer</option>
-                            <option value="curator">Curator</option>
-                            <option value="artist">Artist</option>
+                            <option value="dealer">Expert</option>
+                            <option value="curator">Commissaire priseur</option>
+                            <option value="artist">Assurance & Finance</option>
+                            <option value="collector">Particulier</option>
+                            <option value="artist">Etudiant</option>
                         </select>
                     </div>
-                    <div className="form-group">
-
+                    <div className="form-group checkbox-group">
                         <label>
-                            <input type="checkbox" required /> 
-                            J'accepte les <Link to="/terms">conditions générales d'utilisation</Link> et les <Link to="/terms">conditions générales de vente</Link>.
+                            <p>Nous collectons l’ensemble de ces informations pour vous créer un compte et ainsi permettre d’essayer les services proposés. Pour en savoir plus et connaître vos droits (accès, rectification, effacement, opposition, etc.), vous pouvez lire les conditions générales d'utilisation. La soumission du formulaire d’inscription sera considérée comme valant consentement de votre part à l’utilisation des informations vous concernant.</p>
+                            <div className="checkbox-container">
+                                <input type="checkbox" required />
+                                <span>
+                                    J'accepte les <Link to="/terms">conditions générales d'utilisation</Link> et les <Link to="/cgv">conditions générales de vente</Link>.
+                                </span>
+                            </div>
                         </label>
                     </div>
                     <button type="submit" className="trial-button">Commencer mon essai gratuit</button>

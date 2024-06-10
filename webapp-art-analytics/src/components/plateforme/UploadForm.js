@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card';
-import '../utils/utils_knn';
+import '../../utils/utils_knn';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSort, faCalendarAlt, faDollarSign, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE, URL_UPLOAD} from '../utils/constants';
+import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE, URL_UPLOAD} from '../../utils/constants';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -12,7 +12,7 @@ import {
   Legend
 } from 'chart.js';
 
-import '../css/UploadForm.css';
+import '../../css/UploadForm.css';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);

@@ -18,7 +18,7 @@ const advantagesData = [
     {
         image: image2,
         points: [
-            "It saves time",
+            "It increase accuracy",
             "It enables to find a good price and not sell too cheap or too expensive",
             "It reduces the number of unsold elements"
         ]
@@ -26,7 +26,7 @@ const advantagesData = [
     {
         image: image3,
         points: [
-            "It saves time",
+            "It increase overall turnover",
             "It enables to find a good price and not sell too cheap or too expensive",
             "It reduces the number of unsold elements"
         ]
@@ -34,7 +34,7 @@ const advantagesData = [
     {
         image: image4,
         points: [
-            "It saves time",
+            "It reduces remaining sales",
             "It enables to find a good price and not sell too cheap or too expensive",
             "It reduces the number of unsold elements"
         ]
@@ -45,7 +45,7 @@ const Advantages = () => {
     return (
         <div className="advantages-background-container">
             <div className="advantages-container">
-                <h2>Introduction Estimated Benefits of the Solution for Art Experts</h2>
+                <h2>Des bénéfices tangibles mesurés auprès des utilisateurs</h2>
                 {advantagesData.map((advantage, index) => (
                     <div className="advantage-row" key={index}>
                         <div className="advantage-image">

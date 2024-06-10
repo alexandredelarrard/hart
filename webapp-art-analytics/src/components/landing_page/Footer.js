@@ -1,4 +1,5 @@
 import React from "react";
+import { COMPANY_NAME } from "../../utils/constants";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopyright, faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -45,21 +46,21 @@ const Footer = () => {
                     <a href="#product_2">Estimate</a>
                     <a href="#product_3">Optimize sale</a>
                     <a href="#product_4">Authenticate art piece</a>
-                    <a href="#pricing">Pricing</a>
-                    <Link to="/legal">Legal</Link>
+                    <a href="#pricing">Offres</a>
+                    <Link to="/terms">Legal</Link>
                 </div>
                 <div className="footer-column">
-                    <h3>Artycs</h3>
-                    <Link to="/about">About Artycs</Link>
-                    <Link to="/contact">Contact Us</Link>
-                    <Link to="/team">Team</Link>
+                    <h3>{COMPANY_NAME}</h3>
+                    <Link to="/about">A propos d'Artycs</Link>
+                    <Link to="/contact">Nous contacter</Link>
+                    <Link to="/team">L'équipe</Link>
                     {/* <Link to="/career">Career</Link> */}
                 </div>
                 <div className="footer-column">
                     <h3>Community</h3>
-                    <Link to="/reviews">Reviews</Link>
+                    <Link to="/reviews">Revues</Link>
                     <Link to="/blog">Blog</Link>
-                    <Link to="/external-links">External Links</Link>
+                    {/* <Link to="/external-links">External Links</Link> */}
                 </div>
             </div>
         </footer>

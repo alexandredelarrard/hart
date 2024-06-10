@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
-import '../css/Sidebar.css';
+import '../../css/Sidebar.css';
 
 function Sidebar({ onMenuClick }) {
   const navigate = useNavigate();
@@ -11,8 +12,7 @@ function Sidebar({ onMenuClick }) {
 
   const handleLogout = () => {
     // Clear the authentication token
-    localStorage.removeItem('token');
-    // Redirect to login page
+    Cookies.remove('token');
     navigate('/');
   };
 
@@ -25,6 +25,13 @@ function Sidebar({ onMenuClick }) {
       </div>
     </div>
     <ul className="menu">
+      <li 
+          className={`menu-item ${activeMenu === 'search-art' ? 'active' : ''}`} 
+          onClick={() => { setActiveMenu('search-art'); onMenuClick('search-art'); }}
+        >
+        <FontAwesomeIcon icon={faImage} className="menu-icon" />
+        Search Art piece
+      </li>
       <li 
         className={`menu-item ${activeMenu === 'closest-lots' ? 'active' : ''}`} 
         onClick={() => { setActiveMenu('closest-lots'); onMenuClick('closest-lots'); }}

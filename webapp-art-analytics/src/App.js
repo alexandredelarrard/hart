@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Sidebar from './components/Sidebar';
-import UploadForm from './components/UploadForm';
-import OptimizeSale from './components/OptimizeSale';
+
+import Sidebar from './components/plateforme/Sidebar';
+import UploadForm from './components/plateforme/UploadForm';
+import OptimizeSale from './components/plateforme/OptimizeSale';
+import SearchArt from './components/plateforme/SearchArt';
+import ArtIdentify from './components/plateforme/ArtIdentify';
+import PrivateRoute from './components/plateforme/PrivateRoute';
+import CardDetail from './components/plateforme/CardDetail';
+
 import Home from './components/Home';
 import Trial from './components/Trial';
-import ArtIdentify from './components/ArtIdentify';
-import PrivateRoute from './components/PrivateRoute';
-import CardDetail from './components/CardDetail';
+import Login from './components/Login';
+import Signup from './components/Signup';
 import ContactUs from './components/ContactUs';
+import Terms from './components/Terms';
+import CGV from './components/CGV';
+import About from './components/About';
+import Payment from './components/landing_page/Payment';
+import Checkout from './components/Checkout';
 
 import './css/packages/bootstrap.min.css';
-import About from './components/About';
 
 function App() {
   const [file, setFile] = useState(null);
@@ -34,6 +41,8 @@ function App() {
 
   const renderContent = () => {
     switch (activeMenu) {
+      case 'search-art':
+        return <SearchArt />;
       case 'closest-lots':
         return (
           <UploadForm 
@@ -78,6 +87,9 @@ function App() {
           <Route path="/trial" element={<Trial />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/cgv" element={<CGV />} />
+          <Route path="/enroll" element={<Checkout />} />
           <Route
             path="/analytics"
             element={

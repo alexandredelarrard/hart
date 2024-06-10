@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ROOT_PICTURE } from '../utils/constants';
+import { ROOT_PICTURE } from '../../utils/constants';
 import Carousel from 'react-bootstrap/Carousel';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../css/CardDetail.css';
+import '../../css/CardDetail.css';
 
 
 function CardDetail() {

@@ -71,14 +71,22 @@
 
 .trial-form-section p {
     margin-top: 20px;
-    color: #002955;
 }
 
 .trial-form-section p a {
-    color: #205083;
     text-decoration: none;
 }
 
 .trial-form-section p a:hover {
     text-decoration: underline;
 }
+
+.checkbox-group .checkbox-container {
+    display: flex;
+    align-items: center;
+  }
+  
+.checkbox-group .checkbox-container input {
+    margin-right: 10px;
+    width: 15%;
+  }

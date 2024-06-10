@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeaderWhite from "./landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import {URL_API, URL_LOGIN} from '../utils/constants';
 import '../css/Login.css';
 
@@ -22,8 +23,9 @@ function Login() {
           'Content-Type': 'application/json',
         },
       });
+
       // Save token to localStorage and redirect to upload page
-      localStorage.setItem('token', response.data.access_token);
+      Cookies.set('token', response.data.access_token, { expires: 0.5 });
       setMessage(response.data.message);
       navigate('/analytics');
     } catch (error) {
