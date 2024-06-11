@@ -57,23 +57,23 @@ const problematics = [
             { icon: faCheck, text: "Ajustement de l'optimiseur à partir du résultat de vos ventes passées" }
         ]
     },
-    {
-        title: "Authentification de vos oeuvres",
-        description: "Afin d'éviter toute vente de contrefaçon et vous aider à les identifier, nous avons développé un outil de comparaison de signatures, sceaux, poinçons ou signe distinctif d'authentification.",
-        id:"product_4",
-        painPoints: [
-            { icon: faClock, text: "Authentification complexe, sous évaluant l'oeuvre" },
-            { icon: faBullseye, text: "Expertise difficile à construire" },
-            { icon: faUsers, text: "Ressources limitées d'identification" },
-            { icon: faGavel, text: "Au cas par cas" }
-        ],
-        solutions: [
-            { icon: faCheck, text: "Authentification semi automatisée" },
-            { icon: faCheck, text: "Données visuelles pour +10 000 signes (marque, signature, etc.)" },
-            { icon: faCheck, text: "Données internationales centralisées, tout type d'objet" },
-            { icon: faCheck, text: "Premières analyses en quelques secondes" }
-        ]
-    }
+    // {
+    //     title: "Authentification de vos oeuvres",
+    //     description: "Afin d'éviter toute vente de contrefaçon et vous aider à les identifier, nous avons développé un outil de comparaison de signatures, sceaux, poinçons ou signe distinctif d'authentification.",
+    //     id:"product_4",
+    //     painPoints: [
+    //         { icon: faClock, text: "Authentification complexe, sous évaluant l'oeuvre" },
+    //         { icon: faBullseye, text: "Expertise difficile à construire" },
+    //         { icon: faUsers, text: "Ressources limitées d'identification" },
+    //         { icon: faGavel, text: "Au cas par cas" }
+    //     ],
+    //     solutions: [
+    //         { icon: faCheck, text: "Authentification semi automatisée" },
+    //         { icon: faCheck, text: "Données visuelles pour +10 000 signes (marque, signature, etc.)" },
+    //         { icon: faCheck, text: "Données internationales centralisées, tout type d'objet" },
+    //         { icon: faCheck, text: "Premières analyses en quelques secondes" }
+    //     ]
+    // }
 ];
 
 const Product = () => {

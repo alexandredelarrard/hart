@@ -64,13 +64,20 @@ class StepCleanGptInference(GPTCleaner):
         # save a table mapping desc to specific category 
         # any status KO will have to be redone with proper prompt
         df_cat = df_done[[self.name.id_item, self.name.category, "NUMBER_OBJECTS_DESCRIBED"]]
-        df_cat["STATUS"] = np.where(df_cat[self.name.category] == self.category.lower(), "OK", "KO")
+        df_cat["STATUS"] = np.where(df_cat["CLEAN_" + self.name.category] == self.category.lower(), "OK", "KO")
+        self.remove_rows_sql_data(values=df_cat[self.name.id_item].tolist(),
+                                    column=self.name.id_item,
+                                    table_name="CATEGORY_MAPPING_GPT")
         self.write_sql_data(dataframe=df_cat,
                             table_name="CATEGORY_MAPPING_GPT",
                             if_exists="append")
         
         # save the ones of proper category mapped to right prompt
-        self.write_sql_data(dataframe=df_done.loc[df_done["CLEAN_" + self.name.category] == self.category.lower()],
+        sub_df = df_done.loc[df_done["CLEAN_" + self.name.category] == self.category.lower()]
+        self.remove_rows_sql_data(values=sub_df[self.name.id_item].tolist(),
+                                column=self.name.id_item,
+                                table_name=f"GPT_FEATURES_{self.category}")
+        self.write_sql_data(dataframe=sub_df,
                             table_name=f"GPT_FEATURES_{self.category}",
                             if_exists="append")
 

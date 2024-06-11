@@ -119,7 +119,7 @@ class StepEmbedding(Step):
         return self.get_batched_picture_embeddings(picture_path)
     
     def get_fast_picture_embedding(self, image):
-        image = Image.open(io.BytesIO(image))
+        image = Image.open(io.BytesIO(image)).convert('RGB')
         return self.picture_model.one_embedding_on_the_fly(image)
     
     def get_text_embedding(self, query_text, prompt_name):
