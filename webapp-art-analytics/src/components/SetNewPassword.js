@@ -15,7 +15,7 @@ function SetNewPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(URL_API + URL_SET_NEW_PASSWORD, { token, password }, {
+      const response = await axios.post(`${URL_API}${URL_SET_NEW_PASSWORD}/${token}`, { token, password }, {
         headers: {
           'Content-Type': 'application/json',
         },

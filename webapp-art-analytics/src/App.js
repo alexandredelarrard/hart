@@ -20,6 +20,7 @@ import About from './components/About';
 import Checkout from './components/Checkout';
 import ResetPassword from './components/ResetPassword';
 import SetNewPassword from './components/SetNewPassword';
+import Confirm from './components/Confirm';
 
 import './css/packages/bootstrap.min.css';
 
@@ -92,6 +93,7 @@ function App() {
           <Route path="/cgv" element={<CGV />} />
           <Route path="/enroll" element={<Checkout />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/confirm/:token" element={<Confirm />} />
           <Route path="/set-new-password/:token" element={<SetNewPassword />} />
           <Route
             path="/analytics"

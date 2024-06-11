@@ -47,7 +47,7 @@ class Email:
         self.email_config["MAIL_PORT"] = 587
         self.email_config["MAIL_USE_TLS"] = True
         self.email_config["MAIL_USE_SSL"] = False
-        self.email_config["MAIL_DEFAULT_SENDER"] = os.environ["MAIL_USERNAME"]
+        self.email_config["MAIL_DEFAULT_SENDER"] = os.environ["MAIL_SENDER"]
 
     def init_email(self):
         return Mail()

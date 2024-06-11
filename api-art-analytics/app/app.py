@@ -15,7 +15,7 @@ class App(Step):
 
 		# Initialize the core application.
 		app = Flask(__name__, instance_relative_config=True)
-		app = self.set_config_app(app, debug=True)
+		app = self.set_config_app(app)
 
 		# Initialize db and mail connected to app
 		self._context.flask_db.init_app(app)
@@ -29,7 +29,7 @@ class App(Step):
 
 		return app
 
-	def set_config_app(self, app, debug=True):
+	def set_config_app(self, app):
 			
 		app.config["SQLALCHEMY_DATABASE_URI"] = self._context.connexion_string
 		app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -38,14 +38,9 @@ class App(Step):
 		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 3}
 		app.config["JWT_REFRESH_LIFESPAN"] = {'days': 1}
 		app.config['SECRET_KEY'] = os.environ["SECRET_KEY_LOGIN"]
+		app.config["DEBUG"] = False
+		app.config["TESTING"] = False
 		app.config.update(self._context.email_config)
-
-		if debug:
-			app.config["DEBUG"] = True
-			app.config["TESTING"] = True
-		else:
-			app.config["DEBUG"] = False
-			app.config["TESTING"] = False
 
 		return app
 	
@@ -53,4 +48,4 @@ app_step = App(config=config, context=context)
 app = app_step.create_app()
 
 if __name__ == "__main__":
-	app.run(debug=True, host="0.0.0.0", port=8888)	
+	app.run(debug=False, host="0.0.0.0", port=8888)	

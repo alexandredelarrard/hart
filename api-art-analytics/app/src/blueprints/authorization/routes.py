@@ -99,7 +99,7 @@ def signin():
 
                 # Send confirmation email
                 confirm_url = url_for('authorization.confirm_email', token=token, _external=True)
-                html = f'<p>Please click the link to confirm your email: <a href="{confirm_url}">{confirm_url}</a></p>'
+                html = f'<p>Please click the link to confirm your email: <a href="{confirm_url}">{confirm_url}</a></p>'.replace("localhost", "localhost:3000")
                 msg = Message('Confirm Your Email', recipients=[email], html=html)
                 mail.send(msg)
 
@@ -138,18 +138,15 @@ def reset_password():
     if user:
         token = serializer.dumps(email, salt='password-reset-salt')
         reset_url = url_for('authorization.set_new_password', token=token, _external=True)
-        html = f'<p>Please click the link to reset your password: <a href="{reset_url}">{reset_url}</a></p>'
+        html = f'<p>Please click the link to reset your password: <a href="{reset_url}">{reset_url}</a></p>'.replace("localhost", "localhost:3000")
         msg = Message('Password Reset Request', recipients=[email], html=html)
         mail.send(msg)
         return jsonify({'message': 'A password reset link has been sent to your email.'}), 200
     return jsonify({'error': 'Email not found'}), 404
 
 
-@authorization_blueprint.route('/set-new-password/<token>', methods=['GET', 'POST'])
+@authorization_blueprint.route('/set-new-password/<token>', methods=['POST'])
 def set_new_password(token):
-    if request.method == 'GET':
-        return jsonify({'token': token}), 200
-
     if request.method == 'POST':
         data = request.get_json()
         password = data.get('password')
