@@ -1,11 +1,16 @@
-from flask import request, jsonify
-import logging
+from flask import request, jsonify, url_for
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+from datetime import datetime
 
+from flask_mail import Message
+from itsdangerous import SignatureExpired
 from flask_cors import  cross_origin
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 from . import authorization_blueprint
 from src.schemas.user import User
+from src.extensions import db, mail, serializer
 from src.extensions import front_server
 
 # =============================================================================
@@ -16,6 +21,7 @@ from src.extensions import front_server
 def login():
     if request.method == 'OPTIONS':
         return jsonify({'message': 'Options request handled'}), 200
+    
     if request.method == 'POST':
         data = request.get_json()
         email = data.get('email')
@@ -24,11 +30,11 @@ def login():
         if not email or not password:
             return jsonify({'error': 'Email and password are required'}), 400
 
-        user = User.query.filter_by(email=email, password=password).first()
+        user = User.query.filter_by(email=email).first()
 
-        if user:
+        if user and check_password_hash(user.password, password):
             access_token = create_access_token(identity={'email': user.email})
-            return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
+            return jsonify({'message': 'Login successful', 'access_token': access_token, "userdata": user.to_dict()}), 200
         else:
             return jsonify({'error': 'Invalid email or password'}), 401
        
@@ -48,3 +54,114 @@ def logout():
 def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
+
+@authorization_blueprint.route('/signin', methods=['POST', 'OPTIONS'])
+@cross_origin(origins=front_server)
+def signin():
+    if request.method == 'OPTIONS':
+        return jsonify({'message': 'Options request handled'}), 200
+    
+    if request.method == 'POST':
+        data = request.get_json()
+
+        email = data.get('email')
+        password = data.get('password')
+        name = data.get('username')
+        surname = data.get('surname')
+        job = data.get('metier')
+
+        if not email or not password:
+            return jsonify({'error': 'Email and password are required'}), 400
+        
+        if len(password) > 20:
+            return jsonify({'error': 'Password should have fewer than 20 caracters'}), 401
+
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            return jsonify({'error': 'Email already in use'}), 404
+        else:
+            try:
+                hashed_password = generate_password_hash(password)
+                new_user = User(
+                    email=email,
+                    password=hashed_password,
+                    name=name,
+                    surname=surname,
+                    job=job,
+                    creation_date=datetime.today().strftime("%Y-%m-%d %H:%M")
+                )
+                db.session.add(new_user)
+                db.session.commit()
+
+                # Generate a token
+                token = serializer.dumps(email, salt='email-confirm')
+
+                # Send confirmation email
+                confirm_url = url_for('authorization.confirm_email', token=token, _external=True)
+                html = f'<p>Please click the link to confirm your email: <a href="{confirm_url}">{confirm_url}</a></p>'
+                msg = Message('Confirm Your Email', recipients=[email], html=html)
+                mail.send(msg)
+
+                access_token = create_access_token(identity={'email': new_user.email})
+                return jsonify({'message': 'Signin successful', 
+                                'access_token': access_token, 
+                                "userdata": new_user.to_dict()
+                                }), 200
+            
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': 'Failed to create user', 'details': str(e)}), 500
+
+
+@authorization_blueprint.route('/confirm/<token>', methods=['GET'])
+def confirm_email(token):
+    try:
+        email = serializer.loads(token, salt='email-confirm', max_age=3600)
+        user = User.query.filter_by(email=email).first_or_404()
+        
+        # Update the user as confirmed
+        user.email_confirmed = True
+        db.session.commit()
+        
+        return jsonify({'message': 'Email confirmed. You can now log in.'}), 200
+    except SignatureExpired:
+        return jsonify({'error': 'The confirmation link has expired.'}), 400
+    
+
+@authorization_blueprint.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    email = data.get('email')
+    user = User.query.filter_by(email=email).first()
+    
+    if user:
+        token = serializer.dumps(email, salt='password-reset-salt')
+        reset_url = url_for('authorization.set_new_password', token=token, _external=True)
+        html = f'<p>Please click the link to reset your password: <a href="{reset_url}">{reset_url}</a></p>'
+        msg = Message('Password Reset Request', recipients=[email], html=html)
+        mail.send(msg)
+        return jsonify({'message': 'A password reset link has been sent to your email.'}), 200
+    return jsonify({'error': 'Email not found'}), 404
+
+
+@authorization_blueprint.route('/set-new-password/<token>', methods=['GET', 'POST'])
+def set_new_password(token):
+    if request.method == 'GET':
+        return jsonify({'token': token}), 200
+
+    if request.method == 'POST':
+        data = request.get_json()
+        password = data.get('password')
+        
+        try:
+            email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.password = generate_password_hash(password)
+                db.session.commit()
+                return jsonify({'message': 'Your password has been updated.'}), 200
+        except SignatureExpired:
+            return jsonify({'error': 'The password reset link has expired.'}), 400
+
+        return jsonify({'error': 'Invalid token'}), 400

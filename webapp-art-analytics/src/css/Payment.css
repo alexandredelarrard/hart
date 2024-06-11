@@ -1,8 +1,6 @@
 .payment-container {
-    max-width: 500px;
-    margin: 160px auto;
     padding: 20px;
-    background: #f8f8f8;
+    background: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: left;
@@ -19,6 +17,7 @@
     display: flex;
     flex-direction: column;
     margin-top: 30px;
+    background: white;
   }
   
   .payment-button {
@@ -43,21 +42,21 @@
   }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
   width: 100%;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  color: #333;
+  margin-bottom: 0.5rem;
 }
 
 .form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  width: 100%; /* Ensure input takes full width */
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .form-row {
@@ -77,9 +76,11 @@
 .message {
     color: green;
     margin-top: 20px;
+    text-align: center;
   }
   
 .error {
     color: red;
     margin-top: 20px;
+    text-align: center;
   }

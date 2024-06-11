@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import HeaderWhite from "./landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import {URL_API, URL_LOGIN} from '../utils/constants';
+import LoginElement from './LoginElement.js';
 import '../css/Login.css';
 
 function Login() {
@@ -26,6 +26,7 @@ function Login() {
 
       // Save token to localStorage and redirect to upload page
       Cookies.set('token', response.data.access_token, { expires: 0.5 });
+      Cookies.set('userdata', JSON.stringify(response.data.userdata), { expires: 0.5 });
       setMessage(response.data.message);
       navigate('/analytics');
     } catch (error) {
@@ -43,38 +44,15 @@ function Login() {
     <div>
       <HeaderWhite/>
       <div className="login-container">
-        <div className="login-form">
-          <h2>Login</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Email:</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Password:</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-            <button type="submit" className="login-button">Login</button>
-          </form>
-          {message && <p className="message">{message}</p>}
-          {error && <p className="error">{error}</p>}
-          <hr className="login-delimiter" />
-          <div className='login-trial'>
-            <p>Pas encore inscrit ? <Link to="/trial">Essayez gratuitement</Link>.</p>
-          </div>
-        </div>
+        <LoginElement
+          handleSubmit={handleSubmit}
+          email={email}
+          password={password}
+          error={error}
+          message={message}
+          setEmail={setEmail}
+          setPassword={setPassword}
+        />
       </div>
     </div>
   );

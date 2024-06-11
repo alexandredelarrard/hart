@@ -67,10 +67,10 @@
 .login-delimiter{
   border: 1px solid #ddd;
   align-items: center;
-  margin-top: 40px;
+  margin: 25px;
 }
 
 .login-trial{
   text-align: center;
-  color:gray
+  color:gray;
 }

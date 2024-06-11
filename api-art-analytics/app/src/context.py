@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from itsdangerous import URLSafeTimedSerializer
 
 from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig, OmegaConf
@@ -42,10 +43,11 @@ class Email:
         self.email_config = {}
         self.email_config["MAIL_USERNAME"] = os.environ["MAIL_USERNAME"]
         self.email_config["MAIL_PASSWORD"] = os.environ["MAIL_PWD"]
-        self.email_config["MAIL_SERVER"] = "smtp.gmail.com"
-        self.email_config["MAIL_PORT"] = 465
-        self.email_config["MAIL_USE_TLS"] = False
-        self.email_config["MAIL_USE_SSL"] = True
+        self.email_config["MAIL_SERVER"] = os.environ["MAIL_SMTP"]
+        self.email_config["MAIL_PORT"] = 587
+        self.email_config["MAIL_USE_TLS"] = True
+        self.email_config["MAIL_USE_SSL"] = False
+        self.email_config["MAIL_DEFAULT_SENDER"] = os.environ["MAIL_USERNAME"]
 
     def init_email(self):
         return Mail()
@@ -57,7 +59,7 @@ class Context:
         self._config = config
 
         # creqte logging buffer 
-        buffer =StringIO()
+        buffer = StringIO()
         handler = logging.StreamHandler(buffer)
         formatter = logging.Formatter(self._config.logging.formatters.file.format)
         handler.setFormatter(formatter)
@@ -92,6 +94,9 @@ class Context:
         # Cors policy
         self.cors = CORS(resources={r"/*": {"origins": self._config.front_end.server}})
 
+        # Security of logins
+        self.serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY_LOGIN'])
+
     @property
     def config(self) -> DictConfig:
         return self._config
@@ -107,7 +112,6 @@ class Context:
     @property
     def random_state(self) -> int:
         return self._config.seed
-    
 
 def get_config_context(config_path : str, use_cache : bool, save : bool):
 

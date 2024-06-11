@@ -15,11 +15,11 @@ function Payment({cardData,
 
   return (
     <div className="payment-container">
-      <div className="payment-summary">
+      {/* <div className="payment-summary">
         <h3>Summary</h3>
         <p>Selected Plan: {Cookies.get('selectedPlan')}</p>
         <p>Price: {Cookies.get('selectedPrice')} euros</p>
-      </div>
+      </div> */}
       <div className="payment-form-container">
         <h2>Payment Details</h2>
         <Cards

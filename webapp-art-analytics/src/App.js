@@ -17,8 +17,9 @@ import ContactUs from './components/ContactUs';
 import Terms from './components/Terms';
 import CGV from './components/CGV';
 import About from './components/About';
-import Payment from './components/landing_page/Payment';
 import Checkout from './components/Checkout';
+import ResetPassword from './components/ResetPassword';
+import SetNewPassword from './components/SetNewPassword';
 
 import './css/packages/bootstrap.min.css';
 
@@ -90,6 +91,8 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/cgv" element={<CGV />} />
           <Route path="/enroll" element={<Checkout />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/set-new-password/:token" element={<SetNewPassword />} />
           <Route
             path="/analytics"
             element={

@@ -1,4 +1,5 @@
 from flask import Flask
+import os
 from src.blueprints.authorization import authorization_blueprint
 from src.blueprints.retreiver_infos import infos_blueprint
 from src.utils.step import Step
@@ -36,6 +37,7 @@ class App(Step):
 		app.config['CORS_HEADERS'] = 'Content-Type'
 		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 3}
 		app.config["JWT_REFRESH_LIFESPAN"] = {'days': 1}
+		app.config['SECRET_KEY'] = os.environ["SECRET_KEY_LOGIN"]
 		app.config.update(self._context.email_config)
 
 		if debug:

@@ -1,27 +1,20 @@
 services:
-    chromadb:
-        image: ghcr.io/chroma-core/chroma:latest
-        container_name: chromadb
-        ports:
-            - "8000:8000"
-        volumes:
-            - D:/data/chroma_db/chroma_data:/chroma/chroma
-        # command: "--workers 1 --host 0.0.0.0 --port 8000"
-        healthcheck: 
-            test: curl localhost:8000/api/v1/heartbeat || exit 1
-            interval: 1000s
-            retries: 2
-            start_period: 5s
-            timeout: 10s
-        networks:
-            - shared_net
-        deploy:
-        mem_limit: 32g 
-        ulimits:
-            nofile:
-                soft: 1048576  # Set the soft limit for nofile
-                hard: 1048576  # Set the hard limit for nofile
-
+    # chromadb:
+    #     image: ghcr.io/chroma-core/chroma:latest
+    #     container_name: chromadb
+    #     ports:
+    #         - "8000:8000"
+    #     volumes:
+    #         - D:/data/chroma_db/chroma_data:/chroma/chroma
+    #     # command: "--workers 1 --host 0.0.0.0 --port 8000"
+    #     healthcheck: 
+    #         test: curl localhost:8000/api/v1/heartbeat || exit 1
+    #         interval: 1000s
+    #         retries: 2
+    #         start_period: 5s
+    #         timeout: 10s
+    #     networks:
+    #         - shared_net
     back_app:
         container_name: backend_api
         build: 
