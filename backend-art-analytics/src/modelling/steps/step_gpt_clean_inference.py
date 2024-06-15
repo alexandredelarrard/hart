@@ -44,8 +44,15 @@ class StepCleanGptInference(GPTCleaner):
 
         # get col_mapping:
         self.col_mapping = read_json(self._mapping_path)
+        self.cat_map = read_json(r"D:\data\llm_extracts\features_to_extract\object_category_mapping.json")
 
         df_done = read_crawled_pickles(path=self.save_queue_path)
+        df_names = self.read_sql_data("ARTISTS_DB_PRICE")
+
+        a = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(["1", "2", "3"])]
+        b = a["OBJECT_CATEGORY"].value_counts()
+        c = b.loc[~b.index.isin([x for liste in self.cat_map.values() for x in liste])]
+        print((c.sum()+df_done.shape[0] - b.sum())/b.sum())
 
         df_done = self.eval_json(df_done)
         df_done = self.extract_features(df_done)
@@ -55,6 +62,7 @@ class StepCleanGptInference(GPTCleaner):
         df_done = self.clean_text(df_done)
         df_done = self.clean_binary(df_done)
         df_done = self.clean_values(df_done)
+        df_done = self.clean_names(df_done)
 
         self.save_infos_to_tables(df_done)
 

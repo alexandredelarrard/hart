@@ -1,16 +1,23 @@
 gpt:
   save_path: D:/data/llm_extracts/extraction/
   llm_model: 
-    groq: llama3-70b-8192 #llama3-8b-8192 free so no need of limiting - 30/Min
+    groq: llama3-8b-8192 #llama3-8b-8192 free so no need of limiting - 30/Min
     open_ai: gpt-3.5-turbo
     local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
     google: gemini-1.5-flash
   seed: 1234
-  introduction: "You are an art document entity extraction specialist. \
-                Given an art description, your role is to extract all the text values of the JSON schema. \
-                - Before rendering the JSON, think step by step to make sure the entity name answers well the text value you will give. \
-                - If no value related to the field is found, then render \"None\". \
-                - Do not normalize any entity value.\
-                - Translate all values in english and only english. \
-                - Do not start your answer by Here is the extracted or Response, directly give the JSON output. Make sure all values are quoted."
-                
+  introduction:
+    features: "You are an art document entity extraction specialist. \
+                  Given an art description, your role is to extract all the text values of the JSON schema. \
+                  - Before rendering the JSON, think step by step to make sure the entity name answers well the text value you will give. \
+                  - If no value related to the field is found, then render \"None\". \
+                  - Do not normalize any entity value.\
+                  - Translate all values in english and only english. \
+                  - Do not start your answer by Here is the extracted or Response, directly give the JSON output. Make sure all values are quoted."
+    reformulate: "As an art interpretation expert fluent in both English and French: \ 
+                  - Given an art description, your task is to provide translations in both French and English, formatted as specified in the JSON structure below. \
+                  - For each translation, render the title of the description first in French, then in English. Follow this with the description itself, first in French, then in English. \
+                  - Ensure that only information directly present in the original description is included. \
+                  - Omit details such as auction location, contact information, viewing schedules, and transportation fees. \
+                  - When translating, simplify the sentence while retaining all descriptions of objects, and expand contracted words into their full forms in English or French. For example, 'bout.' should be expanded to 'boutelle' and 'long.' to 'longeur' etc. \
+                  - Finally, also include the number of objects described and the specific category of the art object(s)."

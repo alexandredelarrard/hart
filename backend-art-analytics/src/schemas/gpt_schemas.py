@@ -1,6 +1,14 @@
 from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Optional
 
+class Reformulate(BaseModel):
+    french_title: str = Field(description="The title of the art description translated into French.")
+    french_description: str = Field(description="The detailed art description translated into French.")
+    english_title: str = Field(description="The title of the art description in English.")
+    english_description: str = Field(description="The detailed art description in English.")
+    object_category: str = Field(description="The specific category of the described object. Be very specific and provide the answer in English only. Examples include: painting, table, serigraphy, vase, lamp, ring, or another specific item.")
+    number_objects_described: str = Field(description="The number of objects described in the text. If only one object is described, enter '1'. If it is a pair, enter '2', etc.")
+
 class Painting(BaseModel):
     object_category: str = Field(description="What kind of object this description is talking about? Be very specific in the object category. for instance: painting, table, chair, serigraphie, vase, lamp, etc.")
     artirst_surname : str = Field(description="Surname of the artist")
@@ -18,6 +26,23 @@ class Painting(BaseModel):
     painting_period_or_year: str = Field(description="Year, circa year or century when the painting was painted.")
     number_objects_described: str = Field(description="Number of objects described in the text. If only one element is described, answer '1'")
 
+class Ring(BaseModel):
+    object_category: str = Field(description="Kind of object this description is talking about. Be very specific in the object category. for instance: Painting, table, chair, serigraphie, ring, etc.")
+    ring_typology: str = Field(description="Ring typologie. For instance, a solitary, a perl ring, an alliance, engagement, three stones settings, margueritte, etc.") 
+    ring_brand: str = Field(description="Ring brand, signature or ring maker")
+    ring_material : str = Field(description="Material the ring is made of. For instance, gold, white gold, silver, etc.")
+    ring_material_purety: str = Field(description="Purety of the metal which makes the ring. For instance 14k, 18k, 800/1000, 750 °/°°, etc.")
+    central_ring_stone_kind: str = Field(description="What kind of stone the ring has in its center ? For instance: Ruby, Diamond, Saphir, Opal, Emerald, Perle, etc.")
+    central_ring_stone_weight: str = Field(description="Weight of central ring. Can be in grammes of in carats (written sometimes ct or cts)")
+    central_ring_stone_size: str = Field(description="Diameter of the central stone. Can be in mm if this is a pearl.")
+    side_ring_number: str = Field(description="Stone number the ring has around the central stone, if any. Only give a number if there is a central stone")
+    side_ring_kind: str = Field(description="Kind of stone the ring has around its center (diamond usually, can be perls, etc.).")
+    side_ring_weight: str = Field(description="Weight of side rings. Can be in grammes of in carats (written sometimes ct or cts)")
+    total_ring_weight: str = Field(description="Total weight of the ring. Should be written in grammes.")
+    ring_period_or_year: str = Field(description="Year, circa year, periode or century when the ring was created.")
+    ring_size: str = Field(description="What finger size is the ring ? Around 54 usually. Can be identified by TDD (tour de doigt).")
+    ring_condition: str = Field(description="Condition of the ring. Any missing part, scratch or lack of luminosity should appear here")
+    
 class Sculpture(BaseModel):
     object_category: str = Field(description="What kind of object this description is talking about? Be very specific in the object category. for instance: Painting, table, chair, serigraphie, etc.")
     object_described: Optional[str] = Field(description="If the object described is not a sculpture, write what kind of object is described")
@@ -102,7 +127,9 @@ def get_mapping_pydentic_object(object : str):
     mapping_object= {"painting": Painting,
                     "vase": Vase,
                     "watch": Watch,
-                    "sculpture": Sculpture}
+                    "ring": Ring,
+                    "sculpture": Sculpture,
+                    "reformulate": Reformulate}
     
     if object not in mapping_object.keys():
         raise Exception(f"{object} not handled yet by pydentic schemas, please add to the schema or change object")

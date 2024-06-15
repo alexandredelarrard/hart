@@ -111,6 +111,7 @@
 .price-option.selected {
   border: 2px solid #002955;
   background-color: white;
+  color:#002955;
 }
   
 
@@ -156,4 +157,9 @@
 
 .firm-presentation-cta-button.disabled-button:hover{
  color:white;
+}
+
+.prefered{
+  border: 4px solid red;
+  box-shadow: 0 0 50px rgba(167, 57, 57, 0.952);
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderWhite from "./landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -39,6 +39,14 @@ function Login() {
       }
     }
   };
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    const userdata = Cookies.get('userdata');
+    if (token && userdata) {
+      navigate('/analytics');
+    }
+  }, [navigate]);
 
   return (
     <div>

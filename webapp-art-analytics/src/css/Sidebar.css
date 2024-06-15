@@ -58,6 +58,7 @@
   border-radius: 5px;
   margin-bottom: 0.5rem;
   border-left: 5px solid transparent;
+  font-weight: normal;
 }
 
 .menu-item:hover,
@@ -65,6 +66,7 @@
   background-color: #0c3867; /* Blue background on hover/active */
   color: white;
   border-left: 5px solid #dc3545;
+  font-weight: bold;
 }
 
 .menu-icon {
@@ -78,7 +80,6 @@
 .submenu {
   list-style: none;
   padding: 0;
-  margin: 0 0 0 1rem;
 }
 
 .submenu-item {
@@ -89,74 +90,43 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Add this to space out the delete icon */
   border-radius: 5px;
   margin-bottom: 0.5rem;
+  font-weight: normal;
+}
+
+.submenu-item span {
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden; /* Hides the overflow text */
+  text-overflow: ellipsis; /* Adds the ... */
+  max-width: 170px; /* Adjust the width based on your layout */
+  display: inline-block;
 }
 
 .submenu-item:hover,
 .submenu-item.active {
   background-color: #0c3867; /* Blue background on hover/active */
   color: white;
+  font-weight: bold;
 }
 
-.sidebar-form {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 1rem 0; /* Ensure padding around the form */
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  color: #fff; /* White text color */
-  display: flex;
-  align-items: center;
-}
-
-.input-file,
-.textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px; /* Rounded corners */
-  box-sizing: border-box;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.3s ease;
-}
-
-.input-file:focus,
-.textarea:focus {
-  border-color: #007bff;
-}
-
-.textarea {
-  resize: vertical;
-  min-height: 100px;
-  max-height: 300px;
-}
-
-.send-button {
-  width: 100%;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 5px; /* Rounded corners */
-  background-color: #0c3867;
-  color: white;
-  font-size: 1rem;
+.delete-icon {
+  margin-left: 0.5rem;
   cursor: pointer;
-  box-sizing: border-box;
-  transition: background-color 0.3s ease;
+  color: #dc3545; /* Red color for delete icon */
 }
 
-.send-button:hover {
-  background-color: #002a57;
+.results-container {
+  max-height: 500px;
+  overflow-y: auto;
+  margin-left: 1rem;
+}
+
+.results-category {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 1rem;
 }
 
 .logout-button {

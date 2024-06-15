@@ -7,8 +7,25 @@ import problematicImage from '../../assets/landing_background_3.jpg';
 
 const problematics = [
     {
+        title: "Estimez automatiquement vos oeuvres",
+        description: "Recherchez en soumettant une simple image ou un descriptif pointu, l'IA se charge de vous trouver les pièces correspondantes et les prix associés.",
+        id:"product_2",
+        painPoints: [
+            { icon: faClock, text: "Aucune estimation claire" },
+            { icon: faBullseye, text: "Estimation longue par recherche manuelle" },
+            { icon: faUsers, text: "Aucune explication sur les prix passés" },
+            { icon: faGavel, text: "Aucune espace de travail personnalisé" }
+        ],
+        solutions: [
+            { icon: faCheck, text: "Estimation automatique précise et interprétable" },
+            { icon: faCheck, text: "Estimation en quelques secondes" },
+            { icon: faCheck, text: "Prix passés expliqués par géolocalisation, date, etc." },
+            { icon: faCheck, text: "Espace de travail dédié, historisé" }
+        ]
+    },
+    {
         title: "Recherchez intelligemment vos oeuvres dans plus de 10 millions d'articles",
-        description: "L'IA vous permet de rechercher en comparant l'image ou le texte de votre oeuvre avec celles de notre base de référence en cherchant une oeuvre, un artiste ou une vente.",
+        description: "Recherchez toutes les oeuvre d'un artiste, ou toute oeuvre dans le même jus que la votre à partir de critères très fins.",
         id:"product_1",
         painPoints: [
             { icon: faSearch, text: "Recherche limitée par mots clés"},
@@ -18,26 +35,9 @@ const problematics = [
         ],
         solutions: [
             { icon: faCheck, text: "Recherche par l'image et/ou le texte"},
-            { icon: faCheck, text: "Affinage par nos critères fins"},
+            { icon: faCheck, text: "Recherche par critères fins, materiau, dimension, etc."},
             { icon: faCheck, text: "Analyses de tendances, de CA de l'artiste et plus encore"},
             { icon: faCheck, text: "Données mises à jour toutes les 24h"}
-        ]
-    },
-    {
-        title: "Estimez automatiquement vos oeuvres",
-        description: "A partir d'une simple photo et sans connaissance de l'oeuvre, vous pouvez désormais observer toutes les ventes passées similaires. Vous pouvez contextualiser votre image par le texte pour ajuster l'estimation.",
-        id:"product_2",
-        painPoints: [
-            { icon: faClock, text: "Estimation manuelle" },
-            { icon: faBullseye, text: "Aucune désigantion" },
-            { icon: faUsers, text: "Prix des oeuvres similaires non contextualisable" },
-            { icon: faGavel, text: "Aucune historisation du travail" }
-        ],
-        solutions: [
-            { icon: faCheck, text: "Estimation automatique avec intervalle de confiance" },
-            { icon: faCheck, text: "Désignation automatique par IA générative (ChatGpt)" },
-            { icon: faCheck, text: "Simulateur de prix par géolocalisation, date, etc." },
-            { icon: faCheck, text: "Mémorisation de vos estimations dans le temps" }
         ]
     },
     {

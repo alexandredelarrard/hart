@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
+import './css/packages/bootstrap.min.css';
+
 import Sidebar from './components/plateforme/Sidebar';
 import UploadForm from './components/plateforme/UploadForm';
 import OptimizeSale from './components/plateforme/OptimizeSale';
@@ -22,8 +24,6 @@ import ResetPassword from './components/ResetPassword';
 import SetNewPassword from './components/SetNewPassword';
 import Confirm from './components/Confirm';
 
-import './css/packages/bootstrap.min.css';
-
 function App() {
   const [file, setFile] = useState(null);
   const [text, setText] = useState('');
@@ -35,7 +35,9 @@ function App() {
   const [avgMaxEstimates, setAvgMaxEstimates] = useState(0);
   const [avgFinalResult, setAvgFinalResult] = useState(0);
   const [chatBotResultFetched, setChatBotResultFetched] = useState(false);
+  const [analysisInProgress, setAnalysisInProgress] = useState(false);
   const [activeMenu, setActiveMenu] = useState('closest-lots');
+  const [newResultSaved, setNewResultSaved] = useState(false);
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -68,6 +70,9 @@ function App() {
             avgMinEstimates={avgMinEstimates}
             avgFinalResult={avgFinalResult}
             setAvgFinalResult={setAvgFinalResult}
+            analysisInProgress={analysisInProgress}
+            setAnalysisInProgress={setAnalysisInProgress}
+            setNewResultSaved={setNewResultSaved}
         />
         );
       case 'optimize-sale':
@@ -100,7 +105,22 @@ function App() {
             element={
               <PrivateRoute>
                 <div style={{ display: 'flex' }}>
-                  <Sidebar onMenuClick={handleMenuClick} />
+                  <Sidebar 
+                    onMenuClick={handleMenuClick} 
+                    setFile={setFile}
+                    setText={setText}
+                    setTaskId={setTaskId}
+                    analysisInProgress={analysisInProgress}
+                    setResult={setResult}
+                    setBotResult={setBotResult}
+                    setChatBotResultFetched={setChatBotResultFetched}
+                    setAvgMaxEstimates={setAvgMaxEstimates}
+                    setAdditionalData={setAdditionalData}
+                    setAvgMinEstimates={setAvgMinEstimates}
+                    setAvgFinalResult={setAvgFinalResult}
+                    newResultSaved={newResultSaved}
+                    setAnalysisInProgress={setAnalysisInProgress}
+                  />
                   {renderContent()}
                 </div>
               </PrivateRoute>

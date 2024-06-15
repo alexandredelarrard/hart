@@ -1,9 +1,7 @@
 from flask import request, jsonify
 from typing import List
-from itertools import groupby
-from operator import attrgetter
 from flask_cors import  cross_origin
-from src.schemas.user import AllItems, AllPerItem
+from src.schemas.user import AllItems, AllPerItem, CloseResult
 from sqlalchemy import and_
 from src.extensions import db
 import numpy as np
@@ -25,26 +23,6 @@ def deduplicate_dicts(dict_list, unique_key):
             seen[d[unique_key]] = d
     return list(seen.values())
 
-def reorder_output_on_dist(result, ids, distances):
-    dict_id_dist = {ids[i] : distances[i] for i in range(len(ids))}
-    output = [item.to_dict() for item in result]
-    new_output = add_distance(output, dict_id_dist, column="distance", id="id_unique")
-    sorted_output = sorted(new_output, key=lambda x: x["distance"])
-    return sorted_output
-
-def fetch_filtered_items(output):
-
-    # get all pictures per id_unique 
-    id_items = [x['id_item'] for x in output]
-    filtered_items = db.session.query(AllPerItem).filter(
-        and_(
-            AllPerItem.ID_ITEM.in_(id_items),
-            AllPerItem.ID_PICTURE.isnot(None)
-        )
-    ).all()
-
-    return [item.to_dict() for item in filtered_items]
-
 # =============================================================================
 # additonal infos
 # =============================================================================
@@ -64,12 +42,18 @@ def post_ids_infos():
             # try:
                 # get description per id_unique
                 result_desc_id =  AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
-                output = reorder_output_on_dist(result_desc_id, ids, distances)
+                output = [item.to_dict() for item in result_desc_id]
                 deduplicated_output = deduplicate_dicts(output, "id_item")
 
                 # Fetch filtered items in batches
                 # A refaire avec table indexee sur ID_ITEM
-                grouped_items = fetch_filtered_items(deduplicated_output)
+                filtered_items = db.session.query(AllPerItem).filter(
+                                    and_(
+                                        AllPerItem.ID_ITEM.in_([x['id_item'] for x in output]),
+                                        AllPerItem.ID_PICTURE.isnot(None)
+                                    )
+                                ).all()
+                grouped_items= [item.to_dict() for item in filtered_items]
                 dict_items = {grouped_items[i]["id_item"] : grouped_items[i]["id_picture"] for i in range(len(grouped_items))}
 
                 # Add grouped pictures to the output
@@ -90,3 +74,40 @@ def post_ids_infos():
             
         else:
             return jsonify({"error": 'ids does not have the expected format'}), 400
+
+
+@infos_blueprint.route('/get-past-results', methods=['GET'])
+@cross_origin(origins=front_server)
+def get_past_results():
+    
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        if user_id:
+            results = CloseResult.query.filter_by(user_id=user_id, 
+                                                  status="SUCCESS", 
+                                                  visible_item=True).all()
+            list_results= [item.to_dict() for item in results]
+            return jsonify({"results": list_results}), 200
+        else:
+            return jsonify({"error": 'missing user ID'}), 400
+    
+    else:
+        return jsonify({"error": 'method only GET'}), 500
+
+
+@infos_blueprint.route('/delete-task/<task_id>', methods=['DELETE'])
+@cross_origin(origins=front_server)
+def delete_task(task_id):
+    
+    if request.method == 'DELETE':
+        task = CloseResult.query.filter_by(task_id=task_id).first_or_404()
+
+        if task_id:
+            task.visible_item=False
+            db.session.commit()
+            return jsonify({"message": "successful deletion"}), 200
+        else:
+            return jsonify({"error": 'missing task ID'}), 400
+    
+    else:
+        return jsonify({"error": 'method only GET'}), 500

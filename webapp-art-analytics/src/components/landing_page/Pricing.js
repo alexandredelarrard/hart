@@ -13,7 +13,12 @@ const Pricing = () => {
     const handleSubmit = (category) => {
         console.log(`Selected price for ${category}:`, selectedPrice[category]);
         // Add logic for form submission, e.g., redirect to payment with selected price
-        window.location.href = '/enroll';
+        if(category === 'beginner'){
+            window.location.href = '/trial';
+        }
+        else{
+            window.location.href = '/enroll';
+        }
     };
 
     return (
@@ -22,7 +27,25 @@ const Pricing = () => {
                 <div className="pricing-subsection">
                     <h1>Des offres dédiées à vos besoins</h1>
                     <div className="pricing-cards">
-                        <div className="pricing-card">
+                    <div className="pricing-card">
+                        <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
+                            <h2>Nouveaux utilisateurs</h2>
+                            <p>Essayez notre solution gratuitement pendant 7 jours et familiarisez vous avec les fonctionnalités d'Artyx.</p>
+                            <ul className="features-list">
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Jusqu'à 100 recherches</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 20 estimations </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Valable 1 mois </li>
+                            </ul>
+                            <div className="button-container">
+                                <button
+                                    className="firm-presentation-cta-button"
+                                    onClick={() => handleSubmit('beginner')}
+                                >
+                                    Essayer gratuitement
+                                </button>
+                            </div>
+                        </div>
+                        <div className="pricing-card prefered">
                             <FontAwesomeIcon icon={faUser} className="pricing-icon" />
                             <h2>Passionnés d'art</h2>
                             <p>Idéal pour les passionnés d'art, curieux d'un artiste ou de la valeur d'une oeuvre d'art</p>
@@ -60,25 +83,9 @@ const Pricing = () => {
                             </div>
                         </div>
                         <div className="pricing-card">
-                            <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
-                            <h2>Experts</h2>
-                            <p>Pour les experts devant évaluer ou authentifier des oeuvres d'art.</p>
-                            <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Recherches illimitées </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 200 estimations/mois</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Optimiseur de vente </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Outil d'authentification</li>
-                            </ul>
-                            <div className="button-container">
-                                <button className="firm-presentation-cta-button disabled-button" disabled>
-                                    Bientôt disponible
-                                </button>
-                            </div>
-                        </div>
-                        <div className="pricing-card">
                             <FontAwesomeIcon icon={faShieldAlt} className="pricing-icon" />
-                            <h2>Entreprises</h2>
-                            <p>Entreprises ayant des besoins importants requérant une offre à la carte.</p>
+                            <h2>Entreprises/Experts</h2>
+                            <p>Entreprises ou experts ayant des besoins importants requérant une offre à la carte.</p>
                             <ul className="features-list">
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Requêtes sans limite</li>
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Limite d'estimations dédiée</li>

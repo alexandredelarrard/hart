@@ -9,6 +9,7 @@ from flask_cors import  cross_origin
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 
 from . import authorization_blueprint
+from .utils import confirmation_email_html, reset_email_html
 from src.schemas.user import User
 from src.extensions import db, mail, serializer
 from src.extensions import front_server
@@ -99,8 +100,8 @@ def signin():
 
                 # Send confirmation email
                 confirm_url = url_for('authorization.confirm_email', token=token, _external=True)
-                html = f'<p>Please click the link to confirm your email: <a href="{confirm_url}">{confirm_url}</a></p>'.replace("localhost", "localhost:3000")
-                msg = Message('Confirm Your Email', recipients=[email], html=html)
+                html = confirmation_email_html(new_user, confirm_url)
+                msg = Message('Artyx: Confirmation de votre email', recipients=[email], html=html)
                 mail.send(msg)
 
                 access_token = create_access_token(identity={'email': new_user.email})
@@ -138,8 +139,8 @@ def reset_password():
     if user:
         token = serializer.dumps(email, salt='password-reset-salt')
         reset_url = url_for('authorization.set_new_password', token=token, _external=True)
-        html = f'<p>Please click the link to reset your password: <a href="{reset_url}">{reset_url}</a></p>'.replace("localhost", "localhost:3000")
-        msg = Message('Password Reset Request', recipients=[email], html=html)
+        html = reset_email_html(user, reset_url)
+        msg = Message('Artyx: Réinitialisation du mot de passe', recipients=[email], html=html)
         mail.send(msg)
         return jsonify({'message': 'A password reset link has been sent to your email.'}), 200
     return jsonify({'error': 'Email not found'}), 404

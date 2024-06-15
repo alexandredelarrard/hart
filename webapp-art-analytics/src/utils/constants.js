@@ -9,4 +9,6 @@ export const ROOT_PICTURE='http://localhost:4000';
 export const CARDS_PER_PAGE=36;
 export const COMPANY_NAME='Artyx';
 export const URL_RESET_PASSWORD="/reset-password";
+export const URL_GET_TASK_RESULTS="/get-past-results"
 export const URL_SET_NEW_PASSWORD="/set-new-password";
+export const URL_DELETE_TASK_RESULT="/delete-task"

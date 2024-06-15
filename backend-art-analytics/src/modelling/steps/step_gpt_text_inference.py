@@ -45,7 +45,9 @@ class StepTextInferenceGpt(Step):
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model
         self.save_queue_path= "/".join([self._config.gpt.save_path, self.object]) 
-        self.introduction = self._config.gpt.introduction
+        self.introduction = self._config.gpt.introduction["features"]
+        if self.object == "reformulate":
+            self.introduction = self._config.gpt.introduction["reformulate"]
 
         self.save_in_queue = True
         self.queues = {"descriptions" : Queue(), "results": Queue(), "clients": Queue()}
@@ -55,11 +57,11 @@ class StepTextInferenceGpt(Step):
     def run(self):
         
         # get data DONE: moderne, figuratif
-        df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_07_06_2024_286\" WHERE \"TOP_0\" in ('tableau moderne', 'tableau figuratif', 'tableau religieux', 'tableau aquarelle', 'tableau nature_morte', 'tableau portrait')")
-        df_desc = self.read_sql_data(f"SELECT \"ID_UNIQUE\", \"ID_ITEM\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS_per_item\"") 
-        df = df.merge(df_desc, on="ID_UNIQUE", how="left")
-        df = df.drop_duplicates(self.name.total_description)
-        df = df.loc[df[self.name.total_description].str.len() > 100] # minimal desc size to have
+        # df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_07_06_2024_286\" WHERE \"TOP_0\" in ('bijou bague')")
+        df = self.read_sql_data(f"SELECT \"ID_ITEM\", \"ITEM_TITLE_DETAIL\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS_per_item\"") 
+        # df = df.merge(df_desc, on="ID_UNIQUE", how="left")
+        df = df.drop_duplicates(self.name.total_description).fillna("")
+        df = df.sample(frac=1).reset_index(drop=True)
 
         # get already done 
         df_done = read_crawled_pickles(path=self.save_queue_path)
@@ -116,15 +118,16 @@ class StepTextInferenceGpt(Step):
     def initialize_client_open_ai(self):
         client = ChatOpenAI(openai_api_key=self.api_keys["openai"][0],
                             model=self.llm_model["open_ai"],
+                            model_kwargs={"response_format": {"type": "json_object"}},
                             temperature=0.2,
                             seed=self.seed) 
-        self._log.info(f"Run with API key : {client.openai_api_key}")
         return client
     
     def initialize_client_local(self):
         client = ChatOpenAI(base_url="http://localhost:1234/v1", 
                             openai_api_key="lm-studio",
                             model=self.llm_model["local"],
+                            model_kwargs={"response_format": {"type": "json_object"}},
                             temperature=0.2,
                             seed=self.seed) 
         return client
@@ -133,10 +136,8 @@ class StepTextInferenceGpt(Step):
         client = ChatGroq(groq_api_key=self.api_keys["groq"][0],
                         model=self.llm_model["groq"],
                         temperature=0.2,
-                        # response_format={"type": "json_object"}, # does not work with it 
-                        max_tokens=1024,
+                        max_tokens=2048,
                         seed=self.seed) 
-        self._log.info(f"Run with API key : {client.groq_api_key}")
         return client
     
     def initialize_client_google(self):
@@ -148,7 +149,7 @@ class StepTextInferenceGpt(Step):
                             responseMimeType='application/json',
                             responseSchema=self.parser,
                             temperature=0.2,
-                            max_tokens=1024,
+                            max_tokens=2048,
                             location="europe-west1",
                             seed=self.seed
                         )
@@ -157,14 +158,14 @@ class StepTextInferenceGpt(Step):
     def initialize_queue_description(self, df):
         for row in df.to_dict(orient="records"):
             item = {self.name.id_item: row[self.name.id_item],
-                    self.name.total_description: row[self.name.total_description]}
+                    self.name.total_description: row[self.name.detailed_title].lower() + "\n " + row[self.name.total_description]}
             self.queues["descriptions"].put(item)
     
     def create_prompt(self):
         prompt = PromptTemplate(
-            template=self.introduction + " \n Instructions: {format_instructions} \n User query: {query}",
+            template=self.introduction + " \n JSON Instruction: {format_instructions} \n Art Description: {query}",
             input_variables=["query"],
-            partial_variables={"format_instructions": self.parser.get_format_instructions()},
+            partial_variables={"format_instructions": self.parser.get_format_instructions().replace("```", "")},
         )
         return prompt
     
@@ -204,12 +205,12 @@ class StepTextInferenceGpt(Step):
         if self.threads > len(self.methode):
             remaining = self.threads - len(self.methode)
             for i in range(remaining):
-                if i%3==0:
+                if i%5==0:
                    self.queues["clients"].put(self.prompt | self.initialize_client("open_ai") | self.parser)
-                elif i%2==0:
-                   self.queues["clients"].put(self.prompt | self.initialize_client("google") | self.parser) 
+                elif i%4==0:
+                   self.queues["clients"].put(self.prompt | self.initialize_client("groq") | self.parser) 
                 else:
-                    self.queues["clients"].put(self.prompt | self.initialize_client("groq") | self.parser)
+                    self.queues["clients"].put(self.prompt | self.initialize_client("google") | self.parser)
         
     def queue_gpt(self, queues):
 
@@ -223,10 +224,12 @@ class StepTextInferenceGpt(Step):
             prompt["METHODE"] = chain.to_json()["kwargs"]["middle"][0].__module__
 
             if query_status != "200":
+                # queues["descriptions"].put(prompt)
                 self._log.critical(f"Error for {prompt[self.name.id_item]}")
 
             if self.save_in_queue and query_status == "200":
                 queues["results"].put(prompt)
+                queue_desc.task_done()
 
                 if queues["results"].qsize() == self.save_queue_size_step:
                     file_name = encode_file_name(prompt[self.name.id_item])
@@ -235,7 +238,6 @@ class StepTextInferenceGpt(Step):
                                         f"/{file_name}.pickle")
             
             # done task
-            queue_desc.task_done()
             queues["clients"].put(chain)
             self._log.info(f"[OOF {queue_desc.qsize()}] QUERIED {prompt[self.name.id_item]}")
 

@@ -2,20 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card';
 import '../../utils/utils_knn';
+import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSort, faCalendarAlt, faDollarSign, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE, URL_UPLOAD} from '../../utils/constants';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend
-} from 'chart.js';
 
 import '../../css/UploadForm.css';
 
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
+import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
 
 function UploadForm({
   setFile,
@@ -37,11 +31,14 @@ function UploadForm({
   setAvgMaxEstimates,
   setAvgMinEstimates,
   avgFinalResult,
-  setAvgFinalResult
+  setAvgFinalResult,
+  analysisInProgress,
+  setAnalysisInProgress,
+  setNewResultSaved
 }) {
   
   const [currentPage, setCurrentPage] = useState(1);
-  const [analysisInProgress, setAnalysisInProgress] = useState(false);
+  const [fileUrl, setFileUrl] = useState(null);
   const [sortOrder, setSortOrder] = useState('distance');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   
@@ -85,6 +82,7 @@ function UploadForm({
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
+    const userdataString = Cookies.get("userdata");
     const formData = new FormData();
     if (file) {
       formData.append('file', file);
@@ -92,6 +90,7 @@ function UploadForm({
     if (text) {
       formData.append('text', text);
     }
+    formData.append('user_id', JSON.parse(userdataString).id);
     
     try {
       const response = await axios.post(URL_API_BACK + URL_UPLOAD, formData, {
@@ -99,20 +98,20 @@ function UploadForm({
           'Content-Type': 'multipart/form-data',
         },
       });
-      const task_id = response.data.task_id;
-      console.log(task_id);
 
       setFile(file);
       setText(text);
       setBotResult(null)
       setChatBotResultFetched(false);
       setAnalysisInProgress(true);
-      setTaskId(task_id);
+      setTaskId(response.data.task_id);
       setResult(null);
       setAdditionalData([]);
       setAvgMinEstimates(0);
       setAvgMaxEstimates(0);
       setAvgFinalResult(0);
+      setNewResultSaved(false);
+
     } catch (error) {
       console.error('Error uploading file', error);
     }
@@ -122,30 +121,29 @@ function UploadForm({
     if (taskId && analysisInProgress) {
       const interval = setInterval(async () => {
         try {
-          const response = await axios.get(URL_API_BACK + URL_GET_TASK + '/' + taskId);
+          const response = await axios.post(URL_API_BACK + URL_GET_TASK,
+            {'taskid': taskId});
+
           if (response.data.state === 'SUCCESS') {
             setResult(response.data.result);
             clearInterval(interval);
             setAnalysisInProgress(false);
-            console.log(response.data)
           }
         } catch (error) {
           console.error('Error fetching task result', error);
         }
-      }, 2000); // Poll every X sec
+      }, 1000); // Poll every X sec
       return () => clearInterval(interval);
     }
   }, [taskId, analysisInProgress]);
 
   useEffect(() => {
-    if (result && result.image && result.image.ids) {
+    if (result && result.distances && result.ids) {
       const fetchData = async () => {
         try {
-          const ids = result.image.ids.flat();
-          const distances = result.image.distances.flat();
           const response = await axios.post(URL_API + URL_GET_IDS_INFO, 
-              {'ids': ids,
-                'distances': distances
+              {'ids': result.ids,
+                'distances': result.distances
               });
 
           // Ensure response.data is an array
@@ -155,6 +153,7 @@ function UploadForm({
             setAvgMinEstimates(response.data.min_estimate);
             setAvgMaxEstimates(response.data.max_estimate);
             setAvgFinalResult(response.data.final_result);
+            setNewResultSaved(true);
 
           } else {
             console.error('Unexpected response format:', response.data);
@@ -183,10 +182,21 @@ function UploadForm({
     }
   }, [result, chatBotResultFetched]);
 
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file, { oneTimeOnly: true });
+      setFileUrl(url);
+
+      // Cleanup function to revoke the object URL
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [file]);
+
   return (
     <div className="upload-form-container">
+      <HeaderPlateforme/>
       {!taskId ? (
-        <div>
+        <div className='presentation-closest'>
           <h2>Welcome to Art Analytics</h2>
           <p>Our solution provides detailed analysis of artwork through image and text inputs.</p>
             <div className="search-area">
@@ -217,7 +227,7 @@ function UploadForm({
                 </div>
                 <div className="part-content">
                   <div className="left">
-                    {file && <img src={URL.createObjectURL(file)} alt="Uploaded" className="summary-image" />}
+                    {fileUrl && <img src={fileUrl} alt="Uploaded" className="summary-image" />}
                   </div>
                   <div className="middle">
                     {botresult &&<p><strong>Designation:</strong> {botresult}</p>}
@@ -292,17 +302,6 @@ function UploadForm({
           ) : (
             <p>No additional data available</p>
           )}
-          <div className="pagination">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
         </div>
       )}
     </div>

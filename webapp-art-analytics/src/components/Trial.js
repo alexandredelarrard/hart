@@ -117,10 +117,10 @@ const Trial = () => {
                             onChange={(e) => setMetier(e.target.value)}
                             required>
                                 <option value="">Sélectionnez...</option>
+                                <option value="independent">Particulier</option>
                                 <option value="expert">Expert</option>
                                 <option value="commissaire">Commissaire priseur</option>
-                                <option value="insurance">Assurance & Finance</option>
-                                <option value="independent">Particulier</option>
+                                <option value="insurance">Assureur</option>
                                 <option value="student">Étudiant</option>
                                 <option value="other">Autre</option>
                         </select>
@@ -139,7 +139,7 @@ const Trial = () => {
                     )}
                     <div className="form-group checkbox-group">
                         <label>
-                            <p>Nous collectons l’ensemble de ces informations pour vous créer un compte et ainsi permettre d’essayer les services proposés. Pour en savoir plus et connaître vos droits (accès, rectification, effacement, opposition, etc.), vous pouvez lire les conditions générales d'utilisation. La soumission du formulaire d’inscription sera considérée comme valant consentement de votre part à l’utilisation des informations collectées.</p>
+                            <p>Nous collectons l’ensemble de ces informations pour vous créer un compte puis ajuster les fonctionnalités pour vous proposer les meilleurs services. Pour en savoir plus et connaître vos droits (accès, rectification, effacement, opposition, etc.), vous pouvez lire les conditions générales d'utilisation. La soumission du formulaire d’inscription sera considérée comme valant consentement de votre part à l’utilisation des informations collectées.</p>
                             <div className="checkbox-container">
                                 <input type="checkbox" required />
                                 <span>
