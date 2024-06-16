@@ -17,6 +17,11 @@ const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, 
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
+    const token = Cookies.get('token');
+    if (!token) {
+      return;
+    }
+    
     const userdataString = Cookies.get("userdata");
     const formData = new FormData();
     if (file) {
@@ -31,6 +36,7 @@ const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, 
       const response = await axios.post(URL_API_BACK + URL_UPLOAD, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+           Authorization: `Bearer ${token}`
         },
       });
 
@@ -55,6 +61,10 @@ const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, 
       } else {
         logActivity("click_search_submit", "text")
       }
+
+      // update the volume of search remaining 
+      let remainingClosestVolume = Number(Cookies.get('remaining_closest_volume'));
+      Cookies.set('remaining_closest_volume', remainingClosestVolume - 1);
 
     } catch (error) {
       console.error('Error uploading file', error);

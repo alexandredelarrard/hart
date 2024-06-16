@@ -1,5 +1,6 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import Card from './Card';
+import Cookies from 'js-cookie';
 import '../../utils/utils_knn';
 import {CARDS_PER_PAGE} from '../../utils/constants';
 
@@ -41,6 +42,9 @@ function UploadForm({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('distance');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [planExpired, setPlanExpired] = useState(false);
+  const [closestVolumeExpired, setclosestVolumeExpired] = useState(false);
+  const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);
   
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -50,6 +54,26 @@ function UploadForm({
     setSortOrder(newSortOrder);
     setDropdownOpen(false)
   };
+
+  useEffect(() => {
+    const userdata = Cookies.get('userdata');
+    const remaining_closest_volume= Cookies.get('remaining_closest_volume');
+    const remaining_search_volume= Cookies.get('remaining_search_volume');
+    if (userdata) {
+      const parsedUserdata = JSON.parse(userdata);
+      const planEndDate = new Date(parsedUserdata.plan_end_date);
+      const currentDate = new Date();
+      if (currentDate > planEndDate) {
+        setPlanExpired(true);
+      }
+      if(0>=remaining_closest_volume ){
+        setclosestVolumeExpired(true)
+      }
+      if(0>=remaining_search_volume ){
+        setsearchVolumeExpired(true)
+      }
+    }
+  }, []);
 
   const sortData = (data, sortOrder) => {
     switch (sortOrder) {
@@ -90,15 +114,15 @@ function UploadForm({
         <div className='presentation-closest'>
           <h2>Welcome to Art Analytics</h2>
           <p>Our solution provides detailed analysis of artwork through image and text inputs.</p>
-            <div className="search-area">
-              <SearchForm
-                text={text}
-                file={file}
-                handleSearchTextChange={handleSearchTextChange}
-                handleSearchFileChange={handleSearchFileChange}
-                handleSearchSubmit={handleSearchSubmit}
-              />
-            </div>
+          <SearchForm
+            text={text}
+            file={file}
+            handleSearchTextChange={handleSearchTextChange}
+            handleSearchFileChange={handleSearchFileChange}
+            handleSearchSubmit={handleSearchSubmit}
+            planExpired={planExpired}
+            closestVolumeExpired={closestVolumeExpired}
+          />
         </div>
       ) : (
         <div className="result-container">
@@ -119,15 +143,15 @@ function UploadForm({
                     </div>
                   </div>
                 </div>
-                <div className="search-area">
-                  <SearchForm
-                    text={text}
-                    file={file}
-                    handleSearchTextChange={handleSearchTextChange}
-                    handleSearchFileChange={handleSearchFileChange}
-                    handleSearchSubmit={handleSearchSubmit}
-                  />
-                </div>
+                <SearchForm
+                  text={text}
+                  file={file}
+                  handleSearchTextChange={handleSearchTextChange}
+                  handleSearchFileChange={handleSearchFileChange}
+                  handleSearchSubmit={handleSearchSubmit}
+                  planExpired={planExpired}
+                  closestVolumeExpired={closestVolumeExpired}
+                />
             </div>
             <div className="part2">
             </div>

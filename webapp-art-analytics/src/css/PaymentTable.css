@@ -1,0 +1,35 @@
+/* tableau to render plans */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    text-align: left;
+  }
+  
+  .payment-table thead tr {
+    background-color: #f2f2f2;
+  }
+  
+  .payment-table th,
+  .payment-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+  
+  .payment-table th {
+    font-weight: bold;
+  }
+  
+  .payment-table tbody tr:nth-of-type(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .payment-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }

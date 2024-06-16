@@ -64,7 +64,6 @@ function Sidebar({
     }
     const byteArray = new Uint8Array(byteNumbers);
     const blob = new Blob([byteArray], { type: 'image/jpg' });
-    console.log(blob)
 
     setFile(blob);
     setText(result.text);

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { URL_API, URL_GET_IDS_INFO, URL_API_BACK } from '../../../utils/constants';
 
 const useFetchData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved, setBotResult, setChatBotResultFetched, chatBotResultFetched) => {
@@ -7,9 +8,18 @@ const useFetchData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEs
     if (result && result.distances && result.ids) {
       const fetchData = async () => {
         try {
+          const token = Cookies.get('token');
+          if (!token) {
+            return;
+          }
+
           const response = await axios.post(URL_API + URL_GET_IDS_INFO, {
             'ids': result.ids,
             'distances': result.distances,
+          },{
+            headers: {
+               Authorization: `Bearer ${token}`
+            },
           });
 
           // Ensure response.data is an array

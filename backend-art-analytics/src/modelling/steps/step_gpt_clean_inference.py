@@ -49,13 +49,17 @@ class StepCleanGptInference(GPTCleaner):
         df_done = read_crawled_pickles(path=self.save_queue_path)
         df_names = self.read_sql_data("ARTISTS_DB_PRICE")
 
-        a = df_done.loc[df_done["NUMBER_OBJECTS_DESCRIBED"].isin(["1", "2", "3"])]
-        b = a["OBJECT_CATEGORY"].value_counts()
-        c = b.loc[~b.index.isin([x for liste in self.cat_map.values() for x in liste])]
-        print((c.sum()+df_done.shape[0] - b.sum())/b.sum())
-
+        # extract json and features 
         df_done = self.eval_json(df_done)
         df_done = self.extract_features(df_done)
+
+        # temporary study of category mapping 
+        a = df_done.copy()
+        a["OBJECT_CATEGORY"] = a["OBJECT_CATEGORY"].apply(lambda x: self.pseudo_clean_category(x))
+        b = a["OBJECT_CATEGORY"].value_counts()
+        c = b.loc[~b.index.isin([x for liste in self.cat_map.values() for x in liste])]
+        print((c.sum())/b.sum())
+
         df_done = self.remove_outliers(df_done)
         df_done = self.clean_dimensions(df_done)
         df_done = self.clean_dates(df_done)

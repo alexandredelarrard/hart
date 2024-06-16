@@ -1,7 +1,9 @@
 from flask import request, jsonify
 from typing import List
 from flask_cors import  cross_origin
-from src.schemas.user import AllItems, AllPerItem, CloseResult
+from flask_jwt_extended import jwt_required
+from src.schemas.items import AllItems, AllPerItem
+from src.schemas.results import CloseResult
 from sqlalchemy import and_
 from src.extensions import db
 import numpy as np
@@ -28,6 +30,7 @@ def deduplicate_dicts(dict_list, unique_key):
 # =============================================================================
 @infos_blueprint.route('/ids_infos', methods=['POST'])
 @cross_origin(origins=front_server)
+@jwt_required()
 def post_ids_infos():
 
     if request.method == 'POST':
@@ -41,7 +44,7 @@ def post_ids_infos():
         if isinstance(ids, List) and isinstance(distances, List):
             # try:
                 # get description per id_unique
-                result_desc_id =  AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
+                result_desc_id = AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
                 output = [item.to_dict() for item in result_desc_id]
                 deduplicated_output = deduplicate_dicts(output, "id_item")
 
@@ -78,6 +81,7 @@ def post_ids_infos():
 
 @infos_blueprint.route('/get-past-results', methods=['GET'])
 @cross_origin(origins=front_server)
+@jwt_required()
 def get_past_results():
     
     if request.method == 'GET':
@@ -97,6 +101,7 @@ def get_past_results():
 
 @infos_blueprint.route('/delete-task/<task_id>', methods=['DELETE'])
 @cross_origin(origins=front_server)
+@jwt_required()
 def delete_task(task_id):
     
     if request.method == 'DELETE':

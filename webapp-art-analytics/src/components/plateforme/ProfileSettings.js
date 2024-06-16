@@ -3,6 +3,9 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import { logActivity } from '../../utils/activity.js';
 import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import PaymentTable from "../plateforme/form_components/PaymentTable.js"
+import {URL_GET_PAYMENTS, URL_API, URL_UPDATE_PROFILE} from "../../utils/constants.js";
+
 import '../../css/ProfileSettings.css';
 
 function ProfileSettings({handleMenuClick}) {
@@ -14,8 +17,14 @@ function ProfileSettings({handleMenuClick}) {
   const [emailValidated, setEmailValidated] = useState(false);
   const [validationDate, setValidationDate] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
+  const [payments, setPayments] = useState([]);
 
   useEffect(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+      return;
+    }
+
     const userdataCookie = Cookies.get('userdata');
     if (userdataCookie) {
       const parsedUserdata = JSON.parse(userdataCookie);
@@ -25,6 +34,20 @@ function ProfileSettings({handleMenuClick}) {
       setAddress(parsedUserdata.address || '');
       setEmailValidated(parsedUserdata.emailValidated || false);
       setValidationDate(parsedUserdata.creation_date || null);
+
+      axios.get(`${URL_API + URL_GET_PAYMENTS}?user_id=${parsedUserdata.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      .then(response => {
+        setPayments(response.data.results); 
+      })
+      .catch(error => {
+          console.error('Error fetching former results:', error);
+      });
     }
   }, []);
 
@@ -33,7 +56,7 @@ function ProfileSettings({handleMenuClick}) {
   };
 
   const handleSave = () => {
-    axios.post('/api/updateUserData', { name, surname, address })
+    axios.post(URL_API + URL_UPDATE_PROFILE, { name, surname, address })
       .then(response => {
         setUserData({ ...userData, name, surname, address });
         setEditMode(false);
@@ -102,7 +125,7 @@ function ProfileSettings({handleMenuClick}) {
           </div>
         </div>
       )}
-      {activeTab === 'billing' && <BillingSettings />}
+      {activeTab === 'billing' && <BillingSettings payments={payments}/>}
       </div>
     </div>
   );
@@ -110,7 +133,7 @@ function ProfileSettings({handleMenuClick}) {
 
 export default ProfileSettings;
 
-function BillingSettings() {
+function BillingSettings({payments}) {
   const [activePlan, setActivePlan] = useState('');
 
   useEffect(() => {
@@ -133,6 +156,9 @@ function BillingSettings() {
             {activePlan === plan && <span className="current-plan">Current Plan</span>}
           </div>
         ))}
+        <div className="">
+            <PaymentTable payments={payments}/>
+        </div>
       </div>
     </div>
   );

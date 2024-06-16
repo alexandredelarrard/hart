@@ -18,6 +18,18 @@
   margin-top: 15px;
 }
 
+.plan-expired-message {
+  margin-top: 20px;
+  color: red;
+  font-weight: bold;
+}
+
+.query-expired-message {
+  margin-top: 20px;
+  color: red;
+  font-weight: bold;
+}
+
 .summary-area {
   display: flex;
   width: 100%;

@@ -1,4 +1,5 @@
 from flask import request, jsonify, url_for
+from sqlalchemy import desc
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from flask_mail import Message
@@ -12,6 +13,7 @@ from flask_jwt_extended import (
 from . import authorization_blueprint
 from .utils import confirmation_email_html, reset_email_html
 from src.schemas.user import User
+from src.schemas.payment import PaymentTrack
 from src.extensions import db, mail, serializer
 from src.extensions import front_server
 
@@ -37,12 +39,19 @@ def login():
         if user and check_password_hash(user.password, password):
             access_token = create_access_token(identity={'email': user.email})
             refresh_token = create_refresh_token(identity={'email': user.email})
-            response = jsonify({
+            response = {
                 'message': 'Login successful', 
                 'access_token': access_token,
                 'refresh_token': refresh_token,
-                'userdata': user.to_dict()
-            })
+                'userdata': user.to_dict()}
+            
+            last_payment = PaymentTrack.query.filter_by(user_id=user.id).order_by(desc(PaymentTrack.plan_start_date)).first()
+            if last_payment:
+                response["plan_end_date"] = last_payment.plan_end_date.isoformat()
+                response["remaining_closest_volume"] = last_payment.remaining_closest_volume
+                response["remaining_search_volume"] = last_payment.remaining_search_volume
+
+            response = jsonify(response)
             set_access_cookies(response, access_token)
             set_refresh_cookies(response, refresh_token)
             return response, 200
@@ -102,6 +111,7 @@ def signin():
             return jsonify({'error': 'Email already in use'}), 409
         else:
             try:
+                # create new user 
                 hashed_password = generate_password_hash(password)
                 new_user = User(
                     email=email,
@@ -111,9 +121,27 @@ def signin():
                     job=job,
                     creation_date=datetime.today().strftime("%Y-%m-%d %H:%M"),
                     email_confirmed=False,
-                    active=False
+                    active=True,
+                    plan="free"
                 )
                 db.session.add(new_user)
+                db.session.commit()
+                
+                # create new payment line  
+                payment = PaymentTrack(
+                    user_id=new_user.id,
+                    paying_date= datetime.today(),
+                    paying_methode="FREE",
+                    plan_name="free_plan",
+                    plan_frequency="monthly",
+                    plan_start_date=datetime.today(),
+                    plan_end_date=datetime.today() + timedelta(days=7),
+                    initial_closest_volume=30,
+                    remaining_closest_volume=30,
+                    initial_search_volume=30,
+                    remaining_search_volume=30
+                )
+                db.session.add(payment)
                 db.session.commit()
 
                 # Generate a token

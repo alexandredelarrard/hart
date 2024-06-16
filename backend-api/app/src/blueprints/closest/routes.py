@@ -1,11 +1,14 @@
 from flask import request, jsonify
+from sqlalchemy import desc
 from . import closest_blueprint
 from celery.result import AsyncResult
 from datetime import datetime
 from src.backend.tasks import process_request
 from src.schemas.results import CloseResult
+from src.schemas.payment import PaymentTrack
 from src.extensions import db
 import numpy as np
+import logging
 
 
 @closest_blueprint.route('/process', methods=['POST'])
@@ -76,13 +79,22 @@ def task_status():
             # save result into db 
             try:
                 result = CloseResult.query.filter_by(task_id=task_id).first_or_404()
-        
-                # Update the user as confirmed
-                result.closest_ids = ",".join(results["ids"])
-                result.closest_distances = ",".join([str(x) for x in results["distances"]])
-                result.status = task.state
-                result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-                db.session.commit()
+                
+                if result:
+                    # update the volume of search with -1 with the last payment plan 
+                    payment = PaymentTrack.query.filter_by(user_id=result.user_id).order_by(desc(PaymentTrack.plan_start_date)).first()
+                    if payment:
+                        payment.remaining_closest_volume -=1 
+                        db.session.commit()
+                    else: 
+                        logging.info(f"payment not found for ID {result.user_id}")
+            
+                    # Update the user as confirmed
+                    result.closest_ids = ",".join(results["ids"])
+                    result.closest_distances = ",".join([str(x) for x in results["distances"]])
+                    result.status = task.state
+                    result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+                    db.session.commit()
 
             except Exception as e:
                 print(f"Error for saving result as {e}")

@@ -212,3 +212,19 @@ class GPTCleaner(TextCleaner):
                 # if x!= "nan":
                 #     logging.error(x)
                 return np.nan
+            
+    def pseudo_clean_category(self, x):
+        x = str(x).replace("set of", "").replace("sets of", "").replace("-", " ")
+        x = str(x).replace("pair of", "").replace("objects", "").replace("object", "")
+        words = x.split(" ")
+        new_term = []
+        for word in words: 
+            if word != "other":
+                if len(word) > 1:
+                    if word[-1] == "s" and word[-2] != "s":
+                        new_term.append(word[:-1])
+                    else:
+                        new_term.append(word)
+                else:
+                    new_term.append(word)
+        return " ".join(new_term).strip()
