@@ -13,17 +13,17 @@ import CardDetail from './components/plateforme/CardDetail';
 
 import Home from './components/Home';
 import Trial from './components/Trial';
-import ProfileSettings from './components/ProfileSettings';
-import Login from './components/Login';
-import Signup from './components/Signup';
+import ProfileSettings from './components/plateforme/ProfileSettings';
+import Login from './components/connectors/Login';
+import Signup from './components/connectors/Signup';
 import ContactUs from './components/ContactUs';
 import Terms from './components/Terms';
 import CGV from './components/CGV';
 import About from './components/About';
 import Checkout from './components/Checkout';
-import ResetPassword from './components/ResetPassword';
-import SetNewPassword from './components/SetNewPassword';
-import Confirm from './components/Confirm';
+import ResetPassword from './components/connectors/ResetPassword';
+import SetNewPassword from './components/connectors/SetNewPassword';
+import Confirm from './components/connectors/Confirm';
 
 function App() {
   const [file, setFile] = useState(null);

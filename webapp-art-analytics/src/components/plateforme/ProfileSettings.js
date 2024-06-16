@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { logActivity } from '../utils/activity';
-import HeaderPlateforme from "./landing_page/HeaderPlateforme.js";
-import '../css/ProfileSettings.css';
+import { logActivity } from '../../utils/activity.js';
+import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import '../../css/ProfileSettings.css';
 
 function ProfileSettings({handleMenuClick}) {
   const [userData, setUserData] = useState({});

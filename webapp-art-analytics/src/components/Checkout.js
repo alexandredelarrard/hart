@@ -4,9 +4,9 @@ import Cookies from 'js-cookie';
 import Payment from "./landing_page/Payment.js";
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import { Link } from 'react-router-dom';
-import {URL_API, URL_LOGIN} from '../utils/constants';
-import HeaderWhite from './landing_page/Header_white';
-import LoginElement from './LoginElement.js';
+import {URL_API, URL_LOGIN} from '../utils/constants.js';
+import HeaderWhite from './landing_page/Header_white.js';
+import LoginElement from './connectors/LoginElement.js';
 import '../css/Checkout.css';
 
 const Checkout = () => {
@@ -57,7 +57,6 @@ const Checkout = () => {
       }
     }
   };
-
 
   const handlePayment = async (e) => {
     e.preventDefault();

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import HeaderWhite from "./landing_page/Header_white.js";
+import HeaderWhite from "../landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
-import { logActivity } from '../utils/activity.js';
+import { logActivity } from '../../utils/activity.js';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import {URL_API, URL_LOGIN} from '../utils/constants';
+import {URL_API, URL_LOGIN} from '../../utils/constants.js';
 import LoginElement from './LoginElement.js';
-import '../css/Login.css';
+import '../../css/Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');

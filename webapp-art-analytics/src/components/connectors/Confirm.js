@@ -1,6 +1,6 @@
 import React from 'react';
-import HeaderWhite from "./landing_page/Header_white.js";
-import '../css/ResetPassword.css';
+import HeaderWhite from "../landing_page/Header_white.js";
+import '../../css/ResetPassword.css';
 
 function Confirm() {
   

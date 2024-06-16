@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import HeaderWhite from "./landing_page/Header_white.js";
+import HeaderWhite from "../landing_page/Header_white.js";
 import axios from 'axios';
-import { URL_API, URL_RESET_PASSWORD } from '../utils/constants';
-import '../css/ResetPassword.css';
+import { URL_API, URL_RESET_PASSWORD } from '../../utils/constants.js';
+import '../../css/ResetPassword.css';
 
 function ResetPassword() {
   const [email, setEmail] = useState('');

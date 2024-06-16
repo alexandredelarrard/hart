@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import HeaderWhite from "./landing_page/Header_white.js";
+import HeaderWhite from "../landing_page/Header_white.js";
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { URL_API, URL_SET_NEW_PASSWORD } from '../utils/constants';
-import '../css/SetNewPassword.css';
+import { URL_API, URL_SET_NEW_PASSWORD } from '../../utils/constants.js';
+import '../../css/SetNewPassword.css';
 
 function SetNewPassword() {
   const { token } = useParams();
