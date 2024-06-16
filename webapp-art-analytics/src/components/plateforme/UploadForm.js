@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from './Card';
 import '../../utils/utils_knn';
+import { logActivity } from '../../utils/activity';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSort, faCalendarAlt, faDollarSign, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
@@ -34,7 +35,8 @@ function UploadForm({
   setAvgFinalResult,
   analysisInProgress,
   setAnalysisInProgress,
-  setNewResultSaved
+  setNewResultSaved,
+  handleMenuClick
 }) {
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -112,6 +114,15 @@ function UploadForm({
       setAvgFinalResult(0);
       setNewResultSaved(false);
 
+      // log activity 
+      if(file && text){
+        logActivity("click_search_submit", "file_and_text")}
+      else if(file){
+        logActivity("click_search_submit", "file")
+      } else {
+        logActivity("click_search_submit", "text")
+      }
+
     } catch (error) {
       console.error('Error uploading file', error);
     }
@@ -184,7 +195,7 @@ function UploadForm({
 
   useEffect(() => {
     if (file) {
-      const url = URL.createObjectURL(file, { oneTimeOnly: true });
+      const url = URL.createObjectURL(file);
       setFileUrl(url);
 
       // Cleanup function to revoke the object URL
@@ -194,7 +205,9 @@ function UploadForm({
 
   return (
     <div className="upload-form-container">
-      <HeaderPlateforme/>
+      <HeaderPlateforme 
+        handleMenuClick={handleMenuClick}
+      />
       {!taskId ? (
         <div className='presentation-closest'>
           <h2>Welcome to Art Analytics</h2>

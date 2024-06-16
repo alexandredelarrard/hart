@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { logout, checkAuth } from '../../utils/identification';
+import { logActivity } from '../../utils/activity';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faEdit, faUserCircle, faSignOutAlt, faCog, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { URL_API, URL_GET_TASK_RESULTS, URL_DELETE_TASK_RESULT } from '../../utils/constants';
 import Cookies from 'js-cookie';
@@ -25,19 +27,30 @@ function Sidebar({
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('closest-lots');
   const [userData, setUserData] = useState({});
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [formerResults, setFormerResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
 
-  const handleLogout = () => {
-    Cookies.remove('token');
-    Cookies.remove('userdata');
-    navigate('/');
+  const handleLogout = async () => {
+    // log activity 
+    logActivity("click_log_out", "")
+    
+    await logout();
+    navigate('/login'); // Redirect to the login page or home page
   };
 
-  const toggleSettings = (e) => {
-    setSettingsOpen(e);
-  };
+  useEffect(() => {
+    const checkUserAuth = async () => {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        navigate('/login'); // Redirect to the login page or home page if not authenticated
+      }
+    };
+
+    checkUserAuth();
+
+    const interval = setInterval(checkUserAuth, 240000); // Check every 4 minute
+    return () => clearInterval(interval);
+  }, [navigate]);
 
   const toggleResults = (e) => {
     setShowResults(e);
@@ -50,7 +63,8 @@ function Sidebar({
       byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'image/jpeg' });
+    const blob = new Blob([byteArray], { type: 'image/jpg' });
+    console.log(blob)
 
     setFile(blob);
     setText(result.text);
@@ -66,6 +80,10 @@ function Sidebar({
     setBotResult(null)
     setChatBotResultFetched(false);
     onMenuClick('closest-lots');
+
+    // log activity 
+    logActivity("click_former_result", result.task_id)
+
   };
 
   const handleDeleteResult = (taskId) => {
@@ -74,8 +92,9 @@ function Sidebar({
       axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`)
         .then(response => {
           // Remove the deleted result from the state
-          console.log(response)
           setFormerResults(formerResults.filter(result => result.task_id !== taskId));
+          // log activity 
+          logActivity("delete_former_result", taskId)
         })
         .catch(error => {
           console.error('Error deleting the result:', error);
@@ -155,14 +174,14 @@ function Sidebar({
       <ul className="menu">
         <li 
           className={`menu-item ${activeMenu === 'search-art' ? 'active' : ''}`} 
-          onClick={() => { setActiveMenu('search-art'); onMenuClick('search-art'); toggleSettings(false); toggleResults(false); }}
+          onClick={() => { setActiveMenu('search-art'); onMenuClick('search-art'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
           Search Art piece
         </li>
         <li 
           className={`menu-item ${activeMenu === 'closest-lots' ? 'active' : ''}`} 
-          onClick={() => { setActiveMenu('closest-lots'); onMenuClick('closest-lots'); toggleSettings(false); toggleResults(true); }}
+          onClick={() => { setActiveMenu('closest-lots'); onMenuClick('closest-lots'); toggleResults(true); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
           Closest Lots
@@ -194,36 +213,11 @@ function Sidebar({
         )}
         <li 
           className={`menu-item ${activeMenu === 'optimize-sale' ? 'active' : ''}`} 
-          onClick={() => { setActiveMenu('optimize-sale'); onMenuClick('optimize-sale'); toggleSettings(false); toggleResults(false); }}
+          onClick={() => { setActiveMenu('optimize-sale'); onMenuClick('optimize-sale'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faEdit} className="menu-icon" />
           Optimize Your Sale
         </li>
-        <li 
-          className={`menu-item ${activeMenu === 'settings' ? 'active' : ''}`} 
-          onClick={() => { setActiveMenu('settings'); onMenuClick('settings'); toggleSettings(true); toggleResults(false); }}
-          style={{ marginTop: 'auto' }}
-        >
-          <FontAwesomeIcon icon={faCog} className="menu-icon" />
-          Settings
-          <FontAwesomeIcon icon={settingsOpen ? faChevronDown : faChevronRight} className="submenu-icon" />
-        </li>
-        {settingsOpen && (
-          <ul className="submenu">
-            <li 
-              className={`submenu-item ${activeMenu === 'account-settings' ? 'active' : ''}`} 
-              onClick={() => { setActiveMenu('account-settings'); onMenuClick('account-settings'); }}
-            >
-              Account Settings
-            </li>
-            <li 
-              className={`submenu-item ${activeMenu === 'billing' ? 'active' : ''}`} 
-              onClick={() => { setActiveMenu('billing'); onMenuClick('billing'); }}
-            >
-              Billing
-            </li>
-          </ul>
-        )}
       </ul>
       <button onClick={handleLogout} className="logout-button">
         <FontAwesomeIcon icon={faSignOutAlt} /> Logout

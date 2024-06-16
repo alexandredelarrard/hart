@@ -1,7 +1,9 @@
 from flask import Flask
 import os
+from datetime import timedelta
 from src.blueprints.authorization import authorization_blueprint
 from src.blueprints.retreiver_infos import infos_blueprint
+from src.blueprints.activity_log import activity_blueprint
 from src.utils.step import Step
 from src.extensions import config, context
 
@@ -26,6 +28,7 @@ class App(Step):
 		# Import parts of our application
 		app.register_blueprint(authorization_blueprint, url_prefix="/")
 		app.register_blueprint(infos_blueprint, url_prefix="/")
+		app.register_blueprint(activity_blueprint, url_prefix="/")
 
 		return app
 
@@ -33,10 +36,12 @@ class App(Step):
 			
 		app.config["SQLALCHEMY_DATABASE_URI"] = self._context.connexion_string
 		app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-		app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+		app.config['JWT_SECRET_KEY'] = os.environ["JWT_SECRET_KEY"]
 		app.config['CORS_HEADERS'] = 'Content-Type'
 		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 3}
 		app.config["JWT_REFRESH_LIFESPAN"] = {'days': 1}
+		app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=3)
+		app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=10)
 		app.config['SECRET_KEY'] = os.environ["SECRET_KEY_LOGIN"]
 		app.config["DEBUG"] = False
 		app.config["TESTING"] = False

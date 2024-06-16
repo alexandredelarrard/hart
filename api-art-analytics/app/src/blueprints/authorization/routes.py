@@ -1,12 +1,13 @@
 from flask import request, jsonify, url_for
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
-from datetime import datetime
-
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 from flask_mail import Message
 from itsdangerous import SignatureExpired
-from flask_cors import  cross_origin
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
+from flask_cors import cross_origin
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token, jwt_required, get_jwt_identity, 
+    unset_jwt_cookies, set_access_cookies, set_refresh_cookies
+)
 
 from . import authorization_blueprint
 from .utils import confirmation_email_html, reset_email_html
@@ -15,7 +16,7 @@ from src.extensions import db, mail, serializer
 from src.extensions import front_server
 
 # =============================================================================
-# authentification
+# Authentication
 # =============================================================================
 @authorization_blueprint.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin(origins=front_server)
@@ -35,10 +36,19 @@ def login():
 
         if user and check_password_hash(user.password, password):
             access_token = create_access_token(identity={'email': user.email})
-            return jsonify({'message': 'Login successful', 'access_token': access_token, "userdata": user.to_dict()}), 200
+            refresh_token = create_refresh_token(identity={'email': user.email})
+            response = jsonify({
+                'message': 'Login successful', 
+                'access_token': access_token,
+                'refresh_token': refresh_token,
+                'userdata': user.to_dict()
+            })
+            set_access_cookies(response, access_token)
+            set_refresh_cookies(response, refresh_token)
+            return response, 200
         else:
             return jsonify({'error': 'Invalid email or password'}), 401
-       
+
 # Route to handle logout
 @authorization_blueprint.route('/logout', methods=['POST'])
 @cross_origin(origins=front_server)
@@ -56,6 +66,16 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
+@authorization_blueprint.route('/refresh', methods=['POST'])
+@cross_origin(origins=front_server)
+@jwt_required(refresh=True)
+def refresh():
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user)
+    response = jsonify({'access_token': access_token})
+    set_access_cookies(response, access_token)
+    return response, 200
+
 @authorization_blueprint.route('/signin', methods=['POST', 'OPTIONS'])
 @cross_origin(origins=front_server)
 def signin():
@@ -64,7 +84,6 @@ def signin():
     
     if request.method == 'POST':
         data = request.get_json()
-
         email = data.get('email')
         password = data.get('password')
         name = data.get('username')
@@ -75,12 +94,12 @@ def signin():
             return jsonify({'error': 'Email and password are required'}), 400
         
         if len(password) > 20:
-            return jsonify({'error': 'Password should have fewer than 20 caracters'}), 401
+            return jsonify({'error': 'Password should have fewer than 20 characters'}), 401
 
         user = User.query.filter_by(email=email).first()
 
         if user:
-            return jsonify({'error': 'Email already in use'}), 404
+            return jsonify({'error': 'Email already in use'}), 409
         else:
             try:
                 hashed_password = generate_password_hash(password)
@@ -90,7 +109,9 @@ def signin():
                     name=name,
                     surname=surname,
                     job=job,
-                    creation_date=datetime.today().strftime("%Y-%m-%d %H:%M")
+                    creation_date=datetime.today().strftime("%Y-%m-%d %H:%M"),
+                    email_confirmed=False,
+                    active=False
                 )
                 db.session.add(new_user)
                 db.session.commit()
@@ -105,15 +126,20 @@ def signin():
                 mail.send(msg)
 
                 access_token = create_access_token(identity={'email': new_user.email})
-                return jsonify({'message': 'Signin successful', 
-                                'access_token': access_token, 
-                                "userdata": new_user.to_dict()
-                                }), 200
+                refresh_token = create_refresh_token(identity={'email': new_user.email})
+                response = jsonify({
+                    'message': 'Signin successful', 
+                    'access_token': access_token,
+                    'refresh_token': refresh_token,
+                    'userdata': new_user.to_dict()
+                })
+                set_access_cookies(response, access_token)
+                set_refresh_cookies(response, refresh_token)
+                return response, 200
             
             except Exception as e:
                 db.session.rollback()
                 return jsonify({'error': 'Failed to create user', 'details': str(e)}), 500
-
 
 @authorization_blueprint.route('/confirm/<token>', methods=['GET'])
 def confirm_email(token):
@@ -128,7 +154,6 @@ def confirm_email(token):
         return jsonify({'message': 'Email confirmed. You can now log in.'}), 200
     except SignatureExpired:
         return jsonify({'error': 'The confirmation link has expired.'}), 400
-    
 
 @authorization_blueprint.route('/reset-password', methods=['POST'])
 def reset_password():

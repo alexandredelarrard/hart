@@ -1,10 +1,9 @@
 import React from "react";
 import { COMPANY_NAME } from "../../utils/constants";
-import { Link } from 'react-router-dom';
 import logo_blanc from '../../assets/logo_fond_blanc.jpg';
 import '../../css/HeaderPlateforme.css';
 
-const HeaderPlateforme = () => {
+const HeaderPlateforme = ({handleMenuClick}) => {
 
     return (
       <div className="firm-presentation-plateforme">
@@ -15,9 +14,7 @@ const HeaderPlateforme = () => {
                 </a>
                 <span className="company-name-plateforme">{COMPANY_NAME}</span>
             </div>
-            <Link to="/login">
-              <button className="account-button-plateforme">Mon compte</button>
-            </Link>
+            <button className="account-button-plateforme" onClick={() => { handleMenuClick('account-settings')}}>Mon profile</button>
         </header>
     </div>);
 }

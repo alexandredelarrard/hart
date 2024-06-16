@@ -18,13 +18,13 @@ def process():
             return jsonify({"error": "Missing picture"}), 400
 
         user_id = request.form['user_id']
-        image = request.files['file']
+        file = request.files['file']
 
         if 'text' in request.form:
             text = request.form['text']
 
         # Read the file content
-        image = image.read()
+        image = file.read()
 
         if not image and not text:
             return jsonify({"error": "Missing image and text"}), 400
@@ -41,7 +41,8 @@ def process():
             closest_distances="",
             creation_date=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             status="SENT",
-            result_date=None
+            result_date=None,
+            visible_item=True
             )
         db.session.add(new_result)
         db.session.commit()

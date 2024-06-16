@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HeaderWhite from "./landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
+import { logActivity } from '../utils/activity.js';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import {URL_API, URL_LOGIN} from '../utils/constants';
@@ -26,7 +27,12 @@ function Login() {
 
       // Save token to localStorage and redirect to upload page
       Cookies.set('token', response.data.access_token, { expires: 0.5 });
+      Cookies.set('refresh_token', response.data.refresh_token, { expires: 0.5 });
       Cookies.set('userdata', JSON.stringify(response.data.userdata), { expires: 0.5 });
+
+      // log activity 
+      logActivity("click_log_in", "")
+
       setMessage(response.data.message);
       navigate('/analytics');
     } catch (error) {

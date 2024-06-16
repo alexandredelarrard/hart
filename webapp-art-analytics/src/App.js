@@ -13,6 +13,7 @@ import CardDetail from './components/plateforme/CardDetail';
 
 import Home from './components/Home';
 import Trial from './components/Trial';
+import ProfileSettings from './components/ProfileSettings';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import ContactUs from './components/ContactUs';
@@ -46,7 +47,9 @@ function App() {
   const renderContent = () => {
     switch (activeMenu) {
       case 'search-art':
-        return <SearchArt />;
+        return <SearchArt 
+                  handleMenuClick={handleMenuClick} 
+              />;
       case 'closest-lots':
         return (
           <UploadForm 
@@ -73,12 +76,20 @@ function App() {
             analysisInProgress={analysisInProgress}
             setAnalysisInProgress={setAnalysisInProgress}
             setNewResultSaved={setNewResultSaved}
+            handleMenuClick={handleMenuClick} 
         />
         );
       case 'optimize-sale':
-        return <OptimizeSale />;
+        return <OptimizeSale 
+                handleMenuClick={handleMenuClick} 
+              />;
       case 'authentify-art':
-        return <ArtIdentify />;
+        return <ArtIdentify 
+                handleMenuClick={handleMenuClick} />;
+      case 'account-settings':
+        return <ProfileSettings 
+                handleMenuClick={handleMenuClick} 
+                />;
       default:
         return null;
     }
