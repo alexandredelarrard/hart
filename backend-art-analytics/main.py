@@ -51,8 +51,8 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self = StepTextClassification(context=context, config=config)
  
-    self = StepTextInferenceGpt(context=context, config=config, methode=["groq"], object="reformulate")
-    # self = StepCleanGptInference(context=context, config=config, category="reformulate")
+    # self = StepTextInferenceGpt(context=context, config=config, methode=["groq"], object="reformulate")
+    self = StepCleanGptInference(context=context, config=config, category="reformulate")
     
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()

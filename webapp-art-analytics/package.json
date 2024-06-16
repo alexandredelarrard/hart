@@ -20,10 +20,12 @@
     "react-chartjs-2": "^5.2.0",
     "react-credit-cards-2": "^1.0.2",
     "react-dom": "^18.3.1",
+    "react-dropzone": "^14.2.3",
     "react-multi-carousel": "^2.8.5",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.2",
+    "react-text-input": "^0.0.8",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4"
   },

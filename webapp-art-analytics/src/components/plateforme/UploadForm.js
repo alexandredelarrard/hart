@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState} from 'react';
 import Card from './Card';
 import '../../utils/utils_knn';
-import { logActivity } from '../../utils/activity';
-import Cookies from 'js-cookie';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faSort, faCalendarAlt, faDollarSign, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
-import {URL_API_BACK, URL_GET_TASK, URL_API, URL_GET_IDS_INFO, CARDS_PER_PAGE, URL_UPLOAD} from '../../utils/constants';
+import {CARDS_PER_PAGE} from '../../utils/constants';
 
 import '../../css/UploadForm.css';
-
+import SearchForm from "./form_components/SearchForm.js";
+import Pagination from './form_components/Pagination.js';
 import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import useFetchData from './form_components/useFetchData.js';
+import usePolling from './form_components/usePolling.js';
+import useUploadHandler from './form_components/useUploadHandler.js';
 
 function UploadForm({
   setFile,
@@ -40,7 +39,6 @@ function UploadForm({
 }) {
   
   const [currentPage, setCurrentPage] = useState(1);
-  const [fileUrl, setFileUrl] = useState(null);
   const [sortOrder, setSortOrder] = useState('distance');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   
@@ -74,135 +72,15 @@ function UploadForm({
 
   const totalPages = Math.ceil(additionalData.length / CARDS_PER_PAGE);
 
-  const handleSearchFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleSearchTextChange = (e) => {
-    setText(e.target.value);
-  };
-
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    const userdataString = Cookies.get("userdata");
-    const formData = new FormData();
-    if (file) {
-      formData.append('file', file);
-    }
-    if (text) {
-      formData.append('text', text);
-    }
-    formData.append('user_id', JSON.parse(userdataString).id);
-    
-    try {
-      const response = await axios.post(URL_API_BACK + URL_UPLOAD, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setFile(file);
-      setText(text);
-      setBotResult(null)
-      setChatBotResultFetched(false);
-      setAnalysisInProgress(true);
-      setTaskId(response.data.task_id);
-      setResult(null);
-      setAdditionalData([]);
-      setAvgMinEstimates(0);
-      setAvgMaxEstimates(0);
-      setAvgFinalResult(0);
-      setNewResultSaved(false);
-
-      // log activity 
-      if(file && text){
-        logActivity("click_search_submit", "file_and_text")}
-      else if(file){
-        logActivity("click_search_submit", "file")
-      } else {
-        logActivity("click_search_submit", "text")
-      }
-
-    } catch (error) {
-      console.error('Error uploading file', error);
-    }
-  };
+  const { fileUrl, handleSearchFileChange, handleSearchTextChange, handleSearchSubmit } = useUploadHandler({
+    file, text, 
+    setFile, setText, setTaskId, setResult, setBotResult, setChatBotResultFetched, setAnalysisInProgress,
+    setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved
+  });
   
-  useEffect(() => {
-    if (taskId && analysisInProgress) {
-      const interval = setInterval(async () => {
-        try {
-          const response = await axios.post(URL_API_BACK + URL_GET_TASK,
-            {'taskid': taskId});
-
-          if (response.data.state === 'SUCCESS') {
-            setResult(response.data.result);
-            clearInterval(interval);
-            setAnalysisInProgress(false);
-          }
-        } catch (error) {
-          console.error('Error fetching task result', error);
-        }
-      }, 1000); // Poll every X sec
-      return () => clearInterval(interval);
-    }
-  }, [taskId, analysisInProgress]);
-
-  useEffect(() => {
-    if (result && result.distances && result.ids) {
-      const fetchData = async () => {
-        try {
-          const response = await axios.post(URL_API + URL_GET_IDS_INFO, 
-              {'ids': result.ids,
-                'distances': result.distances
-              });
-
-          // Ensure response.data is an array
-          if (Array.isArray(response.data.result)) {
-
-            setAdditionalData(response.data.result);
-            setAvgMinEstimates(response.data.min_estimate);
-            setAvgMaxEstimates(response.data.max_estimate);
-            setAvgFinalResult(response.data.final_result);
-            setNewResultSaved(true);
-
-          } else {
-            console.error('Unexpected response format:', response.data);
-          }
-        } catch (error) {
-          console.error('Error fetching additional data', error);
-        }
-      };
-      fetchData();
-    }
-  }, [result]);
-
-  useEffect(() => {
-    if (result && result.image && result.image.documents && !chatBotResultFetched) {
-      const fetchLLM = async () => {
-        try {
-          const art_pieces = result.image.documents.flat();
-          const response = await axios.post(URL_API_BACK + '/chatbot', {art_pieces: art_pieces});
-          setBotResult(response.data.result)
-          setChatBotResultFetched(true);
-        } catch (error) {
-          console.error('Error fetching additional data', error);
-        }
-      };
-      fetchLLM(); 
-    }
-  }, [result, chatBotResultFetched]);
-
-  useEffect(() => {
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setFileUrl(url);
-
-      // Cleanup function to revoke the object URL
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [file]);
-
+  usePolling(taskId, analysisInProgress, setResult, setAnalysisInProgress);
+  useFetchData(result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved, setBotResult, setChatBotResultFetched, chatBotResultFetched);
+  
   return (
     <div className="upload-form-container">
       <HeaderPlateforme 
@@ -213,22 +91,13 @@ function UploadForm({
           <h2>Welcome to Art Analytics</h2>
           <p>Our solution provides detailed analysis of artwork through image and text inputs.</p>
             <div className="search-area">
-              <form onSubmit={handleSearchSubmit} className="search-form">
-                <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                <input 
-                  type="text" 
-                  value={text} 
-                  onChange={handleSearchTextChange} 
-                  placeholder="Enter description" 
-                  className="search-input" 
-                />
-                <input 
-                  type="file" 
-                  onChange={handleSearchFileChange} 
-                  className="search-file-input" 
-                />
-                <button type="submit" className="search-submit-button">Send for Analysis</button>
-              </form>
+              <SearchForm
+                text={text}
+                file={file}
+                handleSearchTextChange={handleSearchTextChange}
+                handleSearchFileChange={handleSearchFileChange}
+                handleSearchSubmit={handleSearchSubmit}
+              />
             </div>
         </div>
       ) : (
@@ -251,22 +120,13 @@ function UploadForm({
                   </div>
                 </div>
                 <div className="search-area">
-                  <form onSubmit={handleSearchSubmit} className="search-form">
-                    <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                    <input 
-                      type="text" 
-                      value={text} 
-                      onChange={handleSearchTextChange} 
-                      placeholder="Enter description" 
-                      className="search-input" 
-                    />
-                    <input 
-                      type="file" 
-                      onChange={handleSearchFileChange} 
-                      className="search-file-input" 
-                    />
-                    <button type="submit" className="search-submit-button">Send for Analysis</button>
-                  </form>
+                  <SearchForm
+                    text={text}
+                    file={file}
+                    handleSearchTextChange={handleSearchTextChange}
+                    handleSearchFileChange={handleSearchFileChange}
+                    handleSearchSubmit={handleSearchSubmit}
+                  />
                 </div>
             </div>
             <div className="part2">
@@ -275,44 +135,22 @@ function UploadForm({
           <div className="delimiter-line"></div>
           {additionalData.length > 0 ? (
             <div className="additional-data">
-              <div className="pagination">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index + 1}
-                    className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-                <div className="sort-buttons">
-                <div className="dropdown">
-                  <button onClick={() => setDropdownOpen(!dropdownOpen)} className="dropbtn">
-                    <FontAwesomeIcon icon={faSort} /> Sort
-                  </button>
-                  {dropdownOpen && (
-                    <div className="dropdown-content">
-                      <button onClick={() => handleSortChange('distance')} className={`sort-button ${sortOrder === 'distance' ? 'active' : ''}`}>
-                        <FontAwesomeIcon icon={faMapMarkerAlt} /> Relevance
-                      </button>
-                      <button onClick={() => handleSortChange('date')} className={`sort-button ${sortOrder === 'date' ? 'active' : ''}`}>
-                        <FontAwesomeIcon icon={faCalendarAlt} /> Date
-                      </button>
-                      <button onClick={() => handleSortChange('final_price')} className={`sort-button ${sortOrder === 'final_price' ? 'active' : ''}`}>
-                        <FontAwesomeIcon icon={faDollarSign} /> Final Price
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-              </div>
+              <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                handlePageChange={handlePageChange}
+                sortOrder={sortOrder}
+                handleSortChange={handleSortChange}
+                dropdownOpen={dropdownOpen}
+                setDropdownOpen={setDropdownOpen}
+              />
               <div className="card-container">
                 {paginatedData.map((item, index) => (
                   <Card key={index} item={item} />
                 ))}
               </div>
             </div>
-          ) : (
+            ) : (
             <p>No additional data available</p>
           )}
         </div>
