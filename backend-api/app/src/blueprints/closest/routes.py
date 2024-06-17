@@ -9,6 +9,7 @@ from src.schemas.payment import PaymentTrack
 from src.extensions import db
 import numpy as np
 import logging
+import io
 
 
 @closest_blueprint.route('/process', methods=['POST'])
@@ -38,7 +39,7 @@ def process():
         new_result = CloseResult(
             user_id=user_id,
             task_id=task.id,
-            file=image,
+            file=io.BytesIO(image).read(),
             text=text,
             closest_ids="",
             closest_distances="",

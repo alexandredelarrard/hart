@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import { logActivity } from '../../utils/activity.js';
 import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
-import PaymentTable from "../plateforme/form_components/PaymentTable.js"
+import PaymentTable from "../plateforme/utils/PaymentTable.js"
 import {URL_GET_PAYMENTS, URL_API, URL_UPDATE_PROFILE} from "../../utils/constants.js";
 
 import '../../css/ProfileSettings.css';

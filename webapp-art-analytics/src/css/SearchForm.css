@@ -1,6 +1,6 @@
 .search-area {
   width: 60%; /* 50% of the container width */
-  height: 65px; /* Fixed height */
+  /* height: 65px; Fixed height */
   background: #f7f9fc;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -94,7 +94,7 @@
 .error-message-search {
   opacity: 0;
   transition: opacity 0.5s, max-height 0.5s; /* Added max-height for smooth transition */
-  max-height: 0; /* Initially hidden */
+  /* max-height: 0; Initially hidden */
   overflow: hidden; /* Hide overflowing content */
 }
 
@@ -108,12 +108,20 @@
   color: red;
   font-weight: bold;
   text-align: center;
+  position: relative;
+  display: flex;
+  background-color: #fff;
+  align-items: center;
+  margin-top: 10px;
+  border: 2px solid red;
+  border-radius: 10px;
+  height:65px;
+  padding: 15px;
 }
 
 .plan-expired-message a, .query-expired-message a {
   color: red;
   text-decoration: underline;
-  
 }
 
 .button-error-plan{
@@ -121,13 +129,13 @@
   border: 2px solid white;
   border-radius: 10px;
   margin: 5px;
-  padding:0.2em;
+  padding:0.6em;
   color:white;
 }
 
 .button-error-plan:hover, .button-error-plan:active{
   background-color: white;
-  padding:0.2em;
+  padding:0.6em;
   color:red;
   border-radius: 10px;
   border: 2px solid red;

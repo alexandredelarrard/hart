@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-experts_blueprint = Blueprint('experts', __name__)
+authorization_blueprint = Blueprint('authorization', __name__)
 
 from . import routes

@@ -1,7 +1,7 @@
 import React from 'react';
-import '../../css/Card.css';
-import {ROOT_PICTURE} from '../../utils/constants';
+import {ROOT_PICTURE} from '../../../utils/constants';
 import { useNavigate } from 'react-router-dom';
+import '../../../css/Card.css';
 
 function Card({ item }) {
   const navigate = useNavigate();

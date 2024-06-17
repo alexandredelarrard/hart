@@ -25,6 +25,26 @@ def deduplicate_dicts(dict_list, unique_key):
             seen[d[unique_key]] = d
     return list(seen.values())
 
+def reorder_output_on_dist(result, ids, distances):
+    dict_id_dist = {ids[i] : distances[i] for i in range(len(ids))}
+    output = [item.to_dict() for item in result]
+    new_output = add_distance(output, dict_id_dist, column="distance", id="id_unique")
+    sorted_output = sorted(new_output, key=lambda x: x["distance"])
+    return sorted_output
+
+def fetch_filtered_items(output):
+
+    # get all pictures per id_unique 
+    id_items = [x['id_item'] for x in output]
+    filtered_items = db.session.query(AllPerItem).filter(
+        and_(
+            AllPerItem.ID_ITEM.in_(id_items),
+            AllPerItem.ID_PICTURE.isnot(None)
+        )
+    ).all()
+
+    return [item.to_dict() for item in filtered_items]
+
 # =============================================================================
 # additonal infos
 # =============================================================================
@@ -44,19 +64,13 @@ def post_ids_infos():
         if isinstance(ids, List) and isinstance(distances, List):
             # try:
                 # get description per id_unique
-                result_desc_id = AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
-                output = [item.to_dict() for item in result_desc_id]
+                result_desc_id =  AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
+                output = reorder_output_on_dist(result_desc_id, ids, distances)
                 deduplicated_output = deduplicate_dicts(output, "id_item")
 
                 # Fetch filtered items in batches
                 # A refaire avec table indexee sur ID_ITEM
-                filtered_items = db.session.query(AllPerItem).filter(
-                                    and_(
-                                        AllPerItem.ID_ITEM.in_([x['id_item'] for x in output]),
-                                        AllPerItem.ID_PICTURE.isnot(None)
-                                    )
-                                ).all()
-                grouped_items= [item.to_dict() for item in filtered_items]
+                grouped_items = fetch_filtered_items(deduplicated_output)
                 dict_items = {grouped_items[i]["id_item"] : grouped_items[i]["id_picture"] for i in range(len(grouped_items))}
 
                 # Add grouped pictures to the output

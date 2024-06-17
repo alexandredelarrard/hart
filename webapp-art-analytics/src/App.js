@@ -9,7 +9,7 @@ import OptimizeSale from './components/plateforme/OptimizeSale';
 import SearchArt from './components/plateforme/SearchArt';
 import ArtIdentify from './components/plateforme/ArtIdentify';
 import PrivateRoute from './components/plateforme/PrivateRoute';
-import CardDetail from './components/plateforme/CardDetail';
+import CardDetail from './components/plateforme/utils/CardDetail';
 
 import Home from './components/Home';
 import Trial from './components/Trial';
@@ -40,6 +40,7 @@ function App() {
   const [analysisInProgress, setAnalysisInProgress] = useState(false);
   const [activeMenu, setActiveMenu] = useState('closest-lots');
   const [newResultSaved, setNewResultSaved] = useState(false);
+  const [experts, setExperts] = useState([]);
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -77,6 +78,8 @@ function App() {
             analysisInProgress={analysisInProgress}
             setAnalysisInProgress={setAnalysisInProgress}
             setNewResultSaved={setNewResultSaved}
+            experts={experts}
+            setExperts={setExperts}
             handleMenuClick={handleMenuClick} 
         />
         );

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { URL_API, URL_GET_IDS_INFO, URL_API_BACK } from '../../../utils/constants';
+import { URL_API, URL_GET_IDS_INFO, URL_API_BACK } from '../../utils/constants';
 
 const useFetchData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved, setBotResult, setChatBotResultFetched, chatBotResultFetched) => {
   useEffect(() => {
@@ -18,7 +18,8 @@ const useFetchData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEs
             'distances': result.distances,
           },{
             headers: {
-               Authorization: `Bearer ${token}`
+               Authorization: `Bearer ${token}`,
+               'Content-Type': 'application/json',
             },
           });
 
@@ -38,14 +39,24 @@ const useFetchData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEs
       };
       fetchData();
     }
-  }, [result]);
+  }, [result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved]);
 
   useEffect(() => {
     if (result && result.image && result.image.documents && !chatBotResultFetched) {
       const fetchLLM = async () => {
         try {
+          const token = Cookies.get('token');
+          if (!token) {
+            return;
+          }
+          
           const art_pieces = result.image.documents.flat();
-          const response = await axios.post(URL_API_BACK + '/chatbot', { art_pieces: art_pieces });
+          const response = await axios.post(URL_API_BACK + '/chatbot', { art_pieces: art_pieces },{
+            headers: {
+               Authorization: `Bearer ${token}`,
+               'Content-Type': 'application/json',
+            },
+          });
           setBotResult(response.data.result)
           setChatBotResultFetched(true);
         } catch (error) {
@@ -54,7 +65,7 @@ const useFetchData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEs
       };
       fetchLLM();
     }
-  }, [result, chatBotResultFetched]);
+  }, [result, chatBotResultFetched, setBotResult, setChatBotResultFetched]);
 };
 
 export default useFetchData;

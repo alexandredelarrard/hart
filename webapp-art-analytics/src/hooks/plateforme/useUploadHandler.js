@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { logActivity } from '../../../utils/activity';
-import { URL_API_BACK, URL_UPLOAD } from '../../../utils/constants';
+import { logActivity } from '../../utils/activity';
+import { URL_API_BACK, URL_UPLOAD } from '../../utils/constants';
 
 const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, setBotResult, setChatBotResultFetched, setAnalysisInProgress, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved }) => {
   const [fileUrl, setFileUrl] = useState(null);

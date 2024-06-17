@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { logout, checkAuth } from '../../utils/identification';
-import { logActivity } from '../../utils/activity';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import { URL_API, URL_GET_TASK_RESULTS, URL_DELETE_TASK_RESULT } from '../../utils/constants';
 import Cookies from 'js-cookie';
+
+import useFetchPastResults from '../../hooks/plateforme/sidebarHooks.js';
+import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
+import { logout, checkAuth } from '../../utils/identification';
+import { logActivity } from '../../utils/activity';
+import {organizeResults} from './utils/organizeSidebar.js';
 
 import '../../css/Sidebar.css';
 
@@ -109,71 +112,7 @@ function Sidebar({
     }
   };
 
-  useEffect(() => {
-    const token = Cookies.get('token');
-    const userdataCookie = Cookies.get('userdata');
-    if (userdataCookie) {
-      try {
-        const parsedUserdata = JSON.parse(userdataCookie);
-        setUserData(parsedUserdata);
-
-        axios.get(`${URL_API + URL_GET_TASK_RESULTS}?user_id=${parsedUserdata.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-          .then(response => {
-              setFormerResults(response.data.results); 
-          })
-          .catch(error => {
-              console.error('Error fetching former results:', error);
-          });
-
-      } catch (error) {
-        console.error('Failed to parse userdata cookie:', error);
-      }
-    }
-  }, [newResultSaved]);
-
-  const organizeResults = (results) => {
-    const organizedResults = {
-      "Today": [],
-      "Yesterday": [],
-      "Last Week": [],
-      "Last Month": [],
-      "Older": []
-    };
-
-    const now = new Date();
-    results.forEach(result => {
-      const resultDate = new Date(result.result_date);
-      const differenceInDays = Math.floor((now - resultDate) / (1000 * 60 * 60 * 24));
-
-      if (differenceInDays <= 1) {
-        organizedResults["Today"].push(result);
-      } else if (differenceInDays < 2) {
-        organizedResults["Yesterday"].push(result);
-      } else if (differenceInDays <= 7) {
-        organizedResults["Last Week"].push(result);
-      } else if (differenceInDays <= 30) {
-        organizedResults["Last Month"].push(result);
-      } else {
-        organizedResults["Older"].push(result);
-      }
-    });
-
-    // Remove keys with empty lists
-    Object.keys(organizedResults).forEach(key => {
-      if (organizedResults[key].length === 0) {
-        delete organizedResults[key];
-      }
-    });
-
-    return organizedResults;
-  };
-
+  useFetchPastResults(newResultSaved, setFormerResults, setUserData);
   const organizedResults = organizeResults(formerResults);
 
   return (

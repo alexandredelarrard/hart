@@ -33,18 +33,30 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 70%;
-  padding: 1.5rem; /* Increased padding for wider gap */
+  width: 65%;
+  padding: 1.1rem; /* Increased padding for wider gap */
 }
 
 .part2 {
+  padding: 1.1rem;
   margin-left: 2rem; /* Increased margin for wider gap */
-  width: 30%;
+  width: 35%;
   height: 100%; /* Set the height to match part 1 */
   display: flex;
   background: #fff;
   border-radius: 10px; /* Rounded corners for a modern look */
+  overflow-y: auto;
+  max-height: 450px; /* Adjust based on your layout */
 } 
+
+
+.experts-list {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  max-height: 450px; /* Adjust based on your layout */
+  padding: 10px;
+}
 
 .part-header {
   margin-bottom: 0.5rem; /* Add some space below the header */

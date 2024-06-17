@@ -1,17 +1,20 @@
 import React, { useState, useEffect} from 'react';
-import Card from './Card';
 import Cookies from 'js-cookie';
 import '../../utils/utils_knn';
 import {CARDS_PER_PAGE} from '../../utils/constants';
 
 import '../../css/UploadForm.css';
-import SearchForm from "./form_components/SearchForm.js";
-import Pagination from './form_components/Pagination.js';
+import SearchForm from "./utils/SearchForm.js";
+import Pagination from './utils/Pagination.js';
 import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
-import useFetchData from './form_components/useFetchData.js';
-import usePolling from './form_components/usePolling.js';
-import useUploadHandler from './form_components/useUploadHandler.js';
-import CookieConsent from '../landing_page/CookieConsent.js'
+import CookieConsent from '../landing_page/CookieConsent.js';
+import ExpertCard from './utils/ExpertCard.js';
+import Card from './utils/Card';
+
+import useFetchData from '../../hooks/plateforme/useFetchData.js';
+import usePolling from '../../hooks/plateforme/usePolling.js';
+import useFetchExperts from "../../hooks/plateforme/useFetchExperts.js"
+import useUploadHandler from '../../hooks/plateforme/useUploadHandler.js';
 
 function UploadForm({
   setFile,
@@ -37,6 +40,8 @@ function UploadForm({
   analysisInProgress,
   setAnalysisInProgress,
   setNewResultSaved,
+  setExperts,
+  experts,
   handleMenuClick
 }) {
   
@@ -103,9 +108,10 @@ function UploadForm({
     setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved
   });
   
+  useFetchExperts(result, setExperts);
   usePolling(taskId, analysisInProgress, setResult, setAnalysisInProgress);
   useFetchData(result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved, setBotResult, setChatBotResultFetched, chatBotResultFetched);
-  
+
   return (
     <div className="upload-form-container">
       <HeaderPlateforme 
@@ -141,6 +147,18 @@ function UploadForm({
                 </div>
             </div>
             <div className="part2">
+              <div className="part-content">
+              <div className="middle">
+                <div className="part-header common-title">
+                  <h2>Les Experts à proximité</h2>
+                </div>
+                <div className="experts-list">
+                  {experts.map((expert, index) => (
+                    <ExpertCard key={index} expert={expert} />
+                  ))}
+                </div>
+              </div>
+              </div>
             </div>
           </div>
           <div className="delimiter-line"></div>

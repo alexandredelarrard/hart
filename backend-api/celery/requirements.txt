@@ -1,6 +1,6 @@
 flask
 chromadb==0.5.0
-celery[redis]
+celery[redis]==5.4.0
 flask_cors
 flask_sqlalchemy==3.1.1
 omegaconf==2.3.0
@@ -8,7 +8,7 @@ python-dotenv==1.0.1
 psycopg2
 pandas 
 sqlparse
-numpy
+numpy==1.26.4
 torch==2.2.1
 torchvision==0.17.1
 peft==0.10.0

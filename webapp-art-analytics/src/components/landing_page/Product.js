@@ -2,7 +2,7 @@ import React from "react";
 import '../../css/Product.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faBullseye, faUsers, faGavel, faSearch, faCheck, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faBullseye, faUsers, faGavel, faSearch, faCheck } from '@fortawesome/free-solid-svg-icons';
 import problematicImage from '../../assets/landing_background_3.jpg'; 
 
 const problematics = [

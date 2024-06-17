@@ -1,6 +1,5 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import {logActivity} from './activity';
 import { URL_API, URL_CHECK_LOGIN, URL_LOGOUT, URL_REFRESH_LOGIN } from './constants';
 
 
@@ -15,6 +14,9 @@ export const logout = async () => {
       Cookies.remove('token');
       Cookies.remove('refresh_token');
       Cookies.remove('userdata');
+      Cookies.remove('plan_end_date');
+      Cookies.remove('remaining_closest_volume');
+      Cookies.remove('remaining_search_volume');
     }
   } catch (error) {
     console.error('Error logging out:', error);

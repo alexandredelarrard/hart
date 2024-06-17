@@ -1,5 +1,7 @@
 from flask import Flask
 from celery import Celery
+import os 
+from datetime import timedelta
 
 from src.blueprints.closest import closest_blueprint
 from src.blueprints.chatbot import chatbot_blueprint
@@ -42,9 +44,15 @@ class App(Step):
 			
 		app.config["CELERY_BROKER_URL"] = self._config.celery.url
 		app.config["CELERY_RESULT_BACKEND"] = self._config.celery.url
+		app.config['JWT_SECRET_KEY'] = os.environ["JWT_SECRET_KEY"]
+		app.config['CORS_HEADERS'] = 'Content-Type'
+		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 3}
+		app.config["JWT_REFRESH_LIFESPAN"] = {'days': 1}
+		app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+		app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=10)
+		app.config['SECRET_KEY'] = os.environ["SECRET_KEY_LOGIN"]
 		app.config["SQLALCHEMY_DATABASE_URI"] = self._context.connexion_string
 		app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-		app.config["CORS_HEADERS"] = "Content-Type"
 
 		if debug:
 			app.config["DEBUG"] = True
