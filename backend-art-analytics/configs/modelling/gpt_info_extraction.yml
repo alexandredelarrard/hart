@@ -1,7 +1,7 @@
 gpt:
   save_path: D:/data/llm_extracts/extraction/
   llm_model: 
-    groq: llama3-8b-8192 #llama3-8b-8192 free so no need of limiting - 30/Min
+    groq: llama3-70b-8192 #llama3-8b-8192 free so no need of limiting - 30/Min
     open_ai: gpt-3.5-turbo
     local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
     google: gemini-1.5-flash
@@ -20,4 +20,5 @@ gpt:
                   - Ensure that only information directly present in the original description is included. \
                   - Omit details such as auction location, contact information, viewing schedules, and transportation fees. \
                   - When translating, simplify the sentence while retaining all descriptions of objects, and expand contracted words into their full forms in English or French. For example, 'bout.' should be expanded to 'boutelle' and 'long.' to 'longeur' etc. \
+                  - Do not start your output with 'Here is the output' and do not write 'Note' or comments in the JSON. \
                   - Finally, also include the number of objects described and the specific category of the art object(s)."

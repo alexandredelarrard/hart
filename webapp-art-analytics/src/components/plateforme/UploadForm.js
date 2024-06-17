@@ -110,11 +110,7 @@ function UploadForm({
       <HeaderPlateforme 
         handleMenuClick={handleMenuClick}
       />
-      {!taskId ? (
-        <div className='presentation-closest'>
-          <h2>Welcome to Art Analytics</h2>
-          <p>Our solution provides detailed analysis of artwork through image and text inputs.</p>
-          <SearchForm
+        <SearchForm
             text={text}
             file={file}
             handleSearchTextChange={handleSearchTextChange}
@@ -123,19 +119,17 @@ function UploadForm({
             planExpired={planExpired}
             closestVolumeExpired={closestVolumeExpired}
           />
-        </div>
-      ) : (
         <div className="result-container">
           <div className="summary-area">
             <div className="part1">
-                <div className="part-header common-title">
-                    <h2>Estimation</h2>
-                </div>
                 <div className="part-content">
                   <div className="left">
                     {fileUrl && <img src={fileUrl} alt="Uploaded" className="summary-image" />}
                   </div>
                   <div className="middle">
+                    <div className="part-header common-title">
+                      <h2>Estimation</h2>
+                  </div>
                     {botresult &&<p><strong>Designation:</strong> {botresult}</p>}
                     <div className="card-footer">
                       <span className="card-price"><strong>Estimate:</strong> {avgMinEstimates}-{avgMaxEstimates} €</span>
@@ -143,15 +137,6 @@ function UploadForm({
                     </div>
                   </div>
                 </div>
-                <SearchForm
-                  text={text}
-                  file={file}
-                  handleSearchTextChange={handleSearchTextChange}
-                  handleSearchFileChange={handleSearchFileChange}
-                  handleSearchSubmit={handleSearchSubmit}
-                  planExpired={planExpired}
-                  closestVolumeExpired={closestVolumeExpired}
-                />
             </div>
             <div className="part2">
             </div>
@@ -175,10 +160,9 @@ function UploadForm({
               </div>
             </div>
             ) : (
-            <p>No additional data available</p>
+            <p></p>
           )}
         </div>
-      )}
     </div>
   );
 }

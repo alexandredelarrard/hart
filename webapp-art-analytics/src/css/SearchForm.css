@@ -1,0 +1,117 @@
+.search-area {
+  width: 60%; /* 50% of the container width */
+  height: 65px; /* Fixed height */
+  background: #f7f9fc;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-bottom: 40px;
+  margin-left: auto;
+  flex-direction: column; /* Stack items vertically */
+  /* padding-bottom: 1rem; Added padding to accommodate error message   */
+}
+
+.search-form {
+  display: flex;
+  width: 100%;
+  height: 100%; /* Ensure the form takes the full height */
+  height: 65px; /* Fixed height for the form */
+  align-items: center;
+  justify-content: center;
+}
+
+.form-row {
+  display: flex;
+  width: 100%;
+  height: 100%; /* Ensure the row takes the full height */
+  align-items: center;
+}
+
+.dropzone {
+  flex: 0 0 45%; /* 45% of the width */
+  height: 100%; /* Full height */
+  padding: 1rem;
+  border: 2px dashed #012041;
+  border-radius: 10px 0 0 10px;
+  background: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.dropzone-error {
+  border-color: red;
+}
+
+.dropzone-text {
+  font-size: 1rem;
+  color: #666;
+}
+
+.upload-icon {
+  margin-right: 0.5rem;
+  color: #666;
+}
+
+.search-input {
+  flex: 0 0 44%; 
+  height: 100%; /* Full height */
+  padding: 0.5rem;
+  border: 1px solid #012041;
+  border-left: none; /* Remove the left border */
+  border-radius: 0;
+  font-size: 1rem;
+}
+
+.input-error {
+  border-color: red;
+}
+
+.search-submit-button {
+  flex: 0 0 10%; /* 15% of the width */
+  height: 100%; /* Full height */
+  padding: 0.5rem;
+  background-color: #012041;
+  color: white;
+  border: none;
+  border-radius: 0 10px 10px 0;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.search-submit-button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.search-submit-button:hover:enabled {
+  background-color: #154d89;
+}
+
+.error-message-search {
+  opacity: 0;
+  transition: opacity 0.5s, max-height 0.5s; /* Added max-height for smooth transition */
+  max-height: 0; /* Initially hidden */
+  overflow: hidden; /* Hide overflowing content */
+}
+
+.error-message-search.show {
+  opacity: 1;
+  /* max-height: 100px; Adjust as needed to fit the content */
+  overflow:visible;
+}
+
+.plan-expired-message, .query-expired-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+.plan-expired-message a, .query-expired-message a {
+  color: red;
+  text-decoration: underline;
+  
+}

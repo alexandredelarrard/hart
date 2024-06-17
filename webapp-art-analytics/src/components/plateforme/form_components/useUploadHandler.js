@@ -8,7 +8,7 @@ const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, 
   const [fileUrl, setFileUrl] = useState(null);
 
   const handleSearchFileChange = (e) => {
-    setFile(e.target.files[0]);
+    setFile(e);
   };
 
   const handleSearchTextChange = (e) => {
