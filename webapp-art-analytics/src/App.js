@@ -14,6 +14,7 @@ import CardDetail from './components/plateforme/CardDetail';
 import Home from './components/Home';
 import Trial from './components/Trial';
 import ProfileSettings from './components/plateforme/ProfileSettings';
+import Offers from './components/plateforme/Offers';
 import Login from './components/connectors/Login';
 import Signup from './components/connectors/Signup';
 import ContactUs from './components/ContactUs';
@@ -89,6 +90,10 @@ function App() {
       case 'account-settings':
         return <ProfileSettings 
                 handleMenuClick={handleMenuClick} 
+                />;
+      case 'my-offers':
+        return <Offers 
+                  handleMenuClick={handleMenuClick} 
                 />;
       default:
         return null;

@@ -115,3 +115,21 @@
   text-decoration: underline;
   
 }
+
+.button-error-plan{
+  background-color: red;
+  border: 2px solid white;
+  border-radius: 10px;
+  margin: 5px;
+  padding:0.2em;
+  color:white;
+}
+
+.button-error-plan:hover, .button-error-plan:active{
+  background-color: white;
+  padding:0.2em;
+  color:red;
+  border-radius: 10px;
+  border: 2px solid red;
+  margin: 5px;
+}

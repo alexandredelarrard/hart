@@ -1,0 +1,34 @@
+.cookie-consent-banner {
+    position: fixed;
+    opacity: 0.9;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    z-index: 1000;
+  }
+  
+  .cookie-consent-banner p {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .cookie-consent-banner a {
+    color: red;
+    text-decoration: underline;
+  }
+  
+  .cookie-consent-banner button {
+    margin: 0 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #154d89;
+    color: white;
+    cursor: pointer;
+  } 
+  
+  .cookie-consent-banner button:hover {
+    background-color: #154d89;
+  }

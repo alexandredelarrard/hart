@@ -130,32 +130,14 @@ function ProfileSettings({handleMenuClick}) {
     </div>
   );
 }
-
 export default ProfileSettings;
 
 function BillingSettings({payments}) {
-  const [activePlan, setActivePlan] = useState('');
-
-  useEffect(() => {
-    const userdataCookie = Cookies.get('userdata');
-    if (userdataCookie) {
-      const parsedUserdata = JSON.parse(userdataCookie);
-      setActivePlan(parsedUserdata.activeplan || 'free');
-    }
-  }, []);
-
-  const plans = ['free', 'individuals', 'experts'];
 
   return (
-    <div className="billing-section">
+    <div className="my-payment-section">
       <h2>Billing Settings</h2>
       <div className="plans">
-        {plans.map(plan => (
-          <div key={plan} className={`plan ${activePlan === plan ? 'active-plan' : ''}`}>
-            <h3>{plan.charAt(0).toUpperCase() + plan.slice(1)}</h3>
-            {activePlan === plan && <span className="current-plan">Current Plan</span>}
-          </div>
-        ))}
         <div className="">
             <PaymentTable payments={payments}/>
         </div>

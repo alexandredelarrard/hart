@@ -17,6 +17,8 @@ def log_activity():
         user_email = get_jwt_identity()['email']
         activity_type = data.get('activity_type')
         activity_details = data.get('activity_details')
+        geolocalisation = data.get('geolocation')
+        machineSpecs = data.get('machineSpecs')
 
         if not activity_type:
             return jsonify({'error': 'Activity type is required'}), 400
@@ -26,7 +28,9 @@ def log_activity():
             user_email=user_email,
             activity_type=activity_type,
             activity_details=activity_details,
-            activity_timestamp=datetime.now()
+            activity_timestamp=datetime.now(),
+            geolocalisation=str(geolocalisation),
+            machinespecs=str(machineSpecs)
         )
 
         try:

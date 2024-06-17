@@ -132,6 +132,7 @@ def signin():
                     user_id=new_user.id,
                     paying_date= datetime.today(),
                     paying_methode="FREE",
+                    payment_amount=0,
                     plan_name="free_plan",
                     plan_frequency="monthly",
                     plan_start_date=datetime.today(),

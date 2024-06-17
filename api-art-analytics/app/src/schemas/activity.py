@@ -8,7 +8,9 @@ class ActivityLog(db.Model):
     user_email = db.Column(db.String(120), nullable=False)
     activity_type = db.Column(db.String(80), nullable=False)
     activity_details = db.Column(db.String(255), nullable=True)
-    activity_timestamp = db.Column(db.DateTime, nullable=False)
+    activity_timestamp = db.Column(db.String(255), nullable=False)
+    machinespecs = db.Column(db.String(255), nullable=True)
+    geolocalisation = db.Column(db.String(255), nullable=True)
 
     def to_dict(self):
         return {
@@ -17,5 +19,6 @@ class ActivityLog(db.Model):
             'user_email': self.user_email,
             'activity_type': self.activity_type,
             'activity_details': self.activity_details,
-            'activity_timestamp': self.activity_timestamp
+            'activity_timestamp': self.activity_timestamp,
+            'geolocalisation': self.geolocalisation
         }

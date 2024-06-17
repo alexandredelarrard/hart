@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
-import "../../css/Pricing.css";
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faBuilding, faShieldAlt, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faBuilding, faShieldAlt, faCheck} from '@fortawesome/free-solid-svg-icons';
 
-const Pricing = () => {
+import "../../css/Pricing.css";
+import { COMPANY_NAME } from '../../utils/constants';
+
+const Pricing = ({isplateforme}) => {
     const [selectedPrice, setSelectedPrice] = useState({});
+    const [myPlan, setMyPlan] = useState("individual_plan");
 
     const handlePriceSelection = (category, priceType) => {
         setSelectedPrice({ ...selectedPrice, [category]: priceType });
     };
+
+    useEffect(() => {
+        const token = Cookies.get('token');
+        if (!token) {
+          return;
+        }
+    
+        const userdataCookie = Cookies.get('userdata');
+        if (userdataCookie) {
+          const parsedUserdata = JSON.parse(userdataCookie);
+          setMyPlan(parsedUserdata.plan);
+        }
+      }, []);
 
     const handleSubmit = (category) => {
         console.log(`Selected price for ${category}:`, selectedPrice[category]);
@@ -23,35 +40,44 @@ const Pricing = () => {
 
     return (
         <div>
-            <section className="pricing-section" id="pricing">
-                <div className="pricing-subsection">
+            <section className={isplateforme? "pricing-section-plateforme": "pricing-section"} id="pricing">
+                <div className={isplateforme? "pricing-subsection-plateforme" : "pricing-subsection"}>
                     <h1>Des offres dédiées à vos besoins</h1>
                     <div className="pricing-cards">
-                    <div className="pricing-card">
-                        <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
-                            <h2>Nouveaux utilisateurs</h2>
-                            <p>Essayez notre solution gratuitement pendant 7 jours et familiarisez vous avec les fonctionnalités d'Artyx.</p>
+                        <div className={myPlan === "free_plan" ? "pricing-card prefered" : "pricing-card"}>
+                            <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
+                            <h2>Les nouveaux</h2>
+                            <p>Essai gratuit pendant 7 jours pour vous familiariser avec les fonctionnalités d'{COMPANY_NAME}.</p>
                             <ul className="features-list">
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Jusqu'à 100 recherches</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 20 estimations </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Valable 1 mois </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 40 estimations </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Valable 7 jours </li>
                             </ul>
+                            {myPlan && (
+                                <>
+                                   <ul>
+                                        <li className='sub-li-plan'> {myPlan}</li>
+                                        <li className='sub-li-plan'> {myPlan}</li>
+                                    </ul>
+                                </>
+                                )}
                             <div className="button-container">
                                 <button
                                     className="firm-presentation-cta-button"
                                     onClick={() => handleSubmit('beginner')}
+                                    disabled={myPlan === "free_plan"}
                                 >
-                                    Essayer gratuitement
+                                    {myPlan === "free_plan" ? "Mon plan actuel": "Essayer gratuitement"}
                                 </button>
                             </div>
                         </div>
-                        <div className="pricing-card prefered">
+                        <div className={myPlan === "individual_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faUser} className="pricing-icon" />
                             <h2>Passionnés d'art</h2>
-                            <p>Idéal pour les passionnés d'art, curieux d'un artiste ou de la valeur d'une oeuvre d'art</p>
+                            <p>Idéal pour les passionnés d'art, curieux d'un artiste ou de la valeur d'une oeuvre</p>
                             <ul className="features-list">
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Recherches illimitées </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 20 estimations/mois </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 200 estimations/mois </li>
                             </ul>
                             <div className="price-options">
                                 <div className="price-column">
@@ -82,7 +108,7 @@ const Pricing = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="pricing-card">
+                        <div className={myPlan === "custome_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faShieldAlt} className="pricing-icon" />
                             <h2>Entreprises/Experts</h2>
                             <p>Entreprises ou experts ayant des besoins importants requérant une offre à la carte.</p>

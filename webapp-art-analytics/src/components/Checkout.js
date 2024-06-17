@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Payment from "./landing_page/Payment.js";
@@ -33,6 +33,16 @@ const Checkout = () => {
     setCardData({ ...cardData, focus: e.target.name });
   };
 
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if(token){
+      const userdata = Cookies.get('userdata');
+      const parsedUserdata = JSON.parse(userdata);
+      setEmail(parsedUserdata.email);
+      setStep(2);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     setError(''); // Clear any previous error
     setMessage(''); // Clear any previous message
@@ -55,7 +65,7 @@ const Checkout = () => {
       } else {
         setError('An error occurred. Please try again later.');
       }
-    }
+      }
   };
 
   const handlePayment = async (e) => {

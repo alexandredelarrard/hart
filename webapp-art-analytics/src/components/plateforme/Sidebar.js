@@ -53,7 +53,8 @@ function Sidebar({
   }, [navigate]);
 
   const toggleResults = (e) => {
-    setShowResults(e);
+    if(e===true&&showResults===true){setShowResults(false);}
+    else{setShowResults(e);}
   };
 
   const handleResultClick = (result) => {
@@ -86,9 +87,16 @@ function Sidebar({
   };
 
   const handleDeleteResult = (taskId) => {
+    const token = Cookies.get('token');
     const confirmDelete = window.confirm(`Etes vous cetain de vouloir supprimer l'élément ${taskId}?`);
     if (confirmDelete) {
-      axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`)
+      axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
         .then(response => {
           // Remove the deleted result from the state
           setFormerResults(formerResults.filter(result => result.task_id !== taskId));
@@ -102,13 +110,20 @@ function Sidebar({
   };
 
   useEffect(() => {
+    const token = Cookies.get('token');
     const userdataCookie = Cookies.get('userdata');
     if (userdataCookie) {
       try {
         const parsedUserdata = JSON.parse(userdataCookie);
         setUserData(parsedUserdata);
 
-        axios.get(`${URL_API + URL_GET_TASK_RESULTS}?user_id=${parsedUserdata.id}`)
+        axios.get(`${URL_API + URL_GET_TASK_RESULTS}?user_id=${parsedUserdata.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
           .then(response => {
               setFormerResults(response.data.results); 
           })

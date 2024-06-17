@@ -5,7 +5,15 @@ import { faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
 import "../../../css/SearchForm.css";
 import { Link } from 'react-router-dom'; // Import Link for navigation
 
-const SearchForm = ({ planExpired, closestVolumeExpired, text, handleSearchTextChange, handleSearchSubmit, handleSearchFileChange }) => {
+const SearchForm = ({ 
+  planExpired, 
+  closestVolumeExpired, 
+  text, 
+  handleSearchTextChange, 
+  handleSearchSubmit, 
+  handleSearchFileChange, 
+  handleMenuClick
+}) => {
   const onDrop = acceptedFiles => {
     handleSearchFileChange(acceptedFiles[0]);
   };
@@ -53,7 +61,7 @@ const SearchForm = ({ planExpired, closestVolumeExpired, text, handleSearchTextC
         )}
         {closestVolumeExpired && (
           <div className="query-expired-message">
-            You reached the volume limit of possible queries allocated to your plan. Please <Link to="/subscribe">upgrade your plan</Link>.
+            You reached the volume limit of possible queries allocated to your plan. Please <button className='button-error-plan' onClick={() => { handleMenuClick("my-offers")}}>upgrade your plan</button>
           </div>
         )}
       </div>

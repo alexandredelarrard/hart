@@ -11,6 +11,7 @@ import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
 import useFetchData from './form_components/useFetchData.js';
 import usePolling from './form_components/usePolling.js';
 import useUploadHandler from './form_components/useUploadHandler.js';
+import CookieConsent from '../landing_page/CookieConsent.js'
 
 function UploadForm({
   setFile,
@@ -118,6 +119,7 @@ function UploadForm({
             handleSearchSubmit={handleSearchSubmit}
             planExpired={planExpired}
             closestVolumeExpired={closestVolumeExpired}
+            handleMenuClick={handleMenuClick}
           />
         <div className="result-container">
           <div className="summary-area">
@@ -163,6 +165,7 @@ function UploadForm({
             <p></p>
           )}
         </div>
+        <CookieConsent />
     </div>
   );
 }

@@ -247,51 +247,6 @@
   background-color: #ddd;
 }
 
-/* Search */
-
-.search-area {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.search-form {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.search-icon {
-  margin-right: 0.5rem;
-  color: #012041;
-}
-
-.search-file-input {
-  margin: 0 0.5rem;
-}
-
-
-.search-file-input {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.search-submit-button {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  background-color: #012041;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.search-submit-button:hover {
-  background-color: #154d89;
-}
-
 /* Sort Buttons */
 
 .sort-dropdown {

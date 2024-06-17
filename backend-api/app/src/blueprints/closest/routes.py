@@ -50,6 +50,14 @@ def process():
         db.session.add(new_result)
         db.session.commit()
 
+        # update the volume of search with -1 with the last payment plan 
+        payment = PaymentTrack.query.filter_by(user_id=user_id).order_by(desc(PaymentTrack.plan_start_date)).first()
+        if payment:
+            payment.remaining_closest_volume -=1 
+            db.session.commit()
+        else: 
+            logging.info(f"payment not found for ID {user_id}")
+
         return jsonify({"task_id": task.id}), 202
 
 
@@ -81,14 +89,6 @@ def task_status():
                 result = CloseResult.query.filter_by(task_id=task_id).first_or_404()
                 
                 if result:
-                    # update the volume of search with -1 with the last payment plan 
-                    payment = PaymentTrack.query.filter_by(user_id=result.user_id).order_by(desc(PaymentTrack.plan_start_date)).first()
-                    if payment:
-                        payment.remaining_closest_volume -=1 
-                        db.session.commit()
-                    else: 
-                        logging.info(f"payment not found for ID {result.user_id}")
-            
                     # Update the user as confirmed
                     result.closest_ids = ",".join(results["ids"])
                     result.closest_distances = ",".join([str(x) for x in results["distances"]])

@@ -1,57 +1,64 @@
 .firm-presentation-plateforme {
-    font-family: "Arial", sans-serif;
-  }
-  
+  font-family: "Arial", sans-serif;
+}
+
 .firm-presentation-plateforme header {
-    border-bottom: 1px solid #ddd;
-    width: 100%;
-    margin-bottom: 15px;
-  }
-  
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
 .navbar-scrolled-plateforme {
-    background: #fff;
-    height: 80px;
-    padding: .5rem 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    position:relative;
-  }
-  
+  background: #fff;
+  height: 80px;
+  padding: .5rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between; /* Adjusted to space between items */
+  position:relative;
+}
+
 .logo-container-plateforme {
-    display: flex;
-    align-items: center;
-  }
-  
+  display: flex;
+  align-items: center;
+}
+
 .logo-plateforme {
-    margin-left: 45px;
-  }
-  
-  .logo-plateforme img {
-    width: 70px;
-    height: auto;
-    transition: width 0.3s, transform 0.3s;
-  }
-  
-  .company-name-plateforme {
-    margin-left: 10px;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #154d89;
-    transition: font-size 0.3s;
-  }
-  
-  .account-button-plateforme {
-    background: white;
-    border: 2px solid #154d89;
-    padding: 8px 18px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 10px;
-    margin-right: 25px;
-  }
-  
-  .account-button-plateforme:hover {
-    background: #154d89;
-    color: white;
-  }
+  margin-left: 45px;
+}
+
+.logo-plateforme img {
+  width: 70px;
+  height: auto;
+  transition: width 0.3s, transform 0.3s;
+}
+
+.company-name-plateforme {
+  margin-left: 10px;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #154d89;
+  transition: font-size 0.3s;
+}
+
+.menu-container-plateforme {
+  display: flex;
+  align-items: center;
+  margin-right: 25px;
+}
+
+.menu-item-plateforme, .account-button-plateforme {
+  background: white;
+  border: 2px solid #154d89;
+  padding: 8px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.menu-item-plateforme:hover, .account-button-plateforme:hover {
+  background: #154d89;
+  color: white;
+}

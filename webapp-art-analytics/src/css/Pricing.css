@@ -4,8 +4,21 @@
   padding: 150px 0;
 }
 
+.pricing-section-plateforme {
+  background-color: #f3f3f3ea;
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 140px;
+}
+
 .pricing-subsection {
   width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pricing-subsection-plateforme {
+  width: 80%;
   margin: 0 auto;
   text-align: center;
 }
@@ -14,6 +27,12 @@
   font-size: 4em;
   margin-bottom: 60px;
   color: white;
+}
+
+.pricing-subsection-plateforme h1{
+  font-size: 4em;
+  margin-bottom: 60px;
+  color: #002955;
 }
 
 .pricing-cards {
@@ -35,7 +54,7 @@
 }
 
 .pricing-icon {
-  font-size: 2em;
+  font-size: 2.5em;
   margin-bottom: 10px;
   color: #002955;
 }
@@ -59,6 +78,14 @@
   margin-left: 30px;
   font-size: 19px;
   font-weight: 600;
+}
+
+.sub-li-plan{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
 }
 
 .green-icon {
@@ -161,5 +188,5 @@
 
 .prefered{
   border: 4px solid red;
-  box-shadow: 0 0 50px rgba(167, 57, 57, 0.952);
+  /* box-shadow: 0 0 50px rgba(167, 57, 57, 0.952); */
 }

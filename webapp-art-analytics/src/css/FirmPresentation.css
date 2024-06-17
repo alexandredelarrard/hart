@@ -57,6 +57,13 @@
   color:#154d89;
 }
 
+.firm-presentation-cta-button:disabled {
+  background-color: rgba(207, 206, 206, 0.925);
+  cursor: not-allowed;
+  color: gray;
+  border: 2px solid #154d89;
+}
+
 .button-arrow{
   margin-left: 10px;
   font-size: 1.5em;

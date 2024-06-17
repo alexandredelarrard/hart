@@ -22,15 +22,16 @@
 }
 
 .profile-container{
-  margin-left: 100px;
+  margin-left: 50px;
   margin-top: 50px;
+  padding-bottom: 450px;
 }
 
-.profile-section, .billing-section {
+.profile-section, .my-payment-section {
   margin-top: 20px;
 }
 
-.profile-section h2, .billing-section h2{
+.profile-section h2, .my-payment-section h2{
   margin: 30px;
 }
 
@@ -71,7 +72,6 @@
 }
 
 .plans {
-  display: flex;
   justify-content: space-around;
   flex-direction: row;
   align-content: center;
