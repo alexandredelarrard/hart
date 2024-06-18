@@ -76,12 +76,14 @@ export const checkAuth = async () => {
           Cookies.set('token', newToken);
           return true;
         } catch (refreshError) {
-          console.error('Error refreshing token:', refreshError);
+          console.log('Error refreshing token:', refreshError);
           return false;
         }
+      } else {
+        return false
       }
-    }
-    console.error('Error checking auth:', error);
+    } 
+    console.log('Error checking auth:', error);
     return false;
   }
 };

@@ -13,6 +13,8 @@ class CloseResult(db.Model):
     closest_distances= db.Column(db.String(1000), nullable=False)
     status = db.Column(db.String(120), nullable=False)
     result_date = db.Column(db.String(120), nullable=False)
+    visible_item = db.Column(db.Boolean, nullable=False)
+    llm_result = db.Column(db.String(10000), nullable=False)
 
     def to_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

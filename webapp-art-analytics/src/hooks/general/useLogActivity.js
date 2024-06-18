@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { checkAuth } from './identification';
+import { checkAuth, logout } from './identification';
 import { URL_API, LOG_ACTIVITY } from '../../utils/constants';
 
 const useLogActivity = () => {
@@ -14,6 +14,7 @@ const useLogActivity = () => {
       const isAuthenticated = await checkAuth();
 
       if (!isAuthenticated) {
+        await logout();
         navigate('/login'); // Redirect to the login page or home page if not authenticated
         return false;
       }

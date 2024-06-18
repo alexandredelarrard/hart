@@ -6,6 +6,7 @@ from logging.config import dictConfig
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 
 from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig, OmegaConf
@@ -68,6 +69,9 @@ class Context:
 
         # Cors policy
         self.cors = CORS(resources={r"/*": {"origins": self._config.front_end.server}})
+
+        # JWT manager 
+        self.jwt = JWTManager()
 
     @property
     def config(self) -> DictConfig:

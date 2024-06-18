@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { URL_API_BACK, URL_GET_TASK } from '../../utils/constants';
 
-const usePolling = (taskId, analysisInProgress, setResult, setAnalysisInProgress) => {
+const useGetTaskResult = (taskId, analysisInProgress, setResult, setAnalysisInProgress) => {
   useEffect(() => {
     if (taskId && analysisInProgress) {
       const token = Cookies.get('token');
@@ -34,4 +34,4 @@ const usePolling = (taskId, analysisInProgress, setResult, setAnalysisInProgress
   }, [taskId, analysisInProgress, setResult, setAnalysisInProgress]);
 };
 
-export default usePolling;
+export default useGetTaskResult;

@@ -1,5 +1,4 @@
 from src.extensions import db
-import base64
 
 class CloseResult(db.Model):
     __tablename__ = 'closeresult'
@@ -15,6 +14,7 @@ class CloseResult(db.Model):
     status = db.Column(db.String(120), nullable=False)
     result_date = db.Column(db.String(120), nullable=False)
     visible_item = db.Column(db.Boolean, nullable=False)
+    llm_result = db.Column(db.String(10000), nullable=False)
 
     def to_dict(self):
         return {
@@ -24,8 +24,9 @@ class CloseResult(db.Model):
             'status': self.status,
             'closest_distances': self.closest_distances,
             'closest_ids': self.closest_ids,
-            'file': base64.b64encode(self.file.encode(encoding="utf-8")).decode('utf-8'),
+            'file': self.file,
             'text': self.text,
             "result_date": self.result_date,
             "visible_item": self.visible_item,
+            "llm_result": eval(self.llm_result) if self.llm_result else None
         }

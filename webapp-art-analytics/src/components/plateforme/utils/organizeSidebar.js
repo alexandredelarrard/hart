@@ -11,6 +11,7 @@ export const organizeResults = (results) => {
     results.forEach(result => {
       const resultDate = new Date(result.result_date);
       const differenceInDays = Math.floor((now - resultDate) / (1000 * 60 * 60 * 24));
+      result.llm_result = JSON.parse(JSON.stringify(result.llm_result));
 
       if (differenceInDays <= 1) {
         organizedResults["Today"].push(result);

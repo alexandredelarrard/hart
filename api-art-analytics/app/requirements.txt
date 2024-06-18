@@ -10,4 +10,4 @@ python-dotenv==1.0.1
 psycopg2
 pandas 
 sqlparse
-numpy
+numpy==1.26.4

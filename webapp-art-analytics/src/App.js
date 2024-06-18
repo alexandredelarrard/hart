@@ -8,7 +8,6 @@ import UploadForm from './components/plateforme/UploadForm';
 import OptimizeSale from './components/plateforme/OptimizeSale';
 import SearchArt from './components/plateforme/SearchArt';
 import ArtIdentify from './components/plateforme/ArtIdentify';
-import PrivateRoute from './components/plateforme/PrivateRoute';
 import CardDetail from './components/plateforme/utils/CardDetail';
 import ProfileSettings from './components/plateforme/ProfileSettings';
 import Offers from './components/plateforme/Offers';
@@ -20,7 +19,6 @@ import Terms from './components/landing_page/Terms';
 import CGV from './components/landing_page/CGV';
 import About from './components/landing_page/About';
 import Checkout from './components/landing_page/Checkout';
-
 
 import Login from './components/connectors/Login';
 import Signup from './components/connectors/Signup';
@@ -124,37 +122,33 @@ function App() {
           <Route
             path="/analytics"
             element={
-              <PrivateRoute>
-                <div style={{ display: 'flex' }}>
-                  <Sidebar 
-                    onMenuClick={handleMenuClick} 
-                    setFile={setFile}
-                    setText={setText}
-                    setTaskId={setTaskId}
-                    analysisInProgress={analysisInProgress}
-                    setResult={setResult}
-                    setBotResult={setBotResult}
-                    setChatBotResultFetched={setChatBotResultFetched}
-                    setAvgMaxEstimates={setAvgMaxEstimates}
-                    setAdditionalData={setAdditionalData}
-                    setAvgMinEstimates={setAvgMinEstimates}
-                    setAvgFinalResult={setAvgFinalResult}
-                    newResultSaved={newResultSaved}
-                    setAnalysisInProgress={setAnalysisInProgress}
-                  />
-                  {renderContent()}
-                </div>
-              </PrivateRoute>
+              <div style={{ display: 'flex' }}>
+                <Sidebar 
+                  onMenuClick={handleMenuClick} 
+                  setFile={setFile}
+                  setText={setText}
+                  setTaskId={setTaskId}
+                  analysisInProgress={analysisInProgress}
+                  setResult={setResult}
+                  setBotResult={setBotResult}
+                  setChatBotResultFetched={setChatBotResultFetched}
+                  setAvgMaxEstimates={setAvgMaxEstimates}
+                  setAdditionalData={setAdditionalData}
+                  setAvgMinEstimates={setAvgMinEstimates}
+                  setAvgFinalResult={setAvgFinalResult}
+                  setAnalysisInProgress={setAnalysisInProgress}
+                  newResultSaved={newResultSaved}
+                />
+                {renderContent()}
+              </div>
             }
           />
            <Route
             path="/analytics/card/:id"
             element={
-              <PrivateRoute>
                 <div style={{ display: 'flex' }}>
                   <CardDetail />
                 </div>
-              </PrivateRoute>
             }
           />
         </Routes>

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HeaderWhite from "../landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
-import {login} from '../../hooks/general/identification.js';
-import Cookies from 'js-cookie';
+import {login, checkAuth, logout} from '../../hooks/general/identification.js';
 import LoginElement from './LoginElement.js';
 import '../../css/Login.css';
 
@@ -41,11 +40,16 @@ function Login() {
   };
 
   useEffect(() => {
-    const token = Cookies.get('token');
-    const userdata = Cookies.get('userdata');
-    if (token && userdata) {
-      navigate('/analytics');
-    }
+    const checkUserAuth = async () => {
+      const isAuthenticated = await checkAuth();
+      if (isAuthenticated) {
+          navigate('/analytics');
+      } else {
+        await logout();
+      }
+    };
+
+    checkUserAuth()
   }, [navigate]);
 
   return (

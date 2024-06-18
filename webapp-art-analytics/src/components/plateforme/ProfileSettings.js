@@ -4,7 +4,7 @@ import useLogActivity from '../../hooks/general/useLogActivity.js';
 import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
 import PaymentTable from "../plateforme/utils/PaymentTable.js"
 import {URL_API, URL_UPDATE_PROFILE} from "../../utils/constants.js";
-import useFetchPayments from '../../hooks/plateforme/settingsHooks.js';
+import useFetchPayments from '../../hooks/plateforme/useFetchPayments.js';
 
 import '../../css/ProfileSettings.css';
 

@@ -33,6 +33,7 @@ class App(Step):
 		# Initialize db and mail connected to app
 		self._context.flask_db.init_app(app)
 		self._context.cors.init_app(app)
+		self._context.jwt.init_app(app)
 
 		# Import parts of our application
 		app.register_blueprint(closest_blueprint, url_prefix="/")

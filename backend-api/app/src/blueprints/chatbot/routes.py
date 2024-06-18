@@ -1,10 +1,14 @@
+import os 
+
 from flask import request, jsonify
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from . import chatbot_blueprint
-import os 
+
 from src.extensions import config, context
 from src.extensions import front_server
+from src.schemas.results import CloseResult
+from src.extensions import db
 
 if os.getenv('FLASK_ENV') == 'flask_worker':
     from src.transformers.GptChat import GptChat
@@ -16,12 +20,30 @@ if os.getenv('FLASK_ENV') == 'flask_worker':
 @jwt_required()
 def designation_chat():
 
+    number_ex = 24
+    steps = 4
+    query_status = 400
+    llm_results = {}
+
     if request.method == 'POST':
         data = request.get_json()
+        task_id = data.get('task_id')
         art_pieces = data.get('art_pieces')
-    
+        
         if not art_pieces:
             return jsonify({"error": "No question / art piece provided"}), 400
 
-        results, _ = step_gpt.get_answer(art_pieces=art_pieces[:48])
-        return jsonify({"result": results}), 202
+        while query_status!=200 and steps !=0: # max 4 retries
+            llm_results, query_status = step_gpt.get_answer(prompt=art_pieces[:number_ex]) # list of example
+            number_ex -=1
+            steps -=1
+
+        result = CloseResult.query.filter_by(task_id=task_id).first_or_404()
+        if result: 
+            result.llm_result = str(llm_results)
+            db.session.commit()
+
+        if len(llm_results) !=0:
+            return jsonify({"result": llm_results}), 200
+        else:
+            return jsonify({"error": "could not write designation "}), 400

@@ -1,18 +1,25 @@
 from flask import request, jsonify
 from sqlalchemy import desc
-from . import closest_blueprint
+import numpy as np
+import logging
+import base64
+from flask_cors import cross_origin
+from flask_jwt_extended import jwt_required
 from celery.result import AsyncResult
 from datetime import datetime
+
 from src.backend.tasks import process_request
 from src.schemas.results import CloseResult
 from src.schemas.payment import PaymentTrack
 from src.extensions import db
-import numpy as np
-import logging
-import io
+
+from src.extensions import front_server
+from . import closest_blueprint
 
 
 @closest_blueprint.route('/process', methods=['POST'])
+@cross_origin(origins=front_server)
+@jwt_required()
 def process():
     
     if request.method == 'POST':
@@ -39,13 +46,10 @@ def process():
         new_result = CloseResult(
             user_id=user_id,
             task_id=task.id,
-            file=io.BytesIO(image).read(),
+            file=base64.b64encode(image).decode('utf-8'),
             text=text,
-            closest_ids="",
-            closest_distances="",
             creation_date=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             status="SENT",
-            result_date=None,
             visible_item=True
             )
         db.session.add(new_result)
@@ -63,6 +67,8 @@ def process():
 
 
 @closest_blueprint.route('/task_status', methods=['POST'])
+@cross_origin(origins=front_server)
+@jwt_required()
 def task_status():
 
     if request.method == 'POST':

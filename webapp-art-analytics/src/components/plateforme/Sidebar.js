@@ -5,10 +5,9 @@ import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronD
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-import useFetchPastResults from '../../hooks/plateforme/sidebarHooks.js';
+import useFetchPastResults from '../../hooks/plateforme/useFetchPastResults.js';
 import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
-import { checkAuth } from '../../hooks/general/identification';
-import { logout } from '../../hooks/general/identification.js';
+import { logout } from '../../hooks/general/identification';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
 import {organizeResults} from './utils/organizeSidebar.js';
 
@@ -25,8 +24,8 @@ function Sidebar({
   setAdditionalData,
   setAvgMaxEstimates,
   setAvgMinEstimates,
-  newResultSaved,
-  setAnalysisInProgress 
+  setAnalysisInProgress,
+  newResultSaved
 }) {
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('closest-lots');
@@ -35,6 +34,7 @@ function Sidebar({
   const [showResults, setShowResults] = useState(false);
   const LogActivity = useLogActivity();
 
+  //logout on click button
   const handleLogout = async () => {
 
     // log activity 
@@ -49,20 +49,6 @@ function Sidebar({
     navigate('/login'); // Redirect to the login page or home page
   };
 
-  useEffect(() => {
-    const checkUserAuth = async () => {
-      const isAuthenticated = await checkAuth();
-      if (!isAuthenticated) {
-        navigate('/login'); // Redirect to the login page or home page if not authenticated
-      }
-    };
-
-    checkUserAuth();
-
-    const interval = setInterval(checkUserAuth, 240000); // Check every 4 minute
-    return () => clearInterval(interval);
-  }, [navigate]);
-
   const toggleResults = (e) => {
     if(e===true&&showResults===true){setShowResults(false);}
     else{setShowResults(e);}
@@ -76,7 +62,7 @@ function Sidebar({
     }
     const byteArray = new Uint8Array(byteNumbers);
     const blob = new Blob([byteArray], { type: 'image/jpg' });
-
+    
     setFile(blob);
     setText(result.text);
     setResult({
@@ -84,12 +70,18 @@ function Sidebar({
       ids: result.closest_ids.split(',')
     });
     setTaskId(result.task_id);
-    setAnalysisInProgress(true);
+    setAnalysisInProgress(false);
     setAdditionalData([]);
     setAvgMinEstimates(0);
     setAvgMaxEstimates(0);
-    setBotResult(null)
-    setChatBotResultFetched(false);
+    if(result.llm_result){
+      const llm_result = JSON.parse(JSON.stringify(result.llm_result));
+      setBotResult(llm_result)
+      setChatBotResultFetched(true);
+    } else {
+      setBotResult(null)
+      setChatBotResultFetched(false);
+    }
     onMenuClick('closest-lots');
 
     // log activity 
@@ -120,6 +112,7 @@ function Sidebar({
     }
   };
 
+  // retrieve past results
   useFetchPastResults(newResultSaved, setFormerResults, setUserData);
   const organizedResults = organizeResults(formerResults);
 
@@ -159,7 +152,7 @@ function Sidebar({
                       key={index} 
                       className="submenu-item" 
                     >
-                      <span onClick={() => handleResultClick(result)}>{result.task_id || `Result ${index + 1}`}</span>
+                      <span onClick={() => handleResultClick(result)}>{result.llm_result ? result.llm_result.french_title : result.task_id }</span>
                       <FontAwesomeIcon 
                         icon={faTrash} 
                         className="delete-icon" 

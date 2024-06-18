@@ -4,7 +4,23 @@ import Cookies from 'js-cookie';
 import useLogActivity from '../general/useLogActivity';
 import { URL_API_BACK, URL_UPLOAD } from '../../utils/constants';
 
-const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, setBotResult, setChatBotResultFetched, setAnalysisInProgress, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved }) => {
+const useNewSearchSubmit = ({ 
+      file, 
+      text, 
+      setFile, 
+      setText, 
+      setTaskId, 
+      setResult, 
+      setBotResult, 
+      setChatBotResultFetched, 
+      setAnalysisInProgress, 
+      setAdditionalData, 
+      setAvgMinEstimates, 
+      setAvgMaxEstimates, 
+      setAvgFinalResult, 
+      setNewResultSaved 
+}) => {
+
   const [fileUrl, setFileUrl] = useState(null);
   const LogActivity = useLogActivity();
 
@@ -92,4 +108,4 @@ const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, 
   };
 };
 
-export default useUploadHandler;
+export default useNewSearchSubmit;

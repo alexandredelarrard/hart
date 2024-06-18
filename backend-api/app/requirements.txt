@@ -10,8 +10,11 @@ python-dotenv==1.0.1
 psycopg2
 pandas 
 sqlparse
-numpy
+numpy==1.26.4
 langchain
 langchain_core
 langchain_openai
 langchain_groq
+langchain_google_vertexai
+vertexai
+google

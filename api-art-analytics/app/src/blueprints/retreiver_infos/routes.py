@@ -77,9 +77,10 @@ def post_ids_infos():
                 deduplicated_output = add_distance(deduplicated_output, dict_items, column="pictures", id="id_item")
 
                 # results 
-                min_estimate = np.round(np.median([x["estimate_min"] for x in deduplicated_output if isinstance(x["estimate_min"], float)])/10, 0)*10
-                max_estimate = np.round(np.median([x["estimate_max"] for x in deduplicated_output if isinstance(x["estimate_min"], float)])/10, 0)*10
-                final_result = np.round(np.median([x["final_result"] for x in deduplicated_output if isinstance(x["estimate_min"], float)])/10, 0)*10
+                denominator = np.sum([1/(10*float(x["distance"])+0.01)**2 for x in deduplicated_output if isinstance(x["estimate_min"], float)])
+                min_estimate = np.round(np.sum([x["estimate_min"]/(10*float(x["distance"])+0.01)**2 for x in deduplicated_output if isinstance(x["estimate_min"], float)])/denominator/10, 0)*10
+                max_estimate = np.round(np.sum([x["estimate_max"]/(10*float(x["distance"])+0.01)**2 for x in deduplicated_output if isinstance(x["estimate_max"], float)])/denominator/10, 0)*10
+                final_result = np.round(np.sum([x["final_result"]/(10*float(x["distance"])+0.01)**2 for x in deduplicated_output if isinstance(x["final_result"], float)])/denominator/10, 0)*10
 
                 return jsonify({"result": deduplicated_output, 
                                 "min_estimate": min_estimate,

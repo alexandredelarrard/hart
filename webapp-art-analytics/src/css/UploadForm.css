@@ -33,14 +33,14 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 65%;
+  width: 70%;
   padding: 1.1rem; /* Increased padding for wider gap */
 }
 
 .part2 {
   padding: 1.1rem;
   margin-left: 2rem; /* Increased margin for wider gap */
-  width: 35%;
+  width: 30%;
   height: 100%; /* Set the height to match part 1 */
   display: flex;
   background: #fff;
@@ -55,7 +55,6 @@
   flex-wrap: wrap;
   overflow-y: auto;
   max-height: 450px; /* Adjust based on your layout */
-  padding: 10px;
 }
 
 .part-header {
@@ -113,6 +112,15 @@
 
 .text-container p {
   white-space: pre-wrap; /* To preserve text formatting */
+}
+
+.card-footer-summary{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0, 0, 0, .03);
+  border-top: 1px solid rgba(0, 0, 0, .125);
+  padding: 15px;
 }
 
 .analysis-result, .additional-data {
