@@ -6,21 +6,14 @@ import "../../../css/SearchForm.css";
 import { Link } from 'react-router-dom'; // Import Link for navigation
 
 const SearchForm = ({ 
+  text, 
+  onDrop,
   planExpired, 
   closestVolumeExpired, 
-  text, 
-  setAdditionalData,
-  setResult,
   handleSearchTextChange, 
   handleSearchSubmit, 
-  handleSearchFileChange, 
   handleMenuClick
 }) => {
-  const onDrop = acceptedFiles => {
-    handleSearchFileChange(acceptedFiles[0]);
-    setResult(null);
-    setAdditionalData([]);
-  };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,

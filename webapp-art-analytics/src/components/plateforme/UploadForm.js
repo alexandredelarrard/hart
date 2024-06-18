@@ -52,6 +52,13 @@ function UploadForm({
   const [planExpired, setPlanExpired] = useState(false);
   const [closestVolumeExpired, setclosestVolumeExpired] = useState(false);
   const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);
+
+  const onDrop = acceptedFiles => {
+    handleSearchFileChange(acceptedFiles[0]);
+    setResult(null);
+    setAdditionalData([]);
+    setBotResult(null);
+  };
   
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -119,14 +126,11 @@ function UploadForm({
       />
         <SearchForm
             text={text}
-            file={file}
-            setResult={setResult}
-            setAdditionalData={setAdditionalData}
-            handleSearchTextChange={handleSearchTextChange}
-            handleSearchFileChange={handleSearchFileChange}
-            handleSearchSubmit={handleSearchSubmit}
+            onDrop={onDrop}
             planExpired={planExpired}
             closestVolumeExpired={closestVolumeExpired}
+            handleSearchTextChange={handleSearchTextChange}
+            handleSearchSubmit={handleSearchSubmit}
             handleMenuClick={handleMenuClick}
           />
         <div className="result-container">

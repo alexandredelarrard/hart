@@ -80,22 +80,23 @@
   list-style: none;
   padding: 0;
 }
-
 .submenu-item {
   padding: 0.5rem 0.3rem;
   color: #fff; /* White text color */
   cursor: pointer;
   display: flex;
+  font-size: 0.95em;
   align-items: center;
   justify-content: space-between; /* Add this to space out the delete icon */
   margin-bottom: 0.5rem;
+  position: relative; /* Add this for positioning the delete icon */
 }
 
 .submenu-item span {
   white-space: nowrap; /* Prevents text from wrapping to the next line */
   overflow: hidden; /* Hides the overflow text */
   text-overflow: ellipsis; /* Adds the ... */
-  max-width: 170px; /* Adjust the width based on your layout */
+  max-width: 200px; /* Adjust the width based on your layout */
   display: inline-block;
 }
 
@@ -110,6 +111,12 @@
   margin-left: 0.5rem;
   cursor: pointer;
   color: #dc3545; /* Red color for delete icon */
+  opacity: 0; /* Hide the icon by default */
+  transition: opacity 0.3s ease; /* Smooth transition for showing/hiding */
+}
+
+.submenu-item:hover .delete-icon {
+  opacity: 1; /* Show the icon on hover */
 }
 
 .results-container {

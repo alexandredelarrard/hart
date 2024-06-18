@@ -59,7 +59,7 @@ const useNewSearchSubmit = ({
 
       setFile(file);
       setText(text);
-      setBotResult(null)
+      setBotResult(null);
       setChatBotResultFetched(false);
       setAnalysisInProgress(true);
       setTaskId(response.data.task_id);

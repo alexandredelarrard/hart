@@ -46,7 +46,7 @@ function Sidebar({
     }
     
     await logout();
-    navigate('/login'); // Redirect to the login page or home page
+    navigate('/'); // Redirect to the home page
   };
 
   const toggleResults = (e) => {

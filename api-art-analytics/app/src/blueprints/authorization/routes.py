@@ -84,12 +84,10 @@ def refresh():
     set_access_cookies(response, access_token)
     return response, 200
 
-@authorization_blueprint.route('/signin', methods=['POST', 'OPTIONS'])
+@authorization_blueprint.route('/signin', methods=['POST'])
 @cross_origin(origins=front_server)
 def signin():
-    if request.method == 'OPTIONS':
-        return jsonify({'message': 'Options request handled'}), 200
-    
+   
     if request.method == 'POST':
         data = request.get_json()
         email = data.get('email')
@@ -107,9 +105,11 @@ def signin():
         user = User.query.filter_by(email=email).first()
 
         if user:
-            return jsonify({'error': 'Email already in use'}), 409
+            return jsonify({'error': 'Email already in use'}), 404
+        
         else:
             try:
+
                 # create new user 
                 hashed_password = generate_password_hash(password)
                 new_user = User(
@@ -148,10 +148,13 @@ def signin():
                 token = serializer.dumps(email, salt='email-confirm')
 
                 # Send confirmation email
-                confirm_url = url_for('authorization.confirm_email', token=token, _external=True)
-                html = confirmation_email_html(new_user, confirm_url)
-                msg = Message('Artyx: Confirmation de votre email', recipients=[email], html=html)
-                mail.send(msg)
+                try:
+                    confirm_url = url_for('authorization.confirm_email', token=token, _external=True)
+                    html = confirmation_email_html(new_user, confirm_url)
+                    msg = Message('Artyx: Confirmation de votre email', recipients=[email], html=html)
+                    mail.send(msg)
+                except Exception as e:
+                    print(f"could not send email {e}")
 
                 access_token = create_access_token(identity={'email': new_user.email})
                 refresh_token = create_refresh_token(identity={'email': new_user.email})

@@ -21,7 +21,6 @@ import About from './components/landing_page/About';
 import Checkout from './components/landing_page/Checkout';
 
 import Login from './components/connectors/Login';
-import Signup from './components/connectors/Signup';
 import ResetPassword from './components/connectors/ResetPassword';
 import SetNewPassword from './components/connectors/SetNewPassword';
 import Confirm from './components/connectors/Confirm';
@@ -109,7 +108,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
           <Route path="/trial" element={<Trial />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/about" element={<About />} />

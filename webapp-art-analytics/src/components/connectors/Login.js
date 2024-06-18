@@ -44,8 +44,6 @@ function Login() {
       const isAuthenticated = await checkAuth();
       if (isAuthenticated) {
           navigate('/analytics');
-      } else {
-        await logout();
       }
     };
 

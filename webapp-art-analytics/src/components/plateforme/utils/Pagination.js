@@ -2,7 +2,17 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faCalendarAlt, faDollarSign, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 
-const Pagination = ({ totalPages, currentPage, handlePageChange, sortOrder, handleSortChange, dropdownOpen, setDropdownOpen }) => (
+import '../../../css/Pagination.css';
+
+const Pagination = ({ 
+  totalPages, 
+  currentPage, 
+  handlePageChange, 
+  sortOrder, 
+  handleSortChange, 
+  dropdownOpen, 
+  setDropdownOpen 
+}) => (
   <div className="pagination">
     {Array.from({ length: totalPages }, (_, index) => (
       <button

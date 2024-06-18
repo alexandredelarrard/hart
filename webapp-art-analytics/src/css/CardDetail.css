@@ -70,3 +70,33 @@
 .card-link-detail:hover {
   text-decoration: underline;
 }
+
+/* Carousel Custom CSS */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #012041; /* Change the arrow background color */
+  width: 50px;  /* Increase the width */
+  height: 50px; /* Increase the height */
+  border-radius: 50%; /* Make the arrows circular */
+}
+
+.carousel-control-prev-icon:after,
+.carousel-control-next-icon:after {
+  font-size: 30px; /* Increase the size of the arrow icon */
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 50px; /* Increase the clickable area */
+}
+
+.carousel-indicators li {
+  background-color: #012041; /* Change the indicator color */
+  width: 12px;
+  height: 12px;
+  border-radius: 50%; /* Make the indicators circular */
+}
+
+.carousel-indicators .active {
+  background-color: #012041; /* Ensure the active indicator is also the same color */
+}

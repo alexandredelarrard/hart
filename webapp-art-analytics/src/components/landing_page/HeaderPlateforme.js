@@ -15,7 +15,7 @@ const HeaderPlateforme = ({handleMenuClick}) => {
                 <span className="company-name-plateforme">{COMPANY_NAME}</span>
             </div>
             <div className="menu-container-plateforme">
-                <button className="menu-item-plateforme" onClick={() => { handleMenuClick('my-offers')}}>Les offres</button>
+                <button className="menu-item-plateforme" onClick={() => { handleMenuClick('my-offers')}}>Abonnez-vous</button>
                 <button className="account-button-plateforme" onClick={() => { handleMenuClick('account-settings')}}>Mon profile</button>
             </div>
         </header>

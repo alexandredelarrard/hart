@@ -9,7 +9,7 @@ class Experts(db.Model):
     expert_gender = db.Column(db.String(2), nullable=False)
     expert_cellphone = db.Column(db.String(15), nullable=False)
     expert_email = db.Column(db.String(100), nullable=False)
-    expert_zipcode = db.Column(db.Integer, nullable=False)
+    expert_zipcode = db.Column(db.String(15), nullable=False)
     expert_city= db.Column(db.String(255), nullable=False)
     expert_longitude = db.Column(db.Float, nullable=False)
     expert_latitude = db.Column(db.Float, nullable=False)
