@@ -3,9 +3,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import {URL_API, URL_SIGNIN, COMPANY_NAME} from '../utils/constants';
-import logo from '../assets/logo_fond_blanc.jpg';
-import '../css/Trial.css';
+import {URL_API, URL_SIGNIN, COMPANY_NAME} from '../../utils/constants';
+import logo from '../../assets/logo_fond_blanc.jpg';
+import '../../css/Trial.css';
 
 const Trial = () => {
     const [email, setEmail] = useState('');

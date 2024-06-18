@@ -1,8 +1,8 @@
 import React from 'react';
-import HeaderWhite from "./landing_page/Header_white.js";
-import { COMPANY_NAME } from "../utils/constants.js";
+import HeaderWhite from "./Header_white.js";
+import { COMPANY_NAME } from "../../utils/constants.js";
 import { Link } from 'react-router-dom';
-import '../css/Terms.css';
+import '../../css/Terms.css';
 
 const CGV = () => {
   return (

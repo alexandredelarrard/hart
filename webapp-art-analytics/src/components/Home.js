@@ -19,7 +19,6 @@ const Home = () => {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
         Cookies.set('geolocation', JSON.stringify({ latitude, longitude }), { expires: 7 });
-        console.log(Cookies.get("geolocation"))
       }, (error) => {
         console.error("Error accessing geolocation: ", error);
       });
@@ -51,6 +50,9 @@ const Home = () => {
 
       <Pricing
         isplateforme={false}
+        activePlan={null}
+        remainingDays={null}
+        closestQueries={null}
       />
 
       {/* <Testimonials/> */}

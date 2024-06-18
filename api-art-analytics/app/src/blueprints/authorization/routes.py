@@ -20,11 +20,9 @@ from src.extensions import front_server
 # =============================================================================
 # Authentication
 # =============================================================================
-@authorization_blueprint.route('/login', methods=['POST', 'OPTIONS'])
+@authorization_blueprint.route('/login', methods=['POST'])
 @cross_origin(origins=front_server)
 def login():
-    if request.method == 'OPTIONS':
-        return jsonify({'message': 'Options request handled'}), 200
     
     if request.method == 'POST':
         data = request.get_json()
@@ -47,6 +45,7 @@ def login():
             
             last_payment = PaymentTrack.query.filter_by(user_id=user.id).order_by(desc(PaymentTrack.plan_start_date)).first()
             if last_payment:
+                response["plan_name"] = last_payment.plan_name
                 response["plan_end_date"] = last_payment.plan_end_date.isoformat()
                 response["remaining_closest_volume"] = last_payment.remaining_closest_volume
                 response["remaining_search_volume"] = last_payment.remaining_search_volume

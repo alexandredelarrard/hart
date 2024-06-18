@@ -1,8 +1,8 @@
 import React from "react";
-import HeaderWhite from "./landing_page/Header_white.js";
-import founder1 from "../assets/avatar.png"; // Placeholder for founder 1 image
-import founder2 from "../assets/avatar.png"; // Placeholder for founder 2 image
-import '../css/About.css';
+import HeaderWhite from "./Header_white.js";
+import founder1 from "../../assets/avatar.png"; // Placeholder for founder 1 image
+import founder2 from "../../assets/avatar.png"; // Placeholder for founder 2 image
+import '../../css/About.css';
 
 const About = () => {
     return (

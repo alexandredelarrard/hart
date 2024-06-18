@@ -7,8 +7,9 @@ import Cookies from 'js-cookie';
 
 import useFetchPastResults from '../../hooks/plateforme/sidebarHooks.js';
 import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
-import { logout, checkAuth } from '../../utils/identification';
-import { logActivity } from '../../utils/activity';
+import { checkAuth } from '../../hooks/general/identification';
+import { logout } from '../../hooks/general/identification.js';
+import useLogActivity from '../../hooks/general/useLogActivity.js';
 import {organizeResults} from './utils/organizeSidebar.js';
 
 import '../../css/Sidebar.css';
@@ -32,10 +33,17 @@ function Sidebar({
   const [userData, setUserData] = useState({});
   const [formerResults, setFormerResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const LogActivity = useLogActivity();
 
   const handleLogout = async () => {
+
     // log activity 
-    logActivity("click_log_out", "")
+    const success = await LogActivity("click_log_out", "")
+    if (success) {
+      console.log('Activity logged successfully');
+    } else {
+      console.log('Failed to log activity');
+    }
     
     await logout();
     navigate('/login'); // Redirect to the login page or home page
@@ -85,7 +93,7 @@ function Sidebar({
     onMenuClick('closest-lots');
 
     // log activity 
-    logActivity("click_former_result", result.task_id)
+    LogActivity("click_former_result", result.task_id)
 
   };
 
@@ -104,7 +112,7 @@ function Sidebar({
           // Remove the deleted result from the state
           setFormerResults(formerResults.filter(result => result.task_id !== taskId));
           // log activity 
-          logActivity("delete_former_result", taskId)
+          LogActivity("delete_former_result", taskId)
         })
         .catch(error => {
           console.error('Error deleting the result:', error);

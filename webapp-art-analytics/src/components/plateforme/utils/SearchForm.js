@@ -9,6 +9,8 @@ const SearchForm = ({
   planExpired, 
   closestVolumeExpired, 
   text, 
+  setAdditionalData,
+  setResult,
   handleSearchTextChange, 
   handleSearchSubmit, 
   handleSearchFileChange, 
@@ -16,6 +18,8 @@ const SearchForm = ({
 }) => {
   const onDrop = acceptedFiles => {
     handleSearchFileChange(acceptedFiles[0]);
+    setResult(null);
+    setAdditionalData([]);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -44,7 +48,7 @@ const SearchForm = ({
             type="text" 
             value={text} 
             onChange={handleSearchTextChange} 
-            placeholder="Description de l'objet" 
+            placeholder="Description de l'objet..." 
             className={`search-input ${isError ? 'input-error' : ''}`} 
             disabled={isError}
           />

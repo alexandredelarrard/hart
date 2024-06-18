@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import HeaderWhite from "./landing_page/Header_white.js";
-import '../css/ContactUs.css';
+import HeaderWhite from "./Header_white.js";
+import '../../css/ContactUs.css';
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({

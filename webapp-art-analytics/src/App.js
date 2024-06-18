@@ -10,18 +10,20 @@ import SearchArt from './components/plateforme/SearchArt';
 import ArtIdentify from './components/plateforme/ArtIdentify';
 import PrivateRoute from './components/plateforme/PrivateRoute';
 import CardDetail from './components/plateforme/utils/CardDetail';
-
-import Home from './components/Home';
-import Trial from './components/Trial';
 import ProfileSettings from './components/plateforme/ProfileSettings';
 import Offers from './components/plateforme/Offers';
+
+import Home from './components/Home';
+import Trial from './components/landing_page/Trial';
+import ContactUs from './components/landing_page/ContactUs';
+import Terms from './components/landing_page/Terms';
+import CGV from './components/landing_page/CGV';
+import About from './components/landing_page/About';
+import Checkout from './components/landing_page/Checkout';
+
+
 import Login from './components/connectors/Login';
 import Signup from './components/connectors/Signup';
-import ContactUs from './components/ContactUs';
-import Terms from './components/Terms';
-import CGV from './components/CGV';
-import About from './components/About';
-import Checkout from './components/Checkout';
 import ResetPassword from './components/connectors/ResetPassword';
 import SetNewPassword from './components/connectors/SetNewPassword';
 import Confirm from './components/connectors/Confirm';

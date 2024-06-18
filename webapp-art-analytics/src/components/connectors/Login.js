@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import HeaderWhite from "../landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
-import { logActivity } from '../../utils/activity.js';
-import axios from 'axios';
+import useLogActivity from '../../hooks/general/useLogActivity.js';
+import {login} from '../../hooks/general/identification.js';
 import Cookies from 'js-cookie';
-import {URL_API, URL_LOGIN} from '../../utils/constants.js';
 import LoginElement from './LoginElement.js';
 import '../../css/Login.css';
 
@@ -14,30 +13,22 @@ function Login() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const LogActivity = useLogActivity();
 
   const handleSubmit = async (e) => {
     setError(''); // Clear any previous error
     e.preventDefault();
     try {
-      const response = await axios.post(URL_API + URL_LOGIN, { email, password }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Save token to localStorage and redirect to upload page
-      Cookies.set('token', response.data.access_token, { expires: 0.5 });
-      Cookies.set('refresh_token', response.data.refresh_token, { expires: 0.5 });
-      Cookies.set('userdata', JSON.stringify(response.data.userdata), { expires: 0.5 });
-      Cookies.set('plan_end_date', response.data.plan_end_date);
-      Cookies.set('remaining_closest_volume', response.data.remaining_closest_volume);
-      Cookies.set('remaining_search_volume', response.data.remaining_search_volume);
-
-      // log activity 
-      logActivity("click_log_in", "")
-
+      const response = await login(email, password);
       setMessage(response.data.message);
-      navigate('/analytics');
+      
+      // log activity 
+      const success = await LogActivity("click_log_in", "")
+      if (success) {
+        navigate('/analytics');
+      } else {
+        console.log('Failed to log activity');
+      }
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError('Invalid email or password');

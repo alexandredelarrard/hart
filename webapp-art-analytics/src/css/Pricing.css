@@ -81,11 +81,12 @@
 }
 
 .sub-li-plan{
-  text-align: center;
+  text-align: left;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   align-content: center;
+  font: italic;
 }
 
 .green-icon {

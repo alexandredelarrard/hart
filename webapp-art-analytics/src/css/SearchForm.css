@@ -1,9 +1,9 @@
 .search-area {
-  width: 60%; /* 50% of the container width */
+  width: 70%; /* 50% of the container width */
   /* height: 65px; Fixed height */
   background: #f7f9fc;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(226, 191, 191, 0.1);
   display: flex;
   align-items: center;
   position: relative;
@@ -22,6 +22,7 @@
   height: 65px; /* Fixed height for the form */
   align-items: center;
   justify-content: center;
+  padding: 4px;
 }
 
 .form-row {
@@ -35,7 +36,7 @@
   flex: 0 0 45%; /* 45% of the width */
   height: 100%; /* Full height */
   padding: 1rem;
-  border: 2px dashed #012041;
+  border: 1.5px solid #012041;
   border-radius: 10px 0 0 10px;
   background: #fff;
   text-align: center;
@@ -60,7 +61,7 @@
   flex: 0 0 44%; 
   height: 100%; /* Full height */
   padding: 0.5rem;
-  border: 1px solid #012041;
+  border: 1.5px solid #012041;
   border-left: none; /* Remove the left border */
   border-radius: 0;
   font-size: 1rem;

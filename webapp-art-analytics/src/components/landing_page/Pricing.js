@@ -1,31 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBuilding, faShieldAlt, faCheck} from '@fortawesome/free-solid-svg-icons';
 
 import "../../css/Pricing.css";
 import { COMPANY_NAME } from '../../utils/constants';
 
-const Pricing = ({isplateforme}) => {
+const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries}) => {
     const [selectedPrice, setSelectedPrice] = useState({});
-    const [myPlan, setMyPlan] = useState("individual_plan");
 
     const handlePriceSelection = (category, priceType) => {
         setSelectedPrice({ ...selectedPrice, [category]: priceType });
     };
-
-    useEffect(() => {
-        const token = Cookies.get('token');
-        if (!token) {
-          return;
-        }
-    
-        const userdataCookie = Cookies.get('userdata');
-        if (userdataCookie) {
-          const parsedUserdata = JSON.parse(userdataCookie);
-          setMyPlan(parsedUserdata.plan);
-        }
-      }, []);
 
     const handleSubmit = (category) => {
         console.log(`Selected price for ${category}:`, selectedPrice[category]);
@@ -44,7 +29,7 @@ const Pricing = ({isplateforme}) => {
                 <div className={isplateforme? "pricing-subsection-plateforme" : "pricing-subsection"}>
                     <h1>Des offres dédiées à vos besoins</h1>
                     <div className="pricing-cards">
-                        <div className={myPlan === "free_plan" ? "pricing-card prefered" : "pricing-card"}>
+                        <div className={activePlan === "free_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
                             <h2>Les nouveaux</h2>
                             <p>Essai gratuit pendant 7 jours pour vous familiariser avec les fonctionnalités d'{COMPANY_NAME}.</p>
@@ -53,11 +38,11 @@ const Pricing = ({isplateforme}) => {
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 40 estimations </li>
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Valable 7 jours </li>
                             </ul>
-                            {myPlan && (
+                            {isplateforme && (
                                 <>
                                    <ul>
-                                        <li className='sub-li-plan'> {myPlan}</li>
-                                        <li className='sub-li-plan'> {myPlan}</li>
+                                        <li className='sub-li-plan'> Jours restants: {remainingDays}</li>
+                                        <li className='sub-li-plan'> Requêtes restantes : {closestQueries}</li>
                                     </ul>
                                 </>
                                 )}
@@ -65,13 +50,13 @@ const Pricing = ({isplateforme}) => {
                                 <button
                                     className="firm-presentation-cta-button"
                                     onClick={() => handleSubmit('beginner')}
-                                    disabled={myPlan === "free_plan"}
+                                    disabled={activePlan === "free_plan"}
                                 >
-                                    {myPlan === "free_plan" ? "Mon plan actuel": "Essayer gratuitement"}
+                                    {activePlan === "free_plan" ? "Mon plan actuel": "Essayer gratuitement"}
                                 </button>
                             </div>
                         </div>
-                        <div className={myPlan === "individual_plan" ? "pricing-card prefered" : "pricing-card"}>
+                        <div className={activePlan === "individual_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faUser} className="pricing-icon" />
                             <h2>Passionnés d'art</h2>
                             <p>Idéal pour les passionnés d'art, curieux d'un artiste ou de la valeur d'une oeuvre</p>
@@ -108,7 +93,7 @@ const Pricing = ({isplateforme}) => {
                                 </button>
                             </div>
                         </div>
-                        <div className={myPlan === "custome_plan" ? "pricing-card prefered" : "pricing-card"}>
+                        <div className={activePlan === "custome_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faShieldAlt} className="pricing-icon" />
                             <h2>Entreprises/Experts</h2>
                             <p>Entreprises ou experts ayant des besoins importants requérant une offre à la carte.</p>

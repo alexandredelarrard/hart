@@ -62,12 +62,11 @@ function UploadForm({
   };
 
   useEffect(() => {
-    const userdata = Cookies.get('userdata');
     const remaining_closest_volume= Cookies.get('remaining_closest_volume');
     const remaining_search_volume= Cookies.get('remaining_search_volume');
-    if (userdata) {
-      const parsedUserdata = JSON.parse(userdata);
-      const planEndDate = new Date(parsedUserdata.plan_end_date);
+    const plan_end_date= Cookies.get('plan_end_date');
+    if (plan_end_date) {
+      const planEndDate = new Date(plan_end_date);
       const currentDate = new Date();
       if (currentDate > planEndDate) {
         setPlanExpired(true);
@@ -79,7 +78,7 @@ function UploadForm({
         setsearchVolumeExpired(true)
       }
     }
-  }, []);
+  }, [setPlanExpired, setsearchVolumeExpired, setclosestVolumeExpired]);
 
   const sortData = (data, sortOrder) => {
     switch (sortOrder) {
@@ -108,7 +107,7 @@ function UploadForm({
     setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved
   });
   
-  useFetchExperts(result, setExperts);
+  useFetchExperts(setExperts);
   usePolling(taskId, analysisInProgress, setResult, setAnalysisInProgress);
   useFetchData(result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved, setBotResult, setChatBotResultFetched, chatBotResultFetched);
 
@@ -120,6 +119,8 @@ function UploadForm({
         <SearchForm
             text={text}
             file={file}
+            setResult={setResult}
+            setAdditionalData={setAdditionalData}
             handleSearchTextChange={handleSearchTextChange}
             handleSearchFileChange={handleSearchFileChange}
             handleSearchSubmit={handleSearchSubmit}
@@ -138,11 +139,14 @@ function UploadForm({
                     <div className="part-header common-title">
                       <h2>Estimation</h2>
                   </div>
+                  {text && <div> <strong>Specification:</strong>: {text}</div>}
                     {botresult &&<p><strong>Designation:</strong> {botresult}</p>}
+                    {result &&
                     <div className="card-footer">
                       <span className="card-price"><strong>Estimate:</strong> {avgMinEstimates}-{avgMaxEstimates} €</span>
                       <span className="card-result"><strong>Final:</strong> {avgFinalResult} €</span>
                     </div>
+                  }
                   </div>
                 </div>
             </div>

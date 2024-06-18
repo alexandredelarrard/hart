@@ -1,12 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
+import React, { useState} from 'react';
 import axios from 'axios';
-import { logActivity } from '../../utils/activity.js';
+import useLogActivity from '../../hooks/general/useLogActivity.js';
 import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
 import PaymentTable from "../plateforme/utils/PaymentTable.js"
-import {URL_GET_PAYMENTS, URL_API, URL_UPDATE_PROFILE} from "../../utils/constants.js";
+import {URL_API, URL_UPDATE_PROFILE} from "../../utils/constants.js";
+import useFetchPayments from '../../hooks/plateforme/settingsHooks.js';
 
 import '../../css/ProfileSettings.css';
+
+function BillingSettings({payments}) {
+
+  return (
+    <div className="my-payment-section">
+      <h2>Billing Settings</h2>
+      <div className="plans">
+        <div className="">
+            <PaymentTable 
+              payments={payments}
+            />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ProfileSettings({handleMenuClick}) {
   const [userData, setUserData] = useState({});
@@ -18,38 +34,9 @@ function ProfileSettings({handleMenuClick}) {
   const [validationDate, setValidationDate] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
   const [payments, setPayments] = useState([]);
+  const LogActivity = useLogActivity();
 
-  useEffect(() => {
-    const token = Cookies.get('token');
-    if (!token) {
-      return;
-    }
-
-    const userdataCookie = Cookies.get('userdata');
-    if (userdataCookie) {
-      const parsedUserdata = JSON.parse(userdataCookie);
-      setUserData(parsedUserdata);
-      setName(parsedUserdata.name);
-      setSurname(parsedUserdata.surname);
-      setAddress(parsedUserdata.address || '');
-      setEmailValidated(parsedUserdata.emailValidated || false);
-      setValidationDate(parsedUserdata.creation_date || null);
-
-      axios.get(`${URL_API + URL_GET_PAYMENTS}?user_id=${parsedUserdata.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-      .then(response => {
-        setPayments(response.data.results); 
-      })
-      .catch(error => {
-          console.error('Error fetching former results:', error);
-      });
-    }
-  }, []);
+  useFetchPayments(setUserData, setName, setSurname, setAddress, setEmailValidated, setValidationDate, setPayments);
 
   const handleEditToggle = () => {
     setEditMode(!editMode);
@@ -72,8 +59,8 @@ function ProfileSettings({handleMenuClick}) {
         handleMenuClick={handleMenuClick}
       />
       <div className="menu-bar">
-        <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => {setActiveTab('profile'); logActivity("click_profile_menu", "")}}>Profile</button>
-        <button className={activeTab === 'billing' ? 'active' : ''} onClick={() => {setActiveTab('billing'); logActivity("click_billing_menu", "")}}>Billing</button>
+        <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => {setActiveTab('profile'); LogActivity("click_profile_menu", "")}}>Profile</button>
+        <button className={activeTab === 'billing' ? 'active' : ''} onClick={() => {setActiveTab('billing'); LogActivity("click_billing_menu", "")}}>Billing</button>
       </div>
       <div className='profile-container'>
       {activeTab === 'profile' && (
@@ -131,17 +118,3 @@ function ProfileSettings({handleMenuClick}) {
   );
 }
 export default ProfileSettings;
-
-function BillingSettings({payments}) {
-
-  return (
-    <div className="my-payment-section">
-      <h2>Billing Settings</h2>
-      <div className="plans">
-        <div className="">
-            <PaymentTable payments={payments}/>
-        </div>
-      </div>
-    </div>
-  );
-}

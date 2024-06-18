@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { logActivity } from '../../utils/activity';
+import useLogActivity from '../general/useLogActivity';
 import { URL_API_BACK, URL_UPLOAD } from '../../utils/constants';
 
 const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, setBotResult, setChatBotResultFetched, setAnalysisInProgress, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved }) => {
   const [fileUrl, setFileUrl] = useState(null);
+  const LogActivity = useLogActivity();
 
   const handleSearchFileChange = (e) => {
     setFile(e);
@@ -55,11 +56,11 @@ const useUploadHandler = ({ file, text, setFile, setText, setTaskId, setResult, 
 
       // log activity 
       if(file && text){
-        logActivity("click_search_submit", "file_and_text")}
+        LogActivity("click_search_submit", "file_and_text")}
       else if(file){
-        logActivity("click_search_submit", "file")
+        LogActivity("click_search_submit", "file")
       } else {
-        logActivity("click_search_submit", "text")
+        LogActivity("click_search_submit", "text")
       }
 
       // update the volume of search remaining 
