@@ -28,6 +28,7 @@ function Login() {
       } else {
         console.log('Failed to log activity');
       }
+      
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError('Invalid email or password');

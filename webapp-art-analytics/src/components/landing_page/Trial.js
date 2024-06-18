@@ -9,7 +9,9 @@ import '../../css/Trial.css';
 
 const Trial = () => {
     const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const [username, setUsername] = useState('');
     const [surname, setSurname] = useState('');
     const [metier, setMetier] = useState('');
@@ -17,6 +19,36 @@ const Trial = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+      };
+
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[A-Z])(?=.*[^\w\s])(?=.{8,})/;
+        return regex.test(password);
+      };
+
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value;
+        setPassword(newPassword);
+        if (!validatePassword(newPassword)) {
+          setPasswordError('Le mdp doit contenir au moins 8 caractères, 1 majuscule et 1 caractère spécial.');
+        } else {
+          setPasswordError('');
+        }
+    };
+
+    const handleEmailChange = (e) => {
+        const newEmail = e.target.value;
+        setEmail(newEmail);
+        if (!validateEmail(newEmail)) {
+          setEmailError("Veuillez entrer une adresse email valide.");
+        } else {
+          setEmailError('');
+        }
+      };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -95,20 +127,22 @@ const Trial = () => {
                         <input 
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={handleEmailChange}
                             placeholder="Entrez votre email"
                             required
                         />
+                        {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
                     </div>
                     <div className="form-group">
-                        <label>Mot de passe (8 caractères minimum)</label>
+                        <label>Mot de passe (8 caractères minimum, 1 majuscule et 1 caractère spécial)</label>
                         <input 
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={handlePasswordChange}
                             placeholder="Entrez votre Mot de passe"
                             required
                         />
+                        {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
                     </div>
                     <div className="form-group">
                         <label>Métier</label>
@@ -148,7 +182,7 @@ const Trial = () => {
                             </div>
                         </label>
                     </div>
-                    <button type="submit" className="trial-button">Commencer mon essai gratuit</button>
+                    <button type="submit" className="trial-button" disabled={passwordError || emailError}>Commencer mon essai gratuit</button>
                 </form>
                 {message && <p className="message">{message}</p>}
                 {error && <p className="error">{error}</p>}

@@ -1,37 +1,41 @@
 export const organizeResults = (results) => {
-    const organizedResults = {
-      "Today": [],
-      "Yesterday": [],
-      "Last Week": [],
-      "Last Month": [],
-      "Older": []
-    };
-
-    const now = new Date();
-    results.forEach(result => {
-      const resultDate = new Date(result.result_date);
-      const differenceInDays = Math.floor((now - resultDate) / (1000 * 60 * 60 * 24));
-      result.llm_result = JSON.parse(JSON.stringify(result.llm_result));
-
-      if (differenceInDays <= 1) {
-        organizedResults["Today"].push(result);
-      } else if (differenceInDays < 2) {
-        organizedResults["Yesterday"].push(result);
-      } else if (differenceInDays <= 7) {
-        organizedResults["Last Week"].push(result);
-      } else if (differenceInDays <= 30) {
-        organizedResults["Last Month"].push(result);
-      } else {
-        organizedResults["Older"].push(result);
-      }
-    });
-
-    // Remove keys with empty lists
-    Object.keys(organizedResults).forEach(key => {
-      if (organizedResults[key].length === 0) {
-        delete organizedResults[key];
-      }
-    });
-
-    return organizedResults;
+  const organizedResults = {
+    "Today": [],
+    "Yesterday": [],
+    "Last Week": [],
+    "Last Month": [],
+    "Older": []
   };
+
+  const now = new Date();
+
+  // Sort results by date in descending order (most recent first)
+  results.sort((a, b) => new Date(b.result_date) - new Date(a.result_date));
+
+  results.forEach(result => {
+    const resultDate = new Date(result.result_date);
+    const differenceInDays = Math.floor((now - resultDate) / (1000 * 60 * 60 * 24));
+    result.llm_result = JSON.parse(JSON.stringify(result.llm_result));
+
+    if (differenceInDays <= 1) {
+      organizedResults["Today"].push(result);
+    } else if (differenceInDays < 2) {
+      organizedResults["Yesterday"].push(result);
+    } else if (differenceInDays <= 7) {
+      organizedResults["Last Week"].push(result);
+    } else if (differenceInDays <= 30) {
+      organizedResults["Last Month"].push(result);
+    } else {
+      organizedResults["Older"].push(result);
+    }
+  });
+
+  // Remove keys with empty lists
+  Object.keys(organizedResults).forEach(key => {
+    if (organizedResults[key].length === 0) {
+      delete organizedResults[key];
+    }
+  });
+
+  return organizedResults;
+};

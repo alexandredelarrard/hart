@@ -1,24 +1,141 @@
+.pagination-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 65%;
+  margin: 1rem auto;
+}
+
+.sorting-container{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: right;
+}
+
 .pagination {
-    display: flex;
-    margin: 1rem 0;
-    justify-content: center; /* Center the pagination controls horizontally */
-  }
-  
-  .pagination-button {
-    padding: 0.75rem 1.5rem; /* Increase padding by 30% */
-    margin: 0 0.25rem;
-    border: none;
-    background-color: #012041;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .pagination-button:hover {
-    background-color: #154d89;
-  }
-  
-  .pagination-button.active {
-    background-color: #154d89;
-  }
+  display: flex;
+  align-items: center;
+}
+
+.pagination-button {
+  padding: 0.7rem 1.4rem;
+  margin-left: 1rem;
+  border: none;
+  background-color: #012041;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-button:hover {
+  background-color: #154d89;
+}
+
+.pagination-button.active {
+  background-color: #154d89;
+}
+
+.show-all-button {
+  padding: 0.7rem 1.4rem;
+  margin-left: 1rem;
+  border: none;
+  background-color: #012041;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.show-all-button:hover {
+  background-color: #154d89;
+}
+
+.sort-filter-container {
+  display: flex;
+  align-items: center;
+}
+
+.sort-buttons,
+.filter-buttons {
+  position: relative;
+}
+
+.dropbtn {
+  padding: 0.7rem 1.4rem;
+  margin-left: 1rem;
+  border: none;
+  background-color: #012041;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropbtn:hover {
+  background-color: #154d89;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #f1f1f1;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  width: 250px; /* Widen the sorting dropdown */
+}
+
+.dropdown-content .sort-button,
+.dropdown-content .filter-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #f1f1f1;
+  color: black;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-content .sort-button:hover,
+.dropdown-content .filter-button:hover,
+.dropdown-content .sort-button.active,
+.dropdown-content .filter-button.active {
+  background-color: #ddd;
+}
+
+.filter-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.filter-menu label {
+  margin-bottom: 0.5rem;
+  color: #012041;
+}
+
+.filter-menu input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.filter-icon {
+  padding: 0.7rem 1.4rem;
+  margin-left: 1rem;
+  border: none;
+  background-color: #012041;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-icon:hover {
+  background-color: #154d89;
+}
