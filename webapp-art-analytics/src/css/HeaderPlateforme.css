@@ -47,6 +47,13 @@
   margin-right: 25px;
 }
 
+.language-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  margin-right: 10px;
+}
+
 .menu-item-plateforme, .account-button-plateforme {
   background: white;
   border: 2px solid #154d89;
@@ -57,7 +64,25 @@
   margin-left: 10px;
 }
 
+.lang-button {
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.flag-icon {
+  width: 20px;
+  height: 15px;
+  margin-right: 8px;
+}
+
 .menu-item-plateforme:hover, .account-button-plateforme:hover {
   background: #154d89;
   color: white;
+}
+
+.lang-button:hover {
+  background: #eaeaea;
+  color: #154d89;
 }

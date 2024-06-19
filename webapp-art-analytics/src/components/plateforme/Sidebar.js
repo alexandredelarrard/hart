@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 
 import {organizeResults} from './utils/organizeSidebar.js';
@@ -38,6 +39,7 @@ function Sidebar({
   const [userData, setUserData] = useState({});
   const [formerResults, setFormerResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const { i18n } = useTranslation('/analytics');
   const LogActivity = useLogActivity();
 
   useEffect(() => {
@@ -170,9 +172,9 @@ function Sidebar({
                   {organizedResults[category].map((result, index) => (
                     <li 
                       key={index} 
-                      className="submenu-item" 
+                      className="submenu-item"
                     >
-                      <span onClick={() => handleResultClick(result)}>{result.llm_result ? result.llm_result.french_title : result.task_id }</span>
+                      <span onClick={() => handleResultClick(result)}>{result.llm_result && i18n.language === "fr"? result.llm_result.french_title || result.taskId : result.llm_result.english_title || result.taskId}</span>
                       <FontAwesomeIcon 
                         icon={faTrash} 
                         className="delete-icon" 
