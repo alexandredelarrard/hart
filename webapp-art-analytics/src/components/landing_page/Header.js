@@ -7,28 +7,16 @@ import logo from '../../assets/logo.jpg';
 import logo_blanc from '../../assets/logo_fond_blanc.jpg';
 import '../../css/Header.css';
 
-const Header = ({t}) => {
-    const [scrolled, setScrolled] = useState(false);
+const Header = ({t, scrolled}) => {
+    
     const { i18n } = useTranslation();
-
     const changeLanguage = (lng) => {
         i18n.changeLanguage(lng);
     };
 
-    useEffect(() => {
-        const handleScroll = () => {
-        setScrolled(window.scrollY > 0);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-        window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
-
     return (
       <div className="firm-presentation">
-        <header className={`${scrolled ? "navbar-scrolled" : "navbar"}`}>
+        <header className={`${scrolled ? "navbar white-background" : "navbar"}`}>
             <div className="logo-container">
                 <a href="/" className="logo">
                     <img src={scrolled ? logo_blanc: logo} alt="Firm Logo" className="firm-logo"/>
@@ -36,9 +24,9 @@ const Header = ({t}) => {
                 <span className={`company-name ${scrolled ? "company-name-scrolled" : ""}`}>{COMPANY_NAME}</span>
             </div>
             <nav className="nav-links">
-                <a href="#product">{t("landing_page.header.products")}</a>
-                <a href="#pricing">{t("landing_page.header.offers")}</a>
-                <a href="#blog">{t("landing_page.header.blog")}</a>
+                <a href="/#product">{t("landing_page.header.products")}</a>
+                <a href="/#pricing">{t("landing_page.header.offers")}</a>
+                <a href="/blog">{t("landing_page.header.blog")}</a>
             </nav>
             <div className="menu-container-plateforme">
                 <div className="language-container">

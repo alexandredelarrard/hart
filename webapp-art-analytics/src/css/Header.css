@@ -19,13 +19,9 @@
     height: 120px;
   }
   
-  .navbar-scrolled {
-    background: #fff;
-    height: 120px;
-    padding: .5rem 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+  .white-background{
+    background: white;
+    position: fixed;
   }
   
   .logo-container {
@@ -40,7 +36,6 @@
   .logo img {
     width: 100px;
     height: auto;
-    transition: width 0.3s, transform 0.3s;
   }
   
   .company-name {
@@ -48,17 +43,9 @@
     font-size: 2em;
     font-weight: bold;
     color: #154d89;
-    transition: font-size 0.3s;
+    transition: font-size 0.1s;
   }
   
-  .company-name-scrolled {
-    font-size: 2em; /* Reduce font size when scrolled */
-  }
-  
-  /* .navbar-scrolled .logo img {
-    margin-left: 45px;
-    width: 100px; 
-  } */
   
   .nav-links {
     display: flex;

@@ -1,5 +1,5 @@
 import React from "react";
-import HeaderWhite from "./Header_white.js";
+import Header from "./Header.js";
 import founder1 from "../../assets/avatar.png"; // Placeholder for founder 1 image
 import founder2 from "../../assets/avatar.png"; // Placeholder for founder 2 image
 import '../../css/About.css';
@@ -7,7 +7,7 @@ import '../../css/About.css';
 const About = ({t}) => {
     return (
         <div>
-        <HeaderWhite t={t}/>
+        <Header scrolled={true} t={t}/>
         <div className="about-container">
             <h1>About Artycs</h1>
             <section className="about-aim">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
-import '../../utils/utils_knn';
+import { useTranslation } from 'react-i18next';
 import { CARDS_PER_PAGE } from '../../utils/constants';
 
 import SearchForm from "./utils/SearchForm.js";
@@ -59,6 +59,7 @@ function UploadForm({
   t
 }) {
   
+  const { i18n } = useTranslation('/analytics');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('relevance_desc');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -228,8 +229,8 @@ function UploadForm({
                 {text && <div> <strong>{t("plateforme.uploadform.specification")}</strong>: {text}</div>}
                 {botresult &&
                   <>
-                    <p><strong>{t("plateforme.uploadform.title")}:</strong> {botresult.french_title}</p>
-                    <p><strong>{t("plateforme.uploadform.designation")}:</strong> {botresult.french_description}</p>
+                    <p><strong>{t("plateforme.uploadform.title")}:</strong> {botresult && i18n.language === "fr"? botresult.french_title : botresult.english_title}</p>
+                    <p><strong>{t("plateforme.uploadform.designation")}:</strong> {botresult && i18n.language === "fr"? botresult.french_description : botresult.english_description}</p>
                   </>
                 }
                 {result &&

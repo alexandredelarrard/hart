@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import HeaderWhite from "../landing_page/Header_white.js";
+import Header from "../landing_page/Header.js";
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { URL_API, URL_SET_NEW_PASSWORD } from '../../utils/constants.js';
@@ -29,7 +29,7 @@ function SetNewPassword({t}) {
 
   return (
     <div>
-      <HeaderWhite t={t}/>
+      <Header scrolled={true} t={t}/>
       <div className="set-new-password-container">
         <h2>{t("landing_page.setnewpassword.title")}</h2>
         <form onSubmit={handleSubmit}>

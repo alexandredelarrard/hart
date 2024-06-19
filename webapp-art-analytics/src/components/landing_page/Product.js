@@ -113,9 +113,9 @@ const Product = ({t}) => {
                                     ))}
                                 </div>
                             </div>
-                            <div className="contentainer-product-button">
+                            <div className="contentainer-firm-presentation-button">
                                 <Link to="/login">
-                                    <button className="product-cta-button">{t("landing_page.product.buttonknowmore")}</button>
+                                    <button className="firm-presentation-cta-button">{t("landing_page.product.buttonknowmore")}</button>
                                 </Link>
                             </div>
                         </div>

@@ -47,6 +47,7 @@ function App() {
   const [maxPrice, setMaxPrice] = useState('');
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
+  const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
 
   const handleMenuClick = (menu) => {
@@ -129,17 +130,20 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home t={t}/>} />
-          <Route path="/login" element={<Login t={t}/>} />
-          <Route path="/trial" element={<Trial t={t}/>} />
-          <Route path="/contact" element={<ContactUs t={t}/>} />
-          <Route path="/about" element={<About t={t}/>} />
-          <Route path="/terms" element={<Terms t={t}/>} />
-          <Route path="/cgv" element={<CGV t={t}/>} />
-          <Route path="/enroll" element={<Checkout t={t}/>} />
-          <Route path="/reset-password" element={<ResetPassword t={t}/>} />
-          <Route path="/confirm/:token" element={<Confirm t={t}/>} />
-          <Route path="/set-new-password/:token" element={<SetNewPassword t={t}/>} />
+          <Route path="/" element={<Home 
+                                    scrolled={scrolled} 
+                                    setScrolled={setScrolled} 
+                                    t={t}/>} />
+          <Route path="/login" element={<Login scrolled={true} t={t}/>} />
+          <Route path="/trial" element={<Trial scrolled={true} t={t}/>} />
+          <Route path="/contact" element={<ContactUs scrolled={true} t={t}/>} />
+          <Route path="/about" element={<About scrolled={true} t={t}/>} />
+          <Route path="/terms" element={<Terms scrolled={true} t={t}/>} />
+          <Route path="/cgv" element={<CGV scrolled={true} t={t}/>} />
+          <Route path="/enroll" element={<Checkout scrolled={true} t={t}/>} />
+          <Route path="/reset-password" element={<ResetPassword scrolled={true} t={t}/>} />
+          <Route path="/confirm/:token" element={<Confirm scrolled={true} t={t}/>} />
+          <Route path="/set-new-password/:token" element={<SetNewPassword scrolled={true} t={t}/>} />
           <Route
             path="/analytics"
             element={

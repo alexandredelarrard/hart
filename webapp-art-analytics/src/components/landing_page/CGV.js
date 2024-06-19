@@ -1,5 +1,5 @@
 import React from 'react';
-import HeaderWhite from "./Header_white.js";
+import Header from "./Header.js";
 import { COMPANY_NAME } from "../../utils/constants.js";
 import { Link } from 'react-router-dom';
 import '../../css/Terms.css';
@@ -8,7 +8,7 @@ const CGV = ({t}) => {
 
   return (
     <div>
-      <HeaderWhite t={t}/>
+      <Header scrolled={true} t={t}/>
       <div className="terms-container">
         <h1>{t("cgv.supertitle")}</h1>
 

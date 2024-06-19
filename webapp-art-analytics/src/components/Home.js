@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 
 import FirmPresentation from "./landing_page/FirmPresentation.js";
@@ -13,7 +13,18 @@ import CookieConsent from "./landing_page/CookieConsent";
 
 import '../css/Home.css';
 
-const Home = ({t}) => {
+const Home = ({t, scrolled, setScrolled}) => {
+
+  useEffect(() => {
+    const handleScroll = () => {
+    setScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+    window.removeEventListener("scroll", handleScroll);
+    };
+}, []);
 
   useEffect(() => {
     // Access geolocation
@@ -40,7 +51,10 @@ const Home = ({t}) => {
   return (
     <Fragment>
 
-      <Header t={t}/>
+      <Header
+        scrolled={scrolled}
+        setScrolled={setScrolled}
+        t={t}/>
                 
       <FirmPresentation t={t}/>
 

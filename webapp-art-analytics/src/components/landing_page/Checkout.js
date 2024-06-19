@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 
-import HeaderWhite from './Header_white.js';
+import Header from './Header.js';
 import Payment from "./Payment.js";
 import {login, checkAuth} from "../../hooks/general/identification.js";
 import LoginElement from '../connectors/LoginElement.js';
@@ -101,7 +101,7 @@ const Checkout = ({t}) => {
 
   return (
     <div>
-      <HeaderWhite t={t}/>
+      <Header scrolled={true} t={t}/>
       <div className="checkout-container">
         <div className="container-steps-indicator">
             <div className="steps-indicator">

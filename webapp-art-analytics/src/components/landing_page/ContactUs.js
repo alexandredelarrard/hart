@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import HeaderWhite from "./Header_white.js";
+import Header from "./Header.js";
 import '../../css/ContactUs.css';
 
 const ContactUs = ({t}) => {
@@ -23,7 +23,7 @@ const ContactUs = ({t}) => {
 
     return (
         <div>
-        <HeaderWhite t={t}/>
+        <Header scrolled={true} t={t}/>
         <section className="contact-us-container">
             <h2>{t("overall.contactus")}</h2>
             <form className="contact-us-form" onSubmit={handleSubmit}>

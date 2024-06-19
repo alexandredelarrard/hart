@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import HeaderWhite from "../landing_page/Header_white.js";
+import Header from "../landing_page/Header.js";
 import { useNavigate } from 'react-router-dom';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
 import {login, checkAuth} from '../../hooks/general/identification.js';
@@ -53,7 +53,7 @@ function Login({t}) {
 
   return (
     <div>
-      <HeaderWhite t={t}/>
+      <Header scrolled={true} t={t}/>
       <div className="login-container">
         <LoginElement
           handleSubmit={handleSubmit}

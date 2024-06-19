@@ -4,8 +4,8 @@ import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {URL_API, URL_SIGNIN, COMPANY_NAME} from '../../utils/constants';
-import logo from '../../assets/logo_fond_blanc.jpg';
+import {URL_API, URL_SIGNIN} from '../../utils/constants';
+import Header from "../landing_page/Header.js";
 import '../../css/Trial.css';
 
 const Trial = () => {
@@ -87,18 +87,9 @@ const Trial = () => {
       };
 
     return (
+      <div>
+        <Header scrolled={true} t={t}/>
         <div className="trial-container">
-            <header className="navbar-scrolled">
-                <div className="logo-container">
-                    <a href="/" className="logo">
-                        <img src={logo} alt="Firm Logo" className="firm-logo"/>
-                    </a>
-                    <span className="company-name">{COMPANY_NAME}</span>
-                </div>
-                <Link to="/login">
-                    <button className="account-button">{t("landing_page.header.myaccount")}</button>
-                </Link>
-            </header>
             <section className="trial-form-section">
                 <h2>{t("landing_page.trial.trialtitle")}</h2>
                 <form className="trial-form"  onSubmit={handleSubmit}>
@@ -184,7 +175,7 @@ const Trial = () => {
                             </div>
                         </label>
                     </div>
-                    <button type="submit" className="trial-button" disabled={passwordError || emailError}>{t("overall.starttrial")}</button>
+                    <button type="submit" className="login-button" disabled={passwordError || emailError}>{t("overall.starttrial")}</button>
                 </form>
                 {message && <p className="message">{message}</p>}
                 {error && <p className="error">{error}</p>}
@@ -194,6 +185,7 @@ const Trial = () => {
                 </div>
             </section>
         </div>
+      </div>  
     );
 }
 

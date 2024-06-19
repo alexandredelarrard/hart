@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import HeaderWhite from "../landing_page/Header_white.js";
+import Header from "../landing_page/Header.js";
 import axios from 'axios';
 import { URL_API, URL_RESET_PASSWORD } from '../../utils/constants.js';
-import '../../css/ResetPassword.css';
 
 function ResetPassword({t}) {
   const [email, setEmail] = useState('');
@@ -28,24 +27,26 @@ function ResetPassword({t}) {
 
   return (
     <div>
-      <HeaderWhite t={t}/>
-        <div className="reset-password-container">
-        <h2>{t("landing_page.resetpassword.title")}</h2>
-        <form onSubmit={handleSubmit}>
-            <div className="form-group">
-            <label>{t("overall.email")}:</label>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("overall.email")}
-                required
-            />
-            </div>
-            <button type="submit" className="reset-password-button">{t("landing_page.resetpassword.sendlink")}</button>
-        </form>
-        {message && <p className="message">{message}</p>}
-        {error && <p className="error">{error}</p>}
+        <Header scrolled={true} t={t}/>
+        <div className="login-container">
+          <div className="login-form">
+            <h2>{t("landing_page.resetpassword.title")}</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                <label>{t("overall.email")}:</label>
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t("overall.email")}
+                    required
+                />
+                </div>
+                <button type="submit" className="login-button">{t("landing_page.resetpassword.sendlink")}</button>
+            </form>
+            {message && <p className="message">{message}</p>}
+            {error && <p className="error">{error}</p>}
+          </div>
         </div>
     </div>
   );

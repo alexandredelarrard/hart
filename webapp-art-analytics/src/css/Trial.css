@@ -55,31 +55,8 @@
     border-radius: 5px;
 }
 
-.trial-button {
-    background: #002955;
-    color: white;
-    border: none;
-    padding: 15px;
-    font-size: 1.1em;
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 20px;
-    border: 2px solid #002955;
-}
 
-.trial-button.disabled{
-    background: #929292;
-}
 
-.trial-button:hover {
-    color: white;
-    background: #0056b3;
-    border: 2px solid #0056b3;
-    font-size: 1.1em;
-    font-weight: 500;
-    padding: 15px;
-}
 
 .trial-form-section p {
     margin-top: 20px;

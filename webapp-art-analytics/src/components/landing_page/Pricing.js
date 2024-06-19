@@ -25,8 +25,8 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) =
 
     return (
         <div>
-            <section className={isplateforme? "pricing-section-plateforme": "pricing-section"} id="pricing">
-                <div className={isplateforme? "pricing-subsection-plateforme" : "pricing-subsection"}>
+            <section className={isplateforme? "pricing-section-plateforme": "pricing-section"}>
+                <div className={isplateforme? "pricing-subsection-plateforme" : "pricing-subsection"} id="pricing">
                     <h1>{t("landing_page.pricing.pricingtitle")}</h1>
                     <div className="pricing-cards">
                         <div className={activePlan === "free_plan" ? "pricing-card prefered" : "pricing-card"}>
