@@ -4,10 +4,10 @@ import founder1 from "../../assets/avatar.png"; // Placeholder for founder 1 ima
 import founder2 from "../../assets/avatar.png"; // Placeholder for founder 2 image
 import '../../css/About.css';
 
-const About = () => {
+const About = ({t}) => {
     return (
         <div>
-        <HeaderWhite/>
+        <HeaderWhite t={t}/>
         <div className="about-container">
             <h1>About Artycs</h1>
             <section className="about-aim">

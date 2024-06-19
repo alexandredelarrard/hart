@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBuilding, faShieldAlt, faCheck} from '@fortawesome/free-solid-svg-icons';
 
 import "../../css/Pricing.css";
 import { COMPANY_NAME } from '../../utils/constants';
 
-const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries}) => {
+const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) => {
     const [selectedPrice, setSelectedPrice] = useState({});
 
     const handlePriceSelection = (category, priceType) => {
@@ -27,22 +27,22 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries}) => {
         <div>
             <section className={isplateforme? "pricing-section-plateforme": "pricing-section"} id="pricing">
                 <div className={isplateforme? "pricing-subsection-plateforme" : "pricing-subsection"}>
-                    <h1>Des offres dédiées à vos besoins</h1>
+                    <h1>{t("landing_page.pricing.pricingtitle")}</h1>
                     <div className="pricing-cards">
                         <div className={activePlan === "free_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faBuilding} className="pricing-icon" />
-                            <h2>Les nouveaux</h2>
-                            <p>Essai gratuit pendant 7 jours pour vous familiariser avec les fonctionnalités d'{COMPANY_NAME}.</p>
+                            <h2>{t("landing_page.pricing.newoffertitle")}</h2>
+                            <p>{t("landing_page.pricing.newofferdesc")}{COMPANY_NAME}.</p>
                             <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Jusqu'à 100 recherches</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 40 estimations </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Valable 7 jours </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.newcriterion1")}</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.newcriterion2")}</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.newcriterion3")}</li>
                             </ul>
                             {isplateforme && (
                                 <>
                                    <ul>
-                                        <li className='sub-li-plan'> Jours restants: {remainingDays}</li>
-                                        <li className='sub-li-plan'> Requêtes restantes : {closestQueries}</li>
+                                        <li className='sub-li-plan'> {t("landing_page.pricing.remainingdays")}: {remainingDays}</li>
+                                        <li className='sub-li-plan'> {t("landing_page.pricing.remainingclosequeries")}: {closestQueries}</li>
                                     </ul>
                                 </>
                                 )}
@@ -52,35 +52,35 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries}) => {
                                     onClick={() => handleSubmit('beginner')}
                                     disabled={activePlan === "free_plan"}
                                 >
-                                    {activePlan === "free_plan" ? "Mon plan actuel": "Essayer gratuitement"}
+                                    {activePlan === "free_plan" ? t("overall.currentplan") : t("overall.startnow")}
                                 </button>
                             </div>
                         </div>
                         <div className={activePlan === "individual_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faUser} className="pricing-icon" />
-                            <h2>Passionnés d'art</h2>
-                            <p>Idéal pour les passionnés d'art, curieux d'un artiste ou de la valeur d'une oeuvre</p>
+                            <h2>{t("landing_page.pricing.passionatetitle")}</h2>
+                            <p>{t("landing_page.pricing.passionatedesc")}</p>
                             <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Recherches illimitées </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> 200 estimations/mois </li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.passionatecriterion1")}</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.passionatecriterion2")}</li>
                             </ul>
                             <div className="price-options">
                                 <div className="price-column">
-                                    <h3>Mensuel</h3>
+                                    <h3>{t("overall.monthly")}</h3>
                                     <div 
                                         className={`price-option ${selectedPrice['individual'] === 'monthly' ? 'selected' : ''}`}
                                         onClick={() => handlePriceSelection('individual', 'monthly')}
                                     >
-                                        <span className="price-amount">19 €</span>
+                                        <span className="price-amount">{t("landing_page.pricing.monthlypricepassion")} {t("overall.currency")}</span>
                                     </div>
                                 </div>
                                 <div className="price-column">
-                                    <h3>Annuel</h3>
+                                    <h3>{t("overall.yearly")}</h3>
                                     <div 
                                         className={`price-option ${selectedPrice['individual'] === 'yearly' ? 'selected' : ''}`}
                                         onClick={() => handlePriceSelection('individual', 'yearly')}
                                     >
-                                        <span className="price-amount">199 €</span>
+                                        <span className="price-amount">{t("landing_page.pricing.yearlypricepassion")} {t("overall.currency")}</span>
                                     </div>
                                 </div>
                             </div>
@@ -89,22 +89,22 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries}) => {
                                     className="firm-presentation-cta-button"
                                     onClick={() => handleSubmit('individual')}
                                 >
-                                    S'abonner
+                                    {t("overall.enroll")}
                                 </button>
                             </div>
                         </div>
                         <div className={activePlan === "custome_plan" ? "pricing-card prefered" : "pricing-card"}>
                             <FontAwesomeIcon icon={faShieldAlt} className="pricing-icon" />
-                            <h2>Entreprises/Experts</h2>
-                            <p>Entreprises ou experts ayant des besoins importants requérant une offre à la carte.</p>
+                            <h2>{t("landing_page.pricing.experttitle")}</h2>
+                            <p>{t("landing_page.pricing.expertdesc")}</p>
                             <ul className="features-list">
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Requêtes sans limite</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Limite d'estimations dédiée</li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Support de ventes </li>
-                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" /> Authentification à la carte</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.expertcriterion1")}</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.expertcriterion2")}</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.expertcriterion3")}</li>
+                                <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.expertcriterion4")}</li>
                             </ul>
                             <div className="button-container">
-                                <button className="firm-presentation-cta-button" onClick={() => window.location.href='/contact'}>Nous contacter</button>
+                                <button className="firm-presentation-cta-button" onClick={() => window.location.href='/contact'}>{t("overall.contactus")}</button>
                             </div>
                         </div>
                     </div>

@@ -1,14 +1,15 @@
 import React from 'react';
-import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import HeaderPlateforme from "./utils/HeaderPlateforme.js";
 
-function OptimizeSale({handleMenuClick}) {
+function OptimizeSale({handleMenuClick, t}) {
+
   return (
     <div className="upload-form-container">
       <HeaderPlateforme 
         handleMenuClick={handleMenuClick}
       />
-      <h2>Optimize Your Sale</h2>
-      <p>This is the Optimize Your Sale component.</p>
+      <h2>{t("plateforme.optimize.optimizetitle")}</h2>
+      <p>{t("plateforme.optimize.optimizedesc")}</p>
     </div>
   );
 }

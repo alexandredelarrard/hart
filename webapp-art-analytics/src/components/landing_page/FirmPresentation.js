@@ -7,20 +7,19 @@ import illustration from '../../assets/landing_background.jpg';
 
 import '../../css/FirmPresentation.css';
 
-const FirmPresentation = () => {
+const FirmPresentation = ({t}) => {
 
     return (
       <div className="firm-presentation">
         <main className="main-content"> 
           <div className="content">
-            <h1><div className="blue">Première plateforme</div> d'intelligence artificielle au service de l'art.</h1>
+            <h1><div className="blue">{t("landing_page.firmpresentation.bluesupertitle")}</div> {t("landing_page.firmpresentation.supertitle")}</h1>
             <p>
-              {COMPANY_NAME} met l'IA au service des professionnels de l'art. 
-              Expertisez avec précision, ajustez votre estimation, gagnez en créativité !
+              {COMPANY_NAME} {t("landing_page.firmpresentation.supertitledesc")}
             </p>
             <div className="contentainer-firm-presentation-button">
               <Link to="/trial">
-                <button className="firm-presentation-cta-button">Essayez gratuitement <span className="button-arrow"><FontAwesomeIcon icon={faArrowRight}/></span></button>
+                <button className="firm-presentation-cta-button">{t("overall.starttrial")}<span className="button-arrow"><FontAwesomeIcon icon={faArrowRight}/></span></button>
               </Link>
             </div>
           </div>

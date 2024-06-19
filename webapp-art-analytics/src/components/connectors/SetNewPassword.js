@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { URL_API, URL_SET_NEW_PASSWORD } from '../../utils/constants.js';
 import '../../css/SetNewPassword.css';
 
-function SetNewPassword() {
+function SetNewPassword({t}) {
   const { token } = useParams();
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -23,27 +23,27 @@ function SetNewPassword() {
       setMessage(response.data.message);
       navigate('/login');
     } catch (error) {
-      setError('An error occurred. Please try again later.');
+      setError(t("landing_page.trial.errorglobal"));
     }
   };
 
   return (
     <div>
-      <HeaderWhite/>
+      <HeaderWhite t={t}/>
       <div className="set-new-password-container">
-        <h2>Set New Password</h2>
+        <h2>{t("landing_page.setnewpassword.title")}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>New Password:</label>
+            <label>{t("overall.password")}:</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your new password"
+              placeholder={t("landing_page.setnewpassword.enternewpassword")}
               required
             />
           </div>
-          <button type="submit" className="set-new-password-button">Set New Password</button>
+          <button type="submit" className="set-new-password-button">{t("landing_page.setnewpassword.newpasswordsend")}</button>
         </form>
         {message && <p className="message">{message}</p>}
         {error && <p className="error">{error}</p>}

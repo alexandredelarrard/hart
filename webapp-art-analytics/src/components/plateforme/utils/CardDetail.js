@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../../css/CardDetail.css';
 
 
-function CardDetail() {
+function CardDetail({t}) {
   const navigate = useNavigate();
   const location = useLocation();
   const item = location.state?.item; // Use optional chaining to safely access item

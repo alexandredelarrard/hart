@@ -2,7 +2,6 @@ import React from "react";
 import image1 from '../../assets/logo.jpg';
 import image2 from '../../assets/logo.jpg';
 import image3 from '../../assets/avatar.png';
-import image4 from '../../assets/logo.jpg';
 
 import "../../css/Advantages.css";
 
@@ -31,21 +30,13 @@ const advantagesData = [
             "It reduces the number of unsold elements"
         ]
     },
-    {
-        image: image4,
-        points: [
-            "It reduces remaining sales",
-            "It enables to find a good price and not sell too cheap or too expensive",
-            "It reduces the number of unsold elements"
-        ]
-    }
 ];
 
-const Advantages = () => {
+const Advantages = ({t}) => {
     return (
         <div className="advantages-background-container">
             <div className="advantages-container">
-                <h2>Des bénéfices tangibles mesurés auprès des utilisateurs</h2>
+                <h2>{t("landing_page.advantages.title")}</h2>
                 {advantagesData.map((advantage, index) => (
                     <div className="advantage-row" key={index}>
                         <div className="advantage-image">

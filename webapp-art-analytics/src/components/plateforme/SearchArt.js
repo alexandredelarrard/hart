@@ -1,14 +1,15 @@
 import React from 'react';
-import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import HeaderPlateforme from "./utils/HeaderPlateforme.js";
 
-function SearchArt({handleMenuClick}) {
+function SearchArt({handleMenuClick, t}) {
+
   return (
     <div className="upload-form-container">
       <HeaderPlateforme 
         handleMenuClick={handleMenuClick}
       />
-      <h2>Search your art piece</h2>
-      <p>This is the search element</p>
+      <h2>{t("plateforme.searchart.searchtitle")}</h2>
+      <p>{t("plateforme.searchart.searchdesc")}</p>
     </div>
   );
 }

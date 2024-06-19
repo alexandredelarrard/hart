@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
+
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
 import '../../../css/PaymentTable.css';
 
-const PaymentTable = ({ payments }) => {
+const PaymentTable = ({ payments, t }) => {
 
   // Exclude the user_id column and prepare column definitions
   const columns = useMemo(() => {
@@ -23,9 +24,8 @@ const PaymentTable = ({ payments }) => {
   }, [payments]);
 
   if (!payments || payments.length === 0) {
-    return <div>No payment data available</div>;
+    return <div>{t("plateforme.paymenttable.nopaymentavailable")}</div>;
   }
-
 
   return (
     <div className="ag-theme-quartz" style={{ height: 400}}>

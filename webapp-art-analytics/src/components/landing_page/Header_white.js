@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import logo_blanc from '../../assets/logo_fond_blanc.jpg';
 import '../../css/Header.css';
 
-const HeaderWhite = () => {
+const HeaderWhite = ({t}) => {
 
     return (
       <div className="firm-presentation">
@@ -16,7 +16,7 @@ const HeaderWhite = () => {
                 <span className="company-name">{COMPANY_NAME}</span>
             </div>
             <Link to="/login">
-              <button className="account-button">Mon compte</button>
+              <button className="account-button">{t("landing_page.header.myaccount")}</button>
             </Link>
         </header>
     </div>);

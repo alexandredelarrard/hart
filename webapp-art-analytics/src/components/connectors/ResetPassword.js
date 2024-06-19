@@ -4,7 +4,7 @@ import axios from 'axios';
 import { URL_API, URL_RESET_PASSWORD } from '../../utils/constants.js';
 import '../../css/ResetPassword.css';
 
-function ResetPassword() {
+function ResetPassword({t}) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -22,27 +22,27 @@ function ResetPassword() {
       });
       setMessage(response.data.message);
     } catch (error) {
-      setError('An error occurred. Please try again later.');
+      setError(t("landing_page.trial.errorglobal"));
     }
   };
 
   return (
     <div>
-      <HeaderWhite/>
+      <HeaderWhite t={t}/>
         <div className="reset-password-container">
-        <h2>Reset Password</h2>
+        <h2>{t("landing_page.resetpassword.title")}</h2>
         <form onSubmit={handleSubmit}>
             <div className="form-group">
-            <label>Email:</label>
+            <label>{t("overall.email")}:</label>
             <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("overall.email")}
                 required
             />
             </div>
-            <button type="submit" className="reset-password-button">Send Reset Link</button>
+            <button type="submit" className="reset-password-button">{t("landing_page.resetpassword.sendlink")}</button>
         </form>
         {message && <p className="message">{message}</p>}
         {error && <p className="error">{error}</p>}

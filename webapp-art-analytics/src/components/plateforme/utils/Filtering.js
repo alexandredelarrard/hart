@@ -13,18 +13,19 @@ const Filtering = ({
   minDate,
   maxDate,
   handleDateFilter,
-  filterRef
+  filterRef,
+  t
 }) => (
     <div className="filter-buttons" ref={filterRef}>
         <button className="filter-icon" onClick={() => setFilterOpen(!filterOpen)}>
-            <FontAwesomeIcon icon={faFilter} /> Filtrer
+            <FontAwesomeIcon icon={faFilter} /> {t("plateforme.filtering.filtertitle")}
         </button>
         {filterOpen && (
             <div className="dropdown-content">
             <div className="filter-menu">
-                <h4>Prix</h4>
+                <h4>{t("plateforme.filtering.pricetitle")}</h4>
                 <label>
-                Prix Min:
+                {t("plateforme.filtering.minprice")}:
                 <input
                     type="number"
                     value={minPrice}
@@ -32,16 +33,16 @@ const Filtering = ({
                 />
                 </label>
                 <label>
-                Prix Max:
+                {t("plateforme.filtering.maxprice")}:
                 <input
                     type="number"
                     value={maxPrice}
                     onChange={(e) => handlePriceFilter(minPrice, e.target.value)}
                 />
                 </label>
-                <h4>Date</h4>
+                <h4>{t("plateforme.filtering.datetitle")}</h4>
                 <label>
-                Date Min:
+                {t("plateforme.filtering.mindate")}:
                 <input
                     type="date"
                     value={minDate}
@@ -49,7 +50,7 @@ const Filtering = ({
                 />
                 </label>
                 <label>
-                Date Max:
+                {t("plateforme.filtering.maxdate")}:
                 <input
                     type="date"
                     value={maxDate}

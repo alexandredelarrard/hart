@@ -2,8 +2,10 @@ import React from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
-import "../../../css/SearchForm.css";
+
 import { Link } from 'react-router-dom'; // Import Link for navigation
+
+import "../../../css/SearchForm.css";
 
 const SearchForm = ({ 
   text, 
@@ -12,7 +14,8 @@ const SearchForm = ({
   closestVolumeExpired, 
   handleSearchTextChange, 
   handleSearchSubmit, 
-  handleMenuClick
+  handleMenuClick,
+  t
 }) => {
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -34,14 +37,14 @@ const SearchForm = ({
             <input {...getInputProps()} />
             <p className="dropzone-text">
               <FontAwesomeIcon icon={faUpload} className="upload-icon" />
-              Glissez ou sélectionnez l'image
+              {t("plateforme.search.dropzonedesc")}
             </p>
           </div>
           <input 
             type="text" 
             value={text} 
             onChange={handleSearchTextChange} 
-            placeholder="Description de l'objet..." 
+            placeholder={t("plateforme.search.textareadesc")}
             className={`search-input ${isError ? 'input-error' : ''}`} 
             disabled={isError}
           />
@@ -53,12 +56,12 @@ const SearchForm = ({
       <div className={`error-message-search ${isError ? 'show' : ''}`}>
         {planExpired && (
           <div className="plan-expired-message">
-            Your trial period has ended. Please <Link to="/subscribe">upgrade your plan</Link>.
+            {t("plateforme.search.errorplanexpired")} <Link to="/subscribe">{t("plateforme.search.upgradebutton")}</Link>.
           </div>
         )}
         {closestVolumeExpired && (
           <div className="query-expired-message">
-            You reached the volume limit of possible queries allocated to your plan. Please <button className='button-error-plan' onClick={() => { handleMenuClick("my-offers")}}>upgrade your plan</button>
+            {t("plateforme.search.errorsearchclosevolume")} <button className='button-error-plan' onClick={() => { handleMenuClick("my-offers")}}>{t("plateforme.search.upgradebutton")}</button>
           </div>
         )}
       </div>

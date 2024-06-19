@@ -10,18 +10,14 @@ function Payment({cardData,
   error, 
   message, 
   handleInputChange, 
-  handleInputFocus
+  handleInputFocus,
+  t
 }) {
 
   return (
     <div className="payment-container">
-      {/* <div className="payment-summary">
-        <h3>Summary</h3>
-        <p>Selected Plan: {Cookies.get('selectedPlan')}</p>
-        <p>Price: {Cookies.get('selectedPrice')} euros</p>
-      </div> */}
       <div className="payment-form-container">
-        <h2>Payment Details</h2>
+        <h2>{t("landing_page.payment.title")}</h2>
         <Cards
           number={cardData.number}
           name={cardData.name}
@@ -31,32 +27,32 @@ function Payment({cardData,
         />
         <form onSubmit={handleSubmit} className="payment-form">
           <div className="form-group">
-            <label>Card Number:</label>
+            <label>{t("landing_page.payment.cardnumbertitle")}:</label>
             <input
               type="tel"
               name="number"
               value={cardData.number}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              placeholder="Enter your card number"
+              placeholder={t("landing_page.payment.cardnumberdesc")}
               required
             />
           </div>
           <div className="form-group">
-            <label>Name on Card:</label>
+            <label>{t("landing_page.payment.cardownertitle")}:</label>
             <input
               type="text"
               name="name"
               value={cardData.name}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              placeholder="Enter name on card"
+              placeholder={t("landing_page.payment.cardownerdesc")}
               required
             />
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Expiry Date:</label>
+              <label>{t("landing_page.payment.expirydatetitle")}:</label>
               <input
                 type="tel"
                 name="expiry"
@@ -80,7 +76,7 @@ function Payment({cardData,
               />
             </div>
           </div>
-          <button type="submit" className="payment-button">Pay Now</button>
+          <button type="submit" className="payment-button">{t("landing_page.payment.paynow")}</button>
         </form>
         {message && <p className="message">{message}</p>}
         {error && <p className="error">{error}</p>}

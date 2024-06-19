@@ -8,8 +8,9 @@ const Pagination = ({
   handlePageChange,
   showAll,
   toggleShowAll,
- 
+  t
 }) => (
+  
   <div className="pagination">
     {Array.from({ length: totalPages }, (_, index) => (
       <button
@@ -24,7 +25,7 @@ const Pagination = ({
       className="show-all-button"
       onClick={toggleShowAll}
     >
-      {showAll ? 'Show Pages' : 'Show All'}
+      {showAll ? t("plateforme.pagination.showpages") : t("plateforme.pagination.showall")}
     </button>
   </div>
 );

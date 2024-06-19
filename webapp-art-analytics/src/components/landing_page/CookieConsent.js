@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import '../../css/CookieConsent.css';
 
-const CookieConsent = () => {
+const CookieConsent = ({t}) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -28,9 +28,9 @@ const CookieConsent = () => {
 
   return (
     <div className="cookie-consent-banner">
-      <p>We use cookies to improve your experience on our site. By accepting, you agree to our use of cookies. <a href="/terms">Learn more</a></p>
-      <button onClick={handleAccept}>Accept</button>
-      <button onClick={handleDecline}>Decline</button>
+      <p>{t("landing_page.cookiesconsent.desc")} <a href="/terms">{t("landing_page.cookiesconsent.learnmore")}</a></p>
+      <button onClick={handleAccept}>{t("landing_page.cookiesconsent.buttonaccept")}</button>
+      <button onClick={handleDecline}>{t("landing_page.cookiesconsent.buttondecline")}</button>
     </div>
   );
 };

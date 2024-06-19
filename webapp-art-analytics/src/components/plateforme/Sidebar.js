@@ -5,11 +5,12 @@ import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronD
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-import useFetchPastResults from '../../hooks/plateforme/useFetchPastResults.js';
+import {organizeResults} from './utils/organizeSidebar.js';
 import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
+
 import { logout } from '../../hooks/general/identification';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
-import {organizeResults} from './utils/organizeSidebar.js';
+import useFetchPastResults from '../../hooks/plateforme/useFetchPastResults.js';
 
 import '../../css/Sidebar.css';
 
@@ -29,7 +30,8 @@ function Sidebar({
   setMinPrice,
   setMaxPrice,
   setMinDate,
-  setMaxDate
+  setMaxDate,
+  t
 }) {
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('closest-lots');
@@ -48,7 +50,9 @@ function Sidebar({
     setMaxPrice('');
     setMinDate('');
     setMaxDate('');
-  }, [navigate]);
+  }, [navigate, setResult, setText, setFile, setMaxDate, setMinDate,
+    setMaxPrice, setMinPrice, setBotResult, setAdditionalData
+  ]);
 
   //logout on click button
   const handleLogout = async () => {
@@ -107,7 +111,7 @@ function Sidebar({
 
   const handleDeleteResult = (taskId) => {
     const token = Cookies.get('token');
-    const confirmDelete = window.confirm(`Etes vous cetain de vouloir supprimer l'élément ${taskId}?`);
+    const confirmDelete = window.confirm(`${t("plateforme.sidebar.deleteconfirm")} ${taskId}?`);
     if (confirmDelete) {
       axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`,
         {
@@ -130,15 +134,15 @@ function Sidebar({
 
   // retrieve past results
   useFetchPastResults(newResultSaved, setFormerResults, setUserData);
-  const organizedResults = organizeResults(formerResults);
+  const organizedResults = organizeResults(formerResults, t);
 
   return (
     <aside className="sidebar">
       <div className="login-area">
         <FontAwesomeIcon icon={faUserCircle} className="sidebar-avatar"/>
         <div className="user-info">
-          <p className="user-name">{userData.name || 'User'}</p>
-          <p className="user-name">{userData.surname || 'User'}</p>
+          <p className="user-name">{userData.name || t("plateforme.sidebar.defaultusername")}</p>
+          <p className="user-name">{userData.surname || t("plateforme.sidebar.defaultusername")}</p>
         </div>
       </div>
       <ul className="menu">
@@ -147,14 +151,14 @@ function Sidebar({
           onClick={() => { setActiveMenu('search-art'); onMenuClick('search-art'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
-          Search Art piece
+          {t("plateforme.sidebar.search")}
         </li>
         <li 
           className={`menu-item ${activeMenu === 'closest-lots' ? 'active' : ''}`} 
           onClick={() => { setActiveMenu('closest-lots'); onMenuClick('closest-lots'); toggleResults(true); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
-          Closest Lots
+          {t("plateforme.sidebar.closest")}
           <FontAwesomeIcon icon={showResults ? faChevronDown : faChevronRight} className="submenu-icon" />
         </li>
         {showResults && (
@@ -186,11 +190,11 @@ function Sidebar({
           onClick={() => { setActiveMenu('optimize-sale'); onMenuClick('optimize-sale'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faEdit} className="menu-icon" />
-          Optimize Your Sale
+          {t("plateforme.sidebar.optimize")}
         </li>
       </ul>
       <button onClick={handleLogout} className="logout-button">
-        <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+        <FontAwesomeIcon icon={faSignOutAlt} />{t("plateforme.sidebar.logout")}
       </button>
     </aside>
   );

@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import Cookies from 'js-cookie';
+
 import FirmPresentation from "./landing_page/FirmPresentation.js";
 import Header from "./landing_page/Header.js";
 import Footer from "./landing_page/Footer.js";
@@ -9,9 +10,10 @@ import Product from "./landing_page/Product.js";
 import InfoBand from "./landing_page/InfoBand.js";
 import Testimonials from "./landing_page/Testimonials.js"
 import CookieConsent from "./landing_page/CookieConsent";
-import '../css/Home.css'; // Assuming you have a Home.css file for styling
 
-const Home = () => {
+import '../css/Home.css';
+
+const Home = ({t}) => {
 
   useEffect(() => {
     // Access geolocation
@@ -38,28 +40,29 @@ const Home = () => {
   return (
     <Fragment>
 
-      <Header />
+      <Header t={t}/>
                 
-      <FirmPresentation />
+      <FirmPresentation t={t}/>
 
-      <InfoBand/>
+      <InfoBand t={t}/>
       
-      <Product/>
+      <Product t={t}/>
 
-      <Advantages/>
+      <Advantages t={t}/>
 
       <Pricing
         isplateforme={false}
         activePlan={null}
         remainingDays={null}
         closestQueries={null}
+        t={t}
       />
 
       {/* <Testimonials/> */}
 
-      <Footer/>
+      <Footer t={t}/>
 
-      <CookieConsent />
+      <CookieConsent t={t}/>
 
     </Fragment>
   );

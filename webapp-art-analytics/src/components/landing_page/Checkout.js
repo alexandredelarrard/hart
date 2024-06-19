@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import Payment from "./Payment.js";
-import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import { Link } from 'react-router-dom';
-import {URL_API, URL_LOGIN} from '../../utils/constants.js';
+
 import HeaderWhite from './Header_white.js';
+import Payment from "./Payment.js";
+import {login, checkAuth} from "../../hooks/general/identification.js";
 import LoginElement from '../connectors/LoginElement.js';
+
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '../../css/Checkout.css';
 
-const Checkout = () => {
+const Checkout = ({t}) => {
   const [step, setStep] = useState(1);
   const [cardData, setCardData] = useState({
     number: '',
@@ -34,36 +36,39 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get('token');
-    if(token){
-      const userdata = Cookies.get('userdata');
-      const parsedUserdata = JSON.parse(userdata);
-      setEmail(parsedUserdata.email);
-      setStep(2);
-    }
-  }, []);
+    const checkUserAuth = async () => {
+      const isAuthenticated = await checkAuth();
+      if (isAuthenticated){
+        const userdata = Cookies.get('userdata');
+        if(userdata){
+          const parsedUserdata = JSON.parse(userdata);
+          setEmail(parsedUserdata.email);
+          setStep(2);
+        }
+      }
+    };
+
+    checkUserAuth()
+  }, [setStep, setEmail]);
 
   const handleSubmit = async (e) => {
-    setError(''); // Clear any previous error
-    setMessage(''); // Clear any previous message
+    setError(''); 
+    setMessage('');
     e.preventDefault();
-    try {
-      const response = await axios.post(URL_API + URL_LOGIN, { email, password }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
 
-      // Save token to localStorage and redirect to upload page
-      Cookies.set('token', response.data.access_token, { expires: 0.5 });
-      setStep(2)
+    try {
+
+      const response = await login(email, password);
+      setMessage(response.data.message);
+      setStep(2);
+
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        setError('Invalid email or password');
+        setError(t("landing_page.trial.error401"));
       } else if (error.response && error.response.status === 404) {
-        setError('Email not found');
+        setError(t("landing_page.trial.erroremailnotfound"));
       } else {
-        setError('An error occurred. Please try again later.');
+        setError(t("landing_page.trial.errorglobal"));
       }
       }
   };
@@ -87,22 +92,22 @@ const Checkout = () => {
           'Content-Type': 'application/json',
         },
       });
-      setMessage('Payment successful!');
+      setMessage(t("landing_page.checkout.messagegoodpauyment"));
       setStep(3);
     } catch (error) {
-      setError('Payment failed. Please try again.');
+      setError(t("landing_page.checkout.messagebadpauyment"));
     }
   };
 
   return (
     <div>
-      <HeaderWhite />
+      <HeaderWhite t={t}/>
       <div className="checkout-container">
         <div className="container-steps-indicator">
             <div className="steps-indicator">
-                <div className={`step ${step === 1 ? 'active' : ''}`} onClick={() => setStep(1)}>1. Identifiez-vous</div>
-                <div className={`step ${step === 2 ? 'active' : ''}`} onClick={() => step >1 && setStep(2)}>2. Paiement</div>
-                <div className={`step ${step === 3 ? 'active' : ''}`} onClick={() => step >2 && setStep(3)}>3. Confirmation</div>
+                <div className={`step ${step === 1 ? 'active' : ''}`} onClick={() => setStep(1)}>{t("landing_page.checkout.menu1title")}</div>
+                <div className={`step ${step === 2 ? 'active' : ''}`} onClick={() => step >1 && setStep(2)}>{t("landing_page.checkout.menu2title")}</div>
+                <div className={`step ${step === 3 ? 'active' : ''}`} onClick={() => step >2 && setStep(3)}>{t("landing_page.checkout.menu3title")}</div>
             </div>
         </div>
         {step === 1 && (
@@ -114,6 +119,7 @@ const Checkout = () => {
             message={message}
             setEmail={setEmail}
             setPassword={setPassword}
+            t={t}
         />
         )}
         {step === 2 && (
@@ -124,14 +130,15 @@ const Checkout = () => {
             message={message}
             handleInputChange={handleCardChange}
             handleInputFocus={handleCardFocus}
+            t={t}
           />
         )}
         {step === 3 && (
           <div className="confirmation-container">
-            <h2>Payment Confirmation</h2>
-            <p>Thank you for your purchase! Please check your email for confirmation.</p>
-            <p>If you haven't received a confirmation email, please contact support.</p>
-            <Link to="/contact" className="contact-link">Contact Support</Link>
+            <h2>{t("landing_page.checkout.confirmationtitle")}</h2>
+            <p>{t("landing_page.checkout.confirmationdesc1")}</p>
+            <p>{t("landing_page.checkout.confirmationdesc2")}</p>
+            <Link to="/contact" className="contact-link">{t("overall.contactus")}</Link>
           </div>
         )}
       </div>

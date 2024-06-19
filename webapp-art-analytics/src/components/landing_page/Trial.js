@@ -3,11 +3,13 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {URL_API, URL_SIGNIN, COMPANY_NAME} from '../../utils/constants';
 import logo from '../../assets/logo_fond_blanc.jpg';
 import '../../css/Trial.css';
 
 const Trial = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [password, setPassword] = useState('');
@@ -34,7 +36,7 @@ const Trial = () => {
         const newPassword = e.target.value;
         setPassword(newPassword);
         if (!validatePassword(newPassword)) {
-          setPasswordError('Le mdp doit contenir au moins 8 caractères, 1 majuscule et 1 caractère spécial.');
+          setPasswordError(t("landing_page.trial.errorpassword"));
         } else {
           setPasswordError('');
         }
@@ -44,7 +46,7 @@ const Trial = () => {
         const newEmail = e.target.value;
         setEmail(newEmail);
         if (!validateEmail(newEmail)) {
-          setEmailError("Veuillez entrer une adresse email valide.");
+          setEmailError(t("landing_page.trial.erroremail"));
         } else {
           setEmailError('');
         }
@@ -75,11 +77,11 @@ const Trial = () => {
           navigate('/analytics');
         } catch (error) {
           if (error.response && error.response.status === 401) {
-            setError('Invalid email or password');
+            setError(t("landing_page.trial.error401"));
           } else if (error.response && error.response.status === 404) {
-            setError('Email already in use, please try to login');
+            setError(t("landing_page.trial.erroremailused"));
           } else {
-            setError('An error occurred. Please try again later.');
+            setError(t("landing_page.trial.errorglobal"));
           }
         }
       };
@@ -94,52 +96,52 @@ const Trial = () => {
                     <span className="company-name">{COMPANY_NAME}</span>
                 </div>
                 <Link to="/login">
-                    <button className="account-button">Mon compte</button>
+                    <button className="account-button">{t("landing_page.header.myaccount")}</button>
                 </Link>
             </header>
             <section className="trial-form-section">
-                <h2>Testez gratuitement pendant 7 jours</h2>
+                <h2>{t("landing_page.trial.trialtitle")}</h2>
                 <form className="trial-form"  onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Prénom</label>
+                            <label>{t("overall.surname")}</label>
                             <input 
                                 type="text" 
                                 value={surname}
-                                placeholder="Votre prenom"
+                                placeholder={t("overall.surname")}
                                 onChange={(e) => setSurname(e.target.value)}
                                 required 
                             />
                         </div>
                         <div className="form-group">
-                            <label>Nom</label>
+                            <label>{t("overall.name")}</label>
                             <input 
                                 type="text" 
                                 value={username}
-                                placeholder="Votre nom"
+                                placeholder={t("overall.name")}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required 
                             />
                         </div>
                     </div>
                     <div className="form-group">
-                        <label>Email professionnel</label>
+                        <label>{t("landing_page.trial.emailpro")}</label>
                         <input 
                             type="email"
                             value={email}
                             onChange={handleEmailChange}
-                            placeholder="Entrez votre email"
+                            placeholder={t("overall.email")}
                             required
                         />
                         {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
                     </div>
                     <div className="form-group">
-                        <label>Mot de passe (8 caractères minimum, 1 majuscule et 1 caractère spécial)</label>
+                        <label>{t("landing_page.trial.passwordtitle")}</label>
                         <input 
                             type="password"
                             value={password}
                             onChange={handlePasswordChange}
-                            placeholder="Entrez votre Mot de passe"
+                            placeholder={t("overall.password")}
                             required
                         />
                         {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
@@ -150,22 +152,22 @@ const Trial = () => {
                             value={metier}
                             onChange={(e) => setMetier(e.target.value)}
                             required>
-                                <option value="">Sélectionnez...</option>
-                                <option value="independent">Particulier</option>
-                                <option value="expert">Expert</option>
-                                <option value="commissaire">Commissaire priseur</option>
-                                <option value="insurance">Assureur</option>
-                                <option value="student">Étudiant</option>
-                                <option value="other">Autre</option>
+                                <option value="">{t("landing_page.trial.selectoption")}</option>
+                                <option value="independent">{t("landing_page.trial.optionindependent")}</option>
+                                <option value="expert">{t("landing_page.trial.optionexpert")}</option>
+                                <option value="commissaire">{t("landing_page.trial.optioncommissaire")}</option>
+                                <option value="insurance">{t("landing_page.trial.optioninsurer")}</option>
+                                <option value="student">{t("landing_page.trial.optionstudent")}</option>
+                                <option value="other">{t("landing_page.trial.otheroption")}</option>
                         </select>
                     </div>
                     {metier === 'other' && (
                     <div className="form-group">
-                        <label>Autre Métier</label>
+                        <label>{t("landing_page.trial.otherjobtitle")}</label>
                         <input
                             type="text"
                             value={otherJob}
-                            placeholder="Précisez votre métier"
+                            placeholder={t("landing_page.trial.otherjobplaceholder")}
                             onChange={(e) => setOtherJob(e.target.value)}
                             required
                         />
@@ -173,22 +175,22 @@ const Trial = () => {
                     )}
                     <div className="form-group checkbox-group">
                         <label>
-                            <p>Nous collectons l’ensemble de ces informations pour vous créer un compte puis ajuster les fonctionnalités pour vous proposer les meilleurs services. Pour en savoir plus et connaître vos droits (accès, rectification, effacement, opposition, etc.), vous pouvez lire les conditions générales d'utilisation. La soumission du formulaire d’inscription sera considérée comme valant consentement de votre part à l’utilisation des informations collectées.</p>
+                            <p>{t("landing_page.trial.explanationwhycollect")}</p>
                             <div className="checkbox-container">
                                 <input type="checkbox" required />
                                 <span>
-                                    J'accepte les <Link to="/terms">conditions générales d'utilisation</Link> et les <Link to="/cgv">conditions générales de vente</Link>.
+                                {t("landing_page.trial.accept")}<Link to="/terms">{t("landing_page.trial.cgu")}</Link>{t("landing_page.trial.and")}<Link to="/cgv">{t("landing_page.trial.cgv")}</Link>.
                                 </span>
                             </div>
                         </label>
                     </div>
-                    <button type="submit" className="trial-button" disabled={passwordError || emailError}>Commencer mon essai gratuit</button>
+                    <button type="submit" className="trial-button" disabled={passwordError || emailError}>{t("overall.starttrial")}</button>
                 </form>
                 {message && <p className="message">{message}</p>}
                 {error && <p className="error">{error}</p>}
                 <hr className="login-delimiter" />
                 <div className='login-trial'>
-                    <p>Déjà inscrit ? <Link to="/login">connectez-vous à votre compte</Link>.</p>
+                    <p>{t("overall.alreadyenrolled")} <Link to="/login">{t("overall.pleaseconnect")}</Link>.</p>
                 </div>
             </section>
         </div>

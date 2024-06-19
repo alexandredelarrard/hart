@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import HeaderWhite from "./Header_white.js";
 import '../../css/ContactUs.css';
 
-const ContactUs = () => {
+const ContactUs = ({t}) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -23,27 +23,27 @@ const ContactUs = () => {
 
     return (
         <div>
-        <HeaderWhite/>
+        <HeaderWhite t={t}/>
         <section className="contact-us-container">
-            <h2>Contact Us</h2>
+            <h2>{t("overall.contactus")}</h2>
             <form className="contact-us-form" onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label>Name</label>
+                    <label>{t("overall.name")}</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} required />
                 </div>
                 <div className="form-group">
-                    <label>Email</label>
+                    <label>{t("overall.email")}</label>
                     <input type="email" name="email" value={formData.email} onChange={handleChange} required />
                 </div>
                 <div className="form-group">
-                    <label>Subject</label>
+                    <label>{t("landing_page.contactus.subject")}</label>
                     <input type="text" name="subject" value={formData.subject} onChange={handleChange} required />
                 </div>
                 <div className="form-group">
-                    <label>Message</label>
+                    <label>{t("landing_page.contactus.message")}</label>
                     <textarea name="message" value={formData.message} onChange={handleChange} required></textarea>
                 </div>
-                <button type="submit" className="contact-us-button">Send Message</button>
+                <button type="submit" className="contact-us-button">{t("landing_page.contactus.sendmessage")}</button>
             </form>
         </section>
     </div>

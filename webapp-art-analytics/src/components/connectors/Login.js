@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import HeaderWhite from "../landing_page/Header_white.js";
 import { useNavigate } from 'react-router-dom';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
-import {login, checkAuth, logout} from '../../hooks/general/identification.js';
+import {login, checkAuth} from '../../hooks/general/identification.js';
 import LoginElement from './LoginElement.js';
 import '../../css/Login.css';
 
-function Login() {
+function Login({t}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -31,11 +31,11 @@ function Login() {
       
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        setError('Invalid email or password');
+        setError(t("landing_page.trial.error401"));
       } else if (error.response && error.response.status === 404) {
-        setError('Email not found');
+        setError(t("landing_page.trial.erroremailnotfound"));
       } else {
-        setError('An error occurred. Please try again later.');
+        setError(t("landing_page.trial.errorglobal"));
       }
     }
   };
@@ -53,7 +53,7 @@ function Login() {
 
   return (
     <div>
-      <HeaderWhite/>
+      <HeaderWhite t={t}/>
       <div className="login-container">
         <LoginElement
           handleSubmit={handleSubmit}
@@ -63,6 +63,7 @@ function Login() {
           message={message}
           setEmail={setEmail}
           setPassword={setPassword}
+          t={t}
         />
       </div>
     </div>

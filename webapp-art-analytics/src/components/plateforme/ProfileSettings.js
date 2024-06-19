@@ -1,18 +1,18 @@
 import React, { useState} from 'react';
 import axios from 'axios';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
-import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import HeaderPlateforme from "./utils/HeaderPlateforme.js";
 import PaymentTable from "../plateforme/utils/PaymentTable.js"
 import {URL_API, URL_UPDATE_PROFILE} from "../../utils/constants.js";
 import useFetchPayments from '../../hooks/plateforme/useFetchPayments.js';
 
 import '../../css/ProfileSettings.css';
 
-function BillingSettings({payments}) {
+function BillingSettings({payments, t}) {
 
   return (
     <div className="my-payment-section">
-      <h2>Billing Settings</h2>
+      <h2>{t("plateforme.profilesettings.billingtitle")}</h2>
       <div className="plans">
         <div className="">
             <PaymentTable 
@@ -24,7 +24,7 @@ function BillingSettings({payments}) {
   );
 }
 
-function ProfileSettings({handleMenuClick}) {
+function ProfileSettings({handleMenuClick, t}) {
   const [userData, setUserData] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState('');
@@ -36,7 +36,8 @@ function ProfileSettings({handleMenuClick}) {
   const [payments, setPayments] = useState([]);
   const LogActivity = useLogActivity();
 
-  useFetchPayments(setUserData, setName, setSurname, setAddress, setEmailValidated, setValidationDate, setPayments);
+  useFetchPayments(setUserData, setName, setSurname, setAddress, 
+    setEmailValidated, setValidationDate, setPayments);
 
   const handleEditToggle = () => {
     setEditMode(!editMode);
@@ -59,23 +60,23 @@ function ProfileSettings({handleMenuClick}) {
         handleMenuClick={handleMenuClick}
       />
       <div className="menu-bar">
-        <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => {setActiveTab('profile'); LogActivity("click_profile_menu", "")}}>Profile</button>
-        <button className={activeTab === 'billing' ? 'active' : ''} onClick={() => {setActiveTab('billing'); LogActivity("click_billing_menu", "")}}>Billing</button>
+        <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => {setActiveTab('profile'); LogActivity("click_profile_menu", "")}}>{t("plateforme.profilesettings.profilebutton")}</button>
+        <button className={activeTab === 'billing' ? 'active' : ''} onClick={() => {setActiveTab('billing'); LogActivity("click_billing_menu", "")}}>{t("plateforme.profilesettings.billingbutton")}</button>
       </div>
       <div className='profile-container'>
       {activeTab === 'profile' && (
         <div >
           <div className="profile-section">
-            <h2>Account Settings</h2>
+            <h2>{t("plateforme.profilesettings.profiletitle")}</h2>
             <div className="profile-item">
-              <label>Email:</label>
+              <label>{t("overall.email")}:</label>
               <span>{userData.email}</span>
               <span className={`validation-status ${emailValidated ? 'validated' : 'not-validated'}`}>
-                {emailValidated ? `Validated on ${new Date(validationDate).toLocaleDateString()}` : 'Not validated'}
+                {emailValidated ? `${t("plateforme.profilesettings.validatedemail")} ${new Date(validationDate).toLocaleDateString()}` : t("plateforme.profilesettings.notvalidatedemail")}
               </span>
             </div>
             <div className="profile-item">
-              <label>Name:</label>
+              <label>{t("overall.name")}:</label>
               {editMode ? (
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
               ) : (
@@ -83,7 +84,7 @@ function ProfileSettings({handleMenuClick}) {
               )}
             </div>
             <div className="profile-item">
-              <label>Surname:</label>
+              <label>{t("overall.surname")}:</label>
               {editMode ? (
                 <input type="text" value={surname} onChange={(e) => setSurname(e.target.value)} />
               ) : (
@@ -91,7 +92,7 @@ function ProfileSettings({handleMenuClick}) {
               )}
             </div>
             <div className="profile-item">
-              <label>Address:</label>
+              <label>{t("overall.address")}:</label>
               {editMode ? (
                 <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
               ) : (
@@ -99,20 +100,20 @@ function ProfileSettings({handleMenuClick}) {
               )}
             </div>
             <div className="profile-item">
-              <label>Creation Date:</label>
+              <label>{t("overall.creationdate")}:</label>
               <span>{new Date(userData.creation_date).toLocaleDateString()}</span>
             </div>
             <div className="profile-actions">
               {editMode ? (
-                <button onClick={handleSave}>Save</button>
+                <button onClick={handleSave}>{t("plateforme.profilesettings.save")}</button>
               ) : (
-                <button onClick={handleEditToggle}>Edit</button>
+                <button onClick={handleEditToggle}>{t("plateforme.profilesettings.edit")}</button>
               )}
             </div>
           </div>
         </div>
       )}
-      {activeTab === 'billing' && <BillingSettings payments={payments}/>}
+      {activeTab === 'billing' && <BillingSettings payments={payments} t={t}/>}
       </div>
     </div>
   );

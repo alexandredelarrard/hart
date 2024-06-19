@@ -3,21 +3,23 @@ import Cookies from 'js-cookie';
 import '../../utils/utils_knn';
 import { CARDS_PER_PAGE } from '../../utils/constants';
 
-import '../../css/UploadForm.css';
 import SearchForm from "./utils/SearchForm.js";
 import Pagination from './utils/Pagination.js';
 import Sorting from './utils/Sorting.js';
 import Filtering from './utils/Filtering.js';
-import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
-import CookieConsent from '../landing_page/CookieConsent.js';
 import ExpertCard from './utils/ExpertCard.js';
 import Card from './utils/Card';
+import HeaderPlateforme from "./utils/HeaderPlateforme.js";
+
+import CookieConsent from '../landing_page/CookieConsent.js';
 
 import useFetchComplentaryResultData from '../../hooks/plateforme/useFetchComplentaryResultData.js';
 import useGetTaskResult from '../../hooks/plateforme/useGetTaskResult.js';
 import useFetchExperts from "../../hooks/plateforme/useFetchExperts.js";
 import useNewSearchSubmit from '../../hooks/plateforme/useNewSearchSubmit.js';
 import useLLMDesignation from '../../hooks/plateforme/useLLMDesignation.js';
+
+import '../../css/UploadForm.css';
 
 function UploadForm({
   setFile,
@@ -54,6 +56,7 @@ function UploadForm({
   maxPrice,
   minDate,
   maxDate,
+  t
 }) {
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -209,6 +212,7 @@ function UploadForm({
         handleSearchTextChange={handleSearchTextChange}
         handleSearchSubmit={handleSearchSubmit}
         handleMenuClick={handleMenuClick}
+        t={t}
       />
       <div className="result-container">
         <div className="summary-area">
@@ -219,19 +223,19 @@ function UploadForm({
               </div>
               <div className="middle">
                 <div className="part-header common-title">
-                  <h2>Estimation proposée</h2>
+                  <h2>{t("plateforme.uploadform.summarytitle")}</h2>
                 </div>
-                {text && <div> <strong>Specification:</strong>: {text}</div>}
+                {text && <div> <strong>{t("plateforme.uploadform.specification")}</strong>: {text}</div>}
                 {botresult &&
                   <>
-                    <p><strong>Titre:</strong> {botresult.french_title}</p>
-                    <p><strong>Designation:</strong> {botresult.french_description}</p>
+                    <p><strong>{t("plateforme.uploadform.title")}:</strong> {botresult.french_title}</p>
+                    <p><strong>{t("plateforme.uploadform.designation")}:</strong> {botresult.french_description}</p>
                   </>
                 }
                 {result &&
                   <div className="card-footer-summary">
-                    <span className="card-price"><strong>Estimation:</strong> {avgMinEstimates}-{avgMaxEstimates} €</span>
-                    <span className="card-result"><strong>Prix Final potentiel:</strong> {avgFinalResult} €</span>
+                    <span className="card-price"><strong>{t("plateforme.uploadform.estimationprice")}:</strong> {avgMinEstimates}-{avgMaxEstimates} €</span>
+                    <span className="card-result"><strong>{t("plateforme.uploadform.finalprice")}:</strong> {avgFinalResult} €</span>
                   </div>
                 }
               </div>
@@ -241,7 +245,7 @@ function UploadForm({
             <div className="part-content">
               <div className="middle">
                 <div className="part-header common-title">
-                  <h2>Les Experts à proximité</h2>
+                  <h2>{t("plateforme.uploadform.experttitle")}</h2>
                 </div>
                 <div className="experts-list">
                   {result && experts.map((expert, index) => (
@@ -261,14 +265,16 @@ function UploadForm({
                 currentPage={currentPage}
                 handlePageChange={handlePageChange}
                 showAll={showAll}
-                toggleShowAll={toggleShowAll}/>
+                toggleShowAll={toggleShowAll}
+                t={t}/>
                <div className='sorting-container'>
                   <Sorting
                     sortOrder={sortOrder}
                     handleSortChange={handleSortChange}
                     dropdownOpen={dropdownOpen}
                     setDropdownOpen={setDropdownOpen}
-                    sortRef={sortRef}/>
+                    sortRef={sortRef}
+                    t={t}/>
                   <Filtering
                     filterOpen={filterOpen}
                     setFilterOpen={setFilterOpen}
@@ -278,12 +284,13 @@ function UploadForm({
                     minDate={minDate}
                     maxDate={maxDate}
                     handleDateFilter={handleDateFilter}
-                    filterRef={filterRef}/>
+                    filterRef={filterRef}
+                    t={t}/>
                 </div>
             </div>
             <div className="card-container">
               {paginatedData.map((item, index) => (
-                <Card key={index} item={item} />
+                <Card key={index} item={item} t={t} />
               ))}
             </div>
             <div className="pagination-container">
@@ -292,14 +299,15 @@ function UploadForm({
                 currentPage={currentPage}
                 handlePageChange={handlePageChange}
                 showAll={showAll}
-                toggleShowAll={toggleShowAll}/>
+                toggleShowAll={toggleShowAll}
+                t={t}/>
             </div>
           </div>
         ) : (
           <></>
         )}
       </div>
-      <CookieConsent />
+      <CookieConsent t={t}/>
     </div>
   );
 }

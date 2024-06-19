@@ -8,40 +8,41 @@ function LoginElement({
     error,
     message,
     setEmail,
-    setPassword
+    setPassword,
+    t
 }) {
  
   return (
         <div className="login-form">
-          <h2>Login</h2>
+          <h2>{t("landing_page.login.title")}</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Email:</label>
+              <label>{t("overall.email")}:</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("overall.email")}
                 required
               />
             </div>
             <div className="form-group">
-              <label>Password:</label>
+              <label>{t("overall.password")}:</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder={t("overall.password")}
                 required
               />
             </div>
-            <button type="submit" className="login-button">Login</button>
+            <button type="submit" className="login-button">{t("landing_page.login.loginbutton")}</button>
           </form>
           {message && <p className="message">{message}</p>}
           {error && <p className="error">{error}</p>}
           <hr className="login-delimiter" />
           <div className='login-trial'>
-            <p><Link to="/reset-password">Mot de passe oublié ?</Link> | Pas encore inscrit, <Link to="/trial">Essayez gratuitement</Link> </p>
+            <p><Link to="/reset-password">{t("landing_page.login.forgottenpassword")}</Link> | {t("landing_page.login.notyetenrolled")} <Link to="/trial">{t("overall.starttrial")}</Link></p>
           </div>
         </div>
   );

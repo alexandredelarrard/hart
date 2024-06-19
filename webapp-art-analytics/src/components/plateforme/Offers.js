@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import HeaderPlateforme from "../landing_page/HeaderPlateforme.js";
+import HeaderPlateforme from "./utils/HeaderPlateforme.js";
 import Pricing from '../landing_page/Pricing.js';
 
 import '../../css/ProfileSettings.css';
 
-function Offers({handleMenuClick}) {
+function Offers({handleMenuClick, t}) {
   const [activePlan, setActivePlan] = useState('individual_plan');
   const [closestQueries, setclosestQueries] = useState('');
   const [remainingDays, setremainingDays] = useState('');
@@ -52,6 +52,7 @@ function Offers({handleMenuClick}) {
                     activePlan={activePlan}
                     remainingDays={remainingDays}
                     closestQueries={closestQueries}
+                    t={t}
                 />
             </div>
         </div>

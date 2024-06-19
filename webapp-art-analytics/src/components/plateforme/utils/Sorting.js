@@ -9,12 +9,13 @@ const Sorting = ({
   handleSortChange,
   dropdownOpen,
   setDropdownOpen,
-  sortRef
+  sortRef,
+  t
 }) => (
     <div className="sort-filter-container">
       <div className="sort-buttons" ref={sortRef}>
         <button onClick={() => setDropdownOpen(!dropdownOpen)} className="dropbtn">
-          <FontAwesomeIcon icon={faSort} /> Trier
+          <FontAwesomeIcon icon={faSort} /> {t("plateforme.sorting.sorttitle")}
         </button>
         {dropdownOpen && (
           <div className="dropdown-content">
@@ -22,37 +23,37 @@ const Sorting = ({
               onClick={() => handleSortChange('relevance_desc')}
               className={`sort-button ${sortOrder === 'relevance_desc' ? 'active' : ''}`}
             >
-              <FontAwesomeIcon icon={faMapMarkerAlt} /> Relevance (High to Low)
+              <FontAwesomeIcon icon={faMapMarkerAlt} /> {t("plateforme.sorting.relevancedecreasing")}
             </button>
             <button
               onClick={() => handleSortChange('relevance_asc')}
               className={`sort-button ${sortOrder === 'relevance_asc' ? 'active' : ''}`}
             >
-              <FontAwesomeIcon icon={faMapMarkerAlt} /> Relevance (Low to High)
+              <FontAwesomeIcon icon={faMapMarkerAlt} /> {t("plateforme.sorting.relevanceincreasing")}
             </button>
             <button
               onClick={() => handleSortChange('price_desc')}
               className={`sort-button ${sortOrder === 'price_desc' ? 'active' : ''}`}
             >
-              <FontAwesomeIcon icon={faDollarSign} />  Price (High to Low)
+              <FontAwesomeIcon icon={faDollarSign} /> {t("plateforme.sorting.pricedecreasing")}
             </button>
             <button
               onClick={() => handleSortChange('price_asc')}
               className={`sort-button ${sortOrder === 'price_asc' ? 'active' : ''}`}
             >
-              <FontAwesomeIcon icon={faDollarSign} /> Price (Low to High)
+              <FontAwesomeIcon icon={faDollarSign} /> {t("plateforme.sorting.priceincreasing")}
             </button>
             <button
               onClick={() => handleSortChange('date_desc')}
               className={`sort-button ${sortOrder === 'date_desc' ? 'active' : ''}`}
             >
-              <FontAwesomeIcon icon={faCalendarAlt} /> Date (High to Low)
+              <FontAwesomeIcon icon={faCalendarAlt} /> {t("plateforme.sorting.datedecreasing")}
             </button>
             <button
               onClick={() => handleSortChange('date_asc')}
               className={`sort-button ${sortOrder === 'date_asc' ? 'active' : ''}`}
             >
-              <FontAwesomeIcon icon={faCalendarAlt} /> Date (Low to High)
+              <FontAwesomeIcon icon={faCalendarAlt} /> {t("plateforme.sorting.dateincreasing")}
             </button>
           </div>
         )}

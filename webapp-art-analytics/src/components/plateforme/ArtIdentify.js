@@ -1,6 +1,6 @@
 import React from 'react';
 
-function ArtIdentify() {
+function ArtIdentify({t}) {
   return (
     <div className="upload-form-container">
       <h2>Authentify Your Art Piece</h2>

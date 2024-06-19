@@ -1,0 +1,337 @@
+{
+  "overall": {
+    "name": "Your Name",
+    "surname": "Your Surname",
+    "email": "Your Email",
+    "address": "Your Address",
+    "password": "Your Password",
+    "creationdate": "Profile Creation Date",
+    "enroll": "Subscribe",
+    "contactus": "Contact Us",
+    "startnow": "Try Now",
+    "currentplan": "My Current Plan",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "currency": "€",
+    "pleaseconnect": "Please Log in to Your Account",
+    "alreadyenrolled": "Already Enrolled?",
+    "starttrial": "Start Free Trial"
+  },
+  "plateforme": {
+    "header": {
+      "myprofile": "My Profile",
+      "myoffers": "Subscribe"
+    },
+    "sidebar": {
+      "logout": "Log Out",
+      "optimize": "Optimize Your Sale",
+      "closest": "Automatic Estimation",
+      "search": "Search Your Artworks",
+      "deleteconfirm": "Are you sure you want to delete the item",
+      "defaultusername": "User",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "lastweek": "Last Week",
+      "lastmonth": "Last Month",
+      "older": "Older"
+    },
+    "uploadform": {
+      "summarytitle": "Proposed Estimation",
+      "specification": "Additional Information",
+      "title": "Title",
+      "designation": "Designation",
+      "estimationprice": "Estimation",
+      "finalprice": "Final Price",
+      "experttitle": "Experts Nearby"
+    },
+    "searchart": {
+      "searchtitle": "Find Your Artworks with One Click",
+      "searchdesc": "TODO"
+    },
+    "optimize": {
+      "optimizetitle": "Optimize Your Sales and Boost Your Revenue",
+      "optimizedesc": "TODO"
+    },
+    "artidentify": {},
+    "profilesettings": {
+      "profilebutton": "Profile",
+      "billingbutton": "Payments",
+      "profiletitle": "My Profile",
+      "billingtitle": "My Payments",
+      "save": "Save",
+      "edit": "Edit",
+      "notvalidatedemail": "To be verified",
+      "validatedemail": "Verified on"
+    },
+    "filtering": {
+      "filtertitle": "Filter",
+      "pricetitle": "Price",
+      "minprice": "Min Price",
+      "maxprice": "Max Price",
+      "datetitle": "Date",
+      "mindate": "Min Date",
+      "maxdate": "Max Date"
+    },
+    "pagination": {
+      "showall": "Show All",
+      "showpages": "Per Page"
+    },
+    "paymenttable": {
+      "nopaymentavailable": "You haven't subscribed to an offer yet."
+    },
+    "sorting": {
+      "sorttitle": "Sort",
+      "relevancedecreasing": "Relevance (High to Low)",
+      "relevanceincreasing": "Relevance (Low to High)",
+      "pricedecreasing": "Price (High to Low)",
+      "priceincreasing": "Price (Low to High)",
+      "datedecreasing": "Date (High to Low)",
+      "dateincreasing": "Date (Low to High)"
+    },
+    "search": {
+      "dropzonedesc": "Drag or select the image",
+      "textareadesc": "Object description...",
+      "errorplanexpired": "Your plan has expired, please ",
+      "errorsearchclosevolume": "You have reached your search quota, please ",
+      "upgradebutton": "Upgrade My Plan"
+    }
+  },
+  "landing_page": {
+    "firmpresentation": {
+      "bluesupertitle": "First Platform",
+      "supertitle": "of Artificial Intelligence in the Service of Art.",
+      "supertitledesc": "puts AI at the service of art professionals. Expertly analyze, adjust your estimation, and increase your creativity!"
+    },
+    "footer": {
+      "producttitle": "Our Products",
+      "search": "Search History",
+      "estimate": "Automatic Estimation",
+      "optimize": "Sales Optimization",
+      "authentification": "Authentication",
+      "offers": "Our Offers",
+      "legal": "Legal",
+      "about": "About {COMPANY_NAME}",
+      "team": "Our Team",
+      "community": "Community",
+      "reviews": "Testimonials",
+      "blog": "Our Blog",
+      "references": "References"
+    },
+    "header": {
+      "myaccount": "My Account",
+      "blog": "Blog",
+      "products": "Products",
+      "offers": "Offers"
+    },
+    "pricing": {
+      "pricingtitle": "Offers Tailored to Your Needs",
+      "newoffertitle": "The New",
+      "newofferdesc": "Free trial for 7 days to familiarize yourself with the features of",
+      "passionatetitle": "The Passionate",
+      "passionatedesc": "Ideal for art enthusiasts curious about an artist or the value of a work.",
+      "experttitle": "Businesses or Experts",
+      "expertdesc": "Businesses or experts with significant needs requiring a bespoke offer.",
+      "newcriterion1": "Up to 100 searches",
+      "newcriterion2": "40 estimations",
+      "newcriterion3": "Valid for 7 days",
+      "passionatecriterion1": "Unlimited searches",
+      "passionatecriterion2": "200 estimations/month",
+      "passionatecriterion3": "",
+      "expertcriterion1": "Unlimited queries",
+      "expertcriterion2": "Dedicated estimation limit",
+      "expertcriterion3": "Sales support",
+      "expertcriterion4": "Bespoke authentication",
+      "monthlypricepassion": "19",
+      "yearlypricepassion": "199",
+      "remainingdays": "Remaining days of your plan",
+      "remainingclosequeries": "Remaining query quota"
+    },
+    "infoband": {
+      "title": "Who Our Solution Is For",
+      "passionates": "1. The Enthusiasts",
+      "passionatedesc": "Individuals curious about the art world, having artworks to appraise, in the context of an acquisition or inheritance.",
+      "experts": "2. Art Experts",
+      "expertdesc": "Experts wanting to evaluate an artwork, share references with clients, or simply cross-check their estimation in seconds.",
+      "commissaires": "3. Auctioneers",
+      "commissairedesc": "Auctioneers organizing sales for any art object, wanting to validate the estimates of their sale and then organize it in the best way."
+    },
+    "payment": {
+      "title": "Payment Details",
+      "cardnumbertitle": "Card Number",
+      "cardnumberdesc": "Enter your card number",
+      "cardownertitle": "Name on Card",
+      "cardownerdesc": "Enter your name",
+      "expirydatetitle": "Expiry Date",
+      "paynow": "Pay Now"
+    },
+    "product": {
+      "supertitle": "A Platform to Unleash the Potential of Data, Art, and AI",
+      "superdesc": "The art market is decentralized. Traditional tools are no longer sufficient. Only artificial intelligence allows you to quickly contextualize an artwork, compare it to recent global sales, interpret its valuation, and optimize your sale.",
+      "titleautomatiestim": "Automatically Estimate Your Artworks",
+      "descautomatiestim": "Search by submitting a simple image or detailed description, AI will find the corresponding pieces and associated prices.",
+      "pain1automatiestim": "No clear estimation",
+      "pain2automatiestim": "Long estimation by manual search",
+      "pain3automatiestim": "No explanation on past prices",
+      "pain4automatiestim": "No personalized workspace",
+      "sol1automatiestim": "Precise and interpretable automatic estimation",
+      "sol2automatiestim": "Estimation in seconds",
+      "sol3automatiestim": "Past prices explained by geolocation, date, etc.",
+      "sol4automatiestim": "Dedicated, historized workspace",
+      "titlesearch": "Intelligently Search Your Artworks in Over 10 Million Articles",
+      "descsearch": "Search for all artworks by an artist, or any artwork similar to yours using fine criteria.",
+      "pain1search": "Limited keyword search",
+      "pain2search": "Slow iterative search",
+      "pain3search": "No trend analysis",
+      "pain4search": "Limited data",
+      "sol1search": "Search by image and/or text",
+      "sol2search": "Search by fine criteria, material, dimensions, etc.",
+      "sol3search": "Trend analysis, artist revenue, and more",
+      "sol4search": "Data updated every 24 hours",
+      "titleoptim": "Maximize Your Sales Revenue",
+      "descoptim": "Thanks to our optimization engine, you can now optimize the organization of your lots within the sale to best sell each lot while minimizing the number of unsold lots.",
+      "pain1optim": "Manual lot distribution",
+      "pain2optim": "Significant volume of unsold lots",
+      "pain3optim": "Limited view of your sale's potential",
+      "pain4optim": "No sales tracking tool",
+      "sol1optim": "Sales organization tool to maximize your revenue",
+      "sol2optim": "Minimization of unsold lots",
+      "sol3optim": "Statistical estimation of what your sale would yield",
+      "sol4optim": "Optimizer adjustment based on your past sales results",
+      "buttonknowmore": "Learn More..."
+    },
+    "terms": {
+      "supertitle": "Terms and Conditions of Use",
+      "title1": "1. Introduction",
+      "desc1": "These Terms and Conditions of Use (hereinafter \"Terms\") govern the access and use of the art analysis platform (hereinafter \"the Platform\"). By using the Platform, you agree to be bound by these Terms.",
+      "title2": "2. Intellectual Property",
+      "desc2": "All content available on the Platform, including but not limited to text, images, graphics, logos, icons, and software, are protected by intellectual property rights and are the exclusive property of {COMPANY_NAME} or its licensors. Any reproduction, distribution, modification, or use of these contents without prior written authorization from {COMPANY_NAME} is strictly prohibited.",
+      "title3": "3. Personal Data Protection (GDPR)",
+      "desc3": "By using the Platform, you consent to the collection and processing of your personal data in accordance with the General Data Protection Regulation (GDPR). We are committed to protecting your privacy and ensuring the security of your personal data.",
+      "title4": "3.1 Data Collected",
+      "desc4": "We collect the following information:",
+      "item1": "Identification data (name, email address, etc.)",
+      "item2": "Connection data (IP address, browser type, etc.)",
+      "item3": "Browsing data on the Platform",
+      "title5": "3.2 Use of Data",
+      "desc5": "The collected data is used to:",
+      "item4": "Provide and improve our services",
+      "item5": "Personalize your user experience",
+      "item6": "Respond to your requests and contact you",
+      "item7": "Comply with our legal obligations",
+      "title6": "3.3 User Rights",
+      "desc6": "In accordance with the applicable regulations, you have the following rights regarding your personal data:",
+      "item8": "Right of access",
+      "item9": "Right of rectification",
+      "item10": "Right to erasure",
+      "item11": "Right to restriction of processing",
+      "item12": "Right to data portability",
+      "item13": "Right to object",
+      "desc6sup": "To exercise your rights, please",
+      "contact": "contact us",
+      "title7": "4. Use of the Platform",
+      "desc7": "You agree to use the Platform in accordance with the laws and regulations in force, as well as these Terms. It is prohibited to use the Platform for illegal, harmful, or fraudulent purposes.",
+      "title8": "5. Liability",
+      "desc8": "{COMPANY_NAME} strives to provide accurate and up-to-date information on the Platform, but cannot guarantee the accuracy, completeness, or timeliness of the information provided. {COMPANY_NAME} shall not be held liable for any direct or indirect damages resulting from the use of the Platform.",
+      "title9": "6. Modifications to the Terms",
+      "desc9": "{COMPANY_NAME} reserves the right to modify these Terms at any time. The modifications will take effect upon their publication on the Platform. It is your responsibility to regularly review the Terms to stay informed of any changes.",
+      "title10": "7. Governing Law and Jurisdiction",
+      "desc10": "These Terms are governed by French law. Any dispute related to the interpretation or execution of these Terms will be subject to the exclusive jurisdiction of the French courts.",
+      "title11": "8. Contact",
+      "desc11": "For any questions regarding these Terms, you can"
+    },
+    "testimonials": {},
+    "trial": {
+      "errorpassword": "The password must contain at least 8 characters, 1 uppercase letter, and 1 special character.",
+      "erroremail": "Please enter a valid email address.",
+      "error401": "Invalid email or password",
+      "erroremailnotfound": "Email not found",
+      "erroremailused": "Email already used, please try logging in.",
+      "errorglobal": "An error occurred. Please try again later.",
+      "trialtitle": "Try Free for 7 Days",
+      "emailpro": "Professional Email",
+      "passwordtitle": "Password (minimum 8 characters, 1 uppercase letter, and 1 special character)",
+      "selectoption": "Select...",
+      "optionindependent": "Individual",
+      "optionexpert": "Expert",
+      "optioncommissaire": "Auctioneer",
+      "optioninsurer": "Insurer",
+      "optionstudent": "Student",
+      "option6": "",
+      "option7": "",
+      "otheroption": "Other",
+      "otherjobtitle": "Other Job Title",
+      "otherjobplaceholder": "Specify your job",
+      "explanationwhycollect": "We collect all this information to create your account and then adjust the features to offer you the best services. To learn more and understand your rights (access, rectification, deletion, opposition, etc.), you can read the terms and conditions. Submitting the registration form will be considered as your consent to the use of the collected information.",
+      "accept": "I accept the ",
+      "cgu": " terms and conditions ",
+      "and": " and the ",
+      "cgv": " terms of sale"
+    },
+    "login": {
+      "title": "Login",
+      "loginbutton": "Log In",
+      "forgottenpassword": "Forgotten Password?",
+      "notyetenrolled": "Not yet enrolled, "
+    },
+    "checkout": {
+      "messagegoodpauyment": "Payment successful",
+      "messagebadpauyment": "Payment failed. Please try again",
+      "menu1title": "1. Identify Yourself",
+      "menu2title": "2. Payment",
+      "menu3title": "3. Confirmation",
+      "confirmationtitle": "Payment Confirmation",
+      "confirmationdesc1": "Thank you for your trust! Your invoice should appear in your email inbox within a few minutes.",
+      "confirmationdesc2": "If you have not received a confirmation email after a few minutes, please contact support."
+    },
+    "about": {},
+    "advantages": {
+      "title": "Tangible Benefits Measured by Users."
+    },
+    "cgv": {
+      "supertitle": "Terms and Conditions of Sale",
+      "title1": "1. Introduction",
+      "desc1": "These Terms and Conditions of Sale (hereinafter \"Terms\") govern the sales of products and services made by {COMPANY_NAME} via the Platform. By placing an order on the Platform, you agree to these Terms.",
+      "title2": "2. Products and Services",
+      "desc2": "The descriptions, illustrations, and prices of the products and services offered on the Platform are as accurate as possible. However, {COMPANY_NAME} does not guarantee the absence of errors or modifications.",
+      "title3": "3. Orders",
+      "desc3": "Orders placed on the Platform are binding on the customer upon validation. {COMPANY_NAME} reserves the right to refuse any order for legitimate reasons.",
+      "title4": "4. Prices and Payment",
+      "desc4": "The prices of products and services are indicated in euros, all taxes included. Payment is required immediately upon ordering. The accepted payment methods are indicated on the Platform.",
+      "title5": "5. Delivery",
+      "desc5": "The products are delivered to the address provided at the time of ordering. Delivery times are indicative and may vary. {COMPANY_NAME} cannot be held responsible for delivery delays.",
+      "title6": "6. Withdrawal and Return",
+      "desc6": "In accordance with the Consumer Code, you have a 14-day period to exercise your right of withdrawal. Products must be returned in their original condition and return costs are the customer's responsibility.",
+      "title7": "7. Warranty",
+      "desc7": "Products benefit from the legal warranty of conformity and the warranty against hidden defects. In case of non-conformity or defect, you can return the products for repair, replacement, or refund.",
+      "title8": "8. Liability",
+      "desc8": "{COMPANY_NAME} cannot be held responsible for indirect damages resulting from the purchase of products or services on the Platform. {COMPANY_NAME}'s liability is limited to the amount of the order.",
+      "title9": "9. Governing Law and Jurisdiction",
+      "desc9": "These Terms are governed by French law. Any dispute related to the interpretation or execution of these Terms will be subject to the exclusive jurisdiction of the French courts.",
+      "title10": "10. Contact",
+      "desc10": "For any questions regarding these Terms, you can"
+    },
+    "contactus": {
+      "message": "Your Message",
+      "subject": "Message Subject",
+      "sendmessage": "Send Your Message"
+    },
+    "cookiesconsent": {
+      "desc": "We use cookies to optimize your experience on our platform. By accepting, you authorize us to use cookies.",
+      "learnmore": "Learn More",
+      "buttonaccept": "Accept All Cookies",
+      "buttondecline": "Accept Only Essential Cookies"
+    },
+    "confirmemail": {
+      "title": "Email Confirmed"
+    },
+    "resetpassword": {
+      "title": "Reset Your Password",
+      "sendlink": "Reset My Password"
+    },
+    "setnewpassword": {
+      "title": "Set a New Password",
+      "enternewpassword": "Enter Your New Password",
+      "newpasswordsend": "Confirm My Password"
+    }
+  }
+}

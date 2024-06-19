@@ -1,10 +1,11 @@
-export const organizeResults = (results) => {
+export const organizeResults = (results, t) => {
+  
   const organizedResults = {
-    "Today": [],
-    "Yesterday": [],
-    "Last Week": [],
-    "Last Month": [],
-    "Older": []
+    [t("plateforme.sidebar.today")]: [],
+    [t('plateforme.sidebar.yesterday')]: [],
+    [t('plateforme.sidebar.lastweek')]: [],
+    [t('plateforme.sidebar.lastmonth')]: [],
+    [t('plateforme.sidebar.older')]: []
   };
 
   const now = new Date();
@@ -18,15 +19,15 @@ export const organizeResults = (results) => {
     result.llm_result = JSON.parse(JSON.stringify(result.llm_result));
 
     if (differenceInDays <= 1) {
-      organizedResults["Today"].push(result);
+      organizedResults[t('plateforme.sidebar.today')].push(result);
     } else if (differenceInDays < 2) {
-      organizedResults["Yesterday"].push(result);
+      organizedResults[t('plateforme.sidebar.yesterday')].push(result);
     } else if (differenceInDays <= 7) {
-      organizedResults["Last Week"].push(result);
+      organizedResults[t('plateforme.sidebar.lastweek')].push(result);
     } else if (differenceInDays <= 30) {
-      organizedResults["Last Month"].push(result);
+      organizedResults[t('plateforme.sidebar.lastmonth')].push(result);
     } else {
-      organizedResults["Older"].push(result);
+      organizedResults[t('plateforme.sidebar.older')].push(result);
     }
   });
 

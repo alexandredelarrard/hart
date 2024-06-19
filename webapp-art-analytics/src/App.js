@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import './css/packages/bootstrap.min.css';
@@ -25,6 +26,8 @@ import ResetPassword from './components/connectors/ResetPassword';
 import SetNewPassword from './components/connectors/SetNewPassword';
 import Confirm from './components/connectors/Confirm';
 
+import './i18n';
+
 function App() {
   const [file, setFile] = useState(null);
   const [text, setText] = useState('');
@@ -44,6 +47,7 @@ function App() {
   const [maxPrice, setMaxPrice] = useState('');
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
+  const { t } = useTranslation();
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -54,6 +58,7 @@ function App() {
       case 'search-art':
         return <SearchArt 
                   handleMenuClick={handleMenuClick} 
+                  t={t}
               />;
       case 'closest-lots':
         return (
@@ -92,22 +97,28 @@ function App() {
             maxPrice={maxPrice}
             minDate={minDate}
             maxDate={maxDate}
+            t={t}
         />
         );
       case 'optimize-sale':
         return <OptimizeSale 
-                handleMenuClick={handleMenuClick} 
+                handleMenuClick={handleMenuClick}
+                t={t} 
               />;
       case 'authentify-art':
         return <ArtIdentify 
-                handleMenuClick={handleMenuClick} />;
+                handleMenuClick={handleMenuClick}
+                t={t}
+                />;
       case 'account-settings':
         return <ProfileSettings 
-                handleMenuClick={handleMenuClick} 
+                handleMenuClick={handleMenuClick}
+                t={t} 
                 />;
       case 'my-offers':
         return <Offers 
-                  handleMenuClick={handleMenuClick} 
+                  handleMenuClick={handleMenuClick}
+                  t={t} 
                 />;
       default:
         return null;
@@ -118,17 +129,17 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/trial" element={<Trial />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/cgv" element={<CGV />} />
-          <Route path="/enroll" element={<Checkout />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/confirm/:token" element={<Confirm />} />
-          <Route path="/set-new-password/:token" element={<SetNewPassword />} />
+          <Route path="/" element={<Home t={t}/>} />
+          <Route path="/login" element={<Login t={t}/>} />
+          <Route path="/trial" element={<Trial t={t}/>} />
+          <Route path="/contact" element={<ContactUs t={t}/>} />
+          <Route path="/about" element={<About t={t}/>} />
+          <Route path="/terms" element={<Terms t={t}/>} />
+          <Route path="/cgv" element={<CGV t={t}/>} />
+          <Route path="/enroll" element={<Checkout t={t}/>} />
+          <Route path="/reset-password" element={<ResetPassword t={t}/>} />
+          <Route path="/confirm/:token" element={<Confirm t={t}/>} />
+          <Route path="/set-new-password/:token" element={<SetNewPassword t={t}/>} />
           <Route
             path="/analytics"
             element={
@@ -152,6 +163,7 @@ function App() {
                   setMaxPrice={setMaxPrice}
                   setMinDate={setMinDate}
                   setMaxDate={setMaxDate}
+                  t={t}
                 />
                 {renderContent()}
               </div>
@@ -161,7 +173,7 @@ function App() {
             path="/analytics/card/:id"
             element={
                 <div style={{ display: 'flex' }}>
-                  <CardDetail />
+                  <CardDetail t={t}/>
                 </div>
             }
           />
