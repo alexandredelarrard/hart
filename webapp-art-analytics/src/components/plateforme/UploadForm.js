@@ -45,7 +45,15 @@ function UploadForm({
   setNewResultSaved,
   setExperts,
   experts,
-  handleMenuClick
+  handleMenuClick,
+  setMinPrice,
+  setMaxPrice,
+  setMinDate,
+  setMaxDate,
+  minPrice,
+  maxPrice,
+  minDate,
+  maxDate,
 }) {
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,10 +61,6 @@ function UploadForm({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [minDate, setMinDate] = useState('');
-  const [maxDate, setMaxDate] = useState('');
   const [planExpired, setPlanExpired] = useState(false);
   const [closestVolumeExpired, setclosestVolumeExpired] = useState(false);
   const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);

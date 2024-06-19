@@ -40,6 +40,10 @@ function App() {
   const [activeMenu, setActiveMenu] = useState('closest-lots');
   const [newResultSaved, setNewResultSaved] = useState(false);
   const [experts, setExperts] = useState([]);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minDate, setMinDate] = useState('');
+  const [maxDate, setMaxDate] = useState('');
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -80,6 +84,14 @@ function App() {
             experts={experts}
             setExperts={setExperts}
             handleMenuClick={handleMenuClick} 
+            setMinPrice={setMinPrice}
+            setMaxPrice={setMaxPrice}
+            setMinDate={setMinDate}
+            setMaxDate={setMaxDate}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            minDate={minDate}
+            maxDate={maxDate}
         />
         );
       case 'optimize-sale':
@@ -136,6 +148,10 @@ function App() {
                   setAvgFinalResult={setAvgFinalResult}
                   setAnalysisInProgress={setAnalysisInProgress}
                   newResultSaved={newResultSaved}
+                  setMinPrice={setMinPrice}
+                  setMaxPrice={setMaxPrice}
+                  setMinDate={setMinDate}
+                  setMaxDate={setMaxDate}
                 />
                 {renderContent()}
               </div>

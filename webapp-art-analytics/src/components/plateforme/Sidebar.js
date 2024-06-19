@@ -25,7 +25,11 @@ function Sidebar({
   setAvgMaxEstimates,
   setAvgMinEstimates,
   setAnalysisInProgress,
-  newResultSaved
+  newResultSaved,
+  setMinPrice,
+  setMaxPrice,
+  setMinDate,
+  setMaxDate
 }) {
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('closest-lots');
@@ -33,6 +37,18 @@ function Sidebar({
   const [formerResults, setFormerResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const LogActivity = useLogActivity();
+
+  useEffect(() => {
+    setResult(null);
+    setText('');
+    setFile(null);
+    setAdditionalData([]);
+    setBotResult(null);
+    setMinPrice('');
+    setMaxPrice('');
+    setMinDate('');
+    setMaxDate('');
+  }, [navigate]);
 
   //logout on click button
   const handleLogout = async () => {
@@ -119,7 +135,7 @@ function Sidebar({
   return (
     <aside className="sidebar">
       <div className="login-area">
-        <FontAwesomeIcon icon={faUserCircle} className="avatar"/>
+        <FontAwesomeIcon icon={faUserCircle} className="sidebar-avatar"/>
         <div className="user-info">
           <p className="user-name">{userData.name || 'User'}</p>
           <p className="user-name">{userData.surname || 'User'}</p>
