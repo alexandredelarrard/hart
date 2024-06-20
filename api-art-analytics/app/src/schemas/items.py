@@ -2,6 +2,7 @@ from src.extensions import db
 
 class AllItems(db.Model):
     __table__ = db.Model.metadata.tables['ALL_ITEMS']
+    __table_args__ = {'extend_existing': True}
 
     def to_dict(self):
         return {
@@ -20,14 +21,28 @@ class AllItems(db.Model):
             "title": self.ITEM_TITLE_DETAIL,
             "description": self.TOTAL_DESCRIPTION
         }
-    
 
 class AllPerItem(db.Model):
     __table__ = db.Model.metadata.tables['ALL_ITEMS_per_item']
-
+    __table_args__ = {'extend_existing': True}
     def to_dict(self):
         return {
             'id_item': self.ID_ITEM,
             'id_picture': self.ID_PICTURE,
+        }
+    
+    def to_dict_search(self):
+        return {
+            'id_item': self.ID_ITEM,
+            'id_picture': self.ID_PICTURE,
+            'title': self.ITEM_TITLE_DETAIL,
+            'description': self.TOTAL_DESCRIPTION,
+            'estimate_min': self.EUR_MIN_ESTIMATION,
+            'estimate_max': self.EUR_MAX_ESTIMATION,
+            "localisation": self.LOCALISATION,
+            "final_result": self.EUR_FINAL_RESULT,
+            "date": self.AUCTION_DATE,
+            "house": self.HOUSE,
+            'url_full_detail': self.URL_FULL_DETAILS
         }
     

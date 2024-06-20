@@ -6,8 +6,6 @@ import { URL_API, URL_GET_TASK_RESULTS} from '../../utils/constants';
 const useFetchPastResults = (newResultSaved, setFormerResults, setUserData) => {
   useEffect(() => {
     
-    // required to ensure reloading sidebar sub items once new result is done
-    
     const token = Cookies.get('token');
     const userdataCookie = Cookies.get('userdata');
     if (userdataCookie) {

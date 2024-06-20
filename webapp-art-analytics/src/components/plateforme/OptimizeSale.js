@@ -1,5 +1,5 @@
 import React from 'react';
-import HeaderPlateforme from "./utils/HeaderPlateforme.js";
+import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 
 function OptimizeSale({handleMenuClick, t}) {
 

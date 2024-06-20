@@ -36,7 +36,7 @@
                   "finalprice": "Prix Final",
                   "experttitle": "Les Experts à proximité"},
     "searchart": {"searchtitle": "Trouvez vos oeuvres en un clic",
-              " searchdesc": "TODO"},
+                  "searchdesc": "TODO"},
     "optimize": {"optimizetitle": "Optimisez vos ventes et boostez votre CA",
                 "optimizedesc": "TODO"},
     "artidentify": {},
@@ -70,7 +70,8 @@
     "search": {"dropzonedesc": "Glissez ou sélectionnez l'image",
               "textareadesc": "Description de l'objet...",
               "errorplanexpired": "Votre offre est arrivée à échéance, veuillez ",
-              "errorsearchclosevolume": "Vous avez atteint votre quota de recherches, veuillez ",
+              "errorsearchclosevolume": "Vous avez atteint votre quota d'estimation autimatique, veuillez ",
+              "errorsearchvolume": "Vous avez atteint votre quota de recherches, veuillez ",
               "upgradebutton": "Mettre à jour mon offre"}
   },
   "landing_page": {

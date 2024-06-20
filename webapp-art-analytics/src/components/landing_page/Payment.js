@@ -1,6 +1,5 @@
 import React  from 'react';
 import Cards from 'react-credit-cards-2';
-import Cookies from 'js-cookie';
 
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '../../css/Payment.css';
@@ -76,7 +75,7 @@ function Payment({cardData,
               />
             </div>
           </div>
-          <button type="submit" className="payment-button">{t("landing_page.payment.paynow")}</button>
+          <button type="submit" className="login-button">{t("landing_page.payment.paynow")}</button>
         </form>
         {message && <p className="message">{message}</p>}
         {error && <p className="error">{error}</p>}

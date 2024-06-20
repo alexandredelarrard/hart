@@ -92,7 +92,8 @@
       "dropzonedesc": "Drag or select the image",
       "textareadesc": "Object description...",
       "errorplanexpired": "Your plan has expired, please ",
-      "errorsearchclosevolume": "You have reached your search quota, please ",
+      "errorsearchclosevolume": "You have reached your automatic estimate quota, please ",
+      "errorsearchvolume": "You have reached your search quota, please ",
       "upgradebutton": "Upgrade My Plan"
     }
   },

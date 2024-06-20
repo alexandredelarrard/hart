@@ -9,7 +9,7 @@ import UploadForm from './components/plateforme/UploadForm';
 import OptimizeSale from './components/plateforme/OptimizeSale';
 import SearchArt from './components/plateforme/SearchArt';
 import ArtIdentify from './components/plateforme/ArtIdentify';
-import CardDetail from './components/plateforme/utils/CardDetail';
+import CardDetail from './components/plateforme/upload_utils/CardDetail';
 import ProfileSettings from './components/plateforme/ProfileSettings';
 import Offers from './components/plateforme/Offers';
 

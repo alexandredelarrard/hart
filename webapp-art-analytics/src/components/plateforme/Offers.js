@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import HeaderPlateforme from "./utils/HeaderPlateforme.js";
+import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 import Pricing from '../landing_page/Pricing.js';
 
 import '../../css/ProfileSettings.css';

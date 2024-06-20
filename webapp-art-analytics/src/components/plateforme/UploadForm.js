@@ -3,13 +3,13 @@ import Cookies from 'js-cookie';
 import { useTranslation } from 'react-i18next';
 import { CARDS_PER_PAGE } from '../../utils/constants';
 
-import SearchForm from "./utils/SearchForm.js";
-import Pagination from './utils/Pagination.js';
-import Sorting from './utils/Sorting.js';
-import Filtering from './utils/Filtering.js';
-import ExpertCard from './utils/ExpertCard.js';
-import Card from './utils/Card';
-import HeaderPlateforme from "./utils/HeaderPlateforme.js";
+import SearchForm from "./upload_utils/SearchForm.js";
+import Pagination from './upload_utils/Pagination.js';
+import Sorting from './upload_utils/Sorting.js';
+import Filtering from './upload_utils/Filtering.js';
+import ExpertCard from './upload_utils/ExpertCard.js';
+import Card from './upload_utils/Card.js';
+import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 
 import CookieConsent from '../landing_page/CookieConsent.js';
 
@@ -67,7 +67,6 @@ function UploadForm({
   const [showAll, setShowAll] = useState(false);
   const [planExpired, setPlanExpired] = useState(false);
   const [closestVolumeExpired, setclosestVolumeExpired] = useState(false);
-  const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);
 
   const sortRef = useRef(null);
   const filterRef = useRef(null);
@@ -108,7 +107,6 @@ function UploadForm({
 
   useEffect(() => {
     const remaining_closest_volume = Cookies.get('remaining_closest_volume');
-    const remaining_search_volume = Cookies.get('remaining_search_volume');
     const plan_end_date = Cookies.get('plan_end_date');
     if (plan_end_date) {
       const planEndDate = new Date(plan_end_date);
@@ -119,11 +117,8 @@ function UploadForm({
       if (0 >= remaining_closest_volume) {
         setclosestVolumeExpired(true);
       }
-      if (0 >= remaining_search_volume) {
-        setsearchVolumeExpired(true);
-      }
     }
-  }, [setPlanExpired, setsearchVolumeExpired, setclosestVolumeExpired]);
+  }, [setPlanExpired, setclosestVolumeExpired]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -148,9 +143,9 @@ function UploadForm({
         case 'relevance_desc':
           comparison = a.distances - b.distances;
           break;
-        case 'relevance_asc':
-          comparison = b.distances - a.distances;
-          break;
+        // case 'relevance_asc':
+        //   comparison = b.distances - a.distances;
+        //   break;
         case 'price_desc':
           comparison = b.final_result - a.final_result;
           break;

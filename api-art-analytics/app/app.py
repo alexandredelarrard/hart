@@ -5,6 +5,7 @@ from src.blueprints.authorization import authorization_blueprint
 from src.blueprints.retreiver_infos import infos_blueprint
 from src.blueprints.activity_log import activity_blueprint
 from src.blueprints.payment_infos import payment_blueprint
+from src.blueprints.search_db import search_db_blueprint
 from src.blueprints.experts import experts_blueprint
 from src.utils.step import Step
 from src.extensions import config, context
@@ -33,6 +34,7 @@ class App(Step):
 		app.register_blueprint(activity_blueprint, url_prefix="/")
 		app.register_blueprint(payment_blueprint, url_prefix="/")
 		app.register_blueprint(experts_blueprint, url_prefix="/")
+		app.register_blueprint(search_db_blueprint, url_prefix="/")
 
 		return app
 

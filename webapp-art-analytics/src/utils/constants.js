@@ -19,3 +19,4 @@ export const LOG_ACTIVITY="/log-activity";
 export const URL_GET_PAYMENTS="/user-payment-infos";
 export const URL_UPDATE_PROFILE="/update-user-profile";
 export const URL_GET_EXPERTS='/get-experts-close';
+export const URL_SEARCH_DB='/search-items';

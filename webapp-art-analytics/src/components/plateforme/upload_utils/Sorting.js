@@ -25,12 +25,12 @@ const Sorting = ({
             >
               <FontAwesomeIcon icon={faMapMarkerAlt} /> {t("plateforme.sorting.relevancedecreasing")}
             </button>
-            <button
+            {/* <button
               onClick={() => handleSortChange('relevance_asc')}
               className={`sort-button ${sortOrder === 'relevance_asc' ? 'active' : ''}`}
             >
               <FontAwesomeIcon icon={faMapMarkerAlt} /> {t("plateforme.sorting.relevanceincreasing")}
-            </button>
+            </button> */}
             <button
               onClick={() => handleSortChange('price_desc')}
               className={`sort-button ${sortOrder === 'price_desc' ? 'active' : ''}`}

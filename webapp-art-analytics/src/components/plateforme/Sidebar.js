@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 
-import {organizeResults} from './utils/organizeSidebar.js';
+import {organizeResults} from './upload_utils/organizeSidebar.js';
 import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
 
 import { logout } from '../../hooks/general/identification';
@@ -35,26 +35,12 @@ function Sidebar({
   t
 }) {
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState('closest-lots');
+  const [activeMenu, setActiveMenu] = useState('search-art');
   const [userData, setUserData] = useState({});
   const [formerResults, setFormerResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const { i18n } = useTranslation('/analytics');
   const LogActivity = useLogActivity();
-
-  useEffect(() => {
-    setResult(null);
-    setText('');
-    setFile(null);
-    setAdditionalData([]);
-    setBotResult(null);
-    setMinPrice('');
-    setMaxPrice('');
-    setMinDate('');
-    setMaxDate('');
-  }, [navigate, setResult, setText, setFile, setMaxDate, setMinDate,
-    setMaxPrice, setMinPrice, setBotResult, setAdditionalData
-  ]);
 
   //logout on click button
   const handleLogout = async () => {
@@ -68,6 +54,17 @@ function Sidebar({
     }
     
     await logout();
+
+    setResult(null);
+    setText('');
+    setFile(null);
+    setAdditionalData([]);
+    setBotResult(null);
+    setMinPrice('');
+    setMaxPrice('');
+    setMinDate('');
+    setMaxDate('');
+
     navigate('/'); // Redirect to the home page
   };
 
@@ -96,6 +93,10 @@ function Sidebar({
     setAdditionalData([]);
     setAvgMinEstimates(0);
     setAvgMaxEstimates(0);
+    setMinPrice('');
+    setMaxPrice('');
+    setMinDate('');
+    setMaxDate('');
     if(result.llm_result){
       const llm_result = JSON.parse(JSON.stringify(result.llm_result));
       setBotResult(llm_result)

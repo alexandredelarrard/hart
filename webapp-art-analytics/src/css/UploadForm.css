@@ -27,7 +27,7 @@
   overflow: hidden;
 }
 
-.part1 {
+.part1, .part1-search {
   background: #fff;
   border-radius: 10px; /* Rounded corners for a modern look */
   overflow: hidden;
@@ -37,7 +37,11 @@
   padding: 1.1rem; /* Increased padding for wider gap */
 }
 
-.part2 {
+.part1-search{
+  width: 50%;
+}
+
+.part2, .part2-search {
   padding: 1.1rem;
   margin-left: 2rem; /* Increased margin for wider gap */
   width: 30%;
@@ -49,6 +53,9 @@
   max-height: 450px; /* Adjust based on your layout */
 } 
 
+.part2-search{
+  width: 50%;
+}
 
 .experts-list {
   display: flex;

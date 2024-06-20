@@ -58,12 +58,20 @@
 }
 
 .search-input {
-  flex: 0 0 44%; 
+  flex: 1; 
   height: 100%; /* Full height */
   padding: 0.5rem;
   border: 1.5px solid #012041;
-  border-left: none; /* Remove the left border */
-  border-radius: 0;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.search-bar-input{
+  flex: 1; 
+  height: 100%; /* Full height */
+  padding: 0.5rem;
+  border: 2px solid #012041;
+  border-radius: 5px;
   font-size: 1rem;
 }
 
