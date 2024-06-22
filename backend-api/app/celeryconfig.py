@@ -1,8 +1,8 @@
 # Broker settings.
-broker_url = 'redis://redis:6379/0'
+broker_url = 'redis://:apasswd@redis:6379/0' #'redis://redis:6379/0'
 
 # Backend settings.
-result_backend = 'redis://redis:6379/0'
+result_backend = 'redis://:apasswd@redis:6379/0' # 'redis://redis:6379/0'
 
 # celery_task_routes = {
 #     'app.src.backend.tasks.process_request': {'queue': 'embedding-queue'},

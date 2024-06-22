@@ -69,7 +69,6 @@ def post_ids_infos():
                 deduplicated_output = deduplicate_dicts(output, "id_item")
 
                 # Fetch filtered items in batches
-                # A refaire avec table indexee sur ID_ITEM
                 grouped_items = fetch_filtered_items(deduplicated_output)
                 dict_items = {grouped_items[i]["id_item"] : grouped_items[i]["id_picture"] for i in range(len(grouped_items))}
 

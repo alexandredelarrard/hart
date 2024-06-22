@@ -1,29 +1,30 @@
 services:
-    flower:
-        image: mher/flower:latest
-        container_name: flower
-        command: ['celery', '--broker=redis://redis:6379/0', 'flower', "--port=5555"]
+    redis:
+        image: "redis:alpine"
+        container_name: redis
         expose:
-            - 5555
+            - 6379
         ports:
-            - 5555:5555
+            - "6379:6379"
+        volumes:
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        networks:
+            - shared_net
+
+    redis-exporter:
+        image: oliver006/redis_exporter:latest
+        container_name: redis_exporter
+        command: 
+            - '--redis.addr=redis://redis:6379'
+            - '--redis.password=apasswd'
+        ports:
+            - 9121:9121
         depends_on:
             - redis
         networks:
             - shared_net
-        environment:
-            - FLOWER_UNAUTHENTICATED_API=true
-
-    flower-exporter:
-        build:
-            context: ./flower_exporter
-        container_name: flower_exporter
-        environment:
-            - URI=http://flower:5555/api/tasks
-        ports:
-            - 8001:8000
-        networks:
-            - shared_net
+        restart: always
 
     prometheus:
         image: prom/prometheus

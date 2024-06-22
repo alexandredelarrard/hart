@@ -14,8 +14,7 @@ from . import authorization_blueprint
 from .utils import confirmation_email_html, reset_email_html
 from src.schemas.user import User
 from src.schemas.payment import PaymentTrack
-from src.extensions import db, mail, serializer
-from src.extensions import front_server
+from src.extensions import db, mail, serializer, front_server, config
 
 # =============================================================================
 # Authentication
@@ -130,16 +129,16 @@ def signin():
                 payment = PaymentTrack(
                     user_id=new_user.id,
                     paying_date= datetime.today(),
-                    paying_methode="FREE",
+                    # paying_methode="FREE",
                     payment_amount=0,
-                    plan_name="free_plan",
+                    plan_name=config.plans["free"],
                     plan_frequency="monthly",
                     plan_start_date=datetime.today(),
-                    plan_end_date=datetime.today() + timedelta(days=7),
-                    initial_closest_volume=30,
-                    remaining_closest_volume=30,
-                    initial_search_volume=30,
-                    remaining_search_volume=30
+                    plan_end_date=datetime.today() + timedelta(days=config.product["free_plan_days"]),
+                    initial_closest_volume=config.product["initial_closest_volume"],
+                    remaining_closest_volume=config.product["initial_closest_volume"],
+                    initial_search_volume=config.product["initial_search_volume"],
+                    remaining_search_volume=config.product["initial_search_volume"]
                 )
                 db.session.add(payment)
                 db.session.commit()
@@ -173,6 +172,7 @@ def signin():
                 return jsonify({'error': 'Failed to create user', 'details': str(e)}), 500
 
 @authorization_blueprint.route('/confirm/<token>', methods=['GET'])
+@cross_origin(origins=front_server)
 def confirm_email(token):
     try:
         email = serializer.loads(token, salt='email-confirm', max_age=3600)
@@ -187,6 +187,7 @@ def confirm_email(token):
         return jsonify({'error': 'The confirmation link has expired.'}), 400
 
 @authorization_blueprint.route('/reset-password', methods=['POST'])
+@cross_origin(origins=front_server)
 def reset_password():
     data = request.get_json()
     email = data.get('email')
@@ -203,6 +204,7 @@ def reset_password():
 
 
 @authorization_blueprint.route('/set-new-password/<token>', methods=['POST'])
+@cross_origin(origins=front_server)
 def set_new_password(token):
     if request.method == 'POST':
         data = request.get_json()
@@ -219,3 +221,31 @@ def set_new_password(token):
             return jsonify({'error': 'The password reset link has expired.'}), 400
 
         return jsonify({'error': 'Invalid token'}), 400
+    
+    
+@authorization_blueprint.route('/update-user-profile', methods=['POST'])
+@cross_origin(origins=front_server)
+@jwt_required()
+def update_user_profile():
+    if request.method == 'POST':
+        data = request.get_json()
+
+        email = get_jwt_identity()['email']
+        name = data.get('name')
+        surname = data.get('surname')
+        address = data.get('address')
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            try:
+                user.name = name
+                user.surname = surname
+                user.address = address  
+                db.session.commit()
+
+                return jsonify({'message': 'Your infos have been updated.'}), 200
+            except Exception:
+                return jsonify({'error': 'The update could not be performed.'}), 400
+
+        return jsonify({'error': 'User not found'}), 500

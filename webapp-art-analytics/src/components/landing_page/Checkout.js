@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Header from './Header.js';
 import Payment from "./Payment.js";
@@ -12,6 +13,7 @@ import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '../../css/Checkout.css';
 
 const Checkout = ({t}) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [cardData, setCardData] = useState({
     number: '',
@@ -45,11 +47,13 @@ const Checkout = ({t}) => {
           setEmail(parsedUserdata.email);
           setStep(2);
         }
+      } else {
+        navigate('/login');
       }
     };
 
     checkUserAuth()
-  }, [setStep, setEmail]);
+  }, [setStep, setEmail, navigate]);
 
   const handleSubmit = async (e) => {
     setError(''); 

@@ -56,6 +56,8 @@ function UploadForm({
   maxPrice,
   minDate,
   maxDate,
+  setPlanExpired,
+  planExpired,
   t
 }) {
   
@@ -65,7 +67,6 @@ function UploadForm({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [planExpired, setPlanExpired] = useState(false);
   const [closestVolumeExpired, setclosestVolumeExpired] = useState(false);
 
   const sortRef = useRef(null);

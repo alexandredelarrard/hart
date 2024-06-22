@@ -1,18 +1,54 @@
-/* Optional: Customize the Ag-Grid theme to your preference */
-.ag-theme-quartz .ag-header {
-  background-color: #f7f9fc;
-  color: #154d89;
-  font-weight: bold;
+.payment-table {
+  width: 90%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-.ag-theme-quartz .ag-row {
-  font-size: 11px;
+.ag-theme-quartz .ag-header-cell {
+  font-weight: bold;
+  background-color: #f8f9fa;
 }
 
 .ag-theme-quartz .ag-cell {
-  padding: 5px;
+  text-align: center;
 }
 
-.rag-red {
-  background-color: #cc222244;
+.ag-theme-quartz .ag-row {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.ag-theme-quartz .ag-header {
+  border-bottom: 2px solid #ccc;
+}
+
+.ag-theme-quartz .ag-header-cell-label {
+  padding: 5px;
+  white-space: normal; /* Allow text to wrap */
+  text-align: center;
+  font-size: small;
+
+}
+
+.ag-theme-quartz .ag-paging-panel {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.ag-theme-quartz .ag-header-container, 
+.ag-theme-quartz .ag-header-viewport {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.ag-theme-quartz .ag-header-cell,
+.ag-theme-quartz .ag-cell {
+  flex: 1 0 150px; /* Fixed column width */
+  max-width: 150px; /* Ensuring columns do not exceed 150px */
+}
+
+.ag-theme-quartz .ag-header-cell-text,
+.ag-theme-quartz .ag-cell-value {
+  white-space: normal; /* Allow text to wrap */
 }

@@ -201,6 +201,15 @@ class PictureModel(Step):
             sorties.append(last.cpu().numpy())
         
         return sorties
+    
+    def one_embedding_on_the_fly(self, image):
+        image = self.pict_transformer(image).unsqueeze(0)
+        xb = image.to(self.device)
+        self.new_model.to(self.device).eval()
+        with torch.no_grad():
+            outputs = self.new_model.forward_features(xb)
+        last = self.new_model.forward_head(outputs, pre_logits=True)
+        return last.cpu().numpy()
 
     def batching_data(self, data, mode="train"):
         self.batching[mode] = torch.utils.data.DataLoader(data, shuffle=False, batch_size=self.batch_size)
@@ -220,8 +229,8 @@ class PictureModel(Step):
     def load_trained_model(self, model_path):
         self.base_model = timm.create_model(self.model_name, pretrained=True, num_classes=self.num_classes)
         self.new_model = peft.PeftModel.from_pretrained(self.base_model, model_path)
-        data_config = resolve_data_config(self.new_model.pretrained_cfg, model=self.new_model)
-        return create_transform(**data_config, is_training=False)
+        self.data_config = resolve_data_config(self.new_model.pretrained_cfg, model=self.new_model)
+        self.pict_transformer = create_transform(**self.data_config)
 
     def evaluate(self, loss, mode="train"):
         loss_total = (loss / len(self.batching[mode])).item()

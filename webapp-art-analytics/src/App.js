@@ -10,7 +10,7 @@ import OptimizeSale from './components/plateforme/OptimizeSale';
 import SearchArt from './components/plateforme/SearchArt';
 import ArtIdentify from './components/plateforme/ArtIdentify';
 import CardDetail from './components/plateforme/upload_utils/CardDetail';
-import ProfileSettings from './components/plateforme/ProfileSettings';
+import Settings from './components/plateforme/Settings';
 import Offers from './components/plateforme/Offers';
 
 import Home from './components/Home';
@@ -29,6 +29,7 @@ import Confirm from './components/connectors/Confirm';
 import './i18n';
 
 function App() {
+  const [userData, setUserData] = useState({});
   const [file, setFile] = useState(null);
   const [text, setText] = useState('');
   const [taskId, setTaskId] = useState(null);
@@ -40,7 +41,7 @@ function App() {
   const [avgFinalResult, setAvgFinalResult] = useState(0);
   const [chatBotResultFetched, setChatBotResultFetched] = useState(false);
   const [analysisInProgress, setAnalysisInProgress] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('closest-lots');
+  const [activeMenu, setActiveMenu] = useState('search-art');
   const [newResultSaved, setNewResultSaved] = useState(false);
   const [experts, setExperts] = useState([]);
   const [minPrice, setMinPrice] = useState('');
@@ -48,7 +49,12 @@ function App() {
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const [planExpired, setPlanExpired] = useState(false);
   const { t } = useTranslation();
+
+  // SearchArt 
+  const [searchResults, setSearchResults] = useState([]);
+  const [trendData, setTrendData] = useState(null);
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -58,7 +64,13 @@ function App() {
     switch (activeMenu) {
       case 'search-art':
         return <SearchArt 
-                  handleMenuClick={handleMenuClick} 
+                  setPlanExpired={setPlanExpired}
+                  planExpired={planExpired}
+                  handleMenuClick={handleMenuClick}
+                  searchResults={searchResults}
+                  setSearchResults={setSearchResults}
+                  trendData={trendData}
+                  setTrendData={setTrendData}
                   t={t}
               />;
       case 'closest-lots':
@@ -98,6 +110,8 @@ function App() {
             maxPrice={maxPrice}
             minDate={minDate}
             maxDate={maxDate}
+            setPlanExpired={setPlanExpired}
+            planExpired={planExpired}
             t={t}
         />
         );
@@ -112,9 +126,11 @@ function App() {
                 t={t}
                 />;
       case 'account-settings':
-        return <ProfileSettings 
-                handleMenuClick={handleMenuClick}
-                t={t} 
+        return <Settings 
+                  userData={userData}
+                  setUserData={setUserData}
+                  handleMenuClick={handleMenuClick}
+                  t={t} 
                 />;
       case 'my-offers':
         return <Offers 
@@ -149,6 +165,8 @@ function App() {
             element={
               <div style={{ display: 'flex' }}>
                 <Sidebar 
+                  userData={userData}
+                  setUserData={setUserData}
                   onMenuClick={handleMenuClick} 
                   setFile={setFile}
                   setText={setText}

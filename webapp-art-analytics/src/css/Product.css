@@ -33,20 +33,21 @@
 
 .problematic-image {
   flex: 1;
-  max-width: 45%;
+  max-width: 50%;
   height: 100%;
 }
 
-.problematic-image img {
+.problematic-image video {
   width: 100%;
   height: auto;
   border-radius: 10px;
 }
 
 .problematic-text {
-  flex: 2;
-  max-width: 55%;
+  flex: 1;
+  max-width: 50%;
   padding-left: 50px;
+  padding-right: 50px;
 }
 
 .problematic-text h2 {

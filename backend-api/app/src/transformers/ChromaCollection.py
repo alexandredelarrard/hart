@@ -2,7 +2,7 @@ from typing import List, Dict
 import pandas as pd 
 import numpy as np
 import os 
-from chromadb import Settings, HttpClient
+from chromadb import Settings, HttpClient, PersistentClient
 from src.context import Context
 from src.utils.timing import timing
 from src.utils.constants import (CHROMA_PICTURE_DB_NAME, 
@@ -30,7 +30,16 @@ class ChromaCollection(Step):
 
         super().__init__(context=context, config=config)
 
-         # chromadb connexion
+        # chromadb connexion
+        # chroma_client = PersistentClient(
+        #     path=os.getenv("CHROMA_DB_PATH"),
+        #     settings=Settings(
+        #         allow_reset=True,
+        #         anonymized_telemetry=False,
+        #         persist_directory=os.getenv("CHROMA_DB_PATH")
+        #     )
+        # )
+
         chroma_client = HttpClient(
             host=os.getenv("DB_HOST"),
             port=config.chroma_db.port,
@@ -51,23 +60,32 @@ class ChromaCollection(Step):
                                                     metadata={"hnsw:space": "cosine"})
 
     @timing
-    def save_collection(self, df_desc : pd.DataFrame, 
-                        embeddings : np.array) -> None:
+    def save_collection(self, 
+                        df_desc : pd.DataFrame, 
+                        embeddings : np.array, 
+                        is_document : bool = True) -> None:
         
         nbr_steps = df_desc.shape[0] //self.step_size + 1
+        id_col =self.name.id_unique
 
         for i in range(nbr_steps):
             self._log.info(f"[DB EMBEDDING] : adding batch {i+1} / {nbr_steps} to chromadb")
             sub_df = df_desc.iloc[i*self.step_size:(i+1)*self.step_size]
 
+            if not is_document:
+                documents = [None]*sub_df.shape[0]
+            else:
+                documents = sub_df[self.name.total_description].tolist()
+
             self.picture_collection.add(
                 embeddings=embeddings[i*self.step_size:(i+1)*self.step_size],
-                documents=sub_df[self.name.total_description].tolist(),
+                documents=documents,
                 metadatas=recreate_dict(sub_df),
-                ids=sub_df[self.name.id_unique].tolist()
+                ids=sub_df[id_col].tolist()
             )
     
     @timing
     def query_collection(self, query_embedded : np.array) -> Dict:
         return self.picture_collection.query(query_embeddings=query_embedded,
-                                            n_results=self.n_top_results)
+                                            n_results=self.n_top_results,
+                                            include=["distances", "metadatas"])

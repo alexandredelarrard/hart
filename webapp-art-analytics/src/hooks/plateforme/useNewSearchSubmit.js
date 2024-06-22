@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
+
+import axiosInstance_back from '../general/axiosInstanceBack';
+import { checkAuth } from '../general/identification';
 import useLogActivity from '../general/useLogActivity';
-import { URL_API_BACK, URL_UPLOAD } from '../../utils/constants';
+import { URL_UPLOAD } from '../../utils/constants';
 
 const useNewSearchSubmit = ({ 
       file, 
@@ -34,57 +36,58 @@ const useNewSearchSubmit = ({
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    const token = Cookies.get('token');
-    if (!token) {
-      return;
-    }
-    
-    const userdataString = Cookies.get("userdata");
-    const formData = new FormData();
-    if (file) {
-      formData.append('file', file);
-    }
-    if (text) {
-      formData.append('text', text);
-    }
-    formData.append('user_id', JSON.parse(userdataString).id);
-    
-    try {
-      const response = await axios.post(URL_API_BACK + URL_UPLOAD, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-           Authorization: `Bearer ${token}`
-        },
-      });
+    const isAuthenticated = await checkAuth();
 
-      setFile(file);
-      setText(text);
-      setBotResult(null);
-      setChatBotResultFetched(false);
-      setAnalysisInProgress(true);
-      setTaskId(response.data.task_id);
-      setResult(null);
-      setAdditionalData([]);
-      setAvgMinEstimates(0);
-      setAvgMaxEstimates(0);
-      setAvgFinalResult(0);
-      setNewResultSaved(false);
-
-      // log activity 
-      if(file && text){
-        LogActivity("click_search_submit", "file_and_text")}
-      else if(file){
-        LogActivity("click_search_submit", "file")
-      } else {
-        LogActivity("click_search_submit", "text")
+    if(isAuthenticated){
+      
+      const userdataString = Cookies.get("userdata");
+      const formData = new FormData();
+      if (file) {
+        formData.append('file', file);
       }
+      if (text) {
+        formData.append('text', text);
+      }
+      formData.append('user_id', JSON.parse(userdataString).id);
+      
+      try {
+        const response = await axiosInstance_back.post(URL_UPLOAD, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
-      // update the volume of search remaining 
-      let remainingClosestVolume = Number(Cookies.get('remaining_closest_volume'));
-      Cookies.set('remaining_closest_volume', remainingClosestVolume - 1);
+        setFile(file);
+        setText(text);
+        setBotResult(null);
+        setChatBotResultFetched(false);
+        setAnalysisInProgress(true);
+        setTaskId(response.data.task_id);
+        setResult(null);
+        setAdditionalData([]);
+        setAvgMinEstimates(0);
+        setAvgMaxEstimates(0);
+        setAvgFinalResult(0);
+        setNewResultSaved(false);
 
-    } catch (error) {
-      console.error('Error uploading file', error);
+        // log activity 
+        if(file && text){
+          LogActivity("click_search_submit", "file_and_text")}
+        else if(file){
+          LogActivity("click_search_submit", "file")
+        } else {
+          LogActivity("click_search_submit", "text")
+        }
+
+        // update the volume of search remaining 
+        let remainingClosestVolume = Number(Cookies.get('remaining_closest_volume'));
+        Cookies.set('remaining_closest_volume', remainingClosestVolume - 1);
+      
+      } catch (error) {
+        console.error('Error uploading file', error);
+      }
+    } else {
+      window.location.href = '/login';
     }
   };
 

@@ -1,16 +1,16 @@
-  import axios from 'axios';
   import Cookies from 'js-cookie';
-  // import axiosInstance from './axiosInstance'
-  import { URL_API, URL_CHECK_LOGIN, URL_LOGIN, URL_LOGOUT, URL_REFRESH_LOGIN } from '../../utils/constants';
+  import axiosInstance_middle from './axiosInstance';
+  import { URL_CHECK_LOGIN, URL_LOGIN, URL_LOGOUT, URL_REFRESH_LOGIN } from '../../utils/constants';
 
   export const login = async (email, password) => {
     try {
-      const response = await axios.post(URL_API + URL_LOGIN, { email, password }, {
+      const response = await axiosInstance_middle.post(URL_LOGIN, { email, password }, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
       if (response.status === 200) {
+
         // Save token to localStorage and redirect to upload page
         Cookies.set('token', response.data.access_token, { expires: 0.5 });
         Cookies.set('refresh_token', response.data.refresh_token, { expires: 15 });
@@ -31,11 +31,7 @@
 
   export const logout = async () => {
     try {
-      const response = await axios.post(URL_API + URL_LOGOUT, {}, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`
-        }
-      });
+      const response = await axiosInstance_middle.post(URL_LOGOUT, {});
       if (response.status === 200) {
         Cookies.remove('token');
         Cookies.remove('refresh_token');
@@ -44,6 +40,8 @@
         Cookies.remove('plan_end_date');
         Cookies.remove('remaining_closest_volume');
         Cookies.remove('remaining_search_volume');
+
+        window.location.href = '/login';
       }
     } catch (error) {
       console.error('Error logging out:', error);
@@ -51,24 +49,21 @@
   };
 
   export const checkAuth = async () => {
-    try {
-      const token = Cookies.get('token');
-      if (!token) {
-        return false;
-      }
 
-      const response = await axios.get(URL_API + URL_CHECK_LOGIN, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    const token = Cookies.get('token');
+    if (!token) {
+      return false;
+    }
+  
+    try {
+      const response = await axiosInstance_middle.get(URL_CHECK_LOGIN);
       return response.status === 200;
     } catch (error) {
       if (error.response && error.response.status === 401) {
         const refreshToken = Cookies.get('refresh_token');
         if (refreshToken) {
           try {
-            const refreshResponse = await axios.post(URL_API + URL_REFRESH_LOGIN, {}, {
+            const refreshResponse = await axiosInstance_middle.post(URL_REFRESH_LOGIN, {}, {
               headers: {
                 Authorization: `Bearer ${refreshToken}`
               }
@@ -81,7 +76,7 @@
             return false;
           }
         } else {
-          return false
+          return false;
         }
       } 
       console.log('Error checking auth:', error);

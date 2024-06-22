@@ -2,13 +2,12 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { URL_API, URL_REFRESH_LOGIN } from '../../utils/constants';
 
-// Create an Axios instance
-const axiosInstance = axios.create({
+const axiosInstance_middle = axios.create({
   baseURL: URL_API,
 });
 
 // Request interceptor to add the token to headers
-axiosInstance.interceptors.request.use(
+axiosInstance_middle.interceptors.request.use(
   (config) => {
     const token = Cookies.get('token');
     if (token) {
@@ -22,7 +21,7 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response interceptor to handle token refresh and redirection on 401 errors
-axiosInstance.interceptors.response.use(
+axiosInstance_middle.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -41,17 +40,30 @@ axiosInstance.interceptors.response.use(
           const newToken = refreshResponse.data.access_token;
           Cookies.set('token', newToken);
           originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-          return axiosInstance(originalRequest);
+          return axiosInstance_middle(originalRequest);
         } catch (refreshError) {
+
           console.log('Error refreshing token:', refreshError);
           Cookies.remove('token');
           Cookies.remove('refresh_token');
+          Cookies.remove('userdata');
+          Cookies.remove('plan_name');
+          Cookies.remove('plan_end_date');
+          Cookies.remove('remaining_closest_volume');
+          Cookies.remove('remaining_search_volume');
+
           window.location.href = '/login';
           return Promise.reject(refreshError);
         }
       } else {
         Cookies.remove('token');
         Cookies.remove('refresh_token');
+        Cookies.remove('userdata');
+        Cookies.remove('plan_name');
+        Cookies.remove('plan_end_date');
+        Cookies.remove('remaining_closest_volume');
+        Cookies.remove('remaining_search_volume');
+
         window.location.href = '/login';
         return Promise.reject(error);
       }
@@ -60,4 +72,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+export default axiosInstance_middle;

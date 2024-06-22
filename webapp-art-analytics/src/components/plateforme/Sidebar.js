@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 
@@ -16,6 +15,8 @@ import useFetchPastResults from '../../hooks/plateforme/useFetchPastResults.js';
 import '../../css/Sidebar.css';
 
 function Sidebar({ 
+  userData,
+  setUserData,
   onMenuClick, 
   setFile,
   setText,
@@ -34,9 +35,7 @@ function Sidebar({
   setMaxDate,
   t
 }) {
-  const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('search-art');
-  const [userData, setUserData] = useState({});
   const [formerResults, setFormerResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const { i18n } = useTranslation('/analytics');
@@ -52,8 +51,6 @@ function Sidebar({
     } else {
       console.log('Failed to log activity');
     }
-    
-    await logout();
 
     setResult(null);
     setText('');
@@ -64,8 +61,8 @@ function Sidebar({
     setMaxPrice('');
     setMinDate('');
     setMaxDate('');
-
-    navigate('/'); // Redirect to the home page
+    
+    await logout();
   };
 
   const toggleResults = (e) => {
@@ -105,6 +102,8 @@ function Sidebar({
       setBotResult(null)
       setChatBotResultFetched(false);
     }
+
+    // menu is clicked 
     onMenuClick('closest-lots');
 
     // log activity 
@@ -112,9 +111,9 @@ function Sidebar({
 
   };
 
-  const handleDeleteResult = (taskId) => {
+  const handleDeleteResult = (taskId, title) => {
     const token = Cookies.get('token');
-    const confirmDelete = window.confirm(`${t("plateforme.sidebar.deleteconfirm")} ${taskId}?`);
+    const confirmDelete = window.confirm(`${t("plateforme.sidebar.deleteconfirm")} \n ${title || taskId}?`);
     if (confirmDelete) {
       axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`,
         {
@@ -174,12 +173,31 @@ function Sidebar({
                     <li 
                       key={index} 
                       className="submenu-item"
+                      onClick={() => handleResultClick(result)}
                     >
-                      <span onClick={() => handleResultClick(result)}>{result.llm_result && i18n.language === "fr"? result.llm_result.french_title || result.taskId : result.llm_result.english_title || result.taskId}</span>
+                      <span>
+                          {result.llm_result ? (
+                            i18n.language === "fr" ? (
+                              result.llm_result.french_title || result.taskId
+                            ) : (
+                              result.llm_result.english_title || result.taskId
+                            )
+                          ) : (
+                            result.taskId
+                          )}
+                        </span>
                       <FontAwesomeIcon 
                         icon={faTrash} 
                         className="delete-icon" 
-                        onClick={() => handleDeleteResult(result.task_id)}
+                        onClick={() => handleDeleteResult(result.task_id, result.llm_result ? (
+                          i18n.language === "fr" ? (
+                            result.llm_result.french_title || result.task_id
+                          ) : (
+                            result.llm_result.english_title || result.task_id
+                          )
+                        ) : (
+                          result.task_id
+                        ))}
                       />
                     </li>
                   ))}

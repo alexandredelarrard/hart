@@ -5,3 +5,13 @@ server:
 
 front_end:
   server: 'http://localhost:3000'
+
+product:
+  free_plan_days: 7
+  initial_closest_volume: 30
+  initial_search_volume: 30
+
+plans: 
+  free: "free_plan"
+  individual: "individual_plan"
+  expert: "expert_plan"

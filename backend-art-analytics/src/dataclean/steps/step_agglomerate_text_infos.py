@@ -47,7 +47,6 @@ class StepAgglomerateTextInfos(TextCleaner):
         df = self.homogenize_localisation(df)
         df = self.deduce_country(df)
         df = self.remove_missing_values(df, important_cols=[self.name.total_description])
-        # df = self.deduce_language(df)
 
         # homogenize prices to have comparison through geo & time
         dict_currencies = extract_currencies(liste_currency_paires)

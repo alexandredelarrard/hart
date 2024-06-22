@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faBullseye, faUsers, faGavel, faSearch, faCheck } from '@fortawesome/free-solid-svg-icons';
 import problematicImage from '../../assets/landing_background_3.jpg'; 
+import VideoComponent from './utils/VideoComponent';
+import myVideo from '../../assets/Enregistrement 2024-06-22_intro1.mp4';
 
 const Product = ({t}) => {
 
@@ -90,7 +92,8 @@ const Product = ({t}) => {
                 <React.Fragment key={index}>
                     <div className={`problematic-area ${index % 2 === 1 ? "reverse" : t("landing_page.product.titleautomatiestim")}`} id={problem.id}>
                         <div className="problematic-image">
-                            <img src={problematicImage} alt="Problematic the startup is solving" />
+                            <VideoComponent videoSrc={myVideo} />
+                            {/* <img src={problematicImage} alt="Problematic the startup is solving" /> */}
                         </div>
                         <div className="problematic-text">
                             <h2>{problem.title}</h2>

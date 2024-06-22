@@ -7,7 +7,7 @@ function Card({ item, t }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/analytics/card/${item.id_unique}`, { state: { item } });
+    navigate(`/analytics/card/${item.id_item}`, { state: { item } });
   };
   
   return (

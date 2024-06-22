@@ -206,11 +206,11 @@ class StepTextInferenceGpt(Step):
             remaining = self.threads - len(self.methode)
             for i in range(remaining):
                 if i%5==0:
-                   self.queues["clients"].put(self.prompt | self.initialize_client("open_ai") | self.parser)
+                   self.queues["clients"].put(self.prompt | self.initialize_client("google") | self.parser)
                 elif i%4==0:
                    self.queues["clients"].put(self.prompt | self.initialize_client("groq") | self.parser) 
                 else:
-                    self.queues["clients"].put(self.prompt | self.initialize_client("google") | self.parser)
+                    self.queues["clients"].put(self.prompt | self.initialize_client("open_ai") | self.parser)
         
     def queue_gpt(self, queues):
 

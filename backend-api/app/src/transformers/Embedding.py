@@ -20,6 +20,7 @@ class StepEmbedding(Step):
 
         super().__init__(context=context, config=config)
         self.params = self._config.embedding.dim_reduc.params
+        self.prompt_name= self._config.embedding.prompt_name
         self.default_picture_path = self._config.picture_classification.default_image_path
         
         if "text" in type:
@@ -66,7 +67,7 @@ class StepEmbedding(Step):
         
         test_dataset = ArtDataset(images,
                                  self.classes_2id, 
-                                 transform=self.pict_transformer,
+                                 transform=self.picture_model.pict_transformer,
                                  mode="test",
                                  default_path=self.default_picture_path)
         

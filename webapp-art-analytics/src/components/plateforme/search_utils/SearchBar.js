@@ -28,6 +28,7 @@ const SearchBar = ({
   };
 
   const handleSearch = (e) => {
+    setSearchResults([]);
     searchDb({ e, setError, setLoading, setSearchResults, searchText, isError });
   };
 

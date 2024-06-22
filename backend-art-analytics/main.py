@@ -32,19 +32,19 @@ if __name__ == "__main__":
     # self = StepCrawling(context=context, config=config, threads=1, text_only=True)
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
     
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="christies", mode="new")
+    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot", mode="new")
     # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="christies", start_date="2024-03-01", end_date="2024-05-01")
     # self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="new")
     # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="christies", mode="new")
 
-    # self = StepCleanCrawling(context=context, config=config, seller="sothebys", mode="history")
+    # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="history")
     # self = StepTextCleanArtists(context=context, config=config)
-    # self = StepAgglomerateTextInfos(context=context, config=config, mode="new")
+    # self = StepAgglomerateTextInfos(context=context, config=config, mode="history")
     # self.run() 
 
     # self = StepTextClustering(context=context, config=config)
     # self = StepPictureClustering(context=context, config=config)
-    # self = StepFillChromaPictures(context=context, config=config)
+    self = StepFillChromaPictures(context=context, config=config)
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # self = StepTextClassification(context=context, config=config)
  
     # self = StepTextInferenceGpt(context=context, config=config, methode=["groq"], object="reformulate")
-    self = StepCleanGptInference(context=context, config=config, category="reformulate")
+    # self = StepCleanGptInference(context=context, config=config, category="reformulate")
     
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()

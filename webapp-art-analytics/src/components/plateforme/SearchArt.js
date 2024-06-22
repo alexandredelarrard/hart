@@ -12,11 +12,18 @@ import * as d3 from 'd3';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-function SearchArt({ setPlanExpired, planExpired, setsearchVolumeExpired, searchVolumeExpired, handleMenuClick, t }) {
+function SearchArt({ 
+  setPlanExpired, 
+  planExpired, 
+  handleMenuClick, 
+  searchResults,
+  setSearchResults,
+  trendData,
+  setTrendData,
+  t }) {
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [trendData, setTrendData] = useState(null);
   const [mapData, setMapData] = useState([]);
+  const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);
 
   const navigate = useNavigate();
 

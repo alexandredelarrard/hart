@@ -169,3 +169,29 @@ class DatasetRetreiver(Step):
                                                                                             axis=1)
         logging.info(f"GETTING {df.shape}")
         return df
+    
+    def get_all_text(self, data_name:str=None, limit:int=None):
+
+        if data_name==None:
+            data_name= self._config.cleaning.full_data_per_item
+        
+        if not limit:
+            limit = 1e11
+
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_all_text"))
+        formatted_query = self.sql_queries.format_query(
+                raw_query,
+                {
+                    "table_name": data_name,
+                    "id_item": self.name.id_item,
+                    "seller": self.name.seller,
+                    "total_description": self.name.total_description,
+                    "limite": limit
+                },
+            )
+
+        # 3. Fetch results
+        logging.info(formatted_query)
+        df = self.read_sql_data(formatted_query)
+        logging.info(f"GETTING {df.shape}")
+        return df

@@ -55,15 +55,16 @@ services:
             - ./app:/app
             - D:/data/models:/data/models
             - D:/data/default:/data/default
-        command: celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1
-        depends_on:
-            - redis
+        command: 'celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1'
+        # depends_on:
+            # - redis
             # - chromadb
         env_file:
             - ./.env
         environment:
+            - CHROMA_DB_PATH=/chroma/chroma
             - FLASK_ENV=celery_worker
-            - DB_HOST=host.docker.internal #chromadb
+            - DB_HOST=host.docker.internal #chromadb #
         deploy:
             resources:
                 reservations:
@@ -73,17 +74,7 @@ services:
                           capabilities: [gpu]
         networks:
             - shared_net
-    redis:
-        image: "redis:alpine"
-        container_name: redis
-        expose:
-            - 6379
-        ports:
-            - "6379:6379"
-        networks:
-            - shared_net
-
+        
 networks: 
   shared_net:
-    driver: bridge
-    # external: true
+    external: true

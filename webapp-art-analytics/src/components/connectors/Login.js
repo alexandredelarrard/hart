@@ -17,6 +17,7 @@ function Login({t}) {
   const handleSubmit = async (e) => {
     setError(''); // Clear any previous error
     e.preventDefault();
+
     try {
       const response = await login(email, password);
       setMessage(response.data.message);
@@ -44,11 +45,13 @@ function Login({t}) {
     const checkUserAuth = async () => {
       const isAuthenticated = await checkAuth();
       if (isAuthenticated) {
-          navigate('/analytics');
+        navigate('/analytics');
+      } else {
+        navigate('/login');
       }
     };
 
-    checkUserAuth()
+    checkUserAuth();
   }, [navigate]);
 
   return (

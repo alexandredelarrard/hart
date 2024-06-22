@@ -10,7 +10,7 @@ email:
   MAIL_USE_SSL: True
 
 celery:
-  url: "redis://redis:6379/0"
+  url: "redis://:apasswd@redis:6379/0"
 
 front_end:
   server: 'http://localhost:3000'

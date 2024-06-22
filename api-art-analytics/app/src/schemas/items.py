@@ -28,13 +28,14 @@ class AllPerItem(db.Model):
     def to_dict(self):
         return {
             'id_item': self.ID_ITEM,
-            'id_picture': self.ID_PICTURE,
+            'id_picture': str(self.ID_PICTURE).replace("{", '').replace("}", '').split(","),
         }
     
     def to_dict_search(self):
         return {
             'id_item': self.ID_ITEM,
-            'id_picture': self.ID_PICTURE,
+            'id_picture': str(self.ID_PICTURE).replace("{", '').replace("}", '').split(",")[0],
+            "pictures": str(self.ID_PICTURE).replace("{", '').replace("}", '').split(","),
             'title': self.ITEM_TITLE_DETAIL,
             'description': self.TOTAL_DESCRIPTION,
             'estimate_min': self.EUR_MIN_ESTIMATION,
@@ -42,6 +43,7 @@ class AllPerItem(db.Model):
             "localisation": self.LOCALISATION,
             "final_result": self.EUR_FINAL_RESULT,
             "date": self.AUCTION_DATE,
+            "seller": self.SELLER,
             "house": self.HOUSE,
             'url_full_detail': self.URL_FULL_DETAILS
         }

@@ -20,7 +20,7 @@ export const organizeResults = (results, t) => {
 
     if (differenceInDays <= 1) {
       organizedResults[t('plateforme.sidebar.today')].push(result);
-    } else if (differenceInDays < 2) {
+    } else if (differenceInDays <= 2) {
       organizedResults[t('plateforme.sidebar.yesterday')].push(result);
     } else if (differenceInDays <= 7) {
       organizedResults[t('plateforme.sidebar.lastweek')].push(result);
