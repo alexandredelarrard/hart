@@ -39,12 +39,10 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) =
                                 <li><FontAwesomeIcon icon={faCheck} className="green-icon" />{t("landing_page.pricing.newcriterion3")}</li>
                             </ul>
                             {isplateforme && (
-                                <>
-                                   <ul>
-                                        <li className='sub-li-plan'> {t("landing_page.pricing.remainingdays")}: {remainingDays}</li>
-                                        <li className='sub-li-plan'> {t("landing_page.pricing.remainingclosequeries")}: {closestQueries}</li>
-                                    </ul>
-                                </>
+                                <div className='feature-list-logedin'>
+                                   <p> {t("landing_page.pricing.remainingdays")}: <span>{remainingDays}/7</span></p>
+                                    <p> {t("landing_page.pricing.remainingclosequeries")}: <span>{closestQueries}/30</span></p>
+                                </div>
                                 )}
                             <div className="button-container">
                                 <button

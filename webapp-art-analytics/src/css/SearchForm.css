@@ -150,3 +150,53 @@
   border: 2px solid red;
   margin: 5px;
 }
+
+@media (max-width: 1000px) {
+  .dropzone-text{
+    font-size: 0.9em;
+  }
+
+  .search-input {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 600px) {
+  .dropzone-text{
+    font-size: 0.8em;
+  }
+
+  .search-input {
+    font-size: 0.8em;
+    width:50%;
+  }
+
+  .dropzone {
+    padding:0.6em;
+  }
+
+  .upload-icon{
+    display: none;
+  }
+  
+}
+
+@media (max-width: 380px) {
+  .upload-icon{
+    display: none;
+  }
+
+  .dropzone {
+    padding:0.5em;
+  }
+
+  .dropzone-text{
+    font-size: 0.65em;
+  }
+
+  .search-input {
+    font-size: 0.65em;
+    width:50%;
+    min-width: 65px;
+  }
+}

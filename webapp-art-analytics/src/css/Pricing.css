@@ -68,7 +68,6 @@
   list-style-type: none;
   padding: 0;
   text-align: center;
-  height: 70px;
 }
 
 .features-list li {
@@ -78,6 +77,20 @@
   margin-left: 15px;
   font-size: 17px;
   font-weight: 600;
+}
+
+.feature-list-logedin {
+  text-align: center;
+}
+
+.feature-list-logedin p {
+  font-style: italic;
+}
+
+.feature-list-logedin p span {
+  font-style: normal;
+  font-weight: bold;
+  color: green;
 }
 
 .sub-li-plan{

@@ -38,7 +38,7 @@ const Header = ({ t, changeLanguage, scrolled }) => {
                             Français
                         </button>
                     </div>
-                    <div className="menu-container-plateforme">
+                    <div className="menu-container">
                         <Link to="/login">
                             <button className="account-button">{t("landing_page.header.myaccount")}</button>
                         </Link>

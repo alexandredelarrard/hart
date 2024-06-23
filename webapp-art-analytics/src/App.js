@@ -28,6 +28,8 @@ import Confirm from './components/connectors/Confirm';
 
 import './i18n';
 
+import './App.css';
+
 function App() {
 
   const { i18n } = useTranslation();

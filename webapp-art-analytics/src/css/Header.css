@@ -70,7 +70,7 @@ header {
   outline: none;
 }
 
-.menu-container-plateforme {
+.menu-container {
   display: flex;
   align-items: center;
 }
@@ -160,7 +160,7 @@ header {
   }
 
   .nav-links,
-  .menu-container-plateforme {
+  .menu-container {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
@@ -206,7 +206,7 @@ header {
   }
 
   .nav-links,
-  .menu-container-plateforme {
+  .menu-container {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
@@ -233,6 +233,10 @@ header {
     align-items: center;
     flex-direction: column;
     padding: 20px;
+  }
+
+  .menu-content.show{
+    flex-direction: column;
   }
 
   .company-name {
@@ -262,7 +266,7 @@ header {
   }
 
   .nav-links,
-  .menu-container-plateforme {
+  .menu-container {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
@@ -296,5 +300,13 @@ header {
   .logo img {
     width: 70px;
     height: auto;
+  }
+
+  .language-container {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 10px;
+    flex-direction: column;
 }
 }

@@ -10,8 +10,6 @@
 .navbar-scrolled-plateforme {
   background: #fff;
   padding: .5rem 1rem;
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between; 
   position:relative;
@@ -64,7 +62,7 @@
   cursor: pointer;
   border-radius: 10px;
   margin-left: 10px;
-  
+  min-width: 145px;
 }
 
 .lang-button {
@@ -113,6 +111,7 @@
   .menu-container-plateforme {
     flex-direction: column;
     align-items: flex-start;
+    display: flex;
     gap: 20px;
     flex-wrap: wrap;
     align-content: center;
@@ -158,7 +157,10 @@
   .nav-links,
   .menu-container-plateforme {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
     gap: 20px;
   }
 
@@ -214,7 +216,10 @@
   .nav-links,
   .menu-container-plateforme {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
     gap: 20px;
   }
 
