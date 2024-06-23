@@ -5,7 +5,7 @@ import Pricing from '../landing_page/Pricing.js';
 
 import '../../css/ProfileSettings.css';
 
-function Offers({handleMenuClick, t}) {
+function Offers({changeLanguage, handleMenuClick, t}) {
   const [activePlan, setActivePlan] = useState('individual_plan');
   const [closestQueries, setclosestQueries] = useState('');
   const [remainingDays, setremainingDays] = useState('');
@@ -43,8 +43,10 @@ function Offers({handleMenuClick, t}) {
   return (
     <div className="upload-form-container">
         <HeaderPlateforme 
-            handleMenuClick={handleMenuClick}
-        />
+        changeLanguage={changeLanguage}
+        handleMenuClick={handleMenuClick}
+        t={t}
+      />
         <div className="billing-section">
             <div className="plans">
                 <Pricing

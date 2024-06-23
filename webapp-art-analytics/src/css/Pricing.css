@@ -12,7 +12,7 @@
 }
 
 .pricing-subsection {
-  width: 70%;
+  width: 75%;
   margin: 0 auto;
   text-align: center;
 }
@@ -68,15 +68,15 @@
   list-style-type: none;
   padding: 0;
   text-align: center;
-  height: 170px;
+  height: 70px;
 }
 
 .features-list li {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
-  margin-left: 30px;
-  font-size: 19px;
+  margin-bottom: 4px;
+  margin-left: 15px;
+  font-size: 17px;
   font-weight: 600;
 }
 
@@ -190,4 +190,178 @@
 .prefered{
   border: 4px solid red;
   /* box-shadow: 0 0 50px rgba(167, 57, 57, 0.952); */
+}
+
+@media (max-width: 1400px) {
+
+  .features-list {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+    height: 70px;
+  }
+
+  .features-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    margin-left: 15px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .price-column h3{
+    font-size: 1.1em;
+  }
+
+  .price-option{
+    padding: 5px;
+  }
+
+  .pricing-card h2{
+    font-size: 1.6em;
+  }
+
+}
+
+
+/* Media Queries for responsive design */
+@media (max-width: 1000px) {
+  .pricing-subsection,
+  .pricing-subsection-plateforme {
+    width: 90%;
+  }
+
+  .pricing-subsection h1,
+  .pricing-subsection-plateforme h1 {
+    font-size: 3em;
+  }
+
+  .pricing-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pricing-card {
+    width: 80%;
+    margin-bottom: 40px;
+    height: auto;
+    padding: 20px 40px;
+  }
+
+  .pricing-card h2 {
+    font-size: 1.5em;
+  }
+
+  .features-list {
+    height: auto;
+  }
+
+  .features-list li {
+    font-size: 1em;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .price-column h3 {
+    font-size: 1.2em;
+  }
+
+  .price-amount {
+    font-size: 1.2em;
+  }
+
+  .price-option{
+    padding: 10px;
+  }
+
+  .pricing-card h2{
+    font-size: 2em;
+  }
+
+}
+
+@media (max-width: 600px) {
+  .pricing-subsection h1,
+  .pricing-subsection-plateforme h1 {
+    font-size: 2em;
+  }
+
+  .pricing-icon {
+    font-size: 2em;
+  }
+
+  .pricing-card h2 {
+    font-size: 1.2em;
+  }
+
+  .features-list li {
+    font-size: 0.9em;
+  }
+
+  .price-amount {
+    font-size: 1em;
+  }
+
+  .pricing-cta-button {
+    padding: 10px 20px;
+    font-size: 0.9em;
+    width: 100%;
+  }
+
+  .pricing-card {
+    width: 80%;
+    margin-bottom: 40px;
+    height: auto;
+    padding: 10px 20px;
+  }
+
+  .price-column h3 {
+    font-size: 1em;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .pricing-subsection h1,
+  .pricing-subsection-plateforme h1 {
+    font-size: 1.8em;
+  }
+
+  .pricing-icon {
+    font-size: 1.8em;
+  }
+
+  .pricing-card h2 {
+    font-size: 1em;
+  }
+
+  .features-list li {
+    font-size: 0.8em;
+  }
+
+  .price-amount {
+    font-size: 0.7em;
+  }
+
+  .pricing-cta-button {
+    padding: 8px 15px;
+    font-size: 0.8em;
+    width: 100%;
+  }
+
+  .features-list{
+    display:none;
+  }
+
+  .pricing-card {
+    width: 90%;
+    margin-bottom: 20px;
+    height: auto;
+    padding: 8%;
+  }
+
+  .price-column h3 {
+    font-size: 0.9em;
+  }
 }

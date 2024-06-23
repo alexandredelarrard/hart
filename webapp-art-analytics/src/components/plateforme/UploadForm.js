@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
-import { useTranslation } from 'react-i18next';
 import { CARDS_PER_PAGE } from '../../utils/constants';
 
 import SearchForm from "./upload_utils/SearchForm.js";
@@ -18,6 +17,8 @@ import useGetTaskResult from '../../hooks/plateforme/useGetTaskResult.js';
 import useFetchExperts from "../../hooks/plateforme/useFetchExperts.js";
 import useNewSearchSubmit from '../../hooks/plateforme/useNewSearchSubmit.js';
 import useLLMDesignation from '../../hooks/plateforme/useLLMDesignation.js';
+
+import {formatPrice} from '../../utils/general.js';
 
 import '../../css/UploadForm.css';
 
@@ -58,10 +59,11 @@ function UploadForm({
   maxDate,
   setPlanExpired,
   planExpired,
+  changeLanguage,
+  i18n,
   t
 }) {
   
-  const { i18n } = useTranslation('/analytics');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('relevance_desc');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -199,7 +201,9 @@ function UploadForm({
   return (
     <div className="upload-form-container">
       <HeaderPlateforme 
+        changeLanguage={changeLanguage}
         handleMenuClick={handleMenuClick}
+        t={t}
       />
       <SearchForm
         text={text}
@@ -211,6 +215,7 @@ function UploadForm({
         handleMenuClick={handleMenuClick}
         t={t}
       />
+      {(fileUrl || text ) &&
       <div className="result-container">
         <div className="summary-area">
           <div className="part1">
@@ -231,8 +236,8 @@ function UploadForm({
                 }
                 {result &&
                   <div className="card-footer-summary">
-                    <span className="card-price"><strong>{t("plateforme.uploadform.estimationprice")}:</strong> {avgMinEstimates}-{avgMaxEstimates} €</span>
-                    <span className="card-result"><strong>{t("plateforme.uploadform.finalprice")}:</strong> {avgFinalResult} €</span>
+                    <span className="card-price"><strong>{t("plateforme.uploadform.estimationprice")}:</strong> {formatPrice(avgMinEstimates, i18n.language, false)} - {formatPrice(avgMaxEstimates, i18n.language, true)}</span>
+                    <span className="card-result"><strong>{t("plateforme.uploadform.finalprice")}:</strong> {formatPrice(avgFinalResult, i18n.language, true)}</span>
                   </div>
                 }
               </div>
@@ -287,7 +292,11 @@ function UploadForm({
             </div>
             <div className="card-container">
               {paginatedData.map((item, index) => (
-                <Card key={index} item={item} t={t} />
+                <Card 
+                  key={index} 
+                  item={item}
+                  i18n={i18n} 
+                  t={t} />
               ))}
             </div>
             <div className="pagination-container">
@@ -304,6 +313,7 @@ function UploadForm({
           <></>
         )}
       </div>
+      }
       <CookieConsent t={t}/>
     </div>
   );

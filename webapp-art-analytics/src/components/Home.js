@@ -13,7 +13,12 @@ import CookieConsent from "./landing_page/CookieConsent";
 
 import '../css/Home.css';
 
-const Home = ({t, scrolled, setScrolled}) => {
+const Home = ({
+  changeLanguage, 
+  t, 
+  scrolled, 
+  setScrolled
+}) => {
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,6 +59,7 @@ const Home = ({t, scrolled, setScrolled}) => {
       <Header
         scrolled={scrolled}
         setScrolled={setScrolled}
+        changeLanguage={changeLanguage}
         t={t}/>
                 
       <FirmPresentation t={t}/>

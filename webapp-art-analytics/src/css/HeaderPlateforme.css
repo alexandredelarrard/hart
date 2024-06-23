@@ -9,13 +9,15 @@
 
 .navbar-scrolled-plateforme {
   background: #fff;
-  height: 80px;
   padding: .5rem 1rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between; 
   position:relative;
+  top: 0;
+  left: 0;
+  z-index: 998; /* Ensure it stays below the sidebar */
 }
 
 .logo-container-plateforme {
@@ -62,6 +64,7 @@
   cursor: pointer;
   border-radius: 10px;
   margin-left: 10px;
+  
 }
 
 .lang-button {
@@ -85,4 +88,164 @@
 .lang-button:hover {
   background: #eaeaea;
   color: #154d89;
+}
+
+
+/* Media Queries for responsive design */
+@media (max-width: 1000px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 10px;
+  }
+
+  .navbar {
+    height: auto;
+  }
+
+  .logo-container {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav-links,
+  .menu-container-plateforme {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-content: center;
+  }
+
+
+  .nav-links a {
+    font-size: 1.2em;
+  }
+
+  .account-button {
+    margin-right: 0;
+  }
+
+  .menu-toggle {
+    display: block;
+    padding-right: 30px;
+    font-size: 2em;
+  }
+
+  .show-menu .menu-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 30px;
+  }
+}
+
+/* Media Queries for responsive design */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 10px;
+  }
+
+  .logo-container {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav-links,
+  .menu-container-plateforme {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 1em;
+  }
+
+  .account-button {
+    margin-right: 0;
+    font-size: 1em;
+  }
+
+  .menu-toggle {
+    display: block;
+    padding-right: 30px;
+    font-size: 2em;
+  }
+
+  .show-menu .menu-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .company-name {
+    display: none;
+  }
+
+  .logo img {
+    width: 85px;
+    height: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 10px;
+  }
+
+  .logo-container {
+    justify-content: space-between;
+  }
+
+  .logo {
+    margin-left: 5px;
+  }
+
+  .nav-links,
+  .menu-container-plateforme {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 0.9em;
+  }
+
+  .account-button {
+    margin-right: 0;
+    font-size: 0.9em;
+    width: 140px; 
+  }
+
+  .menu-toggle {
+    display: block;
+    padding-right: 30px;
+    font-size: 2em;
+  }
+
+  .show-menu .menu-content {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .company-name {
+    display: none;
+  }
+
+  .logo img {
+    width: 70px;
+    height: auto;
+}
 }

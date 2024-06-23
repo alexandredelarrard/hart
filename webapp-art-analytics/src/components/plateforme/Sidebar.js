@@ -215,7 +215,8 @@ function Sidebar({
         </li>
       </ul>
       <button onClick={handleLogout} className="logout-button">
-        <FontAwesomeIcon icon={faSignOutAlt} />{t("plateforme.sidebar.logout")}
+        <FontAwesomeIcon icon={faSignOutAlt} />
+        <p>{t("plateforme.sidebar.logout")}</p>
       </button>
     </aside>
   );

@@ -13,7 +13,7 @@
 
         // Save token to localStorage and redirect to upload page
         Cookies.set('token', response.data.access_token, { expires: 0.5 });
-        Cookies.set('refresh_token', response.data.refresh_token, { expires: 15 });
+        Cookies.set('refresh_token', response.data.refresh_token, { expires: 0.5 });
         Cookies.set('userdata', JSON.stringify(response.data.userdata), { expires: 0.5 });
         Cookies.set('plan_name', response.data.plan_name, { expires: 0.5 });
         Cookies.set('plan_end_date', response.data.plan_end_date, { expires: 0.5 });

@@ -1,5 +1,5 @@
 .product-container {
-  width: 65%;
+  width: 70%;
   margin: 0 auto;
   text-align: center;
   margin-top: 120px;
@@ -33,7 +33,7 @@
 
 .problematic-image {
   flex: 1;
-  max-width: 50%;
+  max-width: 45%;
   height: 100%;
 }
 
@@ -45,7 +45,7 @@
 
 .problematic-text {
   flex: 1;
-  max-width: 50%;
+  max-width: 55%;
   padding-left: 50px;
   padding-right: 50px;
 }
@@ -70,11 +70,10 @@
 .pain-points,
 .solutions {
   flex: 1;
-  margin-right: 20px;
 }
 
 .pain-points {
-  margin-right: 40px;
+  margin-right: 20px;
 }
 
 .pain,
@@ -82,7 +81,7 @@
   display: flex;
   align-items: flex-start;
   margin-bottom: 10px;
-  height: 70px;
+  height: 80px;
 }
 
 .pain p,
@@ -90,6 +89,7 @@
   margin-left: 10px;
   font-size: 1.1em;
   text-align: left;
+  min-width: 120px;
 }
 
 .faicon {
@@ -102,13 +102,13 @@
   color: #218838; /* Green color for ticks */
 }
 
-.contentainer-product-button{
+.contentainer-product-button {
   display: flex;
   justify-content: center;
   font-size: 1.1em;
 }
 
-.button-arrow{
+.button-arrow {
   margin-left: 10px;
   font-size: 1.5em;
 }
@@ -116,4 +116,127 @@
 .delimiter {
   border: 1px solid #ddd;
   margin: 40px 0;
+}
+
+/* Media Queries for responsive design */
+@media (max-width: 1200px) {
+  .product-container {
+    width: 90%;
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .product-container h1 {
+    font-size: 2.5em;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+
+  .product-container p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+
+  .problematic-area {
+    flex-direction: column;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  .problematic-area.reverse{
+    flex-direction: column;
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .problematic-image, .problematic-text {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .problematic-text {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .problematic-text h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+  }
+
+  .problematic-text p {
+    font-size: 1em;
+    margin-bottom: 20px;
+  }
+
+  .pain-solution-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pain-points, .solutions {
+    margin-right: 0;
+  }
+
+  .pain-points {
+    margin-bottom: 20px;
+  }
+
+  .solution {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    height: 60px;
+  }
+
+  .pain{
+    display:none;
+  }
+}
+
+@media (max-width: 600px) {
+  .product-container h1 {
+    font-size: 2em;
+  }
+
+  .problematic-text h2 {
+    font-size: 1.5em;
+  }
+
+  .problematic-text p {
+    font-size: 0.9em;
+  }
+
+  .pain p, .solution p {
+    font-size: 1em;
+    max-width: 200px;
+  }
+
+  .pain-solution-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .solution {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    height: 50px;
+  }
+
+  .pain{
+    display:none;
+  }
+}
+
+
+@media (max-width: 480px) {
+.pain-solution-container{
+  display: none;
+}
+
 }

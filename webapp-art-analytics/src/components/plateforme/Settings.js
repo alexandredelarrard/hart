@@ -11,6 +11,7 @@ function Settings({
   userData,
   setUserData,
   handleMenuClick, 
+  changeLanguage,
   t
 }) {
   const [activeTab, setActiveTab] = useState('profile');
@@ -18,8 +19,10 @@ function Settings({
 
   return (
     <div className="upload-form-container">
-      <HeaderPlateforme 
+      <HeaderPlateforme
+        changeLanguage={changeLanguage}
         handleMenuClick={handleMenuClick}
+        t={t}
       />
       <div className="menu-bar">
         <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => {setActiveTab('profile'); LogActivity("click_profile_menu", "")}}>{t("plateforme.profilesettings.profilebutton")}</button>

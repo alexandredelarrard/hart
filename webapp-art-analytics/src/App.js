@@ -29,8 +29,15 @@ import Confirm from './components/connectors/Confirm';
 import './i18n';
 
 function App() {
+
+  const { i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
+
   const [userData, setUserData] = useState({});
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState('');
   const [text, setText] = useState('');
   const [taskId, setTaskId] = useState(null);
   const [result, setResult] = useState(null);
@@ -71,6 +78,7 @@ function App() {
                   setSearchResults={setSearchResults}
                   trendData={trendData}
                   setTrendData={setTrendData}
+                  changeLanguage={changeLanguage}
                   t={t}
               />;
       case 'closest-lots':
@@ -112,17 +120,21 @@ function App() {
             maxDate={maxDate}
             setPlanExpired={setPlanExpired}
             planExpired={planExpired}
+            changeLanguage={changeLanguage}
+            i18n={i18n}
             t={t}
         />
         );
       case 'optimize-sale':
         return <OptimizeSale 
                 handleMenuClick={handleMenuClick}
+                changeLanguage={changeLanguage}
                 t={t} 
               />;
       case 'authentify-art':
         return <ArtIdentify 
                 handleMenuClick={handleMenuClick}
+                changeLanguage={changeLanguage}
                 t={t}
                 />;
       case 'account-settings':
@@ -130,11 +142,13 @@ function App() {
                   userData={userData}
                   setUserData={setUserData}
                   handleMenuClick={handleMenuClick}
+                  changeLanguage={changeLanguage}
                   t={t} 
                 />;
       case 'my-offers':
         return <Offers 
                   handleMenuClick={handleMenuClick}
+                  changeLanguage={changeLanguage}
                   t={t} 
                 />;
       default:
@@ -149,6 +163,7 @@ function App() {
           <Route path="/" element={<Home 
                                     scrolled={scrolled} 
                                     setScrolled={setScrolled} 
+                                    changeLanguage={changeLanguage}
                                     t={t}/>} />
           <Route path="/login" element={<Login scrolled={true} t={t}/>} />
           <Route path="/trial" element={<Trial scrolled={true} t={t}/>} />
@@ -195,7 +210,9 @@ function App() {
             path="/analytics/card/:id"
             element={
                 <div style={{ display: 'flex' }}>
-                  <CardDetail t={t}/>
+                  <CardDetail 
+                  i18n={i18n}
+                  t={t}/>
                 </div>
             }
           />

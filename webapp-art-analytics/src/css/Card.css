@@ -52,7 +52,7 @@
 
 @media (max-width: 400px) {
   .card {
-    flex: 1 1 calc(100% - 2rem); /* 1 card per row */
+    flex: 1 1 calc(85% - 2rem); /* 1 card per row */
   }
 }
 
@@ -135,7 +135,15 @@
   border-top: 1px solid rgba(0, 0, 0, .125);
 }
 
-.card-price, .card-result {
+/* .card-price, .card-result {
   font-size: 0.9rem;
   color: #333;
+} */
+
+.card-price, .card-result {
+  white-space: nowrap; /* Prevent line break */
+  overflow: hidden;
+  font-size: 0.9rem;
+  color: #333;
+  text-overflow: ellipsis; /* Show ellipsis if text is too long */
 }

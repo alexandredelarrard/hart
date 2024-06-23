@@ -1,4 +1,3 @@
-/* New section for the background behind infoband */
 .background-section {
     width: 100%;
     background: linear-gradient(to bottom, #ddecef 50%, #fff 50%);
@@ -57,3 +56,61 @@
     font-size: 1em;
     color: #555;
   }
+
+  /* Media Queries for responsive design */
+@media (max-width: 1000px) {
+  .info-band {
+    width: 70%;
+    padding: 30px 15px;
+  }
+
+  .info-band h2 {
+    font-size: 1.3em;
+  }
+
+  .info-items {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .info-item {
+    margin-bottom: 20px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .info-item .icon {
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .info-item h3 {
+    font-size: 1.1em;
+  }
+
+  .info-item p {
+    font-size: 0.9em;
+  }
+
+}
+
+@media (max-width: 600px) {
+  .info-band h2 {
+    font-size: 1.1em;
+  }
+
+  .info-item .icon {
+    font-size: 1.8em;
+  }
+
+  .info-item h3 {
+    font-size: 1em;
+  }
+
+  .info-item p {
+    font-size: 0.8em;
+  }
+  .info-item svg{
+    display: none;
+  }
+}

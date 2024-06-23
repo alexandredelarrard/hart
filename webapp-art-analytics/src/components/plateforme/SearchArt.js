@@ -20,6 +20,7 @@ function SearchArt({
   setSearchResults,
   trendData,
   setTrendData,
+  changeLanguage,
   t }) {
   const [searchText, setSearchText] = useState('');
   const [mapData, setMapData] = useState([]);
@@ -99,7 +100,11 @@ function SearchArt({
 
   return (
     <div className="upload-form-container">
-      <HeaderPlateforme handleMenuClick={handleMenuClick} />
+      <HeaderPlateforme 
+        changeLanguage={changeLanguage}
+        handleMenuClick={handleMenuClick}
+        t={t}
+      />
       <h2>{t("plateforme.searchart.searchtitle")}</h2>
       <SearchBar
         searchText={searchText}

@@ -1,9 +1,11 @@
 import React from 'react';
 import {ROOT_PICTURE} from '../../../utils/constants';
 import { useNavigate } from 'react-router-dom';
+import {formatPrice} from '../../../utils/general.js';
+
 import '../../../css/Card.css';
 
-function Card({ item, t }) {
+function Card({ i18n, item, t }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -24,8 +26,8 @@ function Card({ item, t }) {
             <h3 className="card-title">{item.title}</h3>
             <p className="card-description">{item.description}</p>
             <div className="card-footer">
-              <span className="card-price"><strong>{t("plateforme.uploadform.estimationprice")}:</strong> {item.estimate_min} - {item.estimate_max} €</span>
-              <span className="card-result"><strong>{t("plateforme.uploadform.finalprice")}:</strong> {item.final_result} €</span>
+              <span className="card-price"><strong>{t("plateforme.uploadform.estimationprice")}:</strong> {formatPrice(item.estimate_min, i18n.language, false)}-{formatPrice(item.estimate_max, i18n.language, true)}</span>
+              <span className="card-result"><strong>{t("plateforme.uploadform.finalprice")}:</strong> {formatPrice(item.final_result, i18n.language, true)}</span>
             </div>
           </div>
     </div>

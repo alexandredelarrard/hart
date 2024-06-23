@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
 import {login, checkAuth} from '../../hooks/general/identification.js';
 import LoginElement from './LoginElement.js';
+import Cookies from 'js-cookie';
 import '../../css/Login.css';
 
 function Login({t}) {
@@ -44,7 +45,8 @@ function Login({t}) {
   useEffect(() => {
     const checkUserAuth = async () => {
       const isAuthenticated = await checkAuth();
-      if (isAuthenticated) {
+      const userdataString = Cookies.get("userdata");
+      if (isAuthenticated && userdataString) {
         navigate('/analytics');
       } else {
         navigate('/login');

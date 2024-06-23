@@ -1,85 +1,300 @@
 .firm-presentation {
-    font-family: "Arial", sans-serif;
-  }
-  
+  font-family: "Arial", sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.navbar {
+  background: #ddecef;
+  height: 120px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.white-background {
+  background: white;
+  position: fixed;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  margin-left: 45px;
+}
+
+.logo img {
+  width: 100px;
+  height: auto;
+}
+
+.company-name {
+  margin-left: 10px;
+  font-size: 2em;
+  font-weight: bold;
+  color: #154d89;
+}
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+  font-size: larger;
+  padding: 10px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-links a {
+  color: #154d89;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  color: #00366e;
+  outline: none;
+}
+
+.menu-container-plateforme {
+  display: flex;
+  align-items: center;
+}
+
+.language-container {
+  display: flex;
+  gap: 10px;
+}
+
+.menu-toggle {
+  display: none;
+  cursor: pointer;
+  font-size: 1.5em;
+  margin-left: 15px;
+}
+
+.menu-item-plateforme.lang-button {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #154d89;
+  font-weight: bold;
+}
+
+.account-button {
+  background: white;
+  border: 2px solid #154d89;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-right: 15px;
+  text-decoration: none;
+}
+
+.account-button:hover {
+  background: #154d89;
+  color: white;
+  text-decoration: none;
+}
+
+.menu-content {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  padding: 10px;
+}
+
+.menu-content.show {
+  display: flex;
+}
+
+.menu-header{
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Media Queries for responsive design */
+@media (max-width: 1000px) {
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 10px;
   }
-  
+
+  .menu-header{display: none;}
+
   .navbar {
-    background: #ddecef;
-    height: 120px;
-  }
-  
-  .white-background{
-    background: white;
-    position: fixed;
-  }
-  
-  .logo-container {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo {
-    margin-left: 45px;
-  }
-  
-  .logo img {
-    width: 100px;
     height: auto;
   }
-  
-  .company-name {
-    margin-left: 10px;
-    font-size: 2em;
-    font-weight: bold;
-    color: #154d89;
-    transition: font-size 0.1s;
+
+  .logo-container {
+    justify-content: space-between;
+    width: 100%;
   }
-  
-  
-  .nav-links {
-    display: flex;
-    gap: 40px;
-    font-size: larger;
-    padding: 10px;  
-    flex: 1;
-    justify-content: center;
+
+  .nav-links,
+  .menu-container-plateforme {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-content: center;
   }
-    
-  
+
+
   .nav-links a {
-    color: #154d89;
-    text-decoration: none;
-    font-weight: bold;
+    font-size: 1.2em;
   }
-  
-  .nav-links a:hover,
-  .nav-links a:focus {
-    color: #00366e;
-    outline: none;
-  }
-  
+
   .account-button {
-    background: white;
-    border: 2px solid #154d89;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 10px;
-    margin-right: 15px;
+    margin-right: 0;
   }
-  
-  .account-button:hover {
-    background: #154d89;
-    color: white;
+
+  .menu-toggle {
+    display: block;
+    padding-right: 30px;
+    font-size: 2em;
   }
+
+  .show-menu .menu-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 30px;
+  }
+}
+
+/* Media Queries for responsive design */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 10px;
+  }
+
+  .logo-container {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav-links,
+  .menu-container-plateforme {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 1em;
+  }
+
+  .account-button {
+    margin-right: 0;
+    font-size: 1em;
+  }
+
+  .menu-toggle {
+    display: block;
+    padding-right: 30px;
+    font-size: 2em;
+  }
+
+  .show-menu .menu-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .company-name {
+    display: none;
+  }
+
+  .logo img {
+    width: 85px;
+    height: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 10px;
+  }
+
+  .logo-container {
+    justify-content: space-between;
+  }
+
+  .logo {
+    margin-left: 5px;
+  }
+
+  .nav-links,
+  .menu-container-plateforme {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 0.9em;
+  }
+
+  .account-button {
+    margin-right: 0;
+    font-size: 0.9em;
+  }
+
+  .menu-toggle {
+    display: block;
+    padding-right: 30px;
+    font-size: 2em;
+  }
+
+  .show-menu .menu-content {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .company-name {
+    display: none;
+  }
+
+  .logo img {
+    width: 70px;
+    height: auto;
+}
+}

@@ -6,6 +6,19 @@
   background-color: #f3f3f3ea;
 }
 
+/* Ensure the upload form doesn't overlap with the sidebar */
+@media (max-width: 1200px) {
+  .upload-form-container {
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 120px; /* Adjust based on header height */
+  }
+
+  .result-container {
+    width: 100%;
+  }
+}
+
 .presentation-closest{
   position: relative;
 }

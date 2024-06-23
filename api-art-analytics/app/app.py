@@ -44,10 +44,10 @@ class App(Step):
 		app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 		app.config['JWT_SECRET_KEY'] = os.environ["JWT_SECRET_KEY"]
 		app.config['CORS_HEADERS'] = 'Content-Type'
-		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 3}
-		app.config["JWT_REFRESH_LIFESPAN"] = {'days': 1}
-		app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
-		app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=10)
+		app.config["JWT_ACCESS_LIFESPAN"] = {'hours': 2}
+		app.config["JWT_REFRESH_LIFESPAN"] = {'hours': 2}
+		app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2)
+		app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(hours=2)
 		app.config["JWT_TOKEN_LOCATION"] = ['headers']
 		app.config['SECRET_KEY'] = os.environ["SECRET_KEY_LOGIN"]
 		app.config["DEBUG"] = False

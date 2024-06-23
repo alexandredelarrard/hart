@@ -89,3 +89,63 @@
 .blue{
   color:#154d89;
 }
+
+@media (max-width: 1400px) {
+  .content h1 {
+    font-size: 3em; /* Smaller title for smaller screens */
+  }
+
+  .content p {
+    font-size: 1.5em; /* Smaller text for smaller screens */
+  }
+}
+
+/* Media Queries for responsive design */
+@media (max-width: 1000px) {
+  .main-content {
+    flex-direction: column;
+    padding: 50px;
+    height: auto;
+  }
+
+  .content {
+    max-width: 100%;
+    padding-right: 0;
+  }
+
+  .illustration {
+    display: none;
+  }
+
+  .content h1 {
+    font-size: 2.5em; /* Smaller title for smaller screens */
+  }
+
+  .content p {
+    font-size: 1.2em; /* Smaller text for smaller screens */
+  }
+
+  .contentainer-firm-presentation-button {
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 600px) {
+  .content h1 {
+    font-size: 2em; /* Even smaller title for smartphone screens */
+  }
+
+  .content p {
+    font-size: 1em; /* Smaller text for smartphone screens */
+  }
+
+  .firm-presentation-cta-button {
+    width: 170px; /* Smaller width for the button */
+    height: 45px; /* Smaller height for the button */
+    font-size: 0.75em; /* Smaller font size for the button */
+  }
+
+  .button-arrow {
+    font-size: 1.2em;
+  }
+}

@@ -42,7 +42,7 @@ const SearchForm = ({
           </div>
           <input 
             type="text" 
-            value={text} 
+            value={text || ''} 
             onChange={handleSearchTextChange} 
             placeholder={t("plateforme.search.textareadesc")}
             className={`search-input ${isError ? 'input-error' : ''}`} 
