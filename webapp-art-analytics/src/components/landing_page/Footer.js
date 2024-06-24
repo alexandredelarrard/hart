@@ -1,21 +1,70 @@
-import React from "react";
-import { COMPANY_NAME } from "../../utils/constants";
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopyright, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
+
+// import useLogActivity from '../../hooks/general/useLogActivity.js';
+import {validateEmail} from '../../utils/general.js';
+import axiosInstance_middle from '../../hooks/general/axiosInstance';
+import { COMPANY_NAME, URL_ADD_TO_NEWSLETTER } from "../../utils/constants";
 import '../../css/Footer.css';
 
 const Footer = ({t}) => {
+
+    // const LogActivity = useLogActivity();
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        setMessage(''); // Clear any previous error
+        e.preventDefault();
+    
+        if (!validateEmail(email)) {
+            setError(t("landing_page.trial.erroremail"));
+          } else {
+            try {
+                const response = await axiosInstance_middle.post(URL_ADD_TO_NEWSLETTER, {
+                    'email': email
+                },{
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if(response.status === 200){
+                    // await LogActivity("add_to_newsletter", email)
+                    setMessage(t("landing_page.footer.addedtothelist"));
+                }
+            } catch (error) {
+                if (error.response && error.response.status === 401) {
+                    setError(t("landing_page.trial.error401"));
+                  } else if (error.response && error.response.status === 404) {
+                    setError(t("landing_page.trial.erroremailused"));
+                  } else {
+                    setError(t("landing_page.trial.errorglobal"));
+                  }
+            }
+          }
+      };
+
     return (
         <footer className="footer-section">
             <hr className="footer-separator" />
             <div className="footer-container">
                 <div className="footer-column">
-                    <form className="newsletter-form">
+                    <form className="newsletter-form" onSubmit={handleSubmit}>
                         <h4>Newsletter</h4>
-                        <input type="email" placeholder={t("overall.email")} />
-                        <button type="submit">
+                        <input 
+                            type="email" 
+                            value={email}
+                            onChange={(e) => {setEmail(e.target.value); setMessage(''); setError('')}}
+                            placeholder={t("overall.email")} 
+                        />
+                        {message && <p style={{ color: 'green' }}>{message}</p>}
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        <button type="submit" className="login-button">
                             <FontAwesomeIcon icon={faEnvelope} />
                         </button>
                     </form>

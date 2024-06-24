@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+
+import useLogActivity from '../../../hooks/general/useLogActivity.js';
 import searchDb from '../../../hooks/search/searchDb.js'
 import "../../../css/SearchForm.css";
 
@@ -16,7 +18,7 @@ const SearchBar = ({
 }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const LogActivity = useLogActivity();
   const isError = planExpired || searchVolumeExpired;
 
   const handleSearchTextChange = (text) => {
@@ -29,7 +31,7 @@ const SearchBar = ({
 
   const handleSearch = (e) => {
     setSearchResults([]);
-    searchDb({ e, setError, setLoading, setSearchResults, searchText, isError });
+    searchDb({ e, LogActivity, setError, setLoading, setSearchResults, searchText, isError });
   };
 
   return (

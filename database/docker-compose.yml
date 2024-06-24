@@ -1,0 +1,34 @@
+services:
+    postgres:
+        container_name: postgres
+        hostname: db
+        build: 
+            context: ./
+            dockerfile: dockerfile
+        ports:
+            - 5433:5433
+        restart: always
+        environment:
+            - POSTGRES_DB=vectordb
+            - POSTGRES_PORT=5433
+            - POSTGRES_HOST_AUTH_METHOD=trust
+        env_file:
+            - ./.env
+        volumes:
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+            - pgdata:/var/lib/postgresql/data
+            - D:/db_backup/vectordb_backup.sql:/tmp/vectordb_dump.sql
+        networks:
+            - shared_net
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready"]
+            interval: 100s
+            timeout: 10s
+            retries: 5
+
+networks:
+  shared_net:
+    external: true
+
+volumes:
+    pgdata: 

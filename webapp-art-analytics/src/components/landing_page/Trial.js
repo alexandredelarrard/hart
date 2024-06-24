@@ -4,7 +4,9 @@ import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
 import {URL_API, URL_SIGNIN} from '../../utils/constants';
+import {validateEmail, validatePassword} from '../../utils/general.js';
 import Header from "../landing_page/Header.js";
 import '../../css/Trial.css';
 
@@ -22,15 +24,7 @@ const Trial = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const validateEmail = (email) => {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return emailRegex.test(email);
-      };
-
-    const validatePassword = (password) => {
-        const regex = /^(?=.*[A-Z])(?=.*[^\w\s])(?=.{8,})/;
-        return regex.test(password);
-      };
+    
 
     const handlePasswordChange = (e) => {
         const newPassword = e.target.value;

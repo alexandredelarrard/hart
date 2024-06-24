@@ -150,10 +150,6 @@
 
 
 /* Chatbot */
-.middle p {
-  margin: 0.5rem 0; /* Consistent spacing between elements */
-  font-size: 1.1rem; /* Slightly larger font for readability */
-}
 
 .chatbot-area {
   flex: 1;

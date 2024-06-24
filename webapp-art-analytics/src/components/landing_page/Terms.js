@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import '../../css/Terms.css';
 
 const Terms = ({t}) => {
+const replaceCompanyName = (text) => text.replace(/{COMPANY_NAME}/g, COMPANY_NAME);
   return (
     <div>
       <Header scrolled={true} t={t}/>
@@ -15,7 +16,7 @@ const Terms = ({t}) => {
             <p>{t("landing_page.terms.desc1")}</p>
 
             <h2>{t("landing_page.terms.title2")}</h2>
-            <p>{t("landing_page.terms.desc2").replace('{COMPANY_NAME}', COMPANY_NAME)}</p>
+            <p>{replaceCompanyName(t("landing_page.terms.desc2"))}</p>
 
             <h2>{t("landing_page.terms.title3")}</h2>
             <p>{t("landing_page.terms.desc3")}</p>
@@ -59,10 +60,10 @@ const Terms = ({t}) => {
             <p>{t("landing_page.terms.desc7")}</p>
 
             <h2>{t("landing_page.terms.title8")}</h2>
-            <p>{t("landing_page.terms.desc8").replace("{COMPANY_NAME}", COMPANY_NAME)} <Link to="/contact">{t("landing_page.terms.contact")}</Link>.</p>
+            <p>{replaceCompanyName(t("landing_page.terms.desc8"))} <Link to="/contact">{t("landing_page.terms.contact")}</Link>.</p>
 
             <h2>{t("landing_page.terms.title9")}</h2>
-            <p>{t("landing_page.terms.desc9").replace("{COMPANY_NAME}", COMPANY_NAME)}</p>
+            <p>{replaceCompanyName(t("landing_page.terms.desc9"))}</p>
 
             <h2>{t("landing_page.terms.title10")}</h2>
             <p>{t("landing_page.terms.desc10")}</p>

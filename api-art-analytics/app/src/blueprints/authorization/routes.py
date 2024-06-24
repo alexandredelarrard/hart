@@ -129,7 +129,7 @@ def signin():
                 payment = PaymentTrack(
                     user_id=new_user.id,
                     paying_date= datetime.today(),
-                    # paying_methode="FREE",
+                    paying_methode="FREE",
                     payment_amount=0,
                     plan_name=config.plans["free"],
                     plan_frequency="monthly",

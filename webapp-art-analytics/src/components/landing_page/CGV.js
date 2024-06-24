@@ -5,61 +5,61 @@ import { Link } from 'react-router-dom';
 import '../../css/Terms.css';
 
 const CGV = ({t}) => {
-
+  const replaceCompanyName = (text) => text.replace(/{COMPANY_NAME}/g, COMPANY_NAME);
   return (
     <div>
       <Header scrolled={true} t={t}/>
       <div className="terms-container">
-        <h1>{t("cgv.supertitle")}</h1>
+        <h1>{t("landing_page.cgv.supertitle")}</h1>
 
-        <h2>{t("cgv.title1").replace('{COMPANY_NAME}', COMPANY_NAME)}</h2>
+        <h2>{t("landing_page.cgv.title1")}</h2>
         <p>
-          {t("cgv.desc1")}
+          {replaceCompanyName(t("landing_page.cgv.desc1"))}
         </p>
 
-        <h2>{t("cgv.title2")}</h2>
+        <h2>{t("landing_page.cgv.title2")}</h2>
         <p>
-          {t("cgv.desc2").replace('{COMPANY_NAME}', COMPANY_NAME)}
+          {replaceCompanyName(t("landing_page.cgv.desc2"))}
         </p>
 
-        <h2>{t("cgv.title3")}</h2>
+        <h2>{t("landing_page.cgv.title3")}</h2>
         <p>
-          {t("cgv.desc3")}
+          {replaceCompanyName(t("landing_page.cgv.desc3"))}
         </p>
 
-        <h2>{t("cgv.title4")}</h2>
+        <h2>{t("landing_page.cgv.title4")}</h2>
         <p>
-          {t("cgv.desc4")}
+          {replaceCompanyName(t("landing_page.cgv.desc4"))}
         </p>
 
-        <h2>{t("cgv.title5")}</h2>
+        <h2>{t("landing_page.cgv.title5")}</h2>
         <p>
-          {t("cgv.desc5")}
+          {replaceCompanyName(t("landing_page.cgv.desc5"))}
         </p>
 
-        <h2>{t("cgv.title6")}</h2>
+        <h2>{t("landing_page.cgv.title6")}</h2>
         <p>
-          {t("cgv.desc6")}
+          {t("landing_page.cgv.desc6")}
         </p>
 
-        <h2>{t("cgv.title7")}</h2>
+        <h2>{t("landing_page.cgv.title7")}</h2>
         <p>
-          {t("cgv.desc7")}
+          {t("landing_page.cgv.desc7")}
         </p>
 
-        <h2>{t("cgv.title8")}</h2>
+        <h2>{t("landing_page.cgv.title8")}</h2>
         <p>
-          {t("cgv.desc8").replace('{COMPANY_NAME}', COMPANY_NAME)}
+          {replaceCompanyName(t("landing_page.cgv.desc8"))}
         </p>
 
-        <h2>{t("cgv.title9")}</h2>
+        <h2>{t("landing_page.cgv.title9")}</h2>
         <p>
-          {t("cgv.desc9")}
+          {t("landing_page.cgv.desc9")}
         </p>
 
-        <h2>{t("cgv.title10")}</h2>
+        <h2>{t("landing_page.cgv.title10")}</h2>
         <p>
-          {t("cgv.desc10")} <Link to="/contact">{t("overall.contactus")}</Link>.
+          {t("landing_page.cgv.desc10")} <Link to="/contact">{t("overall.contactus")}</Link>.
         </p>
       </div>
     </div>

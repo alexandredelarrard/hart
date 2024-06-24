@@ -205,6 +205,7 @@ function UploadForm({
         handleMenuClick={handleMenuClick}
         t={t}
       />
+      <h2>{t("plateforme.uploadform.supertitle")}</h2>
       <SearchForm
         text={text}
         onDrop={onDrop}

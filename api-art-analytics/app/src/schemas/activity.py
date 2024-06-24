@@ -22,3 +22,20 @@ class ActivityLog(db.Model):
             'activity_timestamp': self.activity_timestamp,
             'geolocalisation': self.geolocalisation
         }
+    
+
+class Newsletter(db.Model):
+    __tablename__ = 'newsletter_liste'
+    __table_args__ = {'extend_existing': True}
+    newletter_id = db.Column(db.Integer, unique=True, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    creation_date = db.Column(db.String(120), nullable=False)
+    nbr_email_opened = db.Column(db.Integer, nullable=False)
+    nbr_email_received = db.Column(db.Integer, nullable=False)
+    last_email_received = db.Column(db.String(120), nullable=False)
+    is_active_email = db.Column(db.Boolean, nullable=False)
+    has_opt_out = db.Column(db.Boolean, nullable=False)
+    opt_out_date= db.Column(db.String(120), nullable=False)
+
+    def to_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}

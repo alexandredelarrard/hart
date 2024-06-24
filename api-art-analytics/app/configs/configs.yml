@@ -1,7 +1,7 @@
 server:
-  host: host.docker.internal #postgres_db
-  database: postgres
-  port: 5432
+  host: postgres # host.docker.internal #
+  database: vectordb
+  port: 5433
 
 front_end:
   server: 'http://localhost:3000'

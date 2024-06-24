@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { URL_API, URL_SEARCH_DB } from '../../utils/constants';
 
-const searchDb = async ({ e, setError, setLoading, setSearchResults, searchText, isError }) => {
+const searchDb = async ({ e, LogActivity, setError, setLoading, setSearchResults, searchText, isError }) => {
     
     e.preventDefault();
     if (isError || !searchText.trim()) return;
@@ -19,6 +19,7 @@ const searchDb = async ({ e, setError, setLoading, setSearchResults, searchText,
             }
           });
         setSearchResults(response.data.result);
+        LogActivity('click_history_search', searchText);
     } catch (err) {
         setError(err.message);
     } finally {

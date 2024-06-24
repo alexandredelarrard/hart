@@ -38,7 +38,8 @@
     "uploadform": {
       "summarytitle": "Proposed Estimation",
       "specification": "Additional Information",
-      "title": "Title",
+      "supertitle": "Get an accurate estimate in just a second",
+      "title": "Titre",
       "designation": "Designation",
       "estimationprice": "Estimation",
       "finalprice": "Final Price",
@@ -61,7 +62,8 @@
       "save": "Save",
       "edit": "Edit",
       "notvalidatedemail": "To be verified",
-      "validatedemail": "Verified on"
+      "validatedemail": "Verified on",
+      "myactivitytitle": "My activities"
     },
     "filtering": {
       "filtertitle": "Filter",
@@ -116,7 +118,8 @@
       "community": "Community",
       "reviews": "Testimonials",
       "blog": "Our Blog",
-      "references": "References"
+      "references": "References",
+      "addedtothelist": "You have been successfully added !"
     },
     "header": {
       "myaccount": "My Account",

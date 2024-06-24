@@ -1,0 +1,41 @@
+/* Styling for the left part containing the bar chart */
+.plans .left-chart {
+    width: 65%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+/* Styling for the right part containing the pie chart */
+.plans .right-chart {
+    width: 35%;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+}
+
+/* Styling for the dropdown selector */
+.select-month {
+    margin-top: 20px;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+/* Centering the pie chart */
+.pie-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.recap-container {
+    padding: 1.1rem;
+    margin-left: 2rem; /* Increased margin for wider gap */
+    width: 45%;
+    height: 100%; /* Set the height to match part 1 */
+    display: flex;
+    background: #fff;
+    border-radius: 10px; /* Rounded corners for a modern look */
+    overflow-y: auto;
+    max-height: 400px; /* Adjust based on your layout */
+  } 
