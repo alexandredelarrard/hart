@@ -166,3 +166,6 @@ data/
 art_env/
 .log
 ./api-art-analytics/app/.env
+
+*.sql
+*.csv
