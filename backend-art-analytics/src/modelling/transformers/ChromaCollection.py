@@ -44,11 +44,11 @@ class ChromaCollection(Step):
 
         if type == "picture":
             self.collection = chroma_db.get_or_create_collection(
-                                                        name = CHROMA_TEXT_DB_NAME,
+                                                        name = CHROMA_PICTURE_DB_NAME,
                                                         metadata={"hnsw:space": "cosine"})
         elif type == "text":
             self.collection = chroma_db.get_or_create_collection(
-                                                        name = CHROMA_PICTURE_DB_NAME,
+                                                        name = CHROMA_TEXT_DB_NAME,
                                                         metadata={"hnsw:space": "cosine"})
         else:
             raise Exception("Only text of picture collections handled so far")

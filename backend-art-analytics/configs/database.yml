@@ -1,4 +1,4 @@
 server:
-  database: postgres
+  database: postgres #vectordb
   host: localhost #container of the database
   port: 5432

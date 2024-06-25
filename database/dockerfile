@@ -1,36 +1,3 @@
-# Stage 1: Build stage for setting up the database
-FROM postgres:latest as build
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    postgresql-server-dev-all \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /tmp
-RUN git clone https://github.com/pgvector/pgvector.git
-
-WORKDIR /tmp/pgvector
-RUN make
-RUN make install
-
-# Copy the dump file
-# COPY D:/db_backup/vectordb_backup.sql /tmp/vectordb_dump.sql
-COPY ./init_db.sh /docker-entrypoint-initdb.d/init_db.sh
-
-# Ensure the script is executable
-RUN chmod +x /docker-entrypoint-initdb.d/init_db.sh
-
-# Switch to the postgres user to run the initialization script
-USER postgres
-
-# Initialize the PostgreSQL data directory
-RUN initdb -D /var/lib/postgresql/data
-
-# Run the initialization script
-RUN /docker-entrypoint-initdb.d/init_db.sh
-
-# Stage 2: Final stage for running the container
 FROM postgres:latest
 
 RUN apt-get update && apt-get install -y \
@@ -46,20 +13,19 @@ WORKDIR /tmp/pgvector
 RUN make
 RUN make install
 
-# Copy the data directory from the build stage
-COPY --from=build /var/lib/postgresql/data /var/lib/postgresql/data
+# Copy the configuration files
+# COPY ./postgresql.conf /etc/postgresql/postgresql.conf
+# COPY ./pg_hba.conf /etc/postgresql/pg_hba.conf
+# COPY ./init_db.sh /docker-entrypoint-initdb.d/init_db.sh
+
+# Ensure the script is executable
+# RUN chmod +x /docker-entrypoint-initdb.d/init_db.sh
 
 # Ensure proper permissions
-RUN chown -R postgres:postgres /var/lib/postgresql/data
+# RUN chown -R postgres:postgres /var/lib/postgresql /etc/postgresql/postgresql.conf /etc/postgresql/pg_hba.conf /docker-entrypoint-initdb.d/
 
-# Switch back to root to copy the initialization script
-USER root
+# Switch to the postgres user for running the PostgreSQL server
+# USER postgres
 
-# Copy the initialization script
-COPY ./init.sql /docker-entrypoint-initdb.d/init.sql
-
-# Switch back to the postgres user for running the PostgreSQL server
-USER postgres
-
-# Start PostgreSQL on port 5433
-CMD ["postgres", "-c", "port=5433"]
+# Start PostgreSQL on port 5433 with custom configuration files
+# CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf", "-c", "port=5433"]
