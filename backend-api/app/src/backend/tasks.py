@@ -21,7 +21,7 @@ def process_request(image, text):
     results = {"image" : None, "text": None}
     if image:
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
-        results['image'] = step_chromadb.query_collection(pict_embedding)
+        results['image'] = step_chromadb.query_collection_postgres(pict_embedding)
     if text:
         text_embedding = step_embedding.get_text_embedding(text, prompt_name=config.embedding.prompt_name)
         results['text'] = step_chromadb.query_collection(text_embedding)

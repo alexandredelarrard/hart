@@ -18,7 +18,7 @@ services:
             - ./init.sql:/tmp/init.sql
             - pgdata:/var/lib/postgresql/data
             - D:/db_backup/vectordb_backup.sql:/tmp/vectordb_dump.sql
-            - D:/db_backup/picture_embeddings_truncated.csv:/tmp/picture_embeddings_truncated.csv
+            - D:/db_backup/picture_embeddings.csv:/tmp/picture_embeddings.csv
         networks:
             - shared_net
 

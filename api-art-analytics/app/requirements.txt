@@ -10,5 +10,6 @@ omegaconf==2.3.0
 python-dotenv==1.0.1
 psycopg2
 pandas 
+pgvector
 sqlparse
 numpy==1.26.4

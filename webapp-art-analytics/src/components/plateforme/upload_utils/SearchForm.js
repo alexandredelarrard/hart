@@ -3,8 +3,6 @@ import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
 
-import { Link } from 'react-router-dom'; // Import Link for navigation
-
 import "../../../css/SearchForm.css";
 
 const SearchForm = ({ 
@@ -56,7 +54,7 @@ const SearchForm = ({
       <div className={`error-message-search ${isError ? 'show' : ''}`}>
         {planExpired && (
           <div className="plan-expired-message">
-            {t("plateforme.search.errorplanexpired")} <Link to="/subscribe">{t("plateforme.search.upgradebutton")}</Link>.
+            {t("plateforme.search.errorplanexpired")} <button className='button-error-plan' onClick={() => { handleMenuClick("my-offers")}}>{t("plateforme.search.upgradebutton")}</button>
           </div>
         )}
         {closestVolumeExpired && (

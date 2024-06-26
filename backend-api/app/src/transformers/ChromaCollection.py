@@ -40,24 +40,24 @@ class ChromaCollection(Step):
         #     )
         # )
 
-        chroma_client = HttpClient(
-            host=os.getenv("DB_HOST"),
-            port=config.chroma_db.port,
-            settings=Settings(
-                allow_reset=True,
-                anonymized_telemetry=False,
-            )
-        )
+        # chroma_client = HttpClient(
+        #     host=os.getenv("DB_HOST"),
+        #     port=config.chroma_db.port,
+        #     settings=Settings(
+        #         allow_reset=True,
+        #         anonymized_telemetry=False,
+        #     )
+        # )
 
         self.n_top_results = self._config.embedding.n_top_neighbors
         self.step_size = 41000 # max batch size collection step size
-        self.text_collection = chroma_client.get_or_create_collection(
-                                                    name = CHROMA_TEXT_DB_NAME,
-                                                    metadata={"hnsw:space": "cosine"})
+        # self.text_collection = chroma_client.get_or_create_collection(
+        #                                             name = CHROMA_TEXT_DB_NAME,
+        #                                             metadata={"hnsw:space": "cosine"})
         
-        self.picture_collection = chroma_client.get_or_create_collection(
-                                                    name = CHROMA_PICTURE_DB_NAME,
-                                                    metadata={"hnsw:space": "cosine"})
+        # self.picture_collection = chroma_client.get_or_create_collection(
+        #                                             name = CHROMA_PICTURE_DB_NAME,
+        #                                             metadata={"hnsw:space": "cosine"})
 
     @timing
     def save_collection(self, 
@@ -89,3 +89,16 @@ class ChromaCollection(Step):
         return self.picture_collection.query(query_embeddings=query_embedded,
                                             n_results=self.n_top_results,
                                             include=["distances", "metadatas"])
+    
+    @timing
+    def query_collection_postgres(self, query_embedded: np.array) -> Dict:
+        query = """
+                SELECT "id_unique" AS ids, ("embedding" <=> %s::vector) AS distances 
+                FROM "picture_embeddings" 
+                ORDER BY distances 
+                LIMIT %s
+                """
+        df = pd.read_sql(query, 
+                         con=self._context.db_con, 
+                         params=(query_embedded.tolist()[0], self.n_top_results))
+        return {"ids": df["ids"].tolist(), "distances": df["distances"].tolist()}

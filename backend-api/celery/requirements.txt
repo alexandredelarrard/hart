@@ -18,3 +18,4 @@ swifter==1.4.0
 timm==0.9.16
 tqdm==4.66.2
 trl==0.8.6
+pgvector==0.7.2

@@ -1,7 +1,7 @@
 server:
-  host: host.docker.internal #postgres_db
-  database: postgres
-  port: 5432
+  host: host.docker.internal #postgres #
+  database: vectordb
+  port: 5433
 
 email:
   MAIL_SERVER: smtp.gmail.com

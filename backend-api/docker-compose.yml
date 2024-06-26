@@ -42,7 +42,6 @@ services:
         restart: always
         depends_on: 
             - back_app
-            # - flower
         networks:
             - shared_net
     celery:
@@ -50,21 +49,17 @@ services:
             context: ./celery
             dockerfile: dockerfile
         # user: celeryuser
-        container_name: celery
+        container_name: back_celery
         volumes:
             - ./app:/app
             - D:/data/models:/data/models
             - D:/data/default:/data/default
         command: 'celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1'
-        # depends_on:
-            # - redis
-            # - chromadb
         env_file:
             - ./.env
         environment:
             - CHROMA_DB_PATH=/chroma/chroma
             - FLASK_ENV=celery_worker
-            - DB_HOST=host.docker.internal #chromadb #
         deploy:
             resources:
                 reservations:

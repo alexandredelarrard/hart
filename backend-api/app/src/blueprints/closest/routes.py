@@ -83,12 +83,12 @@ def task_status():
             }
 
         elif task.state == 'SUCCESS':
-            results = {"ids": task.result["image"]['ids'][0],
-                       "distances": [np.round(x, 3) for x in task.result["image"]['distances'][0]]}
+            # results = {"ids": task.result["image"]['ids'][0],
+            #            "distances": [np.round(x, 3) for x in task.result["image"]['distances'][0]]}
             
             response = {
                 'state': task.state,
-                'result': results,
+                'result': task.result["image"], ## to change with chromadb
             }
 
             # save result into db 
@@ -97,8 +97,8 @@ def task_status():
                 
                 if result:
                     # Update the user as confirmed
-                    result.closest_ids = ",".join(results["ids"])
-                    result.closest_distances = ",".join([str(x) for x in results["distances"]])
+                    result.closest_ids = ",".join(task.result["image"]["ids"])
+                    result.closest_distances = ",".join([str(x) for x in task.result["image"]["distances"]])
                     result.status = task.state
                     result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
                     db.session.commit()

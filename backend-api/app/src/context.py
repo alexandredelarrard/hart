@@ -4,6 +4,7 @@ from io import StringIO
 import sys 
 from logging.config import dictConfig 
 from sqlalchemy import create_engine
+from pgvector.sqlalchemy import Vector
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager

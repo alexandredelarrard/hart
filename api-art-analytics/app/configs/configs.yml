@@ -1,5 +1,5 @@
 server:
-  host: postgres # host.docker.internal #
+  host: host.docker.internal #localhost # 
   database: vectordb
   port: 5433
 

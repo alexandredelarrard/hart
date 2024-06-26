@@ -18,3 +18,4 @@ langchain_groq
 langchain_google_vertexai
 vertexai
 google
+pgvector==0.7.2

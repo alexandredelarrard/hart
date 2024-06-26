@@ -25,12 +25,16 @@ CREATE TABLE IF NOT EXISTS picture_embeddings (
 ALTER TABLE text_embeddings SET (autovacuum_enabled = false);
 ALTER TABLE picture_embeddings SET (autovacuum_enabled = false);
 
+-- Set maintenance work memory and parallel workers
+-- SET maintenance_work_mem TO '1GB';
+-- SET max_parallel_maintenance_workers TO 3;
+
 -- Load data from CSV file
-COPY picture_embeddings FROM '/tmp/picture_embeddings_truncated.csv' WITH (FORMAT csv, HEADER true);
+COPY picture_embeddings FROM '/tmp/picture_embeddings.csv' WITH (FORMAT csv, HEADER true);
 
 -- Create indexes on embedding columns
-CREATE INDEX ON picture_embeddings USING hnsw (EMBEDDING vector_cosine_ops);
-CREATE INDEX ON text_embeddings USING hnsw (EMBEDDING vector_cosine_ops);
+CREATE INDEX ON picture_embeddings USING hnsw (EMBEDDING vector_cosine_ops) WITH (m = 16, ef_construction=64);
+CREATE INDEX ON text_embeddings USING hnsw (EMBEDDING vector_cosine_ops) WITH (m = 16, ef_construction=64);
 
 -- Re-enable autovacuum
 ALTER TABLE text_embeddings SET (autovacuum_enabled = true);
