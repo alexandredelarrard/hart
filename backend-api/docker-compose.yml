@@ -9,7 +9,10 @@ services:
         command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
         volumes: 
             - ./app:/app
-            - db-schema:/app/src/schemas
+            - ../global-schemas/schemas:/app/src/schemas
+            - ../global-schemas/utils:/app/src/utils
+            - ../global-schemas/constants:/app/src/constants
+            - ../global-schemas/configs:/app/configs
         environment:
             - FLASK_ENV=flask_worker
         env_file:
@@ -39,9 +42,13 @@ services:
             - ./app:/app
             - D:/data/models:/data/models
             - D:/data/default:/data/default
+            - ../global-schemas/schemas:/app/src/schemas
+            - ../global-schemas/utils:/app/src/utils
+            - ../global-schemas/constants:/app/src/constants
+            - ../global-schemas/configs:/app/configs
         command: 'celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1'
         env_file:
-            - ./.env
+            - ../global-schemas/.env
         environment:
             - FLASK_ENV=celery_worker
         deploy:
@@ -57,11 +64,3 @@ services:
 networks: 
   shared_net:
     external: true
-
-volumes:
-    db-schema:
-        driver: local
-        driver_opts:
-            type: "none"
-            device: "../global-schemas/schemas"
-            o: "bind"

@@ -71,7 +71,7 @@ class EmbeddingCollection(Step):
     def get_id_item_from_pict(self, liste_ids_pict):
         df_ids= pd.read_sql(f"SELECT \"ID_ITEM\", \"ID_UNIQUE\" FROM \"ALL_ITEMS\" WHERE \"ID_UNIQUE\" IN {tuple(liste_ids_pict)}", 
                          con=self._context.db_con)
-        return ids["ID_ITEM"].tolist()
+        return df_ids["ID_ITEM"].tolist()
     
     @timing
     def multi_embedding_strat(self, result_picture, result_text):

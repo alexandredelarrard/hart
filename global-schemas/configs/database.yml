@@ -1,0 +1,4 @@
+server:
+  database: vectordb #host.docker.internal
+  host: host.docker.internal #container of the database
+  port: 5433 # 5432

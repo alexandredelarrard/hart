@@ -1,10 +1,12 @@
 evaluator:
     model_path: D:/data/models/evaluator
+    category_mapping_path: D:/data/llm_extracts/features_to_extract/object_category_mapping.json
     mappings: 
         watch: D:/data/llm_extracts/features_to_extract/watch_features.json
         vase: D:/data/llm_extracts/features_to_extract/vase_features.json
         all: D:/data/llm_extracts/features_to_extract/category_features.json
         painting: D:/data/llm_extracts/features_to_extract/paintings_features.json
+        reformulate: D:/data/llm_extracts/features_to_extract/reformulate_features.json
 
     info_to_mapping:
         shape_mapping: 
@@ -24,6 +26,8 @@ evaluator:
             _CONDITION: [_CONDITION]
         decorations_mapping: 
             _DECORATIONS: [_DECORATIONS]
+        object_category_mapping: 
+            OBJECT_CATEGORY: [OBJECT_CATEGORY]
 
     handle_dates: ["_PERIODE_OR_CIRCA_YEAR", "_PERIOD_OR_YEAR"]
     handle_cm: ["_HEIGHT", "_LENGTH", "_WIDTH"]
@@ -173,7 +177,7 @@ evaluator:
                             "leinwand", "canvasboard", "lin"],
             "ivory": ["ivory", "ivoire"],
             "stone": ["stone", "pierre"],
-            "paper": ["paper", "papuier", "papier", "arches", "parchemin"],
+            "paper": ["scroll", "paper", "papuier", "papier", "arches", "parchemin"],
             "  carton  ": ["millboard", "cartoncino", "card", "cardboard", "carton", 
                             "karton", "cartone", "cartonnette", "paperboard"],
             "  panneau  ": ["panneau", "panneaux", "panel", "pane", "board", "isore", "isorel", "hardboard",
@@ -193,7 +197,7 @@ evaluator:
             "acrylic": ["acrylic", "acrylique", "acrylics", "acryl"],
             "crayon": ["crayon", "pencil", "fusain"],
             "watercolor": ["aquarel", "acuarela", "aquatinte", "aquarelle", "watercolor", "watercolours", "acquarello", "watercolour", "bodycolour", "acquerello", "aquarell", "aquatint"],
-            "serigraphy": ["serigraphy", "serigraphie", "serigraphe", "screenprint", "impression"],
+            "serigraphy": ["serigraphy", "serigraphie", "serigraphe", "screenprint", "impression", "screen print"],
             "lithography": ["lithography", "lithograph", "lithographie", "estampe"],
         }
 
@@ -314,52 +318,48 @@ evaluator:
             "patterns" : ["blue and white", "designs", "patterns", "intricate", "geometric", "abstract", "traditional chinese motifs"]
         }
 
-        object_sub_category_mapping: {
-            "ring": ["ring"],
-            "bracelet": ["bracelet"],
-            "necklace": ["necklace"],
-            "pendant": ["pendant", "pendentif", "medallion pendant"],
-            "brooch": ["brooch"],
-            "earrings": ["earrings", "ear clips"],
-            "ceramic_vase": ["ceramic vase"],
-            "wine": ["bordeaux wine", "bordeaux", "bottles", "bordeaux wine collection", "red wine", "fine wine", "fine and rare wine", "fine and rare wines", "sauternes"],
-            "champagne": ["champagne"],
-            "painting_life": ["still life"],
-            "painting_landscape": ["landscape", "classical ruins landscape"],
-            "painting_portrait": ["portrait", "self-portrait"],
-            "painting_modern": ["modern art", "abstract art", "modern and contemporary art", "impressionist modern art", "contemporary art"],
-            "painting_religious": ["religious art"],
-            "painting_watercolor": ["watercolor"],
-            "painting_oil_canvas": ["oil on canvas", "old master painting"],
-            "painting_maritime": ["maritime scene"],
-            "table": ["table"],
-            "armchair": ["armchair", "armchairs"],
-            "desk": ["desk"],
-            "commode": ["commode"],
-            "chair": ["chair", "chairs"],
-            "sofa": ["sofa", "canape"],
-            "lithography": ["lithograph", "lithography", "lithographie"],
-            "etching": ["etching", "gravure"],
-            "drawing": ["drawing"],
-            "print": ["print", "limited edition print"],
-            "candlesticks": ["candlesticks"],
-            "vase_glass": ["glass vase"],
-            "vase_murano": ["murano glass vase"], 
-            "vase_porcelaine": ["porcelain vase"],
-            "vase_terracotta": ["terracotta"],
-            "time_watch": ["wristwatch", "watches", "mechanical watch", "automatic wristwatch", "pocket watch"],
-            "time_clock": ["mechanical clock"],
-            "sculpture_bronze": ["bronze figurine", "bronze figure", "bronze", "bronze sculpture"],
-            "sculpture_wood": ["wooden sculpture"],
-            "sculpture_animal": ["animal figurine"],
-            "sculpture_mask": ["wooden mask"],
-            "sculpture_terracota": ["terracotta sculpture"],
-            "screenprint": ["screenprint", "cinema poster"],
-            "book": ["rare book", "art book", "limited edition", "art history"],
-            "table_lamp": ["table lamp"],
-            "lamp": ["lamp"],
-            "wall appliques": ["wall appliques"],
-            "rug": ["carpet", "rug"],
-            "cloth_women": ["women's clothing"],
-            "cloth_handbag": ["handbag", "leather handbag"],
+        object_category_mapping: {
+            "painting": ["pair of portraits", "still life", "tableaux", "gouache on paper", "pair of portraits", "watercolor studies", "panneau", "scroll", "still life", "aquarel", "lot of paintings", "set of two watercolour and ink works on paper within artist's sketchbook",
+                        'folio of watercolours', 'etching and aquatint', "aquarell", "gouache pictures", "tableau", "pair of paintings", "pair of gouaches", "composition", "aquatint", "aquatinte", "papier peint", 
+                        "pair of oil paintings", "watercolour", "peinture", "portrait", "painting", "watercolor", "aquarelle", "pastel", "gouache", "pair of paintings", 'oil painting', "collage", "pair of watercolors"],
+            "print": ["linocut", "impression", "chromogenic print", "photolithographie", 'lithographie en couleurs', "lithographs", "illustration", "lithographie offset", "offset", 
+                    "vintage poster", "poster", "affiche", "lithographie couleurs", "color lithograph", "lithographies", "lithographie", "lithograph", "lithography", "estampe litho couleur", 
+                    "lithographie originale", "lithographic print", "offset lithograph","granolithographie",
+                    "prints", 'c-print', "silkscreen", "serigraphie", "serigraph", "impression", "screenprint", "print", "giclee print", "giclee", "estampe", "screen print",
+                    "estampe", "estampes", "lithograph and screenprint", "chromolithographie", "serigrafia", "serigraphy"],
+            "drawing": ["drawing", "dessin"],
+            "book": ["book", "livre d'heures", "manuscript"],
+            "icon": ["icon", "icons", "icone"],
+            "miniature": ["miniatures", "miniature", "miniature portrait", "portrait miniature", "miniature peinte"],
+            "gravure": ["heliogravure", "wood engraving", "etchings", "gravures", "eau-forte", 'gravure en serie en couleur', "linoleum cut", "etching", "gravure", "engraving", "gravure en couleurs", "engravings",
+                       "gravure au carborundum", "woodcut", "gravure sur bois", "linogravure"],
+            "plaque": ["plaque", "enameled plaque", 'plaque en cuivre emaillee polychrome', ""],
+            "vase": ["vase"],
+            "wine": ["wine", "wine bottle"],
+            "sculpture": ["sculpture", 'statuette', "bronze sculpture"],
+            "figurine": ["figurine", "figurines"],
+            "tapestry": ["tapestry", "tapisserie"],
+            "retable": ["retable"],
+            "relief": ["relief"],
+            "triptyque": ["triptyque", "triptyc", "triptych"],
+            "table": ["table", "table top"],
+            "carpet": ["woolen carpet", "carpet", "tapis", "rug"],
+            "photography": ["album", "photograph", "photography", "photographie"],
+            "assiette": ["ceramic plate", "collection of plates", "assiette", "assiettes", "pair of porcelain plates"],
+            "plateau": ["plateau de service", "plateau", "plate"],
+            "plat": ["plat"],
+            "box": ['cigar case', "box"],
+            "chair": ["chair"],
+            "sac": ["sac"],
+            "lamp": ['table lamp', 'lamp'],
+            "paravent": ["paravant"],
+            "tile": ["tile", 'ceramic tile'],
+            "frame": ["frame", "cadre", "cadre de tableau"],
+            "mirror": ["mirror"],
+            "broderie": ["broderie"],
+            "ring": ["ring", "rings", "bague"],
+            "earring": ["earring", "earrings", "boucle oreille"],
+            "necklace" : ["necklace"],
+            "watch": ["watch"],
+            
         }

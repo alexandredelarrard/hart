@@ -8,7 +8,10 @@ services:
             - 8888
         volumes:
             - ./app:/app
-            - db-schema:/app/src/schemas
+            - ../global-schemas/schemas:/app/src/schemas
+            - ../global-schemas/utils:/app/src/utils
+            - ../global-schemas/constants:/app/src/constants
+            - ../global-schemas/configs:/app/configs
         command: gunicorn --bind 0.0.0.0:8888 --workers 4 --threads 4 --timeout 120 app:app
         environment:
             - FLASK_ENV=development
@@ -34,11 +37,3 @@ services:
 networks:
   shared_net:
     external: true
-
-volumes:
-    db-schema:
-        driver: local
-        driver_opts:
-            type: "none"
-            device: "../global-schemas/schemas"
-            o: "bind"

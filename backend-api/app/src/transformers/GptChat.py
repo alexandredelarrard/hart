@@ -26,7 +26,7 @@ class GptChat(Step):
         self.methode = methode
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model
-        self.introduction = self._config.gpt.introduction
+        self.introduction = self._config.gpt.introduction["prod_designation"]
         self.temperature = self._config.gpt.temperature
         self.object = "designation"
         self.get_api_keys()

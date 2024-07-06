@@ -1,0 +1,26 @@
+side_crawling: 
+  artist_db:
+    webpage_url: https://www.artprice.com/artists/all/
+    save_data_path : D:/data/artists/
+    pages:
+      liste_elements : 
+          by_type: XPATH
+          value_css: //div[@class='artist-directory']/div[3]/div
+      per_element:
+        URLS:
+          by_type: TAG_NAME
+          value_css: a
+          attribute: href
+    artist_names:
+      liste_elements: 
+          by_type: CLASS_NAME
+          value_css: artist
+      per_element:
+        URL_ARTIST:
+          by_type: TAG_NAME
+          value_css: a
+          attribute: href
+        ARTIST_NAME:
+          by_type: TAG_NAME
+          value_css: a
+          attribute: text
