@@ -40,7 +40,7 @@ repos:
     rev: v3.2.4  # Specify the version of pylint you want to use
     hooks:
       - id: pylint
-        args: [--max-line-length=110]
+        args: [--max-line-length=100]
         language_version: python3.12
 
   - repo: https://github.com/pre-commit/mirrors-mypy
