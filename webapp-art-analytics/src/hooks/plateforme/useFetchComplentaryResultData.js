@@ -1,40 +1,40 @@
 import { useEffect } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { URL_API, URL_GET_IDS_INFO } from '../../utils/constants';
+import axiosInstance_middle from '../general/axiosInstance';
+import { URL_GET_IDS_INFO } from '../../utils/constants';
+import { checkAuth } from '../general/identification';
 
 const useFetchComplentaryResultData = (result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved) => {
   useEffect(() => {
-    if (result && result.distances && result.ids) {
+    if (result && result.answer) {
       const fetchData = async () => {
         try {
-          const token = Cookies.get('token');
-          if (!token) {
-            return;
-          }
+            const isAuthenticated = await checkAuth();
 
-          const response = await axios.post(URL_API + URL_GET_IDS_INFO, {
-            'ids': result.ids,
-            'distances': result.distances,
-          },{
-            headers: {
-               Authorization: `Bearer ${token}`,
-               'Content-Type': 'application/json',
-            },
-          });
+            if(isAuthenticated){
+              const response = await axiosInstance_middle.post(URL_GET_IDS_INFO, {
+                'answer': result.answer
+              },{
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
 
-          // Ensure response.data is an array
-          if (Array.isArray(response.data.result)) {
-            setAdditionalData(response.data.result);
-            setAvgMinEstimates(response.data.min_estimate);
-            setAvgMaxEstimates(response.data.max_estimate);
-            setAvgFinalResult(response.data.final_result);
-          } else {
-            console.error('Unexpected response format:', response.data);
+              // Ensure response.data is an array
+              if (Array.isArray(response.data.result.answer)) {
+                setAdditionalData(response.data.result.answer);
+                setAvgMinEstimates(response.data.min_estimate);
+                setAvgMaxEstimates(response.data.max_estimate);
+                setAvgFinalResult(response.data.final_result);
+              } else {
+                console.error('Unexpected response format:', response.data);
+              }
+            } else {
+              window.location.href = '/login';
+              throw new Error('User not authenticated');
+            }
+          } catch (error) {
+            console.error('Error fetching additional data', error);
           }
-        } catch (error) {
-          console.error('Error fetching additional data', error);
-        }
       };
       fetchData();
     }

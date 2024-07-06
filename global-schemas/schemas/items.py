@@ -1,4 +1,5 @@
 from src.extensions import db
+from src.constants.models import KnnFullResultInfos, FullResultInfos
 
 
 class AllItems(db.Model):
@@ -28,34 +29,22 @@ class AllPerItem(db.Model):
     __table__ = db.Model.metadata.tables["ALL_ITEMS_per_item"]
     __table_args__ = {"extend_existing": True}
 
-    def to_dict(self):
-        return {
-            "id_item": self.ID_ITEM,
-            "id_picture": str(self.ID_PICTURE)
-            .replace("{", "")
-            .replace("}", "")
-            .split(","),
-        }
-
     def to_dict_search(self):
-        return {
-            "id_item": self.ID_ITEM,
-            "id_picture": str(self.ID_PICTURE)
+        return FullResultInfos(
+            id_item=self.ID_ITEM,
+            id_picture=str(self.ID_PICTURE)
             .replace("{", "")
             .replace("}", "")
             .split(",")[0],
-            "pictures": str(self.ID_PICTURE)
-            .replace("{", "")
-            .replace("}", "")
-            .split(","),
-            "title": self.ITEM_TITLE_DETAIL,
-            "description": self.TOTAL_DESCRIPTION,
-            "estimate_min": self.EUR_MIN_ESTIMATION,
-            "estimate_max": self.EUR_MAX_ESTIMATION,
-            "localisation": self.LOCALISATION,
-            "final_result": self.EUR_FINAL_RESULT,
-            "date": self.AUCTION_DATE,
-            "seller": self.SELLER,
-            "house": self.HOUSE,
-            "url_full_detail": self.URL_FULL_DETAILS,
-        }
+            pictures=str(self.ID_PICTURE).replace("{", "").replace("}", "").split(","),
+            title=self.ITEM_TITLE_DETAIL,
+            description=self.TOTAL_DESCRIPTION,
+            estimate_min=self.EUR_MIN_ESTIMATION,
+            estimate_max=self.EUR_MAX_ESTIMATION,
+            localisation=self.LOCALISATION,
+            final_result=self.EUR_FINAL_RESULT,
+            date=self.AUCTION_DATE,
+            seller=self.SELLER,
+            house=self.HOUSE,
+            url_full_detail=self.URL_FULL_DETAILS,
+        )

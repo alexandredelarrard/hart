@@ -86,7 +86,7 @@ def task_status():
         elif task.state == "SUCCESS":
             response = {
                 "state": task.state,
-                "result": task.result["image"],
+                "result": task.result,
             }
 
             # save result into db
@@ -95,10 +95,7 @@ def task_status():
 
                 if result:
                     # Update the user as confirmed
-                    result.closest_ids = ",".join(task.result["image"]["ids"])
-                    result.closest_distances = ",".join(
-                        [str(x) for x in task.result["image"]["distances"]]
-                    )
+                    result.answer = task.result["answer"]
                     result.status = task.state
                     result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
                     db.session.commit()
@@ -112,4 +109,4 @@ def task_status():
                 "status": str(task.info),
             }
 
-        return jsonify(response), 200
+        return jsonify(response)

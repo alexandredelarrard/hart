@@ -208,3 +208,51 @@ class DatasetRetreiver(Step):
         df = self.read_sql_data(formatted_query)
         logging.info(f"GETTING {df.shape}")
         return df
+
+    def get_picture_embedding_dist(
+        self, table: str, embedding: str = None, limit: int = None
+    ):
+
+        if not limit:
+            limit = 100
+
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "picture_embedding_dist"))
+        formatted_query = self.sql_queries.format_query(
+            raw_query,
+            {  # because embedding table need lower
+                "id_unique_lower": self.name.id_unique.lower(),
+                "id_unique": self.name.id_unique,
+                "id_picture_lower": self.name.id_picture.lower(),
+                "id_item": self.name.id_item,
+                "embedding": f"ARRAY{embedding.tolist()[0]}",
+                "table": table,
+                "table_all": self._config.cleaning.full_data_auction_houses,
+                "limite": limit,
+            },
+        )
+
+        # 3. Fetch results
+        df = self.read_sql_data(formatted_query)
+        return df
+
+    def get_text_embedding_dist(
+        self, table: str, embedding: str = None, limit: int = None
+    ):
+
+        if not limit:
+            limit = 100
+
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "text_embedding_dist"))
+        formatted_query = self.sql_queries.format_query(
+            raw_query,
+            {
+                "id_item_lower": self.name.id_item.lower(),
+                "embedding": f"ARRAY{embedding.tolist()[0]}",
+                "table": table,
+                "limite": limit,
+            },
+        )
+
+        # 3. Fetch results
+        df = self.read_sql_data(formatted_query)
+        return df

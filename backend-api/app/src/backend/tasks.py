@@ -1,9 +1,11 @@
 import os
+import logging
 from celery import Celery
-import pandas as pd
 
-from src.constants.models import EmbeddingsResults, MultiEmbeddingsResults
 from src.extensions import config, context
+from src.constants.models import EmbeddingsResults
+from src.utils.dataset_retreival import DatasetRetreiver
+
 
 celery = Celery("src.backend.tasks", broker=config.celery.url)
 celery.config_from_object("celeryconfig")
@@ -22,28 +24,41 @@ if os.getenv("FLASK_ENV") == "celery_worker":
         context=context, config=config, type=[PICTURE_DB, TEXT_DB_EN, TEXT_DB_FR]
     )
 
+    data_retreiver = DatasetRetreiver(context=context, config=config)
+
 
 @celery.task(time_limit=300)
 def process_request(image, text) -> dict[str, EmbeddingsResults]:
-    results = MultiEmbeddingsResults()
+
+    new_index = step_collection.name.id_item.lower()
 
     if image:
-        picture_db = step_collection.get_db_pict_name()
-        query = step_collection.get_query(picture_db)
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
-        results.image = step_collection.query_collection_postgres(
-            query, pict_embedding, picture_db
+        results_image = data_retreiver.get_picture_embedding_dist(
+            table=PICTURE_DB, embedding=pict_embedding, limit=100
         )
-        results.image.ids = step_collection.get_id_item_from_pict(results["image"].ids)
+        results_image = results_image.drop_duplicates(new_index)
+
     if text:
         language_db = step_collection.detect_language(text)
-        query = step_collection.get_query(language_db)
         text_embedding = step_embedding.get_text_embedding(language_db, text)
-        results.text = step_collection.query_collection_postgres(
-            query, text_embedding, language_db
+        results_text = data_retreiver.get_text_embedding_dist(
+            table=language_db, embedding=text_embedding, limit=100
         )
+        results_text = results_text.drop_duplicates(new_index)
 
-    if text and image:  # TODO: multiembedding model distance (multimodal)
-        results.image = step_collection.multi_embedding_strat(results)
-
-    return results
+    # TODO: multiembedding model distance (multimodal)
+    if text and image:
+        final = step_collection.multi_embedding_strat(results_image, results_text)
+        final = step_collection.fill_EmbeddingsResults(
+            liste_results=final.set_index(new_index).to_dict(orient="index")
+        )
+    elif text and not image:
+        final = step_collection.fill_EmbeddingsResults(
+            liste_results=results_text.set_index(new_index).to_dict(orient="index")
+        )
+    else:
+        final = step_collection.fill_EmbeddingsResults(
+            liste_results=results_image.set_index(new_index).to_dict(orient="index")
+        )
+    return final.dict()

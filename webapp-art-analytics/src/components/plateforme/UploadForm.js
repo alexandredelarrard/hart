@@ -144,10 +144,10 @@ function UploadForm({
       let comparison = 0;
       switch (sortOrder) {
         case 'relevance_desc':
-          comparison = a.distances - b.distances;
+          comparison = a.distance - b.distance;
           break;
         // case 'relevance_asc':
-        //   comparison = b.distances - a.distances;
+        //   comparison = b.distance - a.distance;
         //   break;
         case 'price_desc':
           comparison = b.final_result - a.final_result;

@@ -1,54 +1,46 @@
 from flask import request, jsonify
-from typing import List
+from sqlalchemy import and_
+import numpy as np
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
-from src.schemas.items import AllItems, AllPerItem
+
+from src.schemas.items import AllPerItem
 from src.schemas.results import CloseResult
-from sqlalchemy import and_
 from src.extensions import db
-import numpy as np
-
-from . import infos_blueprint
+from src.constants.models import KnnFullResultInfos, EmbeddingsResults
 from src.extensions import front_server
+from . import infos_blueprint
 
 
-def add_distance(output, dict_distances, column, id):
+def enrich_dict(
+    answer: EmbeddingsResults, additional_info_dict: KnnFullResultInfos
+) -> KnnFullResultInfos:
+
     new_list = []
-    for element in output:
-        element[column] = dict_distances[element[id]]
-        new_list.append(element)
-    return new_list
+    for element in additional_info_dict.answer:
+        if element.id_item in answer.keys():
+            updated_element = element.copy(update=answer[element.id_item])
+            new_list.append(updated_element)
+        else:
+            new_list.append(element)
+    return KnnFullResultInfos(answer=new_list)
 
 
-def deduplicate_dicts(dict_list, unique_key):
-    seen = {}
-    for d in dict_list:
-        if d[unique_key] not in seen:
-            seen[d[unique_key]] = d
-    return list(seen.values())
-
-
-def reorder_output_on_dist(result, ids, distances):
-    dict_id_dist = {ids[i]: distances[i] for i in range(len(ids))}
-    output = [item.to_dict() for item in result]
-    new_output = add_distance(output, dict_id_dist, column="distance", id="id_item")
-    sorted_output = sorted(new_output, key=lambda x: x["distance"])
-    return sorted_output
-
-
-def fetch_filtered_items(output):
+def fetch_additional_infos(answer: EmbeddingsResults) -> KnnFullResultInfos:
 
     # get all pictures per id_unique
-    id_items = [x["id_item"] for x in output]
     filtered_items = (
         db.session.query(AllPerItem)
         .filter(
-            and_(AllPerItem.ID_ITEM.in_(id_items), AllPerItem.ID_PICTURE.isnot(None))
+            and_(
+                AllPerItem.ID_ITEM.in_(list(answer.keys())),
+                AllPerItem.ID_PICTURE.isnot(None),
+            )
         )
         .all()
     )
 
-    return [item.to_dict() for item in filtered_items]
+    return KnnFullResultInfos(answer=[item.to_dict_search() for item in filtered_items])
 
 
 # =============================================================================
@@ -61,47 +53,34 @@ def post_ids_infos():
 
     if request.method == "POST":
         data = request.get_json()
-        ids = data.get("ids")
-        distances = data.get("distances")
+        answer = data.get("answer")
 
-        if not ids or not distances:
-            return jsonify({"error": "No IDs provided"}), 400
+        if not answer:
+            return jsonify({"error": "No answer provided"}), 400
 
-        if isinstance(ids, List) and isinstance(distances, List):
+        if isinstance(answer, dict):
 
             # try:
-            # get description per id_unique
-            result_desc_id = AllItems.query.filter(AllItems.ID_ITEM.in_(ids)).all()
-            output = reorder_output_on_dist(result_desc_id, ids, distances)
-            deduplicated_output = deduplicate_dicts(output, "id_item")
 
             # Fetch filtered items in batches
-            grouped_items = fetch_filtered_items(deduplicated_output)
-            dict_items = {
-                grouped_items[i]["id_item"]: grouped_items[i]["id_picture"]
-                for i in range(len(grouped_items))
-            }
-
-            # Add grouped pictures to the output
-            deduplicated_output = add_distance(
-                deduplicated_output, dict_items, column="pictures", id="id_item"
-            )
+            additional_infos = fetch_additional_infos(answer)
+            knn_full_output = enrich_dict(answer, additional_infos)
 
             # results
             denominator = np.sum(
                 [
-                    1 / (10 * float(x["distance"]) + 0.01) ** 2
-                    for x in deduplicated_output
-                    if isinstance(x["estimate_min"], float)
+                    1 / (10 * float(x.distance) + 0.01) ** 2
+                    for x in knn_full_output.answer
+                    if isinstance(x.estimate_min, float)
                 ]
             )
             min_estimate = (
                 np.round(
                     np.sum(
                         [
-                            x["estimate_min"] / (10 * float(x["distance"]) + 0.01) ** 2
-                            for x in deduplicated_output
-                            if isinstance(x["estimate_min"], float)
+                            x.estimate_min / (10 * float(x.distance) + 0.01) ** 2
+                            for x in knn_full_output.answer
+                            if isinstance(x.estimate_min, float)
                         ]
                     )
                     / denominator
@@ -114,9 +93,9 @@ def post_ids_infos():
                 np.round(
                     np.sum(
                         [
-                            x["estimate_max"] / (10 * float(x["distance"]) + 0.01) ** 2
-                            for x in deduplicated_output
-                            if isinstance(x["estimate_max"], float)
+                            x.estimate_max / (10 * float(x.distance) + 0.01) ** 2
+                            for x in knn_full_output.answer
+                            if isinstance(x.estimate_max, float)
                         ]
                     )
                     / denominator
@@ -129,9 +108,9 @@ def post_ids_infos():
                 np.round(
                     np.sum(
                         [
-                            x["final_result"] / (10 * float(x["distance"]) + 0.01) ** 2
-                            for x in deduplicated_output
-                            if isinstance(x["final_result"], float)
+                            x.final_result / (10 * float(x.distance) + 0.01) ** 2
+                            for x in knn_full_output.answer
+                            if isinstance(x.final_result, float)
                         ]
                     )
                     / denominator
@@ -144,7 +123,7 @@ def post_ids_infos():
             return (
                 jsonify(
                     {
-                        "result": deduplicated_output,
+                        "result": knn_full_output.dict(),
                         "min_estimate": min_estimate,
                         "max_estimate": max_estimate,
                         "final_result": final_result,
@@ -157,7 +136,7 @@ def post_ids_infos():
         #     return jsonify({"error": str(e)}), 500
 
         else:
-            return jsonify({"error": "ids does not have the expected format"}), 400
+            return jsonify({"error": "ids does not have the expected format"}), 401
 
 
 @infos_blueprint.route("/get-past-results", methods=["GET"])
