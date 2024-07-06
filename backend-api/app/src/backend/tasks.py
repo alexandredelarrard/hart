@@ -1,5 +1,6 @@
 import os 
 from celery import Celery
+import pandas as pd 
 from src.extensions import config, context
 
 celery = Celery('src.backend.tasks', broker=config.celery.url)
@@ -21,6 +22,7 @@ if os.getenv('FLASK_ENV') == 'celery_worker':
                                    config=config, 
                                    type=[PICTURE_DB,TEXT_DB_EN,TEXT_DB_FR])
     
+    
 @celery.task(time_limit=300)
 def process_request(image, text):
     results = {"image" : None, "text": None}
@@ -30,6 +32,7 @@ def process_request(image, text):
         query = step_collection.get_query(picture_db)
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
         results['image'] = step_collection.query_collection_postgres(query, pict_embedding, picture_db)
+        results['image']["ids"] = step_collection.get_id_item_from_pict(results['image']["ids"])
     if text:
         language_db = step_collection.detect_language(text)
         query = step_collection.get_query(language_db)

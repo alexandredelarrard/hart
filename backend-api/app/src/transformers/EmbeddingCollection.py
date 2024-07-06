@@ -68,11 +68,18 @@ class EmbeddingCollection(Step):
         return {"ids": df["ids"].tolist(), "distances": df["distances"].tolist()}
     
     @timing
+    def get_id_item_from_pict(self, liste_ids_pict):
+        df_ids= pd.read_sql(f"SELECT \"ID_ITEM\", \"ID_UNIQUE\" FROM \"ALL_ITEMS\" WHERE \"ID_UNIQUE\" IN {tuple(liste_ids_pict)}", 
+                         con=self._context.db_con)
+        return ids["ID_ITEM"].tolist()
+    
+    @timing
     def multi_embedding_strat(self, result_picture, result_text):
 
         df_pict = pd.DataFrame().from_dict(result_picture)
         df_text = pd.DataFrame().from_dict(result_text)
 
+        self._log.info(df_pict.shape, df_text.shape)
         df = df_pict.merge(df_text, on="ids", suffixes=("_PICT", "_TXT"), how="outer")
         
         for col in ["distances_PICT", "distances_TXT"]:
@@ -81,6 +88,6 @@ class EmbeddingCollection(Step):
 
         df["distances"] = df[["distances_PICT", "distances_TXT"]].mean(axis=1)
         df = df.sort_values("distances")
-        self._log.info(df.head().to_dict(orient="records"))
+        self._log.info(df.shape)
 
         return {"ids": df["ids"].tolist(), "distances": df["distances"].tolist()}

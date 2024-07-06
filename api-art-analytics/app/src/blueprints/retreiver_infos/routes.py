@@ -28,7 +28,7 @@ def deduplicate_dicts(dict_list, unique_key):
 def reorder_output_on_dist(result, ids, distances):
     dict_id_dist = {ids[i] : distances[i] for i in range(len(ids))}
     output = [item.to_dict() for item in result]
-    new_output = add_distance(output, dict_id_dist, column="distance", id="id_unique")
+    new_output = add_distance(output, dict_id_dist, column="distance", id="id_item")
     sorted_output = sorted(new_output, key=lambda x: x["distance"])
     return sorted_output
 
@@ -65,7 +65,7 @@ def post_ids_infos():
                 
             # try:
                 # get description per id_unique
-                result_desc_id =  AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()
+                result_desc_id =  AllItems.query.filter(AllItems.ID_ITEM.in_(ids)).all()
                 output = reorder_output_on_dist(result_desc_id, ids, distances)
                 deduplicated_output = deduplicate_dicts(output, "id_item")
 

@@ -13,7 +13,7 @@ services:
         environment:
             - POSTGRES_DB=vectordb
         env_file:
-            - ./.env
+            - ../global-schemas/.env
         volumes:
             - ./init.sql:/tmp/init.sql
             - pgdata:/var/lib/postgresql/data

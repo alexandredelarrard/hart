@@ -9,10 +9,11 @@ services:
         command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
         volumes: 
             - ./app:/app
+            - db-schema:/app/src/schemas
         environment:
             - FLASK_ENV=flask_worker
         env_file:
-            - ./.env
+            - ../global-schemas/.env
         restart: always
         networks:
             - shared_net
@@ -56,3 +57,11 @@ services:
 networks: 
   shared_net:
     external: true
+
+volumes:
+    db-schema:
+        driver: local
+        driver_opts:
+            type: "none"
+            device: "../global-schemas/schemas"
+            o: "bind"
