@@ -15,7 +15,7 @@ services:
     redis-exporter:
         image: oliver006/redis_exporter:latest
         container_name: redis_exporter
-        command: 
+        command:
             - '--redis.addr=redis://redis:6379'
             - '--redis.password=apasswd'
         ports:

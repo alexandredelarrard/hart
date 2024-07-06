@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-import os 
+import os
 from sqlalchemy.exc import SQLAlchemyError
 
 os.chdir(r"C:\Users\alarr\Documents\repos\hart\backend-art-analytics")
@@ -25,12 +25,13 @@ INDEX_COMMANDS = [
     CREATE INDEX text_embeddings_french_embedding_idx
     ON text_embeddings_french USING hnsw (embedding vector_cosine_ops)
     WITH (m = 16, ef_construction = 128, ef_search = 100);
-    """
+    """,
 ]
+
 
 def recreate_indexes(engine):
     with engine.connect() as connection:
-        
+
         # Set maintenance_work_mem for the session
         connection.execute(text("SET max_parallel_workers = 8;"))
         connection.execute(text("SET max_parallel_workers_per_gather = 4;"))
@@ -43,6 +44,7 @@ def recreate_indexes(engine):
             except SQLAlchemyError as e:
                 print(f"An error occurred: {e}")
 
+
 def reset_conn(context):
     # Create a configured "Session" class
     Session = sessionmaker(bind=context.db_con)
@@ -54,5 +56,5 @@ def reset_conn(context):
 
 
 if __name__ == "__main__":
-    config, context = get_config_context('./configs', use_cache = False, save=False)
+    config, context = get_config_context("./configs", use_cache=False, save=False)
     recreate_indexes(context.db_con)

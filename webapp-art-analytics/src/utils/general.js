@@ -1,6 +1,6 @@
 export const formatPrice = (price, langue, currency_suffix) => {
   if (price === null || price === undefined) {
-    return ''; 
+    return '';
   }
 
   if (price >= 1e6) {

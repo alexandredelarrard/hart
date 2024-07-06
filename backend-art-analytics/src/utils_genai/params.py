@@ -43,9 +43,7 @@ class vLLMExtraCompletionParams(Params):
         return (
             self.__class__.__name__
             + "("
-            + ", ".join(
-                [f"{k}={v}" for k, v in vars(self).items() if v is not None]
-            )
+            + ", ".join([f"{k}={v}" for k, v in vars(self).items() if v is not None])
             + ")"
         )
 
@@ -76,8 +74,6 @@ class OpenAICompletionParams(Params):
         return (
             self.__class__.__name__
             + "("
-            + ", ".join(
-                [f"{k}={v}" for k, v in vars(self).items() if v is not None]
-            )
+            + ", ".join([f"{k}={v}" for k, v in vars(self).items() if v is not None])
             + ")"
         )

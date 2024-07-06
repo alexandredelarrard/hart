@@ -1,11 +1,11 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGavel, faHeartbeat, faMagnifyingGlassChart } from '@fortawesome/free-solid-svg-icons';
-import '../../css/InfoBand.css'; 
+import '../../css/InfoBand.css';
 
 const InfoBand = ({t}) => {
     return (
-        
+
         <section className="background-section">
             <div className='info-band'>
                 <h2>{t("landing_page.infoband.title")}</h2>

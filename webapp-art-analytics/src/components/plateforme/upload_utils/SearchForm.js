@@ -5,13 +5,13 @@ import { faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import "../../../css/SearchForm.css";
 
-const SearchForm = ({ 
-  text, 
+const SearchForm = ({
+  text,
   onDrop,
-  planExpired, 
-  closestVolumeExpired, 
-  handleSearchTextChange, 
-  handleSearchSubmit, 
+  planExpired,
+  closestVolumeExpired,
+  handleSearchTextChange,
+  handleSearchSubmit,
   handleMenuClick,
   t
 }) => {
@@ -38,12 +38,12 @@ const SearchForm = ({
               {t("plateforme.search.dropzonedesc")}
             </p>
           </div>
-          <input 
-            type="text" 
-            value={text || ''} 
-            onChange={handleSearchTextChange} 
+          <input
+            type="text"
+            value={text || ''}
+            onChange={handleSearchTextChange}
             placeholder={t("plateforme.search.textareadesc")}
-            className={`search-input ${isError ? 'input-error' : ''}`} 
+            className={`search-input ${isError ? 'input-error' : ''}`}
             disabled={isError}
           />
           <button type="submit" className="search-submit-button" disabled={isError}>

@@ -1,5 +1,5 @@
 from typing import Dict
-import pandas as pd 
+import pandas as pd
 from typing import List
 
 from src.context import Context
@@ -12,23 +12,24 @@ from omegaconf import DictConfig
 
 
 class StepManualCluster(Step):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig, 
-                 database_name : str = "drouot"):
+
+    def __init__(
+        self, context: Context, config: DictConfig, database_name: str = "drouot"
+    ):
 
         super().__init__(context=context, config=config)
 
         self.database_name = database_name
         self.vector = self.name.total_description
 
-        self.sql_table_name = self._config.cleaning[self.database_name].origine_table_name
+        self.sql_table_name = self._config.cleaning[
+            self.database_name
+        ].origine_table_name
         self.output_table_name = "MANUAL_CLUSTER"
-        self.manual_cluster =  self._config.embedding.manual_cluster
+        self.manual_cluster = self._config.embedding.manual_cluster
 
         self.nlp_tb = NLPToolBox()
-        
+
     @timing
     def run(self):
 
@@ -38,14 +39,18 @@ class StepManualCluster(Step):
         vect[self.vector] = self.nlp_tb.simple_homegenize(vect[self.vector])
 
         # words = self.nlp_tb.extract_top_n_words(vect[self.vector], ngram_range=(1,2))
-        vect["MANUAL_CLUSTER"] = self.nlp_tb.manuak_clustering(vect[self.vector], self.manuals)
+        vect["MANUAL_CLUSTER"] = self.nlp_tb.manuak_clustering(
+            vect[self.vector], self.manuals
+        )
         # vect = vect.loc[vect["MANUAL_CLUSTER"].notnull()]
 
         # SAVE ITEMS ENRICHED
-        self.write_sql_data(dataframe=vect,
-                            table_name=self.output_table_name,
-                            if_exists="replace")
+        self.write_sql_data(
+            dataframe=vect, table_name=self.output_table_name, if_exists="replace"
+        )
 
     def get_data(self):
-        return pd.read_sql(f"SELECT \"ID_ITEM\", \"{self.vector}\" FROM \"{self.sql_table_name}\" ", #LIMIT 50000
-                           con=self._context.db_con)
+        return pd.read_sql(
+            f'SELECT "ID_ITEM", "{self.vector}" FROM "{self.sql_table_name}" ',  # LIMIT 50000
+            con=self._context.db_con,
+        )

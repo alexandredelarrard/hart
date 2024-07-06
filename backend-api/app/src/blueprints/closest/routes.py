@@ -17,85 +17,88 @@ from src.extensions import front_server
 from . import closest_blueprint
 
 
-@closest_blueprint.route('/process', methods=['POST'])
+@closest_blueprint.route("/process", methods=["POST"])
 @cross_origin(origins=front_server)
 @jwt_required()
 def process():
-    
-    if request.method == 'POST':
+
+    if request.method == "POST":
 
         text = None
-        if 'file' not in request.files:
+        if "file" not in request.files:
             return jsonify({"error": "Missing picture"}), 400
 
-        user_id = request.form['user_id']
-        file = request.files['file']
+        user_id = request.form["user_id"]
+        file = request.files["file"]
 
-        if 'text' in request.form:
-            text = request.form['text']
+        if "text" in request.form:
+            text = request.form["text"]
 
         # Read the file content
         image = file.read()
 
         if not image and not text:
             return jsonify({"error": "Missing image and text"}), 400
- 
+
         task = process_request.apply_async(args=[image, text])
 
         # save the task in db
         new_result = CloseResult(
             user_id=user_id,
             task_id=task.id,
-            file=base64.b64encode(image).decode('utf-8'),
+            file=base64.b64encode(image).decode("utf-8"),
             text=text,
             creation_date=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             status="SENT",
-            visible_item=True
-            )
+            visible_item=True,
+        )
         db.session.add(new_result)
         db.session.commit()
 
-        # update the volume of search with -1 with the last payment plan 
-        payment = PaymentTrack.query.filter_by(user_id=user_id).order_by(desc(PaymentTrack.plan_start_date)).first()
+        # update the volume of search with -1 with the last payment plan
+        payment = (
+            PaymentTrack.query.filter_by(user_id=user_id)
+            .order_by(desc(PaymentTrack.plan_start_date))
+            .first()
+        )
         if payment:
-            payment.remaining_closest_volume -=1 
+            payment.remaining_closest_volume -= 1
             db.session.commit()
-        else: 
+        else:
             logging.info(f"payment not found for ID {user_id}")
 
         return jsonify({"task_id": task.id}), 202
 
 
-@closest_blueprint.route('/task_status', methods=['POST'])
+@closest_blueprint.route("/task_status", methods=["POST"])
 @cross_origin(origins=front_server)
 @jwt_required()
 def task_status():
 
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
-        task_id = data.get('taskid')
+        task_id = data.get("taskid")
         task = AsyncResult(task_id)
 
-        if task.state == 'PENDING':
+        if task.state == "PENDING":
+            response = {"state": task.state, "status": "Pending..."}
+
+        elif task.state == "SUCCESS":
             response = {
-                'state': task.state,
-                'status': 'Pending...'
+                "state": task.state,
+                "result": task.result["image"],
             }
 
-        elif task.state == 'SUCCESS':
-            response = {
-                'state': task.state,
-                'result': task.result["image"],
-            }
-
-            # save result into db 
+            # save result into db
             try:
                 result = CloseResult.query.filter_by(task_id=task_id).first_or_404()
-                
+
                 if result:
                     # Update the user as confirmed
                     result.closest_ids = ",".join(task.result["image"]["ids"])
-                    result.closest_distances = ",".join([str(x) for x in task.result["image"]["distances"]])
+                    result.closest_distances = ",".join(
+                        [str(x) for x in task.result["image"]["distances"]]
+                    )
                     result.status = task.state
                     result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
                     db.session.commit()
@@ -105,8 +108,8 @@ def task_status():
 
         else:
             response = {
-                'state': task.state,
-                'status': str(task.info),
+                "state": task.state,
+                "status": str(task.info),
             }
 
         return jsonify(response), 200

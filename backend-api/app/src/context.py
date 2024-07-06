@@ -1,8 +1,8 @@
-import logging 
-import os 
+import logging
+import os
 from io import StringIO
-import sys 
-from logging.config import dictConfig 
+import sys
+from logging.config import dictConfig
 from sqlalchemy import create_engine
 from pgvector.sqlalchemy import Vector
 from flask_sqlalchemy import SQLAlchemy
@@ -14,11 +14,12 @@ from omegaconf import DictConfig, OmegaConf
 
 from src.utils.config import read_config
 
-class DBeaver: 
+
+class DBeaver:
 
     def __init__(self, config):
 
-        self.config=config
+        self.config = config
 
         self.server = self.config["server"]
         self.user = os.environ["DATABASE_USERNAME"]
@@ -31,30 +32,31 @@ class DBeaver:
     def init_db(self):
         connection = create_engine(self.connexion_string)
         return connection
-    
+
     def flask_connect(self, connection):
         db = SQLAlchemy()
         db.Model.metadata.reflect(connection.engine)
         return db
-    
+
+
 class Context:
 
-    def __init__(self, config : DictConfig, use_cache : bool, save : bool):
+    def __init__(self, config: DictConfig, use_cache: bool, save: bool):
 
         self._config = config
 
-        # creqte logging buffer 
-        buffer =StringIO()
+        # creqte logging buffer
+        buffer = StringIO()
         handler = logging.StreamHandler(buffer)
         formatter = logging.Formatter(self._config.logging.formatters.file.format)
         handler.setFormatter(formatter)
         logging.root.addHandler(handler)
-        self.log_buffer = buffer 
+        self.log_buffer = buffer
 
-        # logging 
+        # logging
         self.log = logging.getLogger(__name__)
 
-        # env variables 
+        # env variables
         dot_env_file = find_dotenv(usecwd=True)
         load_dotenv(dot_env_file)
         self.log.info(f"Dot env file has been loaded {dot_env_file}")
@@ -62,7 +64,7 @@ class Context:
         self._use_cache = use_cache
         self._save = save
 
-        # connection 
+        # connection
         db = DBeaver(config)
         self.connexion_string = db.connexion_string
         self.db_con = db.init_db()
@@ -71,27 +73,27 @@ class Context:
         # Cors policy
         self.cors = CORS(resources={r"/*": {"origins": self._config.front_end.server}})
 
-        # JWT manager 
+        # JWT manager
         self.jwt = JWTManager()
 
     @property
     def config(self) -> DictConfig:
         return self._config
-    
+
     @property
-    def use_cache(self) -> bool: 
+    def use_cache(self) -> bool:
         return self._use_cache
-    
+
     @property
-    def save(self) -> bool: 
+    def save(self) -> bool:
         return self._save
-    
+
     @property
     def random_state(self) -> int:
         return self._config.seed
-    
 
-def get_config_context(config_path : str, use_cache : bool, save : bool):
+
+def get_config_context(config_path: str, use_cache: bool, save: bool):
 
     try:
         config = read_config(path="./configs")
@@ -102,4 +104,4 @@ def get_config_context(config_path : str, use_cache : bool, save : bool):
 
     context = Context(config=config, use_cache=use_cache, save=save)
 
-    return config, context 
+    return config, context

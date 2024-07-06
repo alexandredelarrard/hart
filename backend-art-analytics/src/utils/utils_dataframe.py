@@ -1,9 +1,10 @@
-import re 
+import re
 import unidecode
 import numpy as np
 import string
 from typing import List, Dict
- 
+
+
 def homogenize_columns(col_names: List) -> List:
     """Rename columns to upper case and remove space and
     non conventional elements
@@ -27,20 +28,24 @@ def homogenize_columns(col_names: List) -> List:
     return new_list
 
 
-def transform_types(dtype : Dict) -> Dict:
+def transform_types(dtype: Dict) -> Dict:
     for i, v in dtype.items():
         try:
-            dtype[i] = eval(v)# float if v=="float" else ( int if v=="int" else str)
+            dtype[i] = eval(v)  # float if v=="float" else ( int if v=="int" else str)
         except ValueError as e:
             print(e)
             pass
     return dtype
 
+
 def remove_accents(x):
     return unidecode.unidecode(x)
 
+
 def remove_punctuation(x):
-    return re.sub("[^A-Za-z0-9_]+", " ", x)  # only alphanumeric characters and underscore are allowed
+    return re.sub(
+        "[^A-Za-z0-9_]+", " ", x
+    )  # only alphanumeric characters and underscore are allowed
 
 
 def flatten_dict(mapping_dict):
@@ -55,10 +60,11 @@ def map_value_to_key(x, mapping_dict):
 
     for key, values in mapping_dict.items():
         for sub_value in values:
-            if str(sub_value)==str(x).strip():
+            if str(sub_value) == str(x).strip():
                 return key
-            
+
     return x
+
 
 # utils functions
 def clean_useless_text(x):
@@ -71,9 +77,11 @@ def clean_useless_text(x):
     x = x.replace("DETAILS\n", "")
     return x
 
+
 def remove_dates_in_parenthesis(x):
-    pattern = re.compile(r'\([0-9-]+\)')
-    return re.sub(pattern, '',  x)
+    pattern = re.compile(r"\([0-9-]+\)")
+    return re.sub(pattern, "", x)
+
 
 def clean_dimensions(x):
     pattern1 = re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+[ xX]+\d+.?\d+)")
@@ -84,8 +92,8 @@ def clean_dimensions(x):
         if len(numbers) == 3:
             new = f" hauteur: {numbers[0].strip()}; largeur: {numbers[1].strip()}; profondeur: {numbers[2].strip()}"
             return x.replace(origin, new)
-        
-    pattern2= re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+)")
+
+    pattern2 = re.compile(r"(\d+.?\d+[ xX]+\d+.?\d+)")
     origin = re.findall(pattern2, x)
     if len(origin) == 1:
         origin = origin[0]
@@ -93,13 +101,15 @@ def clean_dimensions(x):
         if len(numbers) == 2:
             new = f" longueur: {numbers[0].strip()}; largeur: {numbers[1].strip()}"
             return x.replace(origin, new)
-    return x 
+    return x
+
 
 def clean_quantity(x):
     x = re.sub(r"(H[\s.:])[\s.:\d+]", " hauteur ", x, flags=re.I)
     x = re.sub(r"(L[\s.:])[\s.:\d+]", " longueur ", x, flags=re.I)
     x = re.sub(r"(Q[\s.:])[\s.:\d+]", " quantite ", x, flags=re.I)
     return x
+
 
 def clean_shorten_words(x):
     x = re.sub(r"[\s\d+\s](B)\s", " bouteille ", x, flags=re.I, count=1)
@@ -121,13 +131,16 @@ def clean_shorten_words(x):
     x = x.replace("½", "1/2")
     return x
 
+
 def remove_spaces(x):
     x = str(x).strip()
     x = re.sub(" +", " ", x)
     return x
 
+
 def remove_lot_number(x):
-    return re.sub(r"^(\d+\. )", '', str(x))
+    return re.sub(r"^(\d+\. )", "", str(x))
+
 
 def remove_rdv(x):
     x = str(x).split("\nEstimate")[0]

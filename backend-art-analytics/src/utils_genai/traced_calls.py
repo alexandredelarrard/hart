@@ -43,9 +43,7 @@ class TracedVLLMCompletion:
         self,
         client: AsyncOpenAI,
         openai_completion_params: OpenAICompletionParams | dict | None = None,
-        vllm_extra_completion_params: (
-            vLLMExtraCompletionParams | dict | None
-        ) = None,
+        vllm_extra_completion_params: vLLMExtraCompletionParams | dict | None = None,
         metadata: dict | None = None,
         span_name: str = "llm completion",
         use_cache: bool = True,
@@ -61,9 +59,7 @@ class TracedVLLMCompletion:
         self,
         prompt: str | _Prompt,
         openai_completion_params: OpenAICompletionParams | dict | None = None,
-        vllm_extra_completion_params: (
-            vLLMExtraCompletionParams | dict | None
-        ) = None,
+        vllm_extra_completion_params: vLLMExtraCompletionParams | dict | None = None,
         ground_truth=None,
         metadata: dict | None = None,
         span_name: str | None = None,
@@ -166,15 +162,11 @@ class TracedVLLMCompletion:
             # https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#extra-parameters-for-completions-api
             if vllm_params:
                 guided_json = vllm_params.get("guided_json", None)
-                response_format = vllm_params.get(
-                    "response_format", {"type": "text"}
-                )
+                response_format = vllm_params.get("response_format", {"type": "text"})
                 if guided_json or response_format["type"] == "json_object":
                     OUTPUT_KIND = OpenInferenceMimeTypeValues.JSON.value
 
-            ground_truth = (
-                {"ground_truth": ground_truth} if ground_truth else {}
-            )
+            ground_truth = {"ground_truth": ground_truth} if ground_truth else {}
             metadata = metadata or {}
 
             top_level_span.set_status(Status(StatusCode.OK))
@@ -291,6 +283,4 @@ class SpanHandle:
         )
 
     def set_metadata(self, metadata):
-        self.span.set_attributes(
-            {SpanAttributes.METADATA: json.dumps(metadata)}
-        )
+        self.span.set_attributes({SpanAttributes.METADATA: json.dumps(metadata)})

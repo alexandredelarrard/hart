@@ -63,7 +63,7 @@ function UploadForm({
   i18n,
   t
 }) {
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('relevance_desc');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -84,7 +84,7 @@ function UploadForm({
     setMinDate('');
     setMaxDate('');
   };
-  
+
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
@@ -189,7 +189,7 @@ function UploadForm({
   const totalPages = showAll ? 1 : Math.ceil(filteredData.length / CARDS_PER_PAGE);
 
   const { fileUrl, handleSearchFileChange, handleSearchTextChange, handleSearchSubmit } = useNewSearchSubmit({
-    file, text, 
+    file, text,
     setFile, setText, setTaskId, setResult, setBotResult, setChatBotResultFetched, setAnalysisInProgress,
     setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved
   });
@@ -200,7 +200,7 @@ function UploadForm({
 
   return (
     <div className="upload-form-container">
-      <HeaderPlateforme 
+      <HeaderPlateforme
         changeLanguage={changeLanguage}
         handleMenuClick={handleMenuClick}
         t={t}
@@ -293,10 +293,10 @@ function UploadForm({
             </div>
             <div className="card-container">
               {paginatedData.map((item, index) => (
-                <Card 
-                  key={index} 
+                <Card
+                  key={index}
                   item={item}
-                  i18n={i18n} 
+                  i18n={i18n}
                   t={t} />
               ))}
             </div>

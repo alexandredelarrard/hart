@@ -20,7 +20,7 @@ const Footer = ({t}) => {
     const handleSubmit = async (e) => {
         setMessage(''); // Clear any previous error
         e.preventDefault();
-    
+
         if (!validateEmail(email)) {
             setError(t("landing_page.trial.erroremail"));
           } else {
@@ -56,11 +56,11 @@ const Footer = ({t}) => {
                 <div className="footer-column">
                     <form className="newsletter-form" onSubmit={handleSubmit}>
                         <h4>Newsletter</h4>
-                        <input 
-                            type="email" 
+                        <input
+                            type="email"
                             value={email}
                             onChange={(e) => {setEmail(e.target.value); setMessage(''); setError('')}}
-                            placeholder={t("overall.email")} 
+                            placeholder={t("overall.email")}
                         />
                         {message && <p style={{ color: 'green' }}>{message}</p>}
                         {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -71,7 +71,7 @@ const Footer = ({t}) => {
                 </div>
                 <div className="footer-column">
                     <div className="footer-company-info">
-                        <FontAwesomeIcon icon={faCopyright} />  
+                        <FontAwesomeIcon icon={faCopyright} />
                         <div>
                             <span>Artycs 2024</span>
                         </div>
@@ -87,7 +87,7 @@ const Footer = ({t}) => {
                             <FontAwesomeIcon icon={faTwitter} />
                         </a>
                     </div>
-                    
+
                 </div>
                 <div className="footer-column">
                     <h3>{t("landing_page.footer.producttitle")}</h3>

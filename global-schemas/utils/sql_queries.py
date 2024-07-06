@@ -8,6 +8,7 @@ import sqlparse
 
 SQL_FILE_ENDING = "sql"
 
+
 class SQLQueries:
     """Class that handles the parsing and cleaning of SQL files.
 
@@ -25,12 +26,17 @@ class SQLQueries:
                 parsed_sql = "\n".join(
                     filter(
                         None,
-                        [sub(r"\s*--.*$", "", line, DOTALL) for line in f.read().split("\n")],
+                        [
+                            sub(r"\s*--.*$", "", line, DOTALL)
+                            for line in f.read().split("\n")
+                        ],
                     )
                 )
                 # extra cleaning
-                parsed_sql = sqlparse.format(parsed_sql, reindent=True, keyword_case="upper")
-                
+                parsed_sql = sqlparse.format(
+                    parsed_sql, reindent=True, keyword_case="upper"
+                )
+
                 # store query in namespace
                 setattr(self.SQL, query_name, parsed_sql)
 

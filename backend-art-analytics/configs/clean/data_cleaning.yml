@@ -2,28 +2,28 @@ cleaning:
   path_mapping_country: D:/data/default/mapping_country.json
   full_data_auction_houses : ALL_ITEMS
   full_data_per_item: GPT_TRANSLATE_CATEGORIZE
-  artists: 
+  artists:
     origine_table_name: ARTISTS_DB_PRICE
-  drouot : 
-    origine_table_name: 
+  drouot :
+    origine_table_name:
       history: DROUOT_202403
       new: DROUOT_NEW
-  christies : 
-    origine_table_name: 
+  christies :
+    origine_table_name:
       history: CHRISTIES_202403
       new: CHRISTIES_NEW
-  sothebys : 
-    origine_table_name: 
+  sothebys :
+    origine_table_name:
       history: SOTHEBYS_202403
       new: SOTHEBYS_NEW
-  millon : 
-    origine_table_name: 
+  millon :
+    origine_table_name:
       history: MILLON_202405
       new: MILLON_NEW
   mapping:
     localisation: {
-        "london" : ['online', 'onlineonly.christies.com', "londres", "london (south kensigton)", 
-                    "london", "www.nathanmilleraste.com", "www.lambertzhao.com", "www.bonhams.com", "www.sothebys.com", 
+        "london" : ['online', 'onlineonly.christies.com', "londres", "london (south kensigton)",
+                    "london", "www.nathanmilleraste.com", "www.lambertzhao.com", "www.bonhams.com", "www.sothebys.com",
                     'www.dawsonsauctions.co.uk','www.elmwoods.co.uk'],
         "nan": ['', "nan", '(mo)', '(ta)', '(vr)', '54623', '7'],
         "anvers": ['(anvers)', 'anvers'],
@@ -39,7 +39,7 @@ cleaning:
         "bologne": ['bologna', 'bologne'],
         "bale": ['basel', 'bâle'],
         "chambery": ['chambery', 'chambéry'],
-        "geneve": ['geneva', 'geneve', 'genova', 'www.geneve-encheres.ch', 
+        "geneve": ['geneva', 'geneve', 'genova', 'www.geneve-encheres.ch',
             'genève', 'genèves', "www.kollerauctions.com"],
         "berlin": ['germany', 'berlin'],
         "hong-kong": ['hong kong', 'hong-kong', 'hongkong'],

@@ -7,7 +7,7 @@ import { URL_GET_EXPERTS } from '../../utils/constants';
 
 const useFetchExperts = (setExperts) => {
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         const fetchExperts = async () => {
             const isAuthenticated = await checkAuth();
@@ -24,7 +24,7 @@ const useFetchExperts = (setExperts) => {
                                 'Content-Type': 'application/json',
                             },
                         });
-                        
+
                         // Ensure response.data is an array
                         if (Array.isArray(response.data.result)) {
                             if (typeof setExperts === 'function') {

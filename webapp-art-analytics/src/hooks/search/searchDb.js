@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { URL_API, URL_SEARCH_DB } from '../../utils/constants';
 
 const searchDb = async ({ e, LogActivity, setError, setLoading, setSearchResults, searchText, isError }) => {
-    
+
     e.preventDefault();
     if (isError || !searchText.trim()) return;
 

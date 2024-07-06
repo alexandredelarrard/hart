@@ -13,13 +13,13 @@ const PaymentTable = ({ payments, t }) => {
   const columns = useMemo(() => {
     if (payments.length !== 0) {
       return [
-        { 
-          headerName: 'ID', 
-          field: 'id', 
-          sortable: false, 
-          filter: false, 
-          resizable: false, 
-          width: 50 
+        {
+          headerName: 'ID',
+          field: 'id',
+          sortable: false,
+          filter: false,
+          resizable: false,
+          width: 50
         },
         ...Object.keys(payments[0])
           .filter(key => key !== 'user_id')

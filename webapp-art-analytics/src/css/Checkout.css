@@ -44,7 +44,7 @@
 .confirmation-container {
     margin-bottom: 40px;
   }
-  
+
   .signup-signin-container h2,
   .payment-container h2,
   .confirmation-container h2 {
@@ -52,25 +52,25 @@
     margin-bottom: 20px;
     color: #002955;
   }
-  
+
   .form-group {
     margin-bottom: 20px;
     width: 100%;
   }
-  
+
   .form-group label {
     display: block;
     margin-bottom: 5px;
     color: #333;
   }
-  
+
   .form-group input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
   }
-  
+
   .checkout-button,
   .payment-button {
     background: #002955;
@@ -84,61 +84,61 @@
     text-align: center;
     width: 100%;
   }
-  
+
   .checkout-button:hover,
   .payment-button:hover {
     background: #218838;
   }
-  
+
   .payment-summary {
     text-align: left;
     margin-bottom: 20px;
   }
-  
+
   .payment-summary h3 {
     font-size: 1.5em;
     margin-bottom: 10px;
     color: #002955;
   }
-  
+
   .payment-form-container {
     text-align: center;
   }
-  
+
   .form-row {
     display: flex;
     justify-content: space-between;
     width: 100%;
   }
-  
+
   .form-row .form-group {
     flex: 1;
   }
-  
+
   .form-row .form-group:first-child {
     margin-right: 10px;
   }
-  
+
   .message {
     color: green;
     margin-top: 20px;
   }
-  
+
   .error {
     color: red;
     margin-top: 20px;
   }
-  
+
   .confirmation-container p {
     font-size: 1.2em;
     color: #333;
   }
-  
+
   .contact-link {
     color: #002955;
     text-decoration: none;
   }
-  
+
   .contact-link:hover {
     text-decoration: underline;
   }

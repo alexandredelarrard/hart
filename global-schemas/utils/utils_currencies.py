@@ -2,11 +2,12 @@ import yfinance as yf
 from tqdm import tqdm
 import logging
 
+
 def extract_currencies(liste_paires):
 
     currency_data = {}
 
-    # extract currency pairs 
+    # extract currency pairs
     for paire in tqdm(liste_paires):
 
         try:

@@ -1,7 +1,7 @@
 services:
     flask_app:
         container_name: middle_api
-        build: 
+        build:
             context: ./app
             dockerfile: dockerfile
         expose:
@@ -20,16 +20,16 @@ services:
         restart: always
         networks:
             - shared_net
-            
+
     nginx:
         image: nginx:latest
         container_name: middle_nginx
-        ports:    
+        ports:
             - 80:80
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
         restart: always
-        depends_on: 
+        depends_on:
             - flask_app
         networks:
             - shared_net

@@ -4,11 +4,11 @@ import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '../../css/Payment.css';
 
-function Payment({cardData, 
-  handleSubmit, 
-  error, 
-  message, 
-  handleInputChange, 
+function Payment({cardData,
+  handleSubmit,
+  error,
+  message,
+  handleInputChange,
   handleInputFocus,
   t
 }) {

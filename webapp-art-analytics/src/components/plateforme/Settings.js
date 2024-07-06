@@ -10,7 +10,7 @@ import '../../css/ProfileSettings.css';
 function Settings({
   userData,
   setUserData,
-  handleMenuClick, 
+  handleMenuClick,
   changeLanguage,
   t
 }) {
@@ -29,14 +29,14 @@ function Settings({
         <button className={activeTab === 'billing' ? 'active' : ''} onClick={() => {setActiveTab('billing'); LogActivity("click_billing_menu", "")}}>{t("plateforme.profilesettings.billingbutton")}</button>
       </div>
         {activeTab === 'profile' && (
-          <ProfileSettings 
+          <ProfileSettings
             userData={userData}
             setUserData={setUserData}
             t={t}
         />
         )}
         {activeTab === 'billing' && (
-          <BillingSettings 
+          <BillingSettings
             t={t}
           />
         )}

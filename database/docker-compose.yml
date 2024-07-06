@@ -2,7 +2,7 @@ services:
     postgres:
         container_name: postgres
         hostname: db
-        build: 
+        build:
             context: ./
             dockerfile: dockerfile
         ports:
@@ -25,4 +25,4 @@ networks:
     external: true
 
 volumes:
-    pgdata: 
+    pgdata:

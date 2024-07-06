@@ -1,5 +1,5 @@
 export const organizeResults = (results, t) => {
-  
+
   const organizedResults = {
     [t("plateforme.sidebar.today")]: [],
     [t('plateforme.sidebar.yesterday')]: [],

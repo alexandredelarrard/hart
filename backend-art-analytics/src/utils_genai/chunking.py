@@ -54,9 +54,7 @@ def split_text_into_chunks(
 ):
     tokens = tokenize(text)
 
-    chunks = fixed_size_chunking_with_overlap(
-        tokens, chunk_size, chunk_overlap
-    )
+    chunks = fixed_size_chunking_with_overlap(tokens, chunk_size, chunk_overlap)
 
     chunks = [untokenize(chunk).strip() for chunk in chunks]
 

@@ -14,10 +14,10 @@ import useFetchPastResults from '../../hooks/plateforme/useFetchPastResults.js';
 
 import '../../css/Sidebar.css';
 
-function Sidebar({ 
+function Sidebar({
   userData,
   setUserData,
-  onMenuClick, 
+  onMenuClick,
   setFile,
   setText,
   setTaskId,
@@ -44,7 +44,7 @@ function Sidebar({
   //logout on click button
   const handleLogout = async () => {
 
-    // log activity 
+    // log activity
     const success = await LogActivity("click_log_out", "")
     if (success) {
       console.log('Activity logged successfully');
@@ -61,7 +61,7 @@ function Sidebar({
     setMaxPrice('');
     setMinDate('');
     setMaxDate('');
-    
+
     await logout();
   };
 
@@ -78,7 +78,7 @@ function Sidebar({
     }
     const byteArray = new Uint8Array(byteNumbers);
     const blob = new Blob([byteArray], { type: 'image/jpg' });
-    
+
     setFile(blob);
     setText(result.text);
     setResult({
@@ -103,10 +103,10 @@ function Sidebar({
       setChatBotResultFetched(false);
     }
 
-    // menu is clicked 
+    // menu is clicked
     onMenuClick('closest-lots');
 
-    // log activity 
+    // log activity
     LogActivity("click_former_result", result.task_id)
 
   };
@@ -125,7 +125,7 @@ function Sidebar({
         .then(response => {
           // Remove the deleted result from the state
           setFormerResults(formerResults.filter(result => result.task_id !== taskId));
-          // log activity 
+          // log activity
           LogActivity("delete_former_result", taskId)
         })
         .catch(error => {
@@ -148,15 +148,15 @@ function Sidebar({
         </div>
       </div>
       <ul className="menu">
-        <li 
-          className={`menu-item ${activeMenu === 'search-art' ? 'active' : ''}`} 
+        <li
+          className={`menu-item ${activeMenu === 'search-art' ? 'active' : ''}`}
           onClick={() => { setActiveMenu('search-art'); onMenuClick('search-art'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
           {t("plateforme.sidebar.search")}
         </li>
-        <li 
-          className={`menu-item ${activeMenu === 'closest-lots' ? 'active' : ''}`} 
+        <li
+          className={`menu-item ${activeMenu === 'closest-lots' ? 'active' : ''}`}
           onClick={() => { setActiveMenu('closest-lots'); onMenuClick('closest-lots'); toggleResults(true); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
@@ -170,8 +170,8 @@ function Sidebar({
                 <h4 className="results-category">{category}</h4>
                 <ul className="submenu">
                   {organizedResults[category].map((result, index) => (
-                    <li 
-                      key={index} 
+                    <li
+                      key={index}
                       className="submenu-item"
                       onClick={() => handleResultClick(result)}
                     >
@@ -186,9 +186,9 @@ function Sidebar({
                             result.taskId
                           )}
                         </span>
-                      <FontAwesomeIcon 
-                        icon={faTrash} 
-                        className="delete-icon" 
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className="delete-icon"
                         onClick={() => handleDeleteResult(result.task_id, result.llm_result ? (
                           i18n.language === "fr" ? (
                             result.llm_result.french_title || result.task_id
@@ -206,8 +206,8 @@ function Sidebar({
             ))}
           </div>
         )}
-        <li 
-          className={`menu-item ${activeMenu === 'optimize-sale' ? 'active' : ''}`} 
+        <li
+          className={`menu-item ${activeMenu === 'optimize-sale' ? 'active' : ''}`}
           onClick={() => { setActiveMenu('optimize-sale'); onMenuClick('optimize-sale'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faEdit} className="menu-icon" />

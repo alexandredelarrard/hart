@@ -7,14 +7,14 @@ import useLogActivity from '../../../hooks/general/useLogActivity.js';
 import searchDb from '../../../hooks/search/searchDb.js'
 import "../../../css/SearchForm.css";
 
-const SearchBar = ({ 
+const SearchBar = ({
   searchText,
   setSearchText,
-  setSearchResults, 
-  planExpired, 
-  searchVolumeExpired, 
+  setSearchResults,
+  planExpired,
+  searchVolumeExpired,
   handleMenuClick,
-  t 
+  t
 }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -38,12 +38,12 @@ const SearchBar = ({
     <div className="search-area">
       <form onSubmit={handleSearch} className="search-form">
         <div className="form-row">
-          <input 
-            type="text" 
-            value={searchText} 
-            onChange={handleInputChange} 
+          <input
+            type="text"
+            value={searchText}
+            onChange={handleInputChange}
             placeholder={t("plateforme.search.textareadesc")}
-            className={`search-input ${isError ? 'input-error' : ''}`} 
+            className={`search-input ${isError ? 'input-error' : ''}`}
             disabled={isError}
           />
           <button type="submit" className="search-submit-button" disabled={isError || loading}>

@@ -11,7 +11,7 @@ function LoginElement({
     setPassword,
     t
 }) {
- 
+
   return (
         <div className="login-form">
           <h2>{t("landing_page.login.title")}</h2>

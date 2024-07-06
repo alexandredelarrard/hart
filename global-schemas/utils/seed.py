@@ -1,12 +1,12 @@
-import logging 
+import logging
 from omegaconf import DictConfig
 import random
 from numpy import random as rd
 
 
-def set_seed(config : DictConfig):
+def set_seed(config: DictConfig):
 
-    seed = config.gbm_training.seed 
+    seed = config.gbm_training.seed
     if seed is None:
         raise ValueError("No seed was provided.")
     else:

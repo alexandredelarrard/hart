@@ -6,26 +6,31 @@ from omegaconf import DictConfig
 from src.context import Context
 from src.datacrawl.transformers.Crawling import Crawling
 
+
 class DrouotItems(Crawling):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig):
+
+    def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config)
-        self.to_replace=()
-        self.to_split=["?page", 0]
+        self.to_replace = ()
+        self.to_split = ["?page", 0]
         self.mdp = os.environ["DROUOT_MDP"]
         self.email = os.environ["DROUOT_EMAIL"]
 
         # TODO: handle pdfs downloading and extraction ... Low prio
 
     def urls_to_crawl(self, df_auctions) -> List[str]:
-        
-        # CRAWLING TO DO 
-        to_crawl = df_auctions.loc[df_auctions[self.name.url_auction] != "MISSING_URL_AUCTION", 
-                                    self.name.url_auction].drop_duplicates().tolist()
-        
+
+        # CRAWLING TO DO
+        to_crawl = (
+            df_auctions.loc[
+                df_auctions[self.name.url_auction] != "MISSING_URL_AUCTION",
+                self.name.url_auction,
+            ]
+            .drop_duplicates()
+            .tolist()
+        )
+
         return to_crawl
 
     def check_loggedin(self, driver, counter=0):
@@ -35,7 +40,11 @@ class DrouotItems(Crawling):
 
         header = self.get_element_infos(driver, "TAG_NAME", "header")
         if "Mon profil" not in header:
-            self.click_element(driver, "XPATH", "//div[@class='floatRight alignRight noPaddingRight']/div[2]")
+            self.click_element(
+                driver,
+                "XPATH",
+                "//div[@class='floatRight alignRight noPaddingRight']/div[2]",
+            )
             time.sleep(1)
 
             self.send_keys_element(driver, "ID", "authenticate-email", self.email)
@@ -47,9 +56,9 @@ class DrouotItems(Crawling):
             time.sleep(2)
 
             if counter < 2:
-                driver = self.check_loggedin(driver, counter+1)
+                driver = self.check_loggedin(driver, counter + 1)
                 return driver
-            else: 
+            else:
                 raise Exception("CANNOT LOG IN TO DROUOT")
 
         else:
@@ -60,11 +69,13 @@ class DrouotItems(Crawling):
 
         # log in if necessary
         url = driver.current_url.split("?controller=")[0]
-        
-        driver = self.check_loggedin(driver)
-        page_nbr = self.get_page_number(driver, "CLASS_NAME", "fontRadikalBold", divider=50)
 
-        # crawl infos 
+        driver = self.check_loggedin(driver)
+        page_nbr = self.get_page_number(
+            driver, "CLASS_NAME", "fontRadikalBold", divider=50
+        )
+
+        # crawl infos
         list_infos = []
         for new_url in [url + f"?page={x}" for x in range(1, max(page_nbr, 1) + 1)]:
             self.get_url(driver, new_url)

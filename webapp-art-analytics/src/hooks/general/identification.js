@@ -54,7 +54,7 @@
     if (!token) {
       return false;
     }
-  
+
     try {
       const response = await axiosInstance_middle.get(URL_CHECK_LOGIN);
       return response.status === 200;
@@ -78,7 +78,7 @@
         } else {
           return false;
         }
-      } 
+      }
       console.log('Error checking auth:', error);
       return false;
     }

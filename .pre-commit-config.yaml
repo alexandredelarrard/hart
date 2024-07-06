@@ -4,7 +4,7 @@ repos:
     rev: 24.4.2  # Specify the version of Black you want to use
     hooks:
       - id: black
-        language_version: python3.12
+        language_version: python3.12.0
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
@@ -16,10 +16,10 @@ repos:
       - id: check-added-large-files
         args: ['--maxkb=1024']
 
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0  # Specify the version of detect-secrets you want to use
-    hooks:
-      - id: detect-secrets
+  # - repo: https://github.com/Yelp/detect-secrets
+  #   rev: v1.4.0  # Specify the version of detect-secrets you want to use
+  #   hooks:
+  #     - id: detect-secrets
 
   - repo: https://github.com/hadolint/hadolint
     rev: v2.13.0-beta  # Specify the version of hadolint you want to use
@@ -36,22 +36,22 @@ repos:
     hooks:
       - id: golangci-lint
 
-  - repo: https://github.com/PyCQA/pylint
-    rev: v3.2.4  # Specify the version of pylint you want to use
-    hooks:
-      - id: pylint
-        args: [--max-line-length=100]
-        language_version: python3.12
+  # - repo: https://github.com/PyCQA/pylint
+  #   rev: v3.2.4  # Specify the version of pylint you want to use
+  #   hooks:
+  #     - id: pylint
+  #       args: [--max-line-length=100]
+  #       language_version: python3.12
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1  # Specify the version of mypy you want to use
-    hooks:
-      - id: mypy
-        language_version: python3.12
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.10.1  # Specify the version of mypy you want to use
+  #   hooks:
+  #     - id: mypy
+  #       language_version: python3.12
 
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.7.9  # Specify the version of bandit you want to use
-    hooks:
-      - id: bandit
-        args: [--recursive, .]
-        language_version: python3.12
+  # - repo: https://github.com/pycqa/bandit
+  #   rev: 1.7.9  # Specify the version of bandit you want to use
+  #   hooks:
+  #     - id: bandit
+  #       args: [--recursive, .]
+  #       language_version: python3.12

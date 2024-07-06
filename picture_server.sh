@@ -3,7 +3,7 @@
 # cd ./webapp-art-analytics
 # npm run start &
 
-# launch middle api  - flask api for front management 
+# launch middle api  - flask api for front management
 # cd ../api-art-analytics
 # docker-compose up &
 
@@ -11,10 +11,10 @@
 # cd ../backend-api
 # docker-compose up &
 
-# launch S3 equivalent - pictures availability 
+# launch S3 equivalent - pictures availability
 cd D:/data
 python -m http.server 4000 &
 
-# # launch chroma db 
+# # launch chroma db
 # cd ../backend-art-analytics - vectorDB
 # chroma run --path "D:/data/chroma_db/chroma_data" &

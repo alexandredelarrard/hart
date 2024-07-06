@@ -16,9 +16,7 @@ from phoenix.config import TRACE_DATASET_DIR, get_env_host, get_env_port
 
 PHOENIX_DEFAULT_PORT = 6006
 
-_TRACE_FILE_ID_REGEX = re.compile(
-    r"trace_dataset-(?P<id>[a-fA-F0-9\-]{36}).parquet"
-)
+_TRACE_FILE_ID_REGEX = re.compile(r"trace_dataset-(?P<id>[a-fA-F0-9\-]{36}).parquet")
 
 
 def is_port_in_use(port: int) -> bool:
@@ -76,9 +74,7 @@ def save_trace_dataset(phoenix_client, trace_dir=TRACE_DATASET_DIR):
 
 def setup_trace_provider(project_name=None, port=None):
     if project_name:
-        resource = Resource(
-            attributes={ResourceAttributes.PROJECT_NAME: project_name}
-        )
+        resource = Resource(attributes={ResourceAttributes.PROJECT_NAME: project_name})
     else:
         resource = Resource(attributes={})
     tracer_provider = TracerProvider(resource=resource)

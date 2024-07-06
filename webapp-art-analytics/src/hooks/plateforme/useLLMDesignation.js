@@ -15,7 +15,7 @@ const useLLMDesignation = (taskId, additionalData, setNewResultSaved, chatBotRes
                     "distance": item.distance
                 }));
 
-                const response = await axiosInstance_back.post(URL_GET_CHATBOT, 
+                const response = await axiosInstance_back.post(URL_GET_CHATBOT,
                     { "art_pieces": art_pieces,
                     "task_id": taskId
                     },{
@@ -23,7 +23,7 @@ const useLLMDesignation = (taskId, additionalData, setNewResultSaved, chatBotRes
                         'Content-Type': 'application/json',
                     },
                 });
-                
+
                 setBotResult(response.data.result)
                 setChatBotResultFetched(true);
                 setNewResultSaved(true);

@@ -12,10 +12,10 @@ import * as d3 from 'd3';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-function SearchArt({ 
-  setPlanExpired, 
-  planExpired, 
-  handleMenuClick, 
+function SearchArt({
+  setPlanExpired,
+  planExpired,
+  handleMenuClick,
   searchResults,
   setSearchResults,
   trendData,
@@ -100,7 +100,7 @@ function SearchArt({
 
   return (
     <div className="upload-form-container">
-      <HeaderPlateforme 
+      <HeaderPlateforme
         changeLanguage={changeLanguage}
         handleMenuClick={handleMenuClick}
         t={t}
@@ -120,8 +120,8 @@ function SearchArt({
           <div className="summary-area">
             <div className="part1-search">
               <div className="part-content">
-                <Line 
-                  data={trendData} 
+                <Line
+                  data={trendData}
                   options={{
                     scales: {
                       y1: {

@@ -6,21 +6,21 @@ import { checkAuth } from '../general/identification';
 import useLogActivity from '../general/useLogActivity';
 import { URL_UPLOAD } from '../../utils/constants';
 
-const useNewSearchSubmit = ({ 
-      file, 
-      text, 
-      setFile, 
-      setText, 
-      setTaskId, 
-      setResult, 
-      setBotResult, 
-      setChatBotResultFetched, 
-      setAnalysisInProgress, 
-      setAdditionalData, 
-      setAvgMinEstimates, 
-      setAvgMaxEstimates, 
-      setAvgFinalResult, 
-      setNewResultSaved 
+const useNewSearchSubmit = ({
+      file,
+      text,
+      setFile,
+      setText,
+      setTaskId,
+      setResult,
+      setBotResult,
+      setChatBotResultFetched,
+      setAnalysisInProgress,
+      setAdditionalData,
+      setAvgMinEstimates,
+      setAvgMaxEstimates,
+      setAvgFinalResult,
+      setNewResultSaved
 }) => {
 
   const [fileUrl, setFileUrl] = useState(null);
@@ -39,7 +39,7 @@ const useNewSearchSubmit = ({
     const isAuthenticated = await checkAuth();
 
     if(isAuthenticated){
-      
+
       const userdataString = Cookies.get("userdata");
       const formData = new FormData();
       if (file) {
@@ -49,7 +49,7 @@ const useNewSearchSubmit = ({
         formData.append('text', text);
       }
       formData.append('user_id', JSON.parse(userdataString).id);
-      
+
       try {
         const response = await axiosInstance_back.post(URL_UPLOAD, formData, {
           headers: {
@@ -70,7 +70,7 @@ const useNewSearchSubmit = ({
         setAvgFinalResult(0);
         setNewResultSaved(false);
 
-        // log activity 
+        // log activity
         if(file && text){
           LogActivity("click_search_submit", "file_and_text")}
         else if(file){
@@ -79,10 +79,10 @@ const useNewSearchSubmit = ({
           LogActivity("click_search_submit", "text")
         }
 
-        // update the volume of search remaining 
+        // update the volume of search remaining
         let remainingClosestVolume = Number(Cookies.get('remaining_closest_volume'));
         Cookies.set('remaining_closest_volume', remainingClosestVolume - 1);
-      
+
       } catch (error) {
         console.error('Error uploading file', error);
       }

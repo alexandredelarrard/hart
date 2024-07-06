@@ -2,7 +2,7 @@ import React from 'react';
 import Header from "../landing_page/Header.js";
 
 function Confirm({t}) {
-  
+
   return (
     <div>
        <Header scrolled={true} t={t}/>

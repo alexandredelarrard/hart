@@ -10,10 +10,10 @@ import '../../../css/BillingSettings.css';
 function BillingSettings({ t }) {
     const [payments, setPayments] = useState([]);
     const [activityData, setActivityData] = useState([]);
-  
+
     useFetchPayments(setPayments);
     useFetchMyActivity(setActivityData);
-  
+
     return (
       <div className="my-payment-section">
         <h2>{t("plateforme.profilesettings.myactivitytitle")}</h2>
@@ -31,7 +31,7 @@ function BillingSettings({ t }) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
-              <Tooltip />   
+              <Tooltip />
               <Legend />
               <Bar dataKey="searchVolume" stackId="a" fill="#dc3545" />
               <Bar dataKey="estimateVolume" stackId="a" fill="#1964b3" />
@@ -48,13 +48,13 @@ function BillingSettings({ t }) {
                         <p>Expiry date: </p>
                         <p>Subscription volume:</p>
                         <p>Remaining estimate volume</p>
-                    </div> 
-                </div> 
+                    </div>
+                </div>
             </div>
         </div>
         <h2>{t("plateforme.profilesettings.billingtitle")}</h2>
         <div className="plans">
-          <PaymentTable 
+          <PaymentTable
             payments={payments}
             t={t}
           />
@@ -62,5 +62,5 @@ function BillingSettings({ t }) {
       </div>
     );
   }
-  
+
   export default BillingSettings;

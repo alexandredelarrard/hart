@@ -56,7 +56,7 @@ const Checkout = ({t}) => {
   }, [setStep, setEmail, navigate]);
 
   const handleSubmit = async (e) => {
-    setError(''); 
+    setError('');
     setMessage('');
     e.preventDefault();
 
@@ -79,7 +79,7 @@ const Checkout = ({t}) => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
-    setError(''); 
+    setError('');
     setMessage('');
 
     const paymentData = {

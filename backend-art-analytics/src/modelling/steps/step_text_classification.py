@@ -1,5 +1,5 @@
 from datetime import datetime
-import pandas as pd 
+import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import evaluate
@@ -8,25 +8,24 @@ from datasets import Dataset, DatasetDict
 from omegaconf import DictConfig
 
 from peft import LoraConfig, TaskType, get_peft_model, PeftModel
-from transformers import (TrainingArguments,
-                            Trainer,
-                            AutoTokenizer,
-                            AutoModelForSequenceClassification)
+from transformers import (
+    TrainingArguments,
+    Trainer,
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+)
 
-from src.utils.utils_crawler import (save_json,
-                                     read_json)
+from src.utils.utils_crawler import save_json, read_json
 from src.utils.utils_models import print_trainable_parameters
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 from src.constants.class_map import class_mapping
 
+
 class StepTextClassification(Step):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig, 
-                 save_model : bool = True):
+
+    def __init__(self, context: Context, config: DictConfig, save_model: bool = True):
 
         super().__init__(context=context, config=config)
 
@@ -42,41 +41,53 @@ class StepTextClassification(Step):
         self.today = datetime.today().strftime("%d_%m_%Y")
 
     def create_testing_data(self):
-        df = self.read_sql_data("SELECT \"ID_ITEM\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS\" ORDER BY RANDOM() LIMIT 50000")
-        df = df.loc[df[self.name.total_description].apply(lambda x: len(x))> 100]
+        df = self.read_sql_data(
+            'SELECT "ID_ITEM", "TOTAL_DESCRIPTION" FROM "ALL_ITEMS" ORDER BY RANDOM() LIMIT 50000'
+        )
+        df = df.loc[df[self.name.total_description].apply(lambda x: len(x)) > 100]
         df.rename(columns={"TOTAL_DESCRIPTION": "text"}, inplace=True)
         df.to_csv("D:/data/prediction_classif.csv", index=False, sep=";")
 
     def create_training_data(self):
 
-        df = self.read_sql_data("SELECT * FROM \"PICTURES_CATEGORY_20_04_2024\" WHERE \"PROBA_0\" > 0.95")
+        df = self.read_sql_data(
+            'SELECT * FROM "PICTURES_CATEGORY_20_04_2024" WHERE "PROBA_0" > 0.95'
+        )
         df = df[[self.name.id_item, self.name.total_description, "TOP_0"]]
-        df = df.loc[df[self.name.total_description].apply(lambda x: len(x))> 100]
+        df = df.loc[df[self.name.total_description].apply(lambda x: len(x)) > 100]
         df["TOP_0"] = df["TOP_0"].map(class_mapping)
-        volume_classes = df["TOP_0"].value_counts().loc[df["TOP_0"].value_counts() > 15].index
+        volume_classes = (
+            df["TOP_0"].value_counts().loc[df["TOP_0"].value_counts() > 15].index
+        )
         df = df.loc[df["TOP_0"].isin(volume_classes)]
 
         # sample per class
         total_sample_size = 400
-        id_items_to_keep = df.groupby('TOP_0').apply(lambda x: x[self.name.id_item][:total_sample_size]).values
+        id_items_to_keep = (
+            df.groupby("TOP_0")
+            .apply(lambda x: x[self.name.id_item][:total_sample_size])
+            .values
+        )
         df = df.loc[df[self.name.id_item].isin(id_items_to_keep)]
         df.to_csv("D:/data/test_classif.csv", index=False, sep=";")
 
-        df.rename(columns={"TOP_0": "labels", "TOTAL_DESCRIPTION": "text"}, inplace=True)
+        df.rename(
+            columns={"TOP_0": "labels", "TOTAL_DESCRIPTION": "text"}, inplace=True
+        )
 
-        return df 
-    
+        return df
+
     def split_train_test(self, df):
 
-        df_validation = df.sample(frac= self.ratio_validation)
+        df_validation = df.sample(frac=self.ratio_validation)
         df_train = df.drop(df_validation.index)
-                
+
         train = Dataset.from_pandas(df_train)
         validation = Dataset.from_pandas(df_validation)
 
         dataset = DatasetDict()
-        dataset['train'] = train
-        dataset['validation'] = validation
+        dataset["train"] = train
+        dataset["validation"] = validation
 
         return dataset
 
@@ -98,15 +109,17 @@ class StepTextClassification(Step):
         print_trainable_parameters(self.text_model)
 
         self.metric = evaluate.load("accuracy")
-        self.trainer  = self.get_trainer(tokenized_datasets["train"],
-                                         tokenized_datasets["validation"])
+        self.trainer = self.get_trainer(
+            tokenized_datasets["train"], tokenized_datasets["validation"]
+        )
         self.trainer.train()
-        
+
         if self.save_model:
             self.trainer.save_model(self.finetuned_model_name)
             self.tokenizer.save_model(self.finetuned_model_name)
-            save_json(self.classes_2id,
-                      path=self.finetuned_model_name + "/classes_2id.json")
+            save_json(
+                self.classes_2id, path=self.finetuned_model_name + "/classes_2id.json"
+            )
 
         return self.text_model
 
@@ -117,15 +130,17 @@ class StepTextClassification(Step):
         self.id_2classes = self.reverse_classes_id(self.classes_2id)
         dataset = self.split_train_test(df)
 
-        self.batching = torch.utils.data.DataLoader(dataset["validation"], 
-                                                    shuffle=False, 
-                                                    batch_size=self.test_batch_size)
+        self.batching = torch.utils.data.DataLoader(
+            dataset["validation"], shuffle=False, batch_size=self.test_batch_size
+        )
 
-        #load model & tokenizer
+        # load model & tokenizer
         self.load_tokenizer()
-        self.fine_tuned_model = self.load_peft_finetuned_model(model_name=self.model_name)
+        self.fine_tuned_model = self.load_peft_finetuned_model(
+            model_name=self.model_name
+        )
 
-        # predict labels 
+        # predict labels
         answers = self.batched_prediction(self.fine_tuned_model, self.batching)
 
         # reshape top_k answers
@@ -139,7 +154,9 @@ class StepTextClassification(Step):
         answers = []
         for batch in tqdm(batching):
             tokenized_inputs = self.tokenize_text(batch).to(self.device)
-            model_prediction = self.model_prediction(model, tokenized_inputs, self.top_k)
+            model_prediction = self.model_prediction(
+                model, tokenized_inputs, self.top_k
+            )
             answers.append(model_prediction)
         return answers
 
@@ -154,33 +171,30 @@ class StepTextClassification(Step):
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
     def tokenize_text(self, df):
-        return self.tokenizer(df["text"], 
-                              padding="max_length", 
-                              max_length=512,
-                              truncation=True, 
-                              return_tensors='pt')
+        return self.tokenizer(
+            df["text"],
+            padding="max_length",
+            max_length=512,
+            truncation=True,
+            return_tensors="pt",
+        )
 
     def set_lora_config(self):
         return LoraConfig(
-            task_type=TaskType.SEQ_CLS,
-            r=32,
-            lora_alpha=1,
-            lora_dropout=0.1
+            task_type=TaskType.SEQ_CLS, r=32, lora_alpha=1, lora_dropout=0.1
         )
 
     def load_base_model(self, model_name):
         return AutoModelForSequenceClassification.from_pretrained(
-            model_name,
-            num_labels=len(self.classes_2id.keys()),
-            device_map="auto"
+            model_name, num_labels=len(self.classes_2id.keys()), device_map="auto"
         )
-    
+
     def load_peft_finetuned_model(self, model_name):
-      base_model = self.load_base_model(model_name)
-      finetuned_model = PeftModel.from_pretrained(base_model, 
-                                                  self.finetuned_model_name, 
-                                                  is_trainable=False)
-      return finetuned_model.eval()
+        base_model = self.load_base_model(model_name)
+        finetuned_model = PeftModel.from_pretrained(
+            base_model, self.finetuned_model_name, is_trainable=False
+        )
+        return finetuned_model.eval()
 
     def define_num_classes(self, classes):
 
@@ -189,12 +203,12 @@ class StepTextClassification(Step):
             self.classes_2id[classe] = i
 
         return self.classes_2id
-    
+
     def load_classes_id(self):
         return read_json(self.finetuned_model_name + "/classes_2id.json")
-    
+
     def reverse_classes_id(self, classes_2id):
-        return {v: k for k,v in classes_2id.items()}
+        return {v: k for k, v in classes_2id.items()}
 
     def compute_metrics(self, eval_pred):
         logits, labels = eval_pred
@@ -202,25 +216,27 @@ class StepTextClassification(Step):
         return self.metric.compute(predictions=predictions, references=labels)
 
     def get_trainer(self, train_data, test_data):
-        training_args = TrainingArguments(output_dir="test_trainer",
-                                          evaluation_strategy="steps",
-                                          num_train_epochs=self.epochs,
-                                          per_device_train_batch_size=self.train_batch_size,
-                                          lr_scheduler_type="linear",
-                                          report_to="tensorboard",
-                                          warmup_ratio=0.03,
-                                          save_steps=1500,
-                                          group_by_length=True,
-                                          logging_steps=1500,
-                                          learning_rate=2e-4)
+        training_args = TrainingArguments(
+            output_dir="test_trainer",
+            evaluation_strategy="steps",
+            num_train_epochs=self.epochs,
+            per_device_train_batch_size=self.train_batch_size,
+            lr_scheduler_type="linear",
+            report_to="tensorboard",
+            warmup_ratio=0.03,
+            save_steps=1500,
+            group_by_length=True,
+            logging_steps=1500,
+            learning_rate=2e-4,
+        )
         return Trainer(
-                model=self.text_model,
-                args=training_args,
-                train_dataset=train_data,
-                eval_dataset=test_data,
-                compute_metrics=self.compute_metrics
-            )
-        
+            model=self.text_model,
+            args=training_args,
+            train_dataset=train_data,
+            eval_dataset=test_data,
+            compute_metrics=self.compute_metrics,
+        )
+
     def clean_answers(self, answers):
         proba_cols = [f"PROBA_{i}" for i in range(self.top_k)]
         classes_cols = [f"TOP_{i}" for i in range(self.top_k)]
@@ -229,11 +245,13 @@ class StepTextClassification(Step):
         total = pd.DataFrame()
         for batch in answers:
             probas, classes = batch[0].cpu().numpy(), batch[1].cpu().numpy()
-            batch_total = pd.concat([pd.DataFrame(probas), pd.DataFrame(classes)], axis=1)
+            batch_total = pd.concat(
+                [pd.DataFrame(probas), pd.DataFrame(classes)], axis=1
+            )
             total = pd.concat([total, batch_total], axis=0)
 
         for col in classes_cols:
-          total[col] = total[col].map(self.id_2classes)
+            total[col] = total[col].map(self.id_2classes)
 
         total.columns = columns
         return total.reset_index(drop=True)

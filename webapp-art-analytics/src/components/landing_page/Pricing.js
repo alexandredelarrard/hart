@@ -65,7 +65,7 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) =
                             <div className="price-options">
                                 <div className="price-column">
                                     <h3>{t("overall.monthly")}</h3>
-                                    <div 
+                                    <div
                                         className={`price-option ${selectedPrice['individual'] === 'monthly' ? 'selected' : ''}`}
                                         onClick={() => handlePriceSelection('individual', 'monthly')}
                                     >
@@ -74,7 +74,7 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) =
                                 </div>
                                 <div className="price-column">
                                     <h3>{t("overall.yearly")}</h3>
-                                    <div 
+                                    <div
                                         className={`price-option ${selectedPrice['individual'] === 'yearly' ? 'selected' : ''}`}
                                         onClick={() => handlePriceSelection('individual', 'yearly')}
                                     >
@@ -113,4 +113,3 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) =
 }
 
 export default Pricing;
-

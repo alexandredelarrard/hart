@@ -6,20 +6,20 @@
   min-width: 200px;
   height: 100vh;
   padding: 1rem;
-  background-color: #012041; 
+  background-color: #012041;
   box-sizing: border-box;
   /* overflow-y: auto;*/
   display: flex;
   flex-direction: column;
-  color: #fff;   
+  color: #fff;
 }
 
 .logout-button {
   width: 100%;
   padding: 0.75rem;
   border: none;
-  border-radius: 5px; 
-  background-color: #dc3545; 
+  border-radius: 5px;
+  background-color: #dc3545;
   color: white;
   font-size: 1rem;
   cursor: pointer;
@@ -216,7 +216,7 @@
     position: relative;
     padding: 0.5rem;
     margin-bottom: 0;
-    font-size:1rem; 
+    font-size:1rem;
     cursor: pointer;
   }
 
@@ -231,7 +231,7 @@
   }
 
   .menu-item:hover .submenu, .menu-item:focus .submenu, .menu-item.active .submenu {
-    display: flex; 
+    display: flex;
   }
 
   .submenu-item {
@@ -276,7 +276,7 @@
     position: relative;
     padding: 0.4rem;
     margin-bottom: 0;
-    font-size:0.8rem; 
+    font-size:0.8rem;
     cursor: pointer;
 
   }

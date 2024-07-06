@@ -48,8 +48,7 @@ def memoize(user_friendly_id=None, exclude_args_from_caching=()):
                 nonlocal user_friendly_id
                 try:
                     user_friendly_id = (
-                        user_friendly_id
-                        or f"{func.__module__}.{func.__qualname__}"
+                        user_friendly_id or f"{func.__module__}.{func.__qualname__}"
                     )
                 except AttributeError:
                     user_friendly_id = "gen-ai-cache"
@@ -60,9 +59,7 @@ def memoize(user_friendly_id=None, exclude_args_from_caching=()):
                     if k not in exclude_args_from_caching
                 }
 
-                cache_file = get_memoization_path(
-                    user_friendly_id, caching_kwargs
-                )
+                cache_file = get_memoization_path(user_friendly_id, caching_kwargs)
                 if cache_file.exists():
                     if cache_config.show_cache_hit:
                         print("🟢 cache hit")

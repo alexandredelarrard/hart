@@ -1,6 +1,6 @@
 dtypes:
   carreaux_200m:  # https://www.insee.fr/fr/statistiques/7655475?sommaire=7655515
-    met : 
+    met :
       idcar_200m: str
       idcar_1km: str
       idcar_nat: str
@@ -35,7 +35,7 @@ dtypes:
       ind_65_79: float
       ind_80p: float
       ind_inc: float
-    mart : 
+    mart :
       idcar_200m: str
       idcar_1km: str
       idcar_nat: str
@@ -70,7 +70,7 @@ dtypes:
       ind_65_79: float
       ind_80p: float
       ind_inc: float
-    reun : 
+    reun :
       idcar_200m: str
       idcar_1km: str
       idcar_nat: str
@@ -105,7 +105,7 @@ dtypes:
       ind_65_79: float
       ind_80p: float
       ind_inc: float
-  carreaux_1km: 
+  carreaux_1km:
     met:
       idcar_1km: str
       i_est_1km: int
@@ -215,7 +215,7 @@ dtypes:
       libelle: str
       can: str
       comparent: str
-    communes_encodage_2023: 
+    communes_encodage_2023:
       TYPECOM: str
       COM: str
       REG: float
@@ -228,18 +228,18 @@ dtypes:
       LIBELLE: str
       CAN: str
       COMPARENT: str
-    deces: 
+    deces:
       Code: str
       Libellé : str
       Nombre de décès domiciliés 2022: int
       Évolution des décès domiciliés entre 2019 et 2022: float
-    elections: 
+    elections:
       Code: str
       Libellé : str
       Taux de procurations en 2022: float
       Nombre de mandants en 2022: float
       Électeurs inscrits sur liste principale 2022: float
-    emploi: 
+    emploi:
       Code: str
       Libellé : str
       Part des employés dans le nb d’emplois au LT 2020: float
@@ -275,7 +275,7 @@ dtypes:
       Taux activité des hommes par tranche d'âge 2020.1: float
       Taux activité des hommes par tranche d'âge 2020.2: float
       Taux activité des hommes par tranche d'âge 2020.3: float
-    entreprise_creation: 
+    entreprise_creation:
       Code: str
       Libellé : str
       Unités légales (en nombre) 2021: int
@@ -303,7 +303,7 @@ dtypes:
       Part act. spécial., scient. & techn. & act. de svices admin. & soutien dans les créations d'entreprise 2022: float
       Part administration publ., enseignement, santé humaine & action sociale dans les créations d'ent. 2022: float
       Part autres activités de services dans les créations d'ent. 2022: float
-    entreprise_caracteristiques: 
+    entreprise_caracteristiques:
       Code: str
       Libellé : str
       Nb étab. actifs employeurs au 31/12 2021: float
@@ -316,7 +316,7 @@ dtypes:
       Part postes de la construction dans les étab. actifs au 31/12 2021: float
       Part postes du commerce, transport et services marchands dans les étab. actifs au 31/12 2021: float
       Part postes de l'admin. publique, enseignement, santé et action sociale dans les étab. actifs au 31/12 2021: float
-    logements: 
+    logements:
       Code: str
       Libellé : str
       Part des résidences principales (hors studio de 1 personne) suroccupées 2020: float
@@ -332,7 +332,7 @@ dtypes:
       Rés. principales HLM louées vides 2020: float
       Part des locataires HLM dans les rés. principales 2020: float
       Part des rés. principales construites avant 1946 2020: float
-    menages: 
+    menages:
       Code: str
       Libellé : str
       Part des familles monoparentales 2020: float
@@ -354,7 +354,7 @@ dtypes:
       Part des personnes de 15 ans ou + pacsées 2020: float
       Part des pers. de 15 ans ou + veufs 2020: float
       Taille moyenne des ménages 2020: float
-    naissance: 
+    naissance:
       Code: str
       Libellé : str
       Nombre de naissances domiciliées 2022: float
@@ -364,7 +364,7 @@ dtypes:
       Grille communale de densité: str
       Unité urbaine 2020: str
       Zones d'emploi 2020: str
-    populations_csp: 
+    populations_csp:
       Code: str
       Libellé : str
       Période du pic relatif de population: str
@@ -397,7 +397,7 @@ dtypes:
       Population de 15 ans ou + selon la CSP 2020.6 : float
       Population de 15 ans ou + selon la CSP 2020.7: float
       Population de 15 ans ou + selon la CSP 2020.8: float
-    scolarisation: 
+    scolarisation:
       Code: str
       Libellé : str
       Part des diplômés d'un BAC+5 ou plus dans la pop. non scolarisée de 15 ans ou + 2020 : float
@@ -408,7 +408,7 @@ dtypes:
       Part des pers., dont le diplôme le plus élevé est le bac, dans la pop. non scolarisée de 15 ans ou + 2020 : float
       Part des diplômés d'un BAC+2 dans la pop. non scolarisée de 15 ans ou + 2020: float
       Part des diplômés d'un BAC+3  ou BAC+4 dans la pop. non scolarisée de 15 ans ou + 2020: float
-    securite: 
+    securite:
       Code: str
       Libellé : str
       Coups et blessures volontaires (en nombre) 2022: float
@@ -438,7 +438,7 @@ dtypes:
       Usage de stupéfiants (nombre) 2022: float
       Usage de stupéfiants (taux) 2022: float
       Trafic de stupéfiants (nombre) 2022: float
-    tourisme: 
+    tourisme:
       Code: str
       Libellé : str
       Nb d'hôtels 2023: float
@@ -458,7 +458,7 @@ dtypes:
       an: int
       poptot_h: float
   departement:
-    chomage:  
+    chomage:
       Code: str
       Libellé : str
       Taux de chômage annuel moyen des femmes 2022: float
@@ -467,12 +467,12 @@ dtypes:
       Taux de chômage annuel moyen des 25 à 49 ans 2022: float
       Taux de chômage annuel moyen des 50 ans ou plus 2022: float
   zone_emploi:
-    chomage: 
+    chomage:
       Code: str
       Libellé : str
       Taux de chômage trimestriel 2023-T3: float
       Taux de chômage annuel moyen 2022: float
-    pauvrete: 
+    pauvrete:
       Code: str
       Libellé : str
       Taux de pauvreté 2021: float
@@ -483,7 +483,7 @@ dtypes:
       Taux de pauvreté - 60 ans à 74 ans 2021: float
       Taux de pauvreté - 75 ans ou plus 2021: float
       Taux de pauvreté - locataires 2021: float
-    pouvoir_achat: 
+    pouvoir_achat:
       Code: str
       Libellé : str
       Nb de ménages fiscaux 2021: float
@@ -503,7 +503,7 @@ dtypes:
       1er décile du niv. de vie 2021: float
       9e décile du niv. de vie 2021: float
       Rapport interdécile du niveau de vie (9e déc./1er déc.) 2021: float
-    salaires: 
+    salaires:
       Code: str
       Libellé : str
       Salaire net horaire moyen 2021: float

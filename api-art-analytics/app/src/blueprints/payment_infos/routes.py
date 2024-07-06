@@ -8,28 +8,33 @@ import logging
 
 from . import payment_blueprint
 
-@payment_blueprint.route('/new-payment', methods=['POST'])
+
+@payment_blueprint.route("/new-payment", methods=["POST"])
 @jwt_required()
 def new_payment():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
         user_id = data.get("user_id")
-        return jsonify({'message': 'Activity logged successfully'}), 201
-       
+        return jsonify({"message": "Activity logged successfully"}), 201
 
-@payment_blueprint.route('/user-payment-infos', methods=['GET'])
+
+@payment_blueprint.route("/user-payment-infos", methods=["GET"])
 @jwt_required()
 def user_payment_infos():
 
-    if request.method == 'GET':
-        user_id = request.args.get('user_id')
+    if request.method == "GET":
+        user_id = request.args.get("user_id")
         if user_id:
-            results = PaymentTrack.query.filter_by(user_id=user_id).order_by(desc(PaymentTrack.plan_start_date)).all()
-            list_results= [item.to_dict() for item in results]
+            results = (
+                PaymentTrack.query.filter_by(user_id=user_id)
+                .order_by(desc(PaymentTrack.plan_start_date))
+                .all()
+            )
+            list_results = [item.to_dict() for item in results]
             logging.info(list_results)
             return jsonify({"results": list_results}), 200
         else:
-            return jsonify({"error": 'missing user ID'}), 400
-    
+            return jsonify({"error": "missing user ID"}), 400
+
     else:
-        return jsonify({"error": 'method only GET'}), 500
+        return jsonify({"error": "method only GET"}), 500

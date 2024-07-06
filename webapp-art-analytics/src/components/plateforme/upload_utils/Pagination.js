@@ -10,7 +10,7 @@ const Pagination = ({
   toggleShowAll,
   t
 }) => (
-  
+
   <div className="pagination">
     {Array.from({ length: totalPages }, (_, index) => (
       <button

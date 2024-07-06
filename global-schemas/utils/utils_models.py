@@ -1,5 +1,6 @@
 import logging
 
+
 def print_trainable_parameters(model):
     trainable_params = 0
     all_param = 0
@@ -9,4 +10,4 @@ def print_trainable_parameters(model):
             trainable_params += param.numel()
     logging.info(
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
-    ) 
+    )

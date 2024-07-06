@@ -1,7 +1,7 @@
 evaluator:
     model_path: D:/data/models/evaluator
     category_mapping_path: D:/data/llm_extracts/features_to_extract/object_category_mapping.json
-    mappings: 
+    mappings:
         watch: D:/data/llm_extracts/features_to_extract/watch_features.json
         vase: D:/data/llm_extracts/features_to_extract/vase_features.json
         all: D:/data/llm_extracts/features_to_extract/category_features.json
@@ -9,24 +9,24 @@ evaluator:
         reformulate: D:/data/llm_extracts/features_to_extract/reformulate_features.json
 
     info_to_mapping:
-        shape_mapping: 
+        shape_mapping:
             _SHAPE: [_SHAPE]
-        country_mapping: 
+        country_mapping:
             _COUNTRY: [_COUNTRY]
-        color_mapping: 
+        color_mapping:
             _COLOR: [_COLOR]
-        material_mapping: 
+        material_mapping:
             VASE_MATERIAL: [VASE_MATERIAL, VASE_COLOR]
             PAINTING_SUPPORT_MATERIAL: [PAINTING_SUPPORT_MATERIAL, PAINTING_MATERIAL]
         painting_material_mapping:
             PAINTING_MATERIAL: [PAINTING_MATERIAL, PAINTING_SUPPORT_MATERIAL]
-        style_mapping: 
-            _STYLE: [_PERIODE_OR_CIRCA_YEAR, _STYLE"] 
-        condition_mapping: 
+        style_mapping:
+            _STYLE: [_PERIODE_OR_CIRCA_YEAR, _STYLE"]
+        condition_mapping:
             _CONDITION: [_CONDITION]
-        decorations_mapping: 
+        decorations_mapping:
             _DECORATIONS: [_DECORATIONS]
-        object_category_mapping: 
+        object_category_mapping:
             OBJECT_CATEGORY: [OBJECT_CATEGORY]
 
     handle_dates: ["_PERIODE_OR_CIRCA_YEAR", "_PERIOD_OR_YEAR"]
@@ -102,7 +102,7 @@ evaluator:
             "kadjar": ["kadjar"],
             "chine 19": ["chine 19", "china 19", "daoguang", "xianfeng", "jiaqing", "jiajing", "tongzhi", "guangxu"],
             "chine 18": ["chine 18", "china 18", "qianlong", "yonghzeng", "yongzheng", "qing"],
-            "chine 16-17": ["chine 16", "china 16", "china 17", "wan-li","wanli", "shunzhi", 
+            "chine 16-17": ["chine 16", "china 16", "china 17", "wan-li","wanli", "shunzhi",
                             "jingdezhen", "kangxi"],
             "chine 15": ["xuande", "chenghua"],
             "song" : ["song", "sung"],
@@ -121,7 +121,7 @@ evaluator:
             "edo": ["edo"],
             "modern": ["modern"]
         }
-        
+
         country_mapping: {
             "china" : ["china", "chine", "chinese", "asia", "canton", "asia", "nankin"],
             "france": ["france", "paris", "nancy", "sevre", "limoges"],
@@ -149,7 +149,7 @@ evaluator:
             "belgium":["belgium", "belgique"],
             "england" : ["england", "uk"]
         }
-        
+
         material_mapping: {
             "porcelaine" : ["porcelaine", "porcelain"],
             "ceramique": ["ceramique", "ceramic", "glazed", "glazed ceramic", "ceramics"],
@@ -164,8 +164,8 @@ evaluator:
             "copper": ["copper", "cuivre"],
             "glass" : ["glass", "verre", "crystal", "cameo", "cristal"],
             "faience": ["fayence", "faience", "maiolica", "majolica"],
-            "terre_cuite" : ["biscuit", "earthenware", "terre", "terracotta", 
-                            "lagynos", "pottery", "poterie", "impasto"], 
+            "terre_cuite" : ["biscuit", "earthenware", "terre", "terracotta",
+                            "lagynos", "pottery", "poterie", "impasto"],
             "celadon" : ["celadon"],
             "jade": ["jade", "jadeite"],
             "opaline" : ["opal", "opaline"],
@@ -173,12 +173,12 @@ evaluator:
             "plastic": ["plastic", "plastique", "plexiglas", "linoleum"],
             "silk": ["silk", "soie"],
             "peau": ["velin", "peau", "skin", "vellum"],
-            "   toile   ": ["burlap", "lienzo", "doek", "canvas", "tissu", "toile", "toiles", "tela", 
+            "   toile   ": ["burlap", "lienzo", "doek", "canvas", "tissu", "toile", "toiles", "tela",
                             "leinwand", "canvasboard", "lin"],
             "ivory": ["ivory", "ivoire"],
             "stone": ["stone", "pierre"],
             "paper": ["scroll", "paper", "papuier", "papier", "arches", "parchemin"],
-            "  carton  ": ["millboard", "cartoncino", "card", "cardboard", "carton", 
+            "  carton  ": ["millboard", "cartoncino", "card", "cardboard", "carton",
                             "karton", "cartone", "cartonnette", "paperboard"],
             "  panneau  ": ["panneau", "panneaux", "panel", "pane", "board", "isore", "isorel", "hardboard",
                             "masonite", "linen", "linnen", "bois", "wood", "plywood", "contreplaque", "faesite", "hartfaser"],
@@ -202,7 +202,7 @@ evaluator:
         }
 
         shape_mapping: {
-            "baluster" : ["baluster", "balustre", "baluster form", "baluster jar", 
+            "baluster" : ["baluster", "balustre", "baluster form", "baluster jar",
                           "baluster-shaped", "two-handled", "twin-handled"],
             "double gourd": ["double gourd", "gourd-shaped", "gourd", "gourde", "double-gourd"],
             "bottle" : ["bottle", "bouteille"],
@@ -210,7 +210,7 @@ evaluator:
                       "round", "rounded", "globular", "bulbous", "spherical", "boule", "spherique"],
             "triangular" : ["triangular"],
             "pear shaped": ["pear shaped", "pear shape"],
-            "amphora": ["amphora", "amphore", "amphoriskos", "lekythos"], 
+            "amphora": ["amphora", "amphore", "amphoriskos", "lekythos"],
             "polygonal" : ["hexagonal", "octagonal", "polygonal"],
             "square": ["square", "quadrangulaire", "quadrangular", "rectangular", "square section"],
             "meiping": ["meiping"],
@@ -241,17 +241,17 @@ evaluator:
 
         color_mapping: {
             "multicolor" : ["polychrome", "multi colored", "colored", "multiple",
-                            "multicolored", "polychromes", "polychromie", "multicolore", 
+                            "multicolored", "polychromes", "polychromie", "multicolore",
                             "multi color", "various", "multicolor", "colorful", "varied",
                             "polychrome and gold", "vibrant colors", "vibrant"],
-            "blue and white" : ["blue-white", "blue, white", "blue and white", 
-                                "white and blue", "bleu et blanc", "white blue", 
+            "blue and white" : ["blue-white", "blue, white", "blue and white",
+                                "white and blue", "bleu et blanc", "white blue",
                                 "bleu blanc", "white, blue"],
-            "blue and green": ["blue and green", "blue-green", "green and blue", 
+            "blue and green": ["blue and green", "blue-green", "green and blue",
                                "vert et bleu", "bleu et vert", "bluish-green",
                                "blue-green"],
             "blue and gold": ["blue and gold", "gold and blue", "or et bleu", "bleu et or"],
-            "red and white": ["red and white", "white and red", "bland et rouge", 
+            "red and white": ["red and white", "white and red", "bland et rouge",
                               "rouge et blanc", "black, rouge", "rouge, blanc",
                               "white, red", "red, white"],
             "iridescent": ["iridescent", "opalescent"],
@@ -301,7 +301,7 @@ evaluator:
         condition_mapping: {
             "very_good" : ["very good", "excellent", "exquisite", "perfect", "parfait"],
             "good_" : ["good", "restored", "restorations", "fine", "repaired", "bon", "minor", "restaurations", "restauration"],
-            "okay_": ["old wear", "small signs", "minimally damaged", "some egrenures", "some wear", "some chips", "signs of use", "used", 
+            "okay_": ["old wear", "small signs", "minimally damaged", "some egrenures", "some wear", "some chips", "signs of use", "used",
                     "slightly", "small chips", "minor defects", "usures", "minor", "craquelures", "manques", "craquele"],
             "poor" : ["craquelee", "craquelure", "cracks", "damaged", "dechirure", "manques", "degraded", "cracked", "accidents", "taches", "accident", "worn", "damages", "fractured", "chipped", "crack", "eclat"],
         }
@@ -320,10 +320,10 @@ evaluator:
 
         object_category_mapping: {
             "painting": ["pair of portraits", "still life", "tableaux", "gouache on paper", "pair of portraits", "watercolor studies", "panneau", "scroll", "still life", "aquarel", "lot of paintings", "set of two watercolour and ink works on paper within artist's sketchbook",
-                        'folio of watercolours', 'etching and aquatint', "aquarell", "gouache pictures", "tableau", "pair of paintings", "pair of gouaches", "composition", "aquatint", "aquatinte", "papier peint", 
+                        'folio of watercolours', 'etching and aquatint', "aquarell", "gouache pictures", "tableau", "pair of paintings", "pair of gouaches", "composition", "aquatint", "aquatinte", "papier peint",
                         "pair of oil paintings", "watercolour", "peinture", "portrait", "painting", "watercolor", "aquarelle", "pastel", "gouache", "pair of paintings", 'oil painting', "collage", "pair of watercolors"],
-            "print": ["linocut", "impression", "chromogenic print", "photolithographie", 'lithographie en couleurs', "lithographs", "illustration", "lithographie offset", "offset", 
-                    "vintage poster", "poster", "affiche", "lithographie couleurs", "color lithograph", "lithographies", "lithographie", "lithograph", "lithography", "estampe litho couleur", 
+            "print": ["linocut", "impression", "chromogenic print", "photolithographie", 'lithographie en couleurs', "lithographs", "illustration", "lithographie offset", "offset",
+                    "vintage poster", "poster", "affiche", "lithographie couleurs", "color lithograph", "lithographies", "lithographie", "lithograph", "lithography", "estampe litho couleur",
                     "lithographie originale", "lithographic print", "offset lithograph","granolithographie",
                     "prints", 'c-print', "silkscreen", "serigraphie", "serigraph", "impression", "screenprint", "print", "giclee print", "giclee", "estampe", "screen print",
                     "estampe", "estampes", "lithograph and screenprint", "chromolithographie", "serigrafia", "serigraphy"],
@@ -361,5 +361,5 @@ evaluator:
             "earring": ["earring", "earrings", "boucle oreille"],
             "necklace" : ["necklace"],
             "watch": ["watch"],
-            
+
         }

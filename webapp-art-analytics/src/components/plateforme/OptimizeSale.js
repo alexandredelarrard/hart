@@ -5,7 +5,7 @@ function OptimizeSale({changeLanguage, handleMenuClick, t}) {
 
   return (
     <div className="upload-form-container">
-      <HeaderPlateforme 
+      <HeaderPlateforme
         changeLanguage={changeLanguage}
         handleMenuClick={handleMenuClick}
         t={t}

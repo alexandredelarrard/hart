@@ -11,7 +11,7 @@ function Card({ i18n, item, t }) {
   const handleClick = () => {
     navigate(`/analytics/card/${item.id_item}`, { state: { item } });
   };
-  
+
   return (
       <div className="card">
         <div onClick={handleClick} className="card-link">

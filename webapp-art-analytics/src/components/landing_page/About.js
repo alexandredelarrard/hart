@@ -14,7 +14,7 @@ const About = ({t}) => {
                 <h2>Our Aim</h2>
                 <p>
                     Leverage the very large number of past sales, auctions and external data to help art actors to better estimate, track and value art goods.
-                    Our DNA is very much analytical since we would like to help the art world to be more accessible to the public, more transparent for buyers 
+                    Our DNA is very much analytical since we would like to help the art world to be more accessible to the public, more transparent for buyers
                     and sellers, and overall make the sale process more fluid.
                 </p>
                 <p>
@@ -37,7 +37,7 @@ const About = ({t}) => {
             <section className="about-backers">
                 <h2>Our Backers</h2>
                 <p>
-                    Our backers include art experts from art auction houses and 2 commissaires priseurs who are driving our approach on a day-to-day basis to 
+                    Our backers include art experts from art auction houses and 2 commissaires priseurs who are driving our approach on a day-to-day basis to
                     fine-tune our value proposition as much as possible.
                 </p>
             </section>

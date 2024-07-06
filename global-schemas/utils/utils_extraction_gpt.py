@@ -1,39 +1,49 @@
 import re
 from typing import List, Dict
-import logging 
-from src.utils.utils_dataframe import remove_accents
-import warnings 
+import logging
+import ast
+import warnings
+
 warnings.simplefilter("ignore")
+from src.utils.utils_dataframe import remove_accents
+
 
 def reconstruct_dict(x):
-    new_dict= []
+    new_dict = []
     a = x.split("\n")
     count_element = 0
-    for element in a: 
-        if element == '':
+    for element in a:
+        if element == "":
             pass
         else:
-            if element == '{':
-                count_element +=1
+            if element == "{":
+                count_element += 1
             if ": " in element:
                 key, value = element.split(": ", 1)
-                key = key.replace("\"", "").strip()
-                value = value.replace("\"", "").replace("\\", "").replace(",","").split("//")[0].strip()
-                element = f"\"{key}\": \"{value}\","
+                key = key.replace('"', "").strip()
+                value = (
+                    value.replace('"', "")
+                    .replace("\\", "")
+                    .replace(",", "")
+                    .split("//")[0]
+                    .strip()
+                )
+                element = f'"{key}": "{value}",'
             new_dict.append(element)
 
     if new_dict[-1] != "}":
         new_dict.append("}")
 
     answer = "\n".join(new_dict)
-    answer = answer.replace("\"[\",", "[")
-    answer = answer.replace("\"{\",", "{")
+    answer = answer.replace('"[",', "[")
+    answer = answer.replace('"{",', "{")
 
     if "}\n{" in answer:
         answer = "[" + answer + "]"
         answer = answer.replace("}\n{", "},\n{")
 
-    return eval(answer)
+    return ast.literal_eval(answer)
+
 
 def handle_answer(answer):
 
@@ -44,38 +54,41 @@ def handle_answer(answer):
     if x[:5] == "Here ":
         x = x.split(":", 1)[-1]
 
-    x = x.replace("false", "\"False\"")
-    x = x.replace("true", "\"True\"")
-    x = x.replace("null", "\"Null\"")
-    x = x.replace("N/A", "\"None\"")
+    x = x.replace("false", '"False"')
+    x = x.replace("true", '"True"')
+    x = x.replace("null", '"Null"')
+    x = x.replace("N/A", '"None"')
     x = x.replace("```json", "")
     x = x.replace("```", "")
-    x = x.replace("\"\"", "\"")
+    x = x.replace('""', '"')
     x = x.strip()
-    
-    # handle lists 
-    if len(re.findall("\\[(.*?)\\]", x)) !=0: 
+
+    # handle lists
+    if len(re.findall("\\[(.*?)\\]", x)) != 0:
         origin, new_element = clean_list(x)
         x = x.replace(origin, new_element)
 
-    try: 
-        x = eval(x)
+    try:
+        x = ast.literal_eval(x)
         return x
-    
+
     except Exception:
         try:
             return reconstruct_dict(x)
         except Exception:
             logging.error(answer["ID_ITEM"])
             return "{}"
-    
+
+
 def clean_list(x):
     origin = re.findall("\\[(.*?)\\]", x)[0]
     liste = origin.split(",")
     new_element = ""
     for element in liste:
-        clean_element = element.replace("\"", "").replace("\'", "").replace("\\", "").strip()
-        new_element+= f"\"{clean_element}\", "
+        clean_element = (
+            element.replace('"', "").replace("'", "").replace("\\", "").strip()
+        )
+        new_element += f'"{clean_element}", '
     return origin, new_element
 
 
@@ -95,6 +108,7 @@ def homogenize_value_format(value):
     else:
         return value
 
+
 def replace_key(k, col_mapping):
     for feature, liste_features in col_mapping.items():
         k = homogenize_value_format(k).replace(" ", "_")
@@ -102,11 +116,12 @@ def replace_key(k, col_mapping):
             return feature
     return k
 
+
 def homogenize_keys_name(x, col_mapping, smooth_text=True):
     new_dict = {}
     try:
         for k, v in x.items():
-            key =  replace_key(k, col_mapping)
+            key = replace_key(k, col_mapping)
             if isinstance(v, List):
                 values = []
                 for sub_values in v:

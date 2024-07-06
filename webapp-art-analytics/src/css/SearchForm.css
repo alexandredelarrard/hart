@@ -58,7 +58,7 @@
 }
 
 .search-input {
-  flex: 1; 
+  flex: 1;
   height: 100%; /* Full height */
   padding: 0.5rem;
   border: 1.5px solid #012041;
@@ -67,7 +67,7 @@
 }
 
 .search-bar-input{
-  flex: 1; 
+  flex: 1;
   height: 100%; /* Full height */
   padding: 0.5rem;
   border: 2px solid #012041;
@@ -178,7 +178,7 @@
   .upload-icon{
     display: none;
   }
-  
+
 }
 
 @media (max-width: 380px) {

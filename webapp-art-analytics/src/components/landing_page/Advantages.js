@@ -57,6 +57,3 @@ const Advantages = ({t}) => {
 }
 
 export default Advantages;
-
-
-

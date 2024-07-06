@@ -22,15 +22,15 @@ function Login({t}) {
     try {
       const response = await login(email, password);
       setMessage(response.data.message);
-      
-      // log activity 
+
+      // log activity
       const success = await LogActivity("click_log_in", "")
       if (success) {
         navigate('/analytics');
       } else {
         console.log('Failed to log activity');
       }
-      
+
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError(t("landing_page.trial.error401"));

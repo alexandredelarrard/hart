@@ -8,7 +8,7 @@ llm:
     train_data_path: D:/data/llm_log/train_category.jsonl
     test_data_path: D:/data/llm_log/test_category.jsonl
 
-    params: 
+    params:
         batch_size: 4
         ecpochs: 5
 

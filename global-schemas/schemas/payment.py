@@ -1,8 +1,9 @@
 from src.extensions import db
 
+
 class PaymentTrack(db.Model):
-    __tablename__ = 'payment_track'
-    __table_args__ = {'extend_existing': True}
+    __tablename__ = "payment_track"
+    __table_args__ = {"extend_existing": True}
     payment_id = db.Column(db.Integer, unique=True, primary_key=True)
     user_id = db.Column(db.Integer, nullable=True)
     paying_date = db.Column(db.DateTime, nullable=True)
@@ -18,15 +19,15 @@ class PaymentTrack(db.Model):
     remaining_search_volume = db.Column(db.Integer, nullable=True)
 
     def to_dict(self):
-       return {"user_id": self.user_id,
+        return {
+            "user_id": self.user_id,
             "payment_amount": self.payment_amount,
             "plan_name": self.plan_name,
             "plan_frequency": self.plan_frequency,
             "remaining_closest_volume": self.remaining_closest_volume,
-            "remaining_search_volume": self.remaining_search_volume,   
+            "remaining_search_volume": self.remaining_search_volume,
             "initial_search_volume": self.initial_search_volume,
             "initial_closest_volume": self.initial_closest_volume,
             "plan_start_date": self.plan_start_date,
-            "plan_end_date": self.plan_end_date}
-
-    
+            "plan_end_date": self.plan_end_date,
+        }

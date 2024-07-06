@@ -12,7 +12,7 @@ function ResetPassword({t}) {
     e.preventDefault();
     setMessage('');
     setError('');
-    
+
     try {
       const response = await axios.post(URL_API + URL_RESET_PASSWORD, { email }, {
         headers: {

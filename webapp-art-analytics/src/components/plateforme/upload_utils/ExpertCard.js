@@ -22,18 +22,18 @@ const ExpertCard = ({ expert }) => {
       <div className="avatar-container">
         {expert.expert_gender === 'male' ?
           <FontAwesomeIcon icon={faUserCircle} className="avatar" color='#0c3867'/> :
-          <FontAwesomeIcon icon={faUserCircle} className="avatar" color='#0c3867'/> 
+          <FontAwesomeIcon icon={faUserCircle} className="avatar" color='#0c3867'/>
         }
-        <span className="expertise">{expert.expert_expertise}</span> 
+        <span className="expertise">{expert.expert_expertise}</span>
       </div>
       <div className="info-container">
         <div className="row-item">
           <span className="name">{expert.expert_surname} {expert.expert_name}</span>
           <span className="stars">{renderStars(expert.expert_grade)}</span>
         </div>
-        <div className="row-item"> 
-          <span className="city">{expert.expert_city}</span> 
-          <span className="zipcode">{expert.expert_zipcode}</span> 
+        <div className="row-item">
+          <span className="city">{expert.expert_city}</span>
+          <span className="zipcode">{expert.expert_zipcode}</span>
         </div>
         <div className="row-item">
           <span className="phone"><FaPhone color='#0c3867'/> {expert.expert_cellphone}</span>

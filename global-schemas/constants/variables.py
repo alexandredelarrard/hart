@@ -1,4 +1,3 @@
-
 # for crawling & cleaning steps : naming
 class Naming:
     def __init__(self):
@@ -14,7 +13,7 @@ class Naming:
         self.item_title = "ITEM_TITLE"
         self.detailed_title = "ITEM_TITLE_DETAIL"
 
-        self.lot = 'LOT_NUMBER'
+        self.lot = "LOT_NUMBER"
         self.type_sale = "TYPE_SALE"
         self.house = "HOUSE"
         self.place = "PLACE"
@@ -41,7 +40,7 @@ class Naming:
         self.country = "COUNTRY"
         self.currency = "CURRENCY"
         self.currency_coef_eur = "CURRENCY_CEOF"
-        
+
         self.date = "AUCTION_DATE"
         self.hour = "AUCTION_HOUR"
         self.sold_year = "AUCTION_YEAR"
@@ -55,8 +54,8 @@ class Naming:
         self.id_auction = "AUCTION_ID"
         self.id_unique = "ID_UNIQUE"
 
-        # RUN INFO 
-        self.executed_time= "DATE_EXECUTION"
+        # RUN INFO
+        self.executed_time = "DATE_EXECUTION"
         self.category = "OBJECT_CATEGORY"
         self.prompt_description = "PROMPT"
 
@@ -64,42 +63,60 @@ class Naming:
         self.cluster_id = "label"
         self.cluster_top_words = "labels_top_words"
 
-        self.root_dict = {"LOT" : self.lot,
-                        "RESULT" : self.brut_result,
-                        "RESULTAT" : self.brut_result,
-                        "ESTIMATE" : self.brut_estimate,
-                        "ESTIMATION" : self.brut_estimate,
-                        "PICTURE_ID" : self.id_picture,
-                        "NOM_VENTE" : self.auction_title,
-                        "TYPE" : self.type_sale,
-                        "NUMBER_LOT" : self.lot,
-                        "ID" : self.id_item,
-                        "DATE" : self.date,
-                        "HOUR" : self.hour}
-    
+        self.root_dict = {
+            "LOT": self.lot,
+            "RESULT": self.brut_result,
+            "RESULTAT": self.brut_result,
+            "ESTIMATE": self.brut_estimate,
+            "ESTIMATION": self.brut_estimate,
+            "PICTURE_ID": self.id_picture,
+            "NOM_VENTE": self.auction_title,
+            "TYPE": self.type_sale,
+            "NUMBER_LOT": self.lot,
+            "ID": self.id_item,
+            "DATE": self.date,
+            "HOUR": self.hour,
+        }
+
     def dict_rename_auctions(self):
-        return {**self.root_dict, **{"TITLE" : self.auction_title,
-                                    "INFOS" : self.auction_infos,
-                                    "FILE" : self.auction_file}}
+        return {
+            **self.root_dict,
+            **{
+                "TITLE": self.auction_title,
+                "INFOS": self.auction_infos,
+                "FILE": self.auction_file,
+            },
+        }
 
     def dict_rename_items(self):
-        return {**self.root_dict, **{"TITLE" : self.item_title,
-                                    "SALE" : self.brut_estimate,
-                                    "CURRENT_URL": self.url_auction,
-                                    "INFOS" :self.item_infos,
-                                    "FILE" : self.item_file, 
-                                    "URL_FULL_DETAIL": self.url_full_detail,
-                                    "DESCRIPTION": self.item_description}}
-    
+        return {
+            **self.root_dict,
+            **{
+                "TITLE": self.item_title,
+                "SALE": self.brut_estimate,
+                "CURRENT_URL": self.url_auction,
+                "INFOS": self.item_infos,
+                "FILE": self.item_file,
+                "URL_FULL_DETAIL": self.url_full_detail,
+                "DESCRIPTION": self.item_description,
+            },
+        }
+
     def dict_rename_detail(self):
-        return {**self.root_dict, **{"URL" : self.url_full_detail,
-                                    "CURRENT_URL": self.url_full_detail,
-                                    "URL_DETAIL" : self.url_full_detail,
-                                    "URL_FULL_DETAIL": self.url_full_detail,
-                                    "DETAIL" : self.detailed_description,
-                                    "TITLE" : self.item_title,
-                                    "DESCRIPTION": self.detailed_description,
-                                    "FILE" : self.detail_file}}
+        return {
+            **self.root_dict,
+            **{
+                "URL": self.url_full_detail,
+                "CURRENT_URL": self.url_full_detail,
+                "URL_DETAIL": self.url_full_detail,
+                "URL_FULL_DETAIL": self.url_full_detail,
+                "DETAIL": self.detailed_description,
+                "TITLE": self.item_title,
+                "DESCRIPTION": self.detailed_description,
+                "FILE": self.detail_file,
+            },
+        }
+
 
 class Artists:
     def __init__(self):
@@ -108,40 +125,58 @@ class Artists:
         self.artist_year_born = "ARTIST_YEAR_BORN"
         self.artist_year_death = "ARTIST_YEAR_DEATH"
 
-# date format 
+
+# date format
 DATE_FORMAT = "%Y-%m-%d"
 
-#for data cleaning
-currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB|TRY|SEK|ZAR'
+# for data cleaning
+currencies = "USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB|TRY|SEK|ZAR"
 localisation = "London|New York|Hong Kong|Paris|Geneva|Milan|Amsterdam|Zurich|Toronto|Dubai|Doha|Beijing|Mumbai|Derbyshire|Miami|Palm Beach|Chatsworth|Tel Aviv|Singapore|San Francisco|Monaco"
 
-fixed_eur_rate = {"NLG" : 1/2.20371,
-                 "FRF" : 1/6.55957,
-                 "ITL" : 1/1936.27,
-                 "ESP" : 1/200,
-                 "DEM" : 0.511292,
-                 "MAD" : 0.091} # former currencies before euro
+fixed_eur_rate = {
+    "NLG": 1 / 2.20371,
+    "FRF": 1 / 6.55957,
+    "ITL": 1 / 1936.27,
+    "ESP": 1 / 200,
+    "DEM": 0.511292,
+    "MAD": 0.091,
+}  # former currencies before euro
 
-liste_currency_paires = ["USDEUR", "GBPEUR", "CHFEUR", "SEKEUR", "INREUR",
-                        "PLNEUR", "CADEUR", "AEDEUR", "HKDEUR", "SGDEUR",
-                        "MADEUR", "AUDEUR", "CNYEUR", "JPYEUR", "TWDEUR",
-                        "TRYEUR", "ZAREUR"]
+liste_currency_paires = [
+    "USDEUR",
+    "GBPEUR",
+    "CHFEUR",
+    "SEKEUR",
+    "INREUR",
+    "PLNEUR",
+    "CADEUR",
+    "AEDEUR",
+    "HKDEUR",
+    "SGDEUR",
+    "MADEUR",
+    "AUDEUR",
+    "CNYEUR",
+    "JPYEUR",
+    "TWDEUR",
+    "TRYEUR",
+    "ZAREUR",
+]
 
-# for steps 
+# for steps
 list_sellers = ["sothebys", "drouot", "christies", "millon"]
 
 ## embedding types
 embedding_types = ["text", "picture"]
-PICTURE_TYPE="picture"
-TEXT_TYPE_EN="text_en"
-TEXT_TYPE_FR="text_fr"
+PICTURE_TYPE = "picture"
+TEXT_TYPE_EN = "text_en"
+TEXT_TYPE_FR = "text_fr"
 
 # unique IDS
 ID_TEXT = "ID_ITEM"
 ID_PICTURE = "ID_PICTURE"
-ID_UNIQUE= "ID_UNIQUE"
+ID_UNIQUE = "ID_UNIQUE"
 
 # naming of features
-PICTURE_DB="picture_embeddings"
-TEXT_DB_EN="text_embeddings_english"
-TEXT_DB_FR="text_embeddings_french"
+PICTURE_DB = "picture_embeddings"
+TEXT_DB_EN = "text_embeddings_english"
+TEXT_DB_FR = "text_embeddings_french"

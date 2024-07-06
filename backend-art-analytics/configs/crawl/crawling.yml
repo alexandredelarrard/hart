@@ -16,8 +16,8 @@ crawling:
         url_path : D:/data/met/infos/MetObjects.csv
         save_picture_path : D:/data/met/pictures
         save_data_path : D:/data/met/
-        settings : 
-            browser : chrome 
+        settings :
+            browser : chrome
             nodes : 1
             retry : 1
     drouot: # 3.3M
@@ -25,14 +25,14 @@ crawling:
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
         auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?isForAgenda=true&typeName=passees
         auctions:
-            liste_elements : 
+            liste_elements :
                 by_type: CLASS_NAME
                 value_css: infosVente
             per_element:
                 AUCTION_TITLE:
                     by_type: CLASS_NAME
                     value_css: nomVente
-                DATE: 
+                DATE:
                     by_type: CLASS_NAME
                     value_css: capitalize-fl
                 TYPE_SALE:
@@ -63,14 +63,14 @@ crawling:
                 HOUSE:
                     by_type: CLASS_NAME
                     value_css: etudeVente
-            liste_elements : 
+            liste_elements :
                 by_type: CLASS_NAME
                 value_css: Lot
             per_element:
                 LOT_NUMBER:
                     by_type: CLASS_NAME
                     value_css: lotNumListe
-                    replace: 
+                    replace:
                         - "Lot n° "
                         - ""
                 ITEM_TITLE:
@@ -93,8 +93,8 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: imgLot
                     value_of_css_element: background-image
-        detailed: 
-            per_element : 
+        detailed:
+            per_element :
                 URL_AUCTION:
                     by_type : CLASS_NAME
                     value_css : breadcumTitreVente
@@ -106,13 +106,13 @@ crawling:
                     by_type : XPATH
                     value_css : //div[@class='lotDescriptionFiche']/h2
                 URL_PICTURE:
-                    liste_elements : 
+                    liste_elements :
                         by_type: CLASS_NAME
                         value_css: thumbPreview
-                    per_element : 
+                    per_element :
                         value_of_css_element: background
         pictures:
-            global_element: 
+            global_element:
                 URL_PICTURE_CANVAS:
                     by_type: TAG_NAME
                     value_css: canvas
@@ -132,7 +132,7 @@ crawling:
                 - "self.handle_click_element(driver, 'CLASS_NAME', 'banner-actions-container', 'ID', 'onetrust-reject-all-handler')" # cookie
                 - "self.handle_click_element(driver, 'CLASS_NAME', 'fsu--wrapper', 'CLASS_NAME', 'closeiframe')" # signup
                 - 'self.scrowl_driver(driver, Y=150)'
-            liste_elements : 
+            liste_elements :
                 by_type: XPATH
                 value_css: '//ul[@aria-labelledby="calendar-tab-undefined"]/li'
             per_element:
@@ -156,7 +156,7 @@ crawling:
                 - "self.handle_click_element(driver, 'CLASS_NAME', 'banner-actions-container', 'ID', 'onetrust-reject-all-handler')" # cookie
                 - "self.handle_click_element(driver, 'CLASS_NAME', 'fsu--wrapper', 'CLASS_NAME', 'closeiframe')" # signup
                 - 'self.scrowl_driver(driver, Y=150)'
-            liste_elements : 
+            liste_elements :
                 by_type: XPATH
                 value_css: //div[@class='container-fluid']/ul/li
             per_element:
@@ -176,7 +176,7 @@ crawling:
                 RESULT:
                     by_type: CLASS_NAME
                     value_css: chr-lot-tile__dynamic-price
-        detailed : 
+        detailed :
             crawler_infos:
                 url_sleep: 0.2
                 is_picture: True
@@ -185,10 +185,10 @@ crawling:
             functions:
                 - "self.handle_click_element(driver, 'CLASS_NAME', 'banner-actions-container', 'ID', 'onetrust-reject-all-handler')" # cookie
                 - "self.handle_click_element(driver, 'CLASS_NAME', 'fsu--wrapper', 'CLASS_NAME', 'closeiframe')" # signup
-            per_element : 
+            per_element :
                 URL_AUCTION:
                     by_type: CLASS_NAME
-                    value_css: chr-breadcrumb__link 
+                    value_css: chr-breadcrumb__link
                     attribute: href
                 ARTIST:
                     by_type : CLASS_NAME
@@ -202,10 +202,10 @@ crawling:
                 URL_PICTURE:
                     functions:
                         - "self.click_element(driver, 'CLASS_NAME', 'chr-lot-header__image-container')"
-                    liste_elements : 
+                    liste_elements :
                         by_type: CLASS_NAME
                         value_css: chr-gallery__slide
-                    per_element : 
+                    per_element :
                         by_type: TAG_NAME
                         value_css: img
                         attribute: src
@@ -214,7 +214,7 @@ crawling:
         webpage_url : https://www.sothebys.com/en/buy/auction
         auctions_url : https://www.sothebys.com/en/results? #6581
         auctions:
-            liste_elements : 
+            liste_elements :
                 by_type: CLASS_NAME
                 value_css: SearchModule-results-item
             per_element:
@@ -231,7 +231,7 @@ crawling:
                 TYPE_SALE:
                     by_type : CLASS_NAME
                     value_css : Card-category
-        items: 
+        items:
             crawler_infos:
                 url_sleep: 1.5
                 is_picture: False
@@ -245,7 +245,7 @@ crawling:
                     AUCTION_TITLE:
                         by_type: XPATH
                         value_css: //h1[@data-testid='header-desktop']
-                liste_elements : 
+                liste_elements :
                     by_type: XPATH
                     value_css: //div[@aria-label='List of lots']/div/div
                 per_element:
@@ -270,7 +270,7 @@ crawling:
                     AUCTION_TITLE:
                         by_type: CLASS_NAME
                         value_css: AuctionsModule-auction-title
-                liste_elements : 
+                liste_elements :
                     by_type: CLASS_NAME
                     value_css: AuctionsModule-results-item
                 per_element:
@@ -290,13 +290,13 @@ crawling:
                     ESTIMATE:
                         by_type: CLASS_NAME
                         value_css: estimate
-        detailed : 
+        detailed :
             buy_url:
-                per_element : 
+                per_element :
                     TITLE:
                         by_type: CLASS_NAME
                         value_css: css-542wex
-                    URL_AUCTION: 
+                    URL_AUCTION:
                         by_type: XPATH
                         value_css: //div[@class='css-2v1h2i']/nav/span
                         attribute: href
@@ -304,16 +304,16 @@ crawling:
                         by_type : ID
                         value_css : "LotDetails"
                     URL_PICTURE:
-                        liste_elements : 
+                        liste_elements :
                             by_type: XPATH
                             value_css: //ul[@class='slider animated']/li
-                        per_element : 
+                        per_element :
                             by_type: TAG_NAME
                             value_css: img
                             attribute: srcset
             auctions_url:
-                per_element : 
-                    URL_AUCTION: 
+                per_element :
+                    URL_AUCTION:
                         by_type: XPATH
                         value_css: //div[@class='LotPage-breadcrumbs-breadcrumb']/a
                         attribute: href
@@ -329,7 +329,7 @@ crawling:
         webpage_url: https://www.millon.com/catalogue/ventes-passees/
         auctions_url: https://www.millon.com/catalogue/ventes-passees/
         auctions:
-            liste_elements: 
+            liste_elements:
                 by_type: CLASS_NAME
                 value_css: item
             per_element:
@@ -350,7 +350,7 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: sales-time
         items:
-            liste_elements: 
+            liste_elements:
                 by_type: CLASS_NAME
                 value_css: item
             per_element:
@@ -370,8 +370,8 @@ crawling:
                 FINAL_RESULT:
                     by_type: CLASS_NAME
                     value_css: estimation
-        detailed: 
-            per_element : 
+        detailed:
+            per_element :
                 AUCTION_DATE:
                     by_type: CLASS_NAME
                     value_css: sale--info
@@ -391,10 +391,10 @@ crawling:
                     by_type : XPATH
                     value_css : //div[@class='detail']/div[1]
                 URL_PICTURE:
-                    liste_elements : 
+                    liste_elements :
                         by_type: XPATH
                         value_css: //div[@class='slider__bottom slick-slider']/div
-                    per_element : 
+                    per_element :
                         by_type: TAG_NAME
                         value_css: img
                         attribute: src
@@ -414,9 +414,9 @@ crawling:
         auctions_url: https://www.ivoire-france.com/chartres/fr/resultats/59-resultats_ventes
     liladam:
         auctions_url: https://www.liladam.com/ventes-passees
-    rossini: 
+    rossini:
         auctions_url: https://www.rossini.fr/resultats
-    orsenat: 
+    orsenat:
         auctions_url: https://www.osenat.com/resultats-ventes-passees
     sgl-encheres:
         auctions_url: https://www.sgl-encheres.com/ventes-passees

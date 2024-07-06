@@ -28,11 +28,11 @@ from src.datacrawl.transformers.Crawling import Crawling
 
 if __name__ == "__main__":
 
-    config, context = get_config_context('./configs', use_cache = False, save=False)
+    config, context = get_config_context("./configs", use_cache=False, save=False)
 
     # self = StepCrawling(context=context, config=config, threads=1, text_only=True)
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
-    
+
     # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot", mode="new")
     # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="christies", start_date="2024-03-01", end_date="2024-05-01")
     # self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="new")
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="history")
     # self = StepTextCleanArtists(context=context, config=config)
     # self = StepAgglomerateTextInfos(context=context, config=config, mode="history")
-    # self.run() 
+    # self.run()
 
     # self = StepTextClustering(context=context, config=config)
     # self = StepPictureClustering(context=context, config=config)
@@ -51,12 +51,11 @@ if __name__ == "__main__":
 
     # self = StepPictureClassification(context=context, config=config)
     # self = StepTextClassification(context=context, config=config)
- 
+
     # self = StepTextInferenceGpt(context=context, config=config, methode=["groq"], object="reformulate")
     # self = StepCleanGptInference(context=context, config=config, category="reformulate")
     self = StepCategoryGptInference(context=context, config=config)
     self.run()
-    
 
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()

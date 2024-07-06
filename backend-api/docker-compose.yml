@@ -1,13 +1,13 @@
 services:
     back_app:
         container_name: backend_api
-        build: 
+        build:
             context: ./app
             dockerfile: dockerfile
         expose:
             - 5000
         command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
-        volumes: 
+        volumes:
             - ./app:/app
             - ../global-schemas/schemas:/app/src/schemas
             - ../global-schemas/utils:/app/src/utils
@@ -23,12 +23,12 @@ services:
     nginx:
         image: nginx:latest
         container_name: back_nginx
-        ports:    
+        ports:
             - 2000:2000
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
         restart: always
-        depends_on: 
+        depends_on:
             - back_app
         networks:
             - shared_net
@@ -60,7 +60,7 @@ services:
                           capabilities: [gpu]
         networks:
             - shared_net
-        
-networks: 
+
+networks:
   shared_net:
     external: true

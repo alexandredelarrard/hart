@@ -1,9 +1,10 @@
 import time
-import logging 
+import logging
 from functools import wraps
 from typing import Callable
 
-def timing(method : Callable) -> Callable:
+
+def timing(method: Callable) -> Callable:
 
     @wraps(method)
     def timed(*args, **kw):
@@ -13,8 +14,7 @@ def timing(method : Callable) -> Callable:
         log = logging.getLogger(__name__)
 
         te = time.time()
-        log.info('Run time: %r  %2.2f s' % \
-                  (method.__name__, (te - ts)))
+        log.info("Run time: %r  %2.2f s" % (method.__name__, (te - ts)))
         return result
 
     return timed

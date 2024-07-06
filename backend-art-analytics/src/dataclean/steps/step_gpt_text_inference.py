@@ -1,5 +1,6 @@
 import os
 import time
+import ast
 from queue import Queue
 from typing import List
 from threading import Thread
@@ -15,9 +16,11 @@ import vertexai
 from omegaconf import DictConfig
 from src.schemas.gpt_schemas import get_mapping_pydentic_object
 
-from src.utils.utils_crawler import (encode_file_name,
-                                     read_crawled_pickles,
-                                     save_queue_to_file)
+from src.utils.utils_crawler import (
+    encode_file_name,
+    read_crawled_pickles,
+    save_queue_to_file,
+)
 
 from src.context import Context
 from src.utils.step import Step
@@ -25,15 +28,18 @@ from src.utils.timing import timing
 
 SCOPES = ["https://www.googleapis.com/auth/contacts.readonly"]
 
+
 class StepTextInferenceGpt(Step):
 
-    def __init__(self, 
-                context : Context,
-                config : DictConfig,
-                threads : int = 1,
-                object : str = "painting",
-                save_queue_size : int = 50,
-                methode: List[str] = ["open_ai"]):
+    def __init__(
+        self,
+        context: Context,
+        config: DictConfig,
+        threads: int = 1,
+        object: str = "painting",
+        save_queue_size: int = 50,
+        methode: List[str] = ["open_ai"],
+    ):
 
         super().__init__(context=context, config=config)
 
@@ -44,49 +50,51 @@ class StepTextInferenceGpt(Step):
 
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model
-        self.save_queue_path= "/".join([self._config.gpt.save_path, self.object]) 
+        self.save_queue_path = "/".join([self._config.gpt.save_path, self.object])
         self.introduction = self._config.gpt.introduction["features"]
         if self.object == "reformulate":
             self.introduction = self._config.gpt.introduction["reformulate"]
 
         self.save_in_queue = True
-        self.queues = {"descriptions" : Queue(), "results": Queue(), "clients": Queue()}
+        self.queues = {"descriptions": Queue(), "results": Queue(), "clients": Queue()}
         self.get_api_keys()
 
     @timing
     def run(self):
-        
+
         # get data DONE: moderne, figuratif
         # df = self.read_sql_data(f"SELECT * FROM \"PICTURES_CATEGORY_07_06_2024_286\" WHERE \"TOP_0\" in ('bijou bague')")
-        df = self.read_sql_data(f"SELECT \"ID_ITEM\", \"ITEM_TITLE_DETAIL\", \"TOTAL_DESCRIPTION\" FROM \"ALL_ITEMS_per_item\"") 
+        df = self.read_sql_data(
+            f'SELECT "ID_ITEM", "ITEM_TITLE_DETAIL", "TOTAL_DESCRIPTION" FROM "ALL_ITEMS_per_item"'
+        )
         # df = df.merge(df_desc, on="ID_UNIQUE", how="left")
         df = df.drop_duplicates(self.name.total_description).fillna("")
         df = df.sample(frac=1).reset_index(drop=True)
 
-        # get already done 
+        # get already done
         df_done = read_crawled_pickles(path=self.save_queue_path)
-        if df_done.shape[0] !=0:
+        if df_done.shape[0] != 0:
             id_done = df_done[self.name.id_item].tolist()
             df = df.loc[~df[self.name.id_item].isin(id_done)]
 
-        # get parser 
+        # get parser
         self.schema = get_mapping_pydentic_object(self.object)
         self.parser = PydanticOutputParser(pydantic_object=self.schema)
         self.prompt = self.create_prompt()
 
-        # initialize queue clients 
+        # initialize queue clients
         self.initialize_queue_clients()
 
         # initalize the urls queue
         self.initialize_queue_description(df)
-        
+
         # start the crawl
         self.start_threads_and_queues(queues=self.queues)
 
         # multithread gpt queries
         t0 = time.time()
         self.queues["descriptions"].join()
-        self._log.info('*** Done in {0}'.format(time.time() - t0))
+        self._log.info("*** Done in {0}".format(time.time() - t0))
 
     def initialize_client(self, methode):
         if methode == "open_ai":
@@ -105,80 +113,99 @@ class StepTextInferenceGpt(Step):
     def get_api_keys(self):
         self.api_keys = {"openai": [], "groq": [], "google": []}
         for key, item in os.environ.items():
-            if "OPENAI_API_KEY" in key: 
+            if "OPENAI_API_KEY" in key:
                 self.api_keys["openai"].append(item)
-            if "GROQ_API_KEY" in key: 
+            if "GROQ_API_KEY" in key:
                 self.api_keys["groq"].append(item)
-            if "GOOGLE_API_KEY" in key: 
+            if "GOOGLE_API_KEY" in key:
                 self.api_keys["google"].append(item)
-        
+
         if len(self.api_keys) == 0:
             raise Exception("Please provide an API KEY in .env file for OPENAI")
 
     def initialize_client_open_ai(self):
-        client = ChatOpenAI(openai_api_key=self.api_keys["openai"][0],
-                            model=self.llm_model["open_ai"],
-                            model_kwargs={"response_format": {"type": "json_object"}},
-                            temperature=0.2,
-                            seed=self.seed) 
+        client = ChatOpenAI(
+            openai_api_key=self.api_keys["openai"][0],
+            model=self.llm_model["open_ai"],
+            model_kwargs={"response_format": {"type": "json_object"}},
+            temperature=0.2,
+            seed=self.seed,
+        )
         return client
-    
+
     def initialize_client_local(self):
-        client = ChatOpenAI(base_url="http://localhost:1234/v1", 
-                            openai_api_key="lm-studio",
-                            model=self.llm_model["local"],
-                            model_kwargs={"response_format": {"type": "json_object"}},
-                            temperature=0.2,
-                            seed=self.seed) 
+        client = ChatOpenAI(
+            base_url="http://localhost:1234/v1",
+            openai_api_key="lm-studio",
+            model=self.llm_model["local"],
+            model_kwargs={"response_format": {"type": "json_object"}},
+            temperature=0.2,
+            seed=self.seed,
+        )
         return client
-    
+
     def initialize_client_groq(self):
-        client = ChatGroq(groq_api_key=self.api_keys["groq"][0],
-                        model=self.llm_model["groq"],
-                        temperature=0.2,
-                        max_tokens=2048,
-                        seed=self.seed) 
+        client = ChatGroq(
+            groq_api_key=self.api_keys["groq"][0],
+            model=self.llm_model["groq"],
+            temperature=0.2,
+            max_tokens=2048,
+            seed=self.seed,
+        )
         return client
-    
+
     def initialize_client_google(self):
-        creds = Credentials.from_authorized_user_file(os.environ["GOOGLE_APPLICATION_CREDENTIALS"], SCOPES)
-        vertexai.init(project=creds.quota_project_id, location="europe-west1", credentials=creds)
+        creds = Credentials.from_authorized_user_file(
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"], SCOPES
+        )
+        vertexai.init(
+            project=creds.quota_project_id, location="europe-west1", credentials=creds
+        )
         client = ChatVertexAI(
-                            credentials=creds,
-                            model=self.llm_model["google"],
-                            responseMimeType='application/json',
-                            responseSchema=self.parser,
-                            temperature=0.2,
-                            max_tokens=2048,
-                            location="europe-west1",
-                            seed=self.seed
-                        )
+            credentials=creds,
+            model=self.llm_model["google"],
+            responseMimeType="application/json",
+            responseSchema=self.parser,
+            temperature=0.2,
+            max_tokens=2048,
+            location="europe-west1",
+            seed=self.seed,
+        )
         return client
 
     def initialize_queue_description(self, df):
         for row in df.to_dict(orient="records"):
-            item = {self.name.id_item: row[self.name.id_item],
-                    self.name.total_description: row[self.name.detailed_title].lower() + "\n " + row[self.name.total_description]}
+            item = {
+                self.name.id_item: row[self.name.id_item],
+                self.name.total_description: row[self.name.detailed_title].lower()
+                + "\n "
+                + row[self.name.total_description],
+            }
             self.queues["descriptions"].put(item)
-    
+
     def create_prompt(self):
         prompt = PromptTemplate(
-            template=self.introduction + " \n {format_instructions} \n Art Description: {query} \n Extraction in JSON format: ",
+            template=self.introduction
+            + " \n {format_instructions} \n Art Description: {query} \n Extraction in JSON format: ",
             input_variables=["query"],
-            partial_variables={"format_instructions": self.parser.get_format_instructions().replace("```", "")},
+            partial_variables={
+                "format_instructions": self.parser.get_format_instructions().replace(
+                    "```", ""
+                )
+            },
         )
         return prompt
-    
+
     def invoke_llm(self, prompt, chain):
         message_content = chain.invoke({"query": prompt[self.name.total_description]})
         try:
-            message_content = eval(message_content.json())
+            message_content = ast.literal_eval(message_content.json())
         except Exception:
             pass
         return message_content
 
     def get_answer(self, prompt, chain):
-        
+
         message_content = ""
         try:
             message_content = self.invoke_llm(prompt, chain)
@@ -189,11 +216,11 @@ class StepTextInferenceGpt(Step):
             query_status = "400"
 
         return message_content, query_status
-    
+
     def start_threads_and_queues(self, queues):
 
         for _ in range(self.threads):
-            t = Thread(target= self.queue_gpt, args=(queues, )) 
+            t = Thread(target=self.queue_gpt, args=(queues,))
             t.daemon = True
             t.start()
 
@@ -201,17 +228,23 @@ class StepTextInferenceGpt(Step):
         for methode in self.methode:
             client = self.initialize_client(methode)
             self.queues["clients"].put(self.prompt | client | self.parser)
-        
+
         if self.threads > len(self.methode):
             remaining = self.threads - len(self.methode)
             for i in range(remaining):
-                if i%5==0:
-                   self.queues["clients"].put(self.prompt | self.initialize_client("open_ai") | self.parser)
-                elif i%4==0:
-                   self.queues["clients"].put(self.prompt | self.initialize_client("groq") | self.parser) 
+                if i % 5 == 0:
+                    self.queues["clients"].put(
+                        self.prompt | self.initialize_client("open_ai") | self.parser
+                    )
+                elif i % 4 == 0:
+                    self.queues["clients"].put(
+                        self.prompt | self.initialize_client("groq") | self.parser
+                    )
                 else:
-                    self.queues["clients"].put(self.prompt | self.initialize_client("open_ai") | self.parser)
-        
+                    self.queues["clients"].put(
+                        self.prompt | self.initialize_client("open_ai") | self.parser
+                    )
+
     def queue_gpt(self, queues):
 
         queue_desc = queues["descriptions"]
@@ -219,7 +252,7 @@ class StepTextInferenceGpt(Step):
 
         while True:
             prompt = queue_desc.get()
-            
+
             prompt["ANSWER"], query_status = self.get_answer(prompt, chain)
             prompt["METHODE"] = chain.to_json()["kwargs"]["middle"][0].__module__
 
@@ -233,17 +266,21 @@ class StepTextInferenceGpt(Step):
 
                 if queues["results"].qsize() == self.save_queue_size_step:
                     file_name = encode_file_name(prompt[self.name.id_item])
-                    save_queue_to_file(queues["results"], 
-                                        path=self.save_queue_path +
-                                        f"/{file_name}.pickle")
-            
+                    save_queue_to_file(
+                        queues["results"],
+                        path=self.save_queue_path + f"/{file_name}.pickle",
+                    )
+
             # done task
             queues["clients"].put(chain)
-            self._log.info(f"[OOF {queue_desc.qsize()}] QUERIED {prompt[self.name.id_item]}")
+            self._log.info(
+                f"[OOF {queue_desc.qsize()}] QUERIED {prompt[self.name.id_item]}"
+            )
 
             # last saving
             if queues["descriptions"].qsize() == 0:
                 file_name = encode_file_name(prompt[self.name.id_item])
-                save_queue_to_file(queues["results"], 
-                                    path=self.save_queue_path +
-                                    f"/{file_name}.pickle")
+                save_queue_to_file(
+                    queues["results"],
+                    path=self.save_queue_path + f"/{file_name}.pickle",
+                )

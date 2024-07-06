@@ -10,7 +10,7 @@ product:
   initial_closest_volume: 30
   initial_search_volume: 30
 
-plans: 
+plans:
   free: "free_plan"
   individual: "individual_plan"
   expert: "expert_plan"

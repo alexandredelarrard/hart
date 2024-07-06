@@ -1,17 +1,16 @@
 from omegaconf import DictConfig
 import re
 import time
-import os 
+import os
 from typing import Dict
 
 from src.context import Context
 from src.datacrawl.transformers.Crawling import Crawling
 
+
 class SothebysItems(Crawling):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig):
+
+    def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config, threads=1)
 
@@ -19,30 +18,38 @@ class SothebysItems(Crawling):
         self.email = os.environ["SOTHEBYS_EMAIL"]
 
         self.root_url = self._config.crawling["sothebys"].webpage_url
-        self.to_replace=("?lotFilter=AllLots","")
-        self.to_split=["?p=", 0]
-        
+        self.to_replace = ("?lotFilter=AllLots", "")
+        self.to_split = ["?p=", 0]
+
         # TODO: include the F1 webpage formating from sothebys # weird webpage format regarding F1
         # weird formating: https://www.sothebys.com/en/buy/auction/2021/a-brilliant-menagerie
-    
+
     def urls_to_crawl(self, df_auctions):
-        to_crawl = (df_auctions.loc[(self.name.url_auction != "MISSING_URL_AUCTION")&
-                            (df_auctions[self.name.url_auction].notnull()), 
-                            self.name.url_auction]
-                            .drop_duplicates()
-                            .tolist())
-        to_crawl = [x for x in to_crawl if "/en/auctions" in x or "/en/buy/" in x] # no F1 and catalogue urls
+        to_crawl = (
+            df_auctions.loc[
+                (self.name.url_auction != "MISSING_URL_AUCTION")
+                & (df_auctions[self.name.url_auction].notnull()),
+                self.name.url_auction,
+            ]
+            .drop_duplicates()
+            .tolist()
+        )
+        to_crawl = [
+            x for x in to_crawl if "/en/auctions" in x or "/en/buy/" in x
+        ]  # no F1 and catalogue urls
         return to_crawl
- 
+
     def check_loggedin(self, driver, counter=0):
-        driver_log = self.get_element_infos(driver, "CLASS_NAME", "AuctionsModule-auction-info-total")
+        driver_log = self.get_element_infos(
+            driver, "CLASS_NAME", "AuctionsModule-auction-info-total"
+        )
         if driver_log == "":
             driver_log = self.get_element_infos(driver, "CLASS_NAME", "PageHeader-hat")
-        
+
         if "my account" in driver_log.lower():
             return driver
 
-        if 'log in' in driver_log.lower():
+        if "log in" in driver_log.lower():
             self.click_element(driver, "CLASS_NAME", "SothebysHat-aemLogin")
             time.sleep(1)
 
@@ -55,67 +62,73 @@ class SothebysItems(Crawling):
             time.sleep(2)
 
             if counter < 3:
-                driver = self.check_loggedin(driver, counter+1)
+                driver = self.check_loggedin(driver, counter + 1)
                 return driver
-            else: 
+            else:
                 self._log.warning("CANNOT LOG IN TO SOTHEBYS")
                 return driver
 
         else:
             self._log.debug("LOGGED IN TO SOTHEBYS")
             return driver
-        
+
     def accept_cookies(self, driver, counter=0):
         cookie = self.get_element_infos(driver, "ID", "onetrust-button-group-parent")
-        if "Reject All" in cookie: 
+        if "Reject All" in cookie:
             self.click_element(driver, "ID", "onetrust-reject-all-handler")
             time.sleep(1)
 
             if counter < 2:
-                    driver = self.accept_cookies(driver, counter+1)
-                    return driver
-            else: 
+                driver = self.accept_cookies(driver, counter + 1)
+                return driver
+            else:
                 raise Exception("CANNOT CLICK COOKIES")
         else:
             return driver
-        
+
     def click_page(self, driver, position):
 
-        navigation = self.get_elements(driver, "XPATH", "//nav[@aria-label='pagination navigation']/ul/li")
+        navigation = self.get_elements(
+            driver, "XPATH", "//nav[@aria-label='pagination navigation']/ul/li"
+        )
 
         infos = {}
-        for i, element in enumerate(navigation): 
+        for i, element in enumerate(navigation):
             if element.text != "":
                 infos[i] = element.text
         reversed = {v: k for k, v in infos.items()}
 
         if position <= 1:
-            return driver 
+            return driver
         else:
             if str(position) in reversed.keys():
                 navigation[reversed[str(position)]].click()
                 time.sleep(3)
                 return driver
-            else: 
-                self._log.warning(f"PAGE NUMBER {position} NOT AVILABLE IN PAGINATION {reversed}")
+            else:
+                self._log.warning(
+                    f"PAGE NUMBER {position} NOT AVILABLE IN PAGINATION {reversed}"
+                )
                 return driver
 
     def crawl_auction_pages(self, driver, config, url):
         list_infos = []
-        pages = self.get_page_number(driver, "CLASS_NAME", "AuctionsModule-lotsCount", divider=12)
+        pages = self.get_page_number(
+            driver, "CLASS_NAME", "AuctionsModule-lotsCount", divider=12
+        )
 
-        for new_url in [url + f"?p={x}" for x in range(1, max(1, pages)+1)]:
+        for new_url in [url + f"?p={x}" for x in range(1, max(1, pages) + 1)]:
             self.get_url(driver, new_url)
             new_infos = self.crawl_iteratively(driver, config.auctions_url)
             list_infos = list_infos + new_infos
         return list_infos
-    
+
     def crawl_buy_pages(self, driver, config, url):
         list_infos = []
         self.get_url(driver, url)
         pages = self.get_page_number(driver, "CLASS_NAME", "css-1xtedx2", divider=48)
- 
-        for position in range(1, max(1, pages)+1):
+
+        for position in range(1, max(1, pages) + 1):
             self.click_page(driver, position)
             new_infos = self.crawl_iteratively(driver, config.buy_url)
             list_infos = list_infos + new_infos
@@ -125,10 +138,10 @@ class SothebysItems(Crawling):
 
         list_infos = []
 
-        # crawl infos 
+        # crawl infos
         url = driver.current_url
 
-        # check if pages exists : 
+        # check if pages exists :
         error = self.get_element_infos(driver, "CLASS_NAME", "ErrorPage-body")
 
         if error == "":

@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#npm library 
+#npm library
 node_modules
 
 # C extensions

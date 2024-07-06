@@ -7,7 +7,7 @@ import logo_blanc from '../../assets/logo_fond_blanc.jpg';
 import '../../css/Header.css';
 
 const Header = ({ t, changeLanguage, scrolled }) => {
-    
+
     const [menuOpen, setMenuOpen] = useState(false);
 
     return (

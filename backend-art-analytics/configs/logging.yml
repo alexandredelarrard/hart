@@ -6,7 +6,7 @@ logging:
       console:
           format: '%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(message)s'
           datefmt: '%Y-%m-%d %H:%M:%S'
-      file: 
+      file:
           format: '%(asctime)s - %(levelname)s - %(message)s'
           datefmt: '%Y-%m-%d %H:%M:%S'
       network:
@@ -17,7 +17,7 @@ logging:
           class: src.utils.logging_handler.ColorHandler
           level: DEBUG
           formatter: console
-          
+
           stream: ext://sys.stdout
           colors:
             debug: magenta

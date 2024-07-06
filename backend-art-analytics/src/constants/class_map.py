@@ -1,4 +1,3 @@
-
 class_mapping = {
     "tableau figuratif": "tableau",
     "livre": "livre",
@@ -333,5 +332,5 @@ class_mapping = {
     "bijou bague alliance": "bague",
     "lampe ballon": "lampe",
     "table violon": "table",
-    "table carre": "table"
+    "table carre": "table",
 }

@@ -1,4 +1,3 @@
-
 from omegaconf import DictConfig
 
 from src.context import Context
@@ -6,10 +5,8 @@ from src.datacrawl.transformers.Crawling import Crawling
 
 
 class ArtusAuctions(Crawling):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig):
+
+    def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config)
         self.history_start_year = self._config.crawling[self.seller].history_start_year

@@ -1,6 +1,6 @@
 import re
 import numpy as np
-import logging 
+import logging
 
 from src.context import Context
 from nltk.tokenize import word_tokenize
@@ -11,21 +11,27 @@ from omegaconf import DictConfig
 
 
 def check_numbers(numbers, x):
-    clean_numbers=[]
+    clean_numbers = []
     for number in numbers:
         if len(number) >= 3:
             clean_numbers.append(number)
         else:
-            if len(re.findall("\\b\\d+\s?century", x.strip()) + 
-                   re.findall("c.\s?\\d+", x.strip()) + 
-                   re.findall("s.\s?\\d+", x) + 
-                   re.findall("\\d+\s?jh", x) + 
-                   re.findall("\\b\\d+\s?siecle", x) + 
-                   re.findall("sec.\s?\\b\\d+", x.strip()) + 
-                   re.findall("\\b\\d+\s?sec", x.strip()) + 
-                   re.findall("\\b\\d+\s?secolo", x)) != 0:
-                clean_numbers.append(number + str('00'))
+            if (
+                len(
+                    re.findall("\\b\\d+\s?century", x.strip())
+                    + re.findall("c.\s?\\d+", x.strip())
+                    + re.findall("s.\s?\\d+", x)
+                    + re.findall("\\d+\s?jh", x)
+                    + re.findall("\\b\\d+\s?siecle", x)
+                    + re.findall("sec.\s?\\b\\d+", x.strip())
+                    + re.findall("\\b\\d+\s?sec", x.strip())
+                    + re.findall("\\b\\d+\s?secolo", x)
+                )
+                != 0
+            ):
+                clean_numbers.append(number + str("00"))
     return clean_numbers
+
 
 def handle_romain(x):
     x = x.replace(" veme ", " 5th ")
@@ -60,9 +66,10 @@ def handle_th(x):
 
     for ith in ["th ", "st ", "rd ", "nd ", "eme ", "e ", "er ", "nd "]:
         for th in re.findall(f"(\\d+\s?){ith}", x):
-            x = x.replace(f"{th}{ith}", str((int(th) -1)*100 + 50) + " ")
+            x = x.replace(f"{th}{ith}", str((int(th) - 1) * 100 + 50) + " ")
 
     return x
+
 
 def handle_years_pair(numbers):
     if numbers == ["19", "20"]:
@@ -79,7 +86,8 @@ def handle_years_pair(numbers):
         return ["1450"]
     else:
         return numbers
-    
+
+
 def handle_short_century(x):
     if x == "19":
         return "1850"
@@ -90,18 +98,17 @@ def handle_short_century(x):
     elif x == "17":
         return "1650"
     else:
-        return x 
-    
+        return x
+
+
 class GPTCleaner(TextCleaner):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig):
+
+    def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config)
 
         self.period_mapping = self._config.evaluator.cleaning_mapping.period_mapping
-       
+
     def map_value_to_key(self, x, mapping_dict):
         tok_x = word_tokenize(remove_punctuation(str(x)))
         for key, values in mapping_dict.items():
@@ -109,20 +116,20 @@ class GPTCleaner(TextCleaner):
                 if str(sub_value) in tok_x:
                     return key.strip()
         return np.nan
-    
+
     def exact_map_value_to_key(self, x, mapping_dict):
         for key, values in mapping_dict.items():
             for sub_value in values:
                 if str(sub_value) == x:
                     return key.strip()
         return np.nan
-        
+
     def handle_cm(self, x):
 
         x = " " + x.replace("-", " ") + " "
         x = x.replace(",", ".")
 
-        # handle inches 
+        # handle inches
         x = x.replace(" 3/4 ", ".75 ")
         x = x.replace(" 1/2 ", ".5 ")
         x = x.replace(" 1/4 ", ".25 ")
@@ -139,11 +146,11 @@ class GPTCleaner(TextCleaner):
         x = x.replace(" 5/8in", ".625 in")
         x = x.replace(" 3/8in", ".375 in")
 
-        # TODO: handle picture frames with x 
+        # TODO: handle picture frames with x
 
         dimensions = {}
         for dim in ["cm", "mm", "in", "po", ""]:
-            extract =  re.findall(f"(\\d+.?\\d+\s?){dim}", x)
+            extract = re.findall(f"(\\d+.?\\d+\s?){dim}", x)
             if len(extract) == 1:
                 if dim != "":
                     if dim == "in":
@@ -163,19 +170,19 @@ class GPTCleaner(TextCleaner):
             answer = np.nan
             # logging.error(x)
         return answer
-        
+
     def replace_periodes(self, x):
         for k, v in self.period_mapping.items():
             if k in x:
                 x = v
         return x
-    
+
     def eval_number(self, x):
-        try: 
+        try:
             return eval(x)
         except Exception:
             return np.nan
-        
+
     def clean_periode(self, x):
 
         infos = {}
@@ -194,10 +201,10 @@ class GPTCleaner(TextCleaner):
             infos["sign"] = "-1"
 
         infos["distance_century"] = "0"
-        if " early " in x or ' debut ' in x or 'before' in x or "premiere moitie" in x:
+        if " early " in x or " debut " in x or "before" in x or "premiere moitie" in x:
             infos["distance_century"] = "-30"
-        
-        if " late " in x or ' fin ' in x:
+
+        if " late " in x or " fin " in x:
             infos["distance_century"] = "30"
 
         x = self.replace_periodes(x)
@@ -206,29 +213,29 @@ class GPTCleaner(TextCleaner):
         x = handle_short_century(x.strip())
 
         if " 1st " in x or " 1er " in x:
-            return eval(infos["sign"])*(eval(infos["distance_century"]))
+            return eval(infos["sign"]) * (eval(infos["distance_century"]))
         else:
             numbers = re.findall("\\d+", x)
             numbers = handle_years_pair(numbers)
             numbers = check_numbers(numbers, x)
 
-            if len(numbers) !=0:
+            if len(numbers) != 0:
                 dates = np.mean([int(a) for a in numbers if a.isdigit()])
-                return eval(infos["sign"])*(dates + eval(infos["distance_century"]))
+                return eval(infos["sign"]) * (dates + eval(infos["distance_century"]))
             else:
                 # if x!= "nan":
                 #     logging.error(x)
                 return np.nan
-            
+
     def pseudo_clean_category(self, x):
-        x = re.sub('[^a-zA-Z]+', ' ', str(x))
+        x = re.sub("[^a-zA-Z]+", " ", str(x))
         x = re.sub(" +", " ", x).strip()
         x = str(x).lower()
         x = str(x).replace("set of", "").replace("sets of", "").replace("-", " ")
         x = str(x).replace("pair of", "").replace("objects", "").replace("object", "")
         words = x.split(" ")
         new_term = []
-        for word in words: 
+        for word in words:
             if word != "other":
                 if len(word) > 1:
                     if word[-1] == "s" and word[-2] != "s":

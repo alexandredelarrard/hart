@@ -1,8 +1,8 @@
 # Broker settings.
-broker_url = 'redis://:apasswd@redis:6379/0' #'redis://redis:6379/0'
+broker_url = "redis://:apasswd@redis:6379/0"  #'redis://redis:6379/0'
 
 # Backend settings.
-result_backend = 'redis://:apasswd@redis:6379/0' # 'redis://redis:6379/0'
+result_backend = "redis://:apasswd@redis:6379/0"  # 'redis://redis:6379/0'
 
 # celery_task_routes = {
 #     'app.src.backend.tasks.process_request': {'queue': 'embedding-queue'},
@@ -10,12 +10,12 @@ result_backend = 'redis://:apasswd@redis:6379/0' # 'redis://redis:6379/0'
 # }
 
 # Task serialization and deserialization settings.
-task_serializer = 'json'
-result_serializer = 'json'
-accept_content = ['json']  # Ignore other content
+task_serializer = "json"
+result_serializer = "json"
+accept_content = ["json"]  # Ignore other content
 
 # Timezone and UTC settings.
-timezone = 'UTC'
+timezone = "UTC"
 enable_utc = True
 
 # Other Celery settings.

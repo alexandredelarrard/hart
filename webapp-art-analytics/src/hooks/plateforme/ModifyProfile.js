@@ -4,7 +4,7 @@ import { URL_UPDATE_PROFILE } from '../../utils/constants';
 
 export const ModifyProfile = async (name, surname, address) => {
     const isAuthenticated = await checkAuth();
-  
+
     if (isAuthenticated) {
       try {
         const response = await axiosInstance_middle.post(URL_UPDATE_PROFILE, { name, surname, address });

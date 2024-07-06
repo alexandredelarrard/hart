@@ -11,7 +11,7 @@ const FirmPresentation = ({t}) => {
 
     return (
       <div className="firm-presentation">
-        <main className="main-content"> 
+        <main className="main-content">
           <div className="content">
             <h1><div className="blue">{t("landing_page.firmpresentation.bluesupertitle")}</div> {t("landing_page.firmpresentation.supertitle")}</h1>
             <p>
@@ -30,5 +30,5 @@ const FirmPresentation = ({t}) => {
       </div>
     );
   };
-  
+
 export default FirmPresentation;

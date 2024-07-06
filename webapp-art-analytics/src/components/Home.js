@@ -14,9 +14,9 @@ import CookieConsent from "./landing_page/CookieConsent";
 import '../css/Home.css';
 
 const Home = ({
-  changeLanguage, 
-  t, 
-  scrolled, 
+  changeLanguage,
+  t,
+  scrolled,
   setScrolled
 }) => {
 
@@ -61,11 +61,11 @@ const Home = ({
         setScrolled={setScrolled}
         changeLanguage={changeLanguage}
         t={t}/>
-                
+
       <FirmPresentation t={t}/>
 
       <InfoBand t={t}/>
-      
+
       <Product t={t}/>
 
       <Advantages t={t}/>

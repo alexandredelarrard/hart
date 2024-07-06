@@ -17,7 +17,7 @@ const useFetchPayments = (setPayments) => {
             axiosInstance_middle.get(`${URL_GET_PAYMENTS}?user_id=${parsedUserdata.id}`, {}
             )
             .then(response => {
-              setPayments(response.data.results); 
+              setPayments(response.data.results);
             })
             .catch(error => {
                 console.error('Error fetching former results:', error);

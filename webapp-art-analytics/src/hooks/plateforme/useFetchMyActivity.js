@@ -5,7 +5,7 @@ import { URL_MY_ACTIVITY } from '../../utils/constants';
 import {generateDatesRange} from '../../utils/general.js';
 
 const useFetchMyActivity = (setActivityData) => {
-  
+
   const fetchActivityData = async () => {
       const isAuthenticated = checkAuth();
 

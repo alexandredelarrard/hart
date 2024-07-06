@@ -1,23 +1,19 @@
 from typing import List, Dict
-import pandas as pd 
+import pandas as pd
 import numpy as np
 import langid
 from src.context import Context
 from src.utils.timing import timing
-from src.constants.variables import (TEXT_DB_EN,
-                                     TEXT_DB_FR,
-                                     PICTURE_DB)
-from src.constants.models import EmbeddingsResults
+from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
+from src.constants.models import EmbeddingsResults, MultiEmbeddingsResults
 
 from src.utils.step import Step
 from omegaconf import DictConfig
 
 
 class EmbeddingCollection(Step):
-    
-    def __init__(self, 
-                 context : Context,
-                 config : DictConfig):
+
+    def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config)
 
@@ -29,56 +25,63 @@ class EmbeddingCollection(Step):
             return TEXT_DB_EN
         elif langue == "fr":
             return TEXT_DB_FR
-        else: 
+        else:
             self._log.warning(f"Text is not in EN or FR {langue}, will take EN default")
             return TEXT_DB_EN
-        
+
     def get_db_pict_name(self):
         return PICTURE_DB
-    
+
     @timing
     def get_query(self, table: str):
-        query= """
+        query = """
                 BEGIN;
                 SET LOCAL hnsw.ef_search = 100;
-                SELECT {id} AS ids, ("embedding" <=> %s::vector) AS distances 
+                SELECT {id} AS ids, ("embedding" <=> %s::vector) AS distances
                 FROM {table}
-                ORDER BY distances 
+                ORDER BY distances
                 LIMIT 100
                 """
-        unique_id = self.name.id_unique.lower() if table == PICTURE_DB else self.name.id_item.lower()
+        unique_id = (
+            self.name.id_unique.lower()
+            if table == PICTURE_DB
+            else self.name.id_item.lower()
+        )
         query = query.format(table=table, id=unique_id)
         return query
-        
+
     @timing
     def query_collection_postgres(self, query: str, query_embedded: np.array) -> Dict:
-       
-        df = pd.read_sql(query, 
-                         con=self._context.db_con, 
-                         params=(query_embedded.tolist()[0], ))
-        
-        result = EmbeddingsResults(
-            ids=df["ids"].tolist(),
-            distances= df["distances"].tolist()
+
+        df = pd.read_sql(
+            query, con=self._context.db_con, params=(query_embedded.tolist()[0],)
         )
-        
+
+        result = EmbeddingsResults(
+            ids=df["ids"].tolist(), distances=df["distances"].tolist()
+        )
+
         return result
-    
+
     @timing
     def get_id_item_from_pict(self, liste_ids_pict):
-        df_ids= pd.read_sql(f"SELECT \"ID_ITEM\", \"ID_UNIQUE\" FROM \"ALL_ITEMS\" WHERE \"ID_UNIQUE\" IN {tuple(liste_ids_pict)}", 
-                         con=self._context.db_con)
+        df_ids = pd.read_sql(
+            f'SELECT "ID_ITEM", "ID_UNIQUE" FROM "ALL_ITEMS" WHERE "ID_UNIQUE" IN {tuple(liste_ids_pict)}',
+            con=self._context.db_con,
+        )
         return df_ids["ID_ITEM"].tolist()
-    
-    @timing
-    def multi_embedding_strat(self, result_picture, result_text):
 
-        df_pict = pd.DataFrame().from_dict(result_picture)
-        df_text = pd.DataFrame().from_dict(result_text)
+    @timing
+    def multi_embedding_strat(
+        self, result: MultiEmbeddingsResults
+    ) -> MultiEmbeddingsResults:
+
+        df_pict = pd.DataFrame().from_dict(result.image)
+        df_text = pd.DataFrame().from_dict(result.text)
 
         self._log.info(df_pict.shape, df_text.shape)
         df = df_pict.merge(df_text, on="ids", suffixes=("_PICT", "_TXT"), how="outer")
-        
+
         for col in ["distances_PICT", "distances_TXT"]:
             max_dist = df[col].max()
             df[col] = df[col].fillna(max_dist)
@@ -87,4 +90,10 @@ class EmbeddingCollection(Step):
         df = df.sort_values("distances")
         self._log.info(df.shape)
 
-        return {"ids": df["ids"].tolist(), "distances": df["distances"].tolist()}
+        new_result = MultiEmbeddingsResults(
+            image=EmbeddingsResults(
+                ids=df["ids"].tolist(), distances=df["distances"].tolist()
+            ),
+            text=result.text,
+        )
+        return new_result

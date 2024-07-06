@@ -7,7 +7,7 @@ gbm_training:
   vase:
     model_target: "EUR_FINAL_RESULT"
     model_weight: Null
-    model_features: 
+    model_features:
       - NUMBER_DESCRIBED_OBJECTS
       # - VASE_HEIGHT
       # - VASE_MATERIAL
@@ -21,8 +21,8 @@ gbm_training:
       # - VASE_SHAPE
       - AUCTION_YEAR
       - EXPERT_ESTIMATION
-      # - SELLER 
-      # - CURRENCY 
+      # - SELLER
+      # - CURRENCY
     categorical_features:
       # - VASE_MATERIAL
       # - VASE_DECORATIONS
@@ -31,11 +31,11 @@ gbm_training:
       # - VASE_COUNTRY
       # - VASE_SHAPE
       # - CURRENCY
-      # - SELLER 
+      # - SELLER
     cross_validation:
       n_splits: 5
-      
-    model_parameters: 
+
+    model_parameters:
       objective: "regression"
       eval_metric: "mape"
       metric: 'mape'

@@ -24,7 +24,7 @@ const Trial = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    
+
 
     const handlePasswordChange = (e) => {
         const newPassword = e.target.value;
@@ -49,21 +49,21 @@ const Trial = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(''); // Clear any previous error
-    
+
         const jobTitle = metier === 'other' ? otherJob : metier;
-    
+
         try {
-          const response = await axios.post(`${URL_API}${URL_SIGNIN}`, { 
-            "surname": surname, 
-            "username": username, 
-            "email": email, 
-            "password": password, 
+          const response = await axios.post(`${URL_API}${URL_SIGNIN}`, {
+            "surname": surname,
+            "username": username,
+            "email": email,
+            "password": password,
             metier: jobTitle }, {
             headers: {
               'Content-Type': 'application/json',
             },
           });
-    
+
           // Save token to cookies and redirect to analytics
           Cookies.set('token', response.data.access_token, { expires: 0.5 });
           Cookies.set('userdata', JSON.stringify(response.data.userdata), { expires: 0.5 });
@@ -90,28 +90,28 @@ const Trial = () => {
                     <div className="form-row">
                         <div className="form-group">
                             <label>{t("overall.surname")}</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={surname}
                                 placeholder={t("overall.surname")}
                                 onChange={(e) => setSurname(e.target.value)}
-                                required 
+                                required
                             />
                         </div>
                         <div className="form-group">
                             <label>{t("overall.name")}</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={username}
                                 placeholder={t("overall.name")}
                                 onChange={(e) => setUsername(e.target.value)}
-                                required 
+                                required
                             />
                         </div>
                     </div>
                     <div className="form-group">
                         <label>{t("landing_page.trial.emailpro")}</label>
-                        <input 
+                        <input
                             type="email"
                             value={email}
                             onChange={handleEmailChange}
@@ -122,7 +122,7 @@ const Trial = () => {
                     </div>
                     <div className="form-group">
                         <label>{t("landing_page.trial.passwordtitle")}</label>
-                        <input 
+                        <input
                             type="password"
                             value={password}
                             onChange={handlePasswordChange}
@@ -133,7 +133,7 @@ const Trial = () => {
                     </div>
                     <div className="form-group">
                         <label>Métier</label>
-                        <select 
+                        <select
                             value={metier}
                             onChange={(e) => setMetier(e.target.value)}
                             required>
@@ -179,7 +179,7 @@ const Trial = () => {
                 </div>
             </section>
         </div>
-      </div>  
+      </div>
     );
 }
 

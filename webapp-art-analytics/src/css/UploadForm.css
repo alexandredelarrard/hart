@@ -64,7 +64,7 @@
   border-radius: 10px; /* Rounded corners for a modern look */
   overflow-y: auto;
   max-height: 450px; /* Adjust based on your layout */
-} 
+}
 
 .part2-search{
   width: 50%;
@@ -157,7 +157,7 @@
   flex-direction: column;
   padding: 1rem;
   background-color: #fff;
-  border-radius: 10px; 
+  border-radius: 10px;
 }
 
 .chatbot-header {
@@ -360,7 +360,7 @@
   margin: 0.5rem 0;
   font-size: 0.95rem;
 }
- 
+
 }
 
 @media (max-width: 600px) {

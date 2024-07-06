@@ -3,7 +3,7 @@ import '../../css/Product.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faBullseye, faUsers, faGavel, faSearch, faCheck } from '@fortawesome/free-solid-svg-icons';
-import problematicImage from '../../assets/landing_background_3.jpg'; 
+import problematicImage from '../../assets/landing_background_3.jpg';
 import VideoComponent from './utils/VideoComponent';
 import myVideo from '../../assets/Enregistrement 2024-06-22_intro1.mp4';
 
@@ -81,7 +81,7 @@ const Product = ({t}) => {
     ];
 
     return (
-        
+
         <div className="product-container">
             <h1 id="product">{t("landing_page.product.supertitle")}</h1>
             <p>

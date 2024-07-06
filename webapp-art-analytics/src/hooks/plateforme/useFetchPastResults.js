@@ -25,7 +25,7 @@ const useFetchPastResults = (newResultSaved, setFormerResults, setUserData) => {
             }
           )
             .then(response => {
-              setFormerResults(response.data.results); 
+              setFormerResults(response.data.results);
             })
             .catch(error => {
               console.error('Error fetching former results:', error);

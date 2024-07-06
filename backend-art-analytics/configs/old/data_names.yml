@@ -1,6 +1,6 @@
 naming:
   carreaux_200m:  # https://www.insee.fr/fr/statistiques/7655475?sommaire=7655515
-    met : 
+    met :
       idcar_200m: ID_CARREAU
       idcar_1km: IDCAR_1KM
       idcar_nat: IDCAR_NAT
@@ -35,7 +35,7 @@ naming:
       ind_65_79: NBR_INDIV_65_79
       ind_80p: NBR_INDIV_80_PLUS
       ind_inc: NBR_INDIV_AGE_INCONNU
-    mart : 
+    mart :
       idcar_200m: ID_CARREAU
       idcar_1km: IDCAR_1KM
       idcar_nat: IDCAR_NAT
@@ -70,7 +70,7 @@ naming:
       ind_65_79: NBR_INDIV_65_79
       ind_80p: NBR_INDIV_80_PLUS
       ind_inc: NBR_INDIV_AGE_INCONNU
-    reun : 
+    reun :
       idcar_200m: ID_CARREAU
       idcar_1km: IDCAR_1KM
       idcar_nat: IDCAR_NAT
@@ -105,8 +105,8 @@ naming:
       ind_65_79: NBR_INDIV_65_79
       ind_80p: NBR_INDIV_80_PLUS
       ind_inc: NBR_INDIV_AGE_INCONNU
-  carreaux_1km: 
-    met : 
+  carreaux_1km:
+    met :
       idcar_1km: IDCAR_1KM
       i_est_1km: I_EST_1KM
       lcog_geo: LCOG_GEO
@@ -138,7 +138,7 @@ naming:
       ind_65_79: NBR_INDIV_65_79
       ind_80p: NBR_INDIV_80_PLUS
       ind_inc: NBR_INDIV_AGE_INCONNU
-    mart : 
+    mart :
       idcar_1km: IDCAR_1KM
       i_est_1km: I_EST_1KM
       lcog_geo: LCOG_GEO
@@ -170,7 +170,7 @@ naming:
       ind_65_79: NBR_INDIV_65_79
       ind_80p: NBR_INDIV_80_PLUS
       ind_inc: NBR_INDIV_AGE_INCONNU
-    reun : 
+    reun :
       idcar_1km: IDCAR_1KM
       i_est_1km: I_EST_1KM
       lcog_geo: LCOG_GEO
@@ -203,7 +203,7 @@ naming:
       ind_80p: NBR_INDIV_80_PLUS
       ind_inc: NBR_INDIV_AGE_INCONNU
   commune: #https://statistiques-locales.insee.fr/#view=map1&c=indicator
-    communes_encodage_2020: 
+    communes_encodage_2020:
       typecom: TYPE_COMMUNE
       com: ID_COMMUNE
       reg: ID_REGION
@@ -215,7 +215,7 @@ naming:
       libelle: NOM_COMMUNE_ORIGINE
       can: ID_CANTON
       comparent: ID_COMMUNE_PARENTE
-    communes_encodage_2023: 
+    communes_encodage_2023:
       TYPECOM: TYPE_COMMUNE
       COM: ID_COMMUNE
       REG: ID_REGION
@@ -228,18 +228,18 @@ naming:
       LIBELLE: NOM_COMMUNE_ORIGINE
       CAN: ID_CANTON
       COMPARENT: ID_COMMUNE_PARENTE
-    deces: 
+    deces:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Nombre de décès domiciliés 2022: NBR_DECES_2022
       Évolution des décès domiciliés entre 2019 et 2022: DELTA_NBR_DECES_2019_2022
-    elections: 
+    elections:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Taux de procurations en 2022: TAUX_PROCURATION_2022
       Nombre de mandants en 2022: NBR_MANDATS_2022
       Électeurs inscrits sur liste principale 2022: ELECTEURS_SUR_LISTE_2022
-    emploi: 
+    emploi:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Nb d'emplois au lieu de travail (LT) 2020: NBR_EMPLOI
@@ -275,7 +275,7 @@ naming:
       Taux activité des hommes par tranche d'âge 2020.1: TAUX_ACTIVITE_HOMME_15_24
       Taux activité des hommes par tranche d'âge 2020.2: TAUX_ACTIVITE_HOMME_25_54
       Taux activité des hommes par tranche d'âge 2020.3: TAUX_ACTIVITE_HOMME_55_64
-    entreprise_creation: 
+    entreprise_creation:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Unités légales (en nombre) 2021: NBR_ENTREP_TOTAL_2021
@@ -303,7 +303,7 @@ naming:
       Part act. spécial., scient. & techn. & act. de svices admin. & soutien dans les créations d'entreprise 2022: TAUX_CREA_ENTREP_SERVICES_TECHNIQUE_2022
       Part administration publ., enseignement, santé humaine & action sociale dans les créations d'ent. 2022: TAUX_CREA_ENTREP_SOCIAL_SANTE_PROF_2022
       Part autres activités de services dans les créations d'ent. 2022: TAUX_CREA_ENTREP_AUTRE_SERVICES_2022
-    entreprise_caracteristiques: 
+    entreprise_caracteristiques:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Nb étab. actifs employeurs au 31/12 2021: NBR_ENTREP_ACTIF_2021
@@ -316,7 +316,7 @@ naming:
       Part postes de la construction dans les étab. actifs au 31/12 2021: TAUX_POSTES_CONSTRUCTION_2021
       Part postes du commerce, transport et services marchands dans les étab. actifs au 31/12 2021: TAUX_POSTES_RESTO_TRANSPORT_COMMERCE_2021
       Part postes de l'admin. publique, enseignement, santé et action sociale dans les étab. actifs au 31/12 2021: TAUX_POSTES_SOCIAL_SANTE_PROF_2021
-    logements: 
+    logements:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Part des résidences principales (hors studio de 1 personne) suroccupées 2020: TAUX_LOG_PRINCIPAL_SUROCCUPE_2020
@@ -332,7 +332,7 @@ naming:
       Rés. principales HLM louées vides 2020: NBR_HLM_LOUES_VIDE_2020
       Part des locataires HLM dans les rés. principales 2020: TAUX_LOCATAIRE_HLM_LOG_PRINCIPAL_2020
       Part des rés. principales construites avant 1946 2020: TAUX_LOG_PRINCIPAL_CONSTRUIT_PRE_1946_EN_2020
-    menages: 
+    menages:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Part des familles monoparentales 2020: TAUX_FAMILLE_MONOPARENT_2020
@@ -354,7 +354,7 @@ naming:
       Part des personnes de 15 ans ou + pacsées 2020: TAUX_PACSE_2020
       Part des pers. de 15 ans ou + veufs 2020: TAUX_VEUF_2020
       Taille moyenne des ménages 2020: TAILLE_MOYENNE_MENAGE_2020
-    naissance: 
+    naissance:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Nombre de naissances domiciliées 2022: NBR_NAISSANCE_2022
@@ -364,7 +364,7 @@ naming:
       Grille communale de densité: ID_GRILLE_COMMUNALE
       Unité urbaine 2020: UNITE_URBAINE_2020
       Zones d'emploi 2020: ZONE_EMPLOI_2020
-    populations_csp: 
+    populations_csp:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Période du pic relatif de population: PERIODE_PIC_RELATIF_POP
@@ -397,7 +397,7 @@ naming:
       Population de 15 ans ou + selon la CSP 2020.6 : NBR_POP_15_PLUS_OUVRIER_2020
       Population de 15 ans ou + selon la CSP 2020.7: NBR_POP_15_PLUS_RETRAITE_2020
       Population de 15 ans ou + selon la CSP 2020.8: NBR_POP_15_PLUS_AUTRE_2020
-    scolarisation: 
+    scolarisation:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Part des diplômés d'un BAC+5 ou plus dans la pop. non scolarisée de 15 ans ou + 2020 : TAUX_BAC_PLUS_5_2020
@@ -408,7 +408,7 @@ naming:
       Part des pers., dont le diplôme le plus élevé est le bac, dans la pop. non scolarisée de 15 ans ou + 2020 : TAUX_BAC_2020
       Part des diplômés d'un BAC+2 dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_BAC_PLUS_2_2020
       Part des diplômés d'un BAC+3  ou BAC+4 dans la pop. non scolarisée de 15 ans ou + 2020: TAUX_BAC_PLUS_4_2020
-    securite: 
+    securite:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Coups et blessures volontaires (en nombre) 2022: NBR_COUP_BLESSURE_VOLONTAIRE_2022
@@ -438,7 +438,7 @@ naming:
       Usage de stupéfiants (nombre) 2022: NBR_USAGE_STUPEFIANTS_2022
       Usage de stupéfiants (taux) 2022: TAUX_USAGE_STUPEFIANTS_2022
       Trafic de stupéfiants (nombre) 2022: NBR_TRAFIC_STUPEFIANTS_2022
-    tourisme: 
+    tourisme:
       Code: ID_COMMUNE
       Libellé : NOM_COMMUNE_ORIGINE
       Nb d'hôtels 2023: NBR_HOTEL_2023
@@ -458,7 +458,7 @@ naming:
       an: ANNEE
       poptot_h: NBR_HOMMES_2020
   departement:
-    chomage:  
+    chomage:
       Code: ID_DEPARTEMENT
       Libellé : NOM_DEPARTEMENT
       Taux de chômage annuel moyen des femmes 2022: TAUX_CHOMAGE_FEMME_2022
@@ -467,12 +467,12 @@ naming:
       Taux de chômage annuel moyen des 25 à 49 ans 2022: TAUX_CHOMAGE_25_49_2022
       Taux de chômage annuel moyen des 50 ans ou plus 2022: TAUX_CHOMAGE_50_PLUS_2022
   zone_emploi:
-    chomage: 
+    chomage:
       Code: ID_ZONE_EMPLOI
       Libellé : NOM_ZONE_EMPLOI
       Taux de chômage trimestriel 2023-T3: TAUX_CHOMAGE_T3_2023
       Taux de chômage annuel moyen 2022: TAUX_CHOMAGE_2023
-    pauvrete: 
+    pauvrete:
       Code: ID_ZONE_EMPLOI
       Libellé : NOM_ZONE_EMPLOI
       Taux de pauvreté 2021: TAUX_PAUVRETE_2021
@@ -483,7 +483,7 @@ naming:
       Taux de pauvreté - 60 ans à 74 ans 2021: TAUX_PAUVRETE_60_74_2021
       Taux de pauvreté - 75 ans ou plus 2021: TAUX_PAUVRETE_75_PLUS_2021
       Taux de pauvreté - locataires 2021: TAUX_PAUVRETE_LOCATAIRES_2021
-    pouvoir_achat: 
+    pouvoir_achat:
       Code: ID_ZONE_EMPLOI
       Libellé : NOM_ZONE_EMPLOI
       Nb de ménages fiscaux 2021: NBR_MENAGE_FISCAUX_2021
@@ -503,7 +503,7 @@ naming:
       1er décile du niv. de vie 2021: NIVEAU_VIE_1_DECILE
       9e décile du niv. de vie 2021: NIVEAU_VIE_9_DECILE
       Rapport interdécile du niveau de vie (9e déc./1er déc.) 2021: RATIO_NIVEAU_VIE_9_1_DECILE
-    salaires: 
+    salaires:
       Code: ID_ZONE_EMPLOI
       Libellé : NOM_ZONE_EMPLOI
       Salaire net horaire moyen 2021: SALAIRE_HORAIRE_NET_2021
@@ -516,4 +516,3 @@ naming:
       Salaire net hor. moy. des prof. intermédiaires 2021 : SALAIRE_HORAIRE_NET_PROF_INTERMEDIAIRE_2021
       Salaire net hor. moy. des employés 2021: SALAIRE_HORAIRE_NET_EMPLOYES_2021
       Salaire net hor. moy. des ouvriers 2021: SALAIRE_HORAIRE_NET_OUVRIERS _2021
-

@@ -61,7 +61,7 @@ function App() {
   const [planExpired, setPlanExpired] = useState(false);
   const { t } = useTranslation();
 
-  // SearchArt 
+  // SearchArt
   const [searchResults, setSearchResults] = useState([]);
   const [trendData, setTrendData] = useState(null);
 
@@ -72,7 +72,7 @@ function App() {
   const renderContent = () => {
     switch (activeMenu) {
       case 'search-art':
-        return <SearchArt 
+        return <SearchArt
                   setPlanExpired={setPlanExpired}
                   planExpired={planExpired}
                   handleMenuClick={handleMenuClick}
@@ -85,7 +85,7 @@ function App() {
               />;
       case 'closest-lots':
         return (
-          <UploadForm 
+          <UploadForm
             setFile={setFile}
             setText={setText}
             setTaskId={setTaskId}
@@ -111,7 +111,7 @@ function App() {
             setNewResultSaved={setNewResultSaved}
             experts={experts}
             setExperts={setExperts}
-            handleMenuClick={handleMenuClick} 
+            handleMenuClick={handleMenuClick}
             setMinPrice={setMinPrice}
             setMaxPrice={setMaxPrice}
             setMinDate={setMinDate}
@@ -128,30 +128,30 @@ function App() {
         />
         );
       case 'optimize-sale':
-        return <OptimizeSale 
+        return <OptimizeSale
                 handleMenuClick={handleMenuClick}
                 changeLanguage={changeLanguage}
-                t={t} 
+                t={t}
               />;
       case 'authentify-art':
-        return <ArtIdentify 
+        return <ArtIdentify
                 handleMenuClick={handleMenuClick}
                 changeLanguage={changeLanguage}
                 t={t}
                 />;
       case 'account-settings':
-        return <Settings 
+        return <Settings
                   userData={userData}
                   setUserData={setUserData}
                   handleMenuClick={handleMenuClick}
                   changeLanguage={changeLanguage}
-                  t={t} 
+                  t={t}
                 />;
       case 'my-offers':
-        return <Offers 
+        return <Offers
                   handleMenuClick={handleMenuClick}
                   changeLanguage={changeLanguage}
-                  t={t} 
+                  t={t}
                 />;
       default:
         return null;
@@ -162,9 +162,9 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home 
-                                    scrolled={scrolled} 
-                                    setScrolled={setScrolled} 
+          <Route path="/" element={<Home
+                                    scrolled={scrolled}
+                                    setScrolled={setScrolled}
                                     changeLanguage={changeLanguage}
                                     t={t}/>} />
           <Route path="/login" element={<Login scrolled={true} t={t}/>} />
@@ -181,10 +181,10 @@ function App() {
             path="/analytics"
             element={
               <div style={{ display: 'flex' }}>
-                <Sidebar 
+                <Sidebar
                   userData={userData}
                   setUserData={setUserData}
-                  onMenuClick={handleMenuClick} 
+                  onMenuClick={handleMenuClick}
                   setFile={setFile}
                   setText={setText}
                   setTaskId={setTaskId}
@@ -212,7 +212,7 @@ function App() {
             path="/analytics/card/:id"
             element={
                 <div style={{ display: 'flex' }}>
-                  <CardDetail 
+                  <CardDetail
                   i18n={i18n}
                   t={t}/>
                 </div>

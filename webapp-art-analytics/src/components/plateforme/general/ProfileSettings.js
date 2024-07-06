@@ -24,7 +24,7 @@ function ProfileSettings({
     if(isAuthenticated){
         if (userdataCookie) {
         const parsedUserdata = JSON.parse(userdataCookie);
-        
+
         setUserData(parsedUserdata);
         setName(parsedUserdata.name);
         setSurname(parsedUserdata.surname);
@@ -60,49 +60,49 @@ function ProfileSettings({
             <div className="profile-section">
             <h2>{t("plateforme.profilesettings.profiletitle")}</h2>
             <div className="form-group">
-                <label>{t("overall.email")}: 
+                <label>{t("overall.email")}:
                 <span className={`validation-status ${emailValidated ? 'validated' : 'not-validated'}`}>
                     {emailValidated ? `${t("plateforme.profilesettings.validatedemail")} ${new Date(validationDate).toLocaleDateString()}` : t("plateforme.profilesettings.notvalidatedemail")}
                 </span>
                 </label>
-                <input 
-                    type="text" 
-                    value={userData.email} 
+                <input
+                    type="text"
+                    value={userData.email}
                     disabled
                 />
             </div>
             <div className="form-group">
                 <label>{t("overall.name")}:</label>
-                <input 
-                    type="text" 
-                    value={editMode ? name : userData.name} 
-                    onChange={(e) => setName(e.target.value)} 
+                <input
+                    type="text"
+                    value={editMode ? name : userData.name}
+                    onChange={(e) => setName(e.target.value)}
                     disabled = {editMode ? false: true}
                 />
             </div>
             <div className="form-group">
                 <label>{t("overall.surname")}:</label>
-                <input 
-                    type="text" 
-                    value={editMode ? surname : userData.surname} 
-                    onChange={(e) => setSurname(e.target.value)} 
+                <input
+                    type="text"
+                    value={editMode ? surname : userData.surname}
+                    onChange={(e) => setSurname(e.target.value)}
                     disabled = {editMode ? false: true}
                 />
             </div>
             <div className="form-group">
                 <label>{t("overall.address")}:</label>
-                <input 
-                    type="text" 
-                    value={editMode ? address : userData.address} 
-                    onChange={(e) => setAddress(e.target.value)} 
+                <input
+                    type="text"
+                    value={editMode ? address : userData.address}
+                    onChange={(e) => setAddress(e.target.value)}
                     disabled = {editMode ? false: true}
                 />
             </div>
             <div className="form-group">
                 <label>{t("overall.creationdate")}:</label>
-                <input 
-                    type="text" 
-                    value={new Date(userData.creation_date).toLocaleDateString()} 
+                <input
+                    type="text"
+                    value={new Date(userData.creation_date).toLocaleDateString()}
                     disabled
                 />
             </div>

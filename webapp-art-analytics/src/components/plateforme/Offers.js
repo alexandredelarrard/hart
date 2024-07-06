@@ -15,7 +15,7 @@ function Offers({changeLanguage, handleMenuClick, t}) {
     if (!token) {
       return;
     }
-    
+
     const plan_name = Cookies.get('plan_name');
     const plan_end_date=  Cookies.get('plan_end_date');
     const vol_cosest=  Cookies.get('remaining_closest_volume');
@@ -31,18 +31,18 @@ function Offers({changeLanguage, handleMenuClick, t}) {
 
       // Calculate the difference in time
       const timeDifference = planEndDate - currentDate + 10;
-      
+
       // Convert time difference from milliseconds to days
       const remainingDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
-      
+
       setremainingDays(remainingDays);
     }
 
   }, [setActivePlan, setclosestQueries]);
-  
+
   return (
     <div className="upload-form-container">
-        <HeaderPlateforme 
+        <HeaderPlateforme
         changeLanguage={changeLanguage}
         handleMenuClick={handleMenuClick}
         t={t}
