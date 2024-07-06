@@ -128,8 +128,15 @@ liste_currency_paires = ["USDEUR", "GBPEUR", "CHFEUR", "SEKEUR", "INREUR",
                         "TRYEUR", "ZAREUR"]
 
 # for steps 
-list_sellers = ["sothebys", "drouot", "christies"]
+list_sellers = ["sothebys", "drouot", "christies", "millon"]
 
-## TEXT DATABASE NAME
-CHROMA_TEXT_DB_NAME="text"
-CHROMA_PICTURE_DB_NAME="pictures"
+## embedding types
+embedding_types = ["text", "picture"]
+PICTURE_TYPE="picture"
+TEXT_TYPE_EN="text_en"
+TEXT_TYPE_FR="text_fr"
+
+# unique IDS
+ID_TEXT = "ID_ITEM"
+ID_PICTURE = "ID_PICTURE"
+ID_UNIQUE= "ID_UNIQUE"

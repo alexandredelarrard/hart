@@ -2,9 +2,9 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Optional
 
 class Reformulate(BaseModel):
-    french_title: str = Field(description="The title of the art description translated into French.")
+    french_title: str = Field(description="Few words in French, presenting what the art description is about.")
     french_description: str = Field(description="The detailed art description translated into French.")
-    english_title: str = Field(description="The title of the art description in English.")
+    english_title: str = Field(description="Few words in English, presenting what the art description is about.")
     english_description: str = Field(description="The detailed art description in English.")
     object_category: str = Field(description="The specific category of the described object. Be very specific and provide the answer in English only. Examples include: painting, table, serigraphy, vase, lamp, ring, or another specific item.")
     number_objects_described: str = Field(description="The number of objects described in the text. If only one object is described, enter '1'. If it is a pair, enter '2', etc.")

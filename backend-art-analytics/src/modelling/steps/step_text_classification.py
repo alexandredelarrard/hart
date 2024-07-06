@@ -21,7 +21,6 @@ from src.utils.step import Step
 from src.utils.timing import timing
 from src.constants.class_map import class_mapping
 
-
 class StepTextClassification(Step):
     
     def __init__(self, 

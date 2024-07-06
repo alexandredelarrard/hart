@@ -8,11 +8,9 @@ from src.utils.timing import timing
 from src.modelling.transformers.Clustering import TopicClustering
 from src.modelling.transformers.Embedding import StepEmbedding
 from src.modelling.transformers.NlpToolBox import NLPToolBox
-from src.modelling.transformers.ChromaCollection import ChromaCollection
 from src.utils.dataset_retreival import DatasetRetreiver
 
 from src.utils.utils_crawler import copy_picture
-from src.constants.variables import CHROMA_TEXT_DB_NAME
 
 from omegaconf import DictConfig
 
@@ -39,9 +37,6 @@ class StepTextClustering(Step):
         self.step_embedding = StepEmbedding(context=context, config=config, 
                                             type="text")
         self.data_retreiver = DatasetRetreiver(context=context, config=config)
-        self.chroma_collection = ChromaCollection(context=self._context,
-                                                 data_name=CHROMA_TEXT_DB_NAME, 
-                                                 config=self._config)
         
     @timing
     def run(self, data_name : str, vector : str):
@@ -71,9 +66,6 @@ class StepTextClustering(Step):
 
             if self.params["verbose"] ==1:
                 self.plot_2d_embeddings(df_desc)
-
-        if self.save_embeddings:
-            self.chroma_collection.save_collection(df_desc.fillna(""), self.embeddings)
 
         return df_desc 
     

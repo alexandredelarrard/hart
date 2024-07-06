@@ -1,5 +1,6 @@
 evaluator:
     model_path: D:/data/models/evaluator
+    category_mapping_path: D:/data/llm_extracts/features_to_extract/object_category_mapping.json
     mappings: 
         watch: D:/data/llm_extracts/features_to_extract/watch_features.json
         vase: D:/data/llm_extracts/features_to_extract/vase_features.json

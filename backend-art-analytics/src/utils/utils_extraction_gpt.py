@@ -35,7 +35,6 @@ def reconstruct_dict(x):
 
     return eval(answer)
 
-
 def handle_answer(answer):
 
     x = answer["ANSWER"]
@@ -69,7 +68,6 @@ def handle_answer(answer):
         except Exception:
             logging.error(answer["ID_ITEM"])
             return "{}"
-            
     
 def clean_list(x):
     origin = re.findall("\\[(.*?)\\]", x)[0]
@@ -104,7 +102,7 @@ def replace_key(k, col_mapping):
             return feature
     return k
 
-def homogenize_keys_name(x, col_mapping):
+def homogenize_keys_name(x, col_mapping, smooth_text=True):
     new_dict = {}
     try:
         for k, v in x.items():
@@ -112,10 +110,16 @@ def homogenize_keys_name(x, col_mapping):
             if isinstance(v, List):
                 values = []
                 for sub_values in v:
-                    values.append(remove_accents(str(sub_values).lower().strip()))
+                    if smooth_text:
+                        values.append(remove_accents(str(sub_values).lower().strip()))
+                    else:
+                        values.append(remove_accents(str(sub_values).strip()))
                 new_dict[key] = values
             else:
-                new_dict[key] = remove_accents(str(v).lower().strip())
+                if smooth_text:
+                    new_dict[key] = remove_accents(str(v).lower().strip())
+                else:
+                    new_dict[key] = remove_accents(str(v).strip())
         return new_dict
     except Exception:
         logging.warning(x)

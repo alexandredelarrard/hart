@@ -109,6 +109,13 @@ class GPTCleaner(TextCleaner):
                 if str(sub_value) in tok_x:
                     return key.strip()
         return np.nan
+    
+    def exact_map_value_to_key(self, x, mapping_dict):
+        for key, values in mapping_dict.items():
+            for sub_value in values:
+                if str(sub_value) == x:
+                    return key.strip()
+        return np.nan
         
     def handle_cm(self, x):
 
@@ -214,6 +221,9 @@ class GPTCleaner(TextCleaner):
                 return np.nan
             
     def pseudo_clean_category(self, x):
+        x = re.sub('[^a-zA-Z]+', ' ', str(x))
+        x = re.sub(" +", " ", x).strip()
+        x = str(x).lower()
         x = str(x).replace("set of", "").replace("sets of", "").replace("-", " ")
         x = str(x).replace("pair of", "").replace("objects", "").replace("object", "")
         words = x.split(" ")

@@ -16,8 +16,5 @@ gpt:
                   - Do not start your answer by Here is the extracted or Response, directly give the JSON output. Make sure all values are quoted."
     reformulate: "As an art interpretation expert fluent in English and French: \ 
                   - Given an art description, your task is to provide translations in both French and English, formatted as specified in the JSON structure below. \
-                  - For each translation, render the title of the description first in French, then in English. Follow this with the description itself, first in French, then in English. \
                   - Omit details such as auction location, contact information, viewing schedules, and transportation fees. \
-                  - When translating, simplify the sentence while retaining all descriptions of objects, and expand contracted words into their full forms in English or French. For example, 'bout.' should be expanded to 'boutelle', etc. \
-                  - Do not start your output with 'Here is the output' and do not write 'Note' or comments in the JSON. \
-                  - Include the number of objects described and the specific category of the art object(s)."
+                  - When translating, simplify the sentence while retaining all descriptions of objects, and expand contracted words into their full forms in English or French. For example, 'bout.' should be expanded to 'boutelle', etc."

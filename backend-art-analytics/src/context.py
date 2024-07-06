@@ -4,6 +4,7 @@ from io import StringIO
 import sys 
 from logging.config import dictConfig 
 from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig, OmegaConf
@@ -30,7 +31,11 @@ class DBeaver:
         connection = create_engine(self.connexion_string)
         return connection
     
-
+    def flask_connect(self, connection):
+        db = SQLAlchemy()
+        db.Model.metadata.reflect(connection.engine)
+        return db
+    
 class Context:
 
     def __init__(self, config : DictConfig, use_cache : bool, save : bool):
@@ -59,6 +64,7 @@ class Context:
         # connection 
         db = DBeaver(config)
         self.db_con = db.init_db()
+        self.flask_db = db.flask_connect(self.db_con)
 
     @property
     def config(self) -> DictConfig:

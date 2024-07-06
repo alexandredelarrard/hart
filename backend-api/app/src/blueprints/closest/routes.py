@@ -83,12 +83,9 @@ def task_status():
             }
 
         elif task.state == 'SUCCESS':
-            # results = {"ids": task.result["image"]['ids'][0],
-            #            "distances": [np.round(x, 3) for x in task.result["image"]['distances'][0]]}
-            
             response = {
                 'state': task.state,
-                'result': task.result["image"], ## to change with chromadb
+                'result': task.result["image"],
             }
 
             # save result into db 

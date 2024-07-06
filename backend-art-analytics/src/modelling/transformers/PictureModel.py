@@ -68,8 +68,6 @@ class PictureModel(Step):
                  config : DictConfig,
                  model_name : str,
                  model_path : str = None,
-                 batch_size : int = 32,
-                 device : str = None,
                  epochs : int = 10,
                  classes : Dict = {}):
 
@@ -78,7 +76,7 @@ class PictureModel(Step):
         self.model_name = model_name
         self.top_k = 5
         self.epochs = epochs
-        self.batch_size=batch_size
+        self.batch_size = self._config.embedding.picture.batch_size
         self.model_path = model_path
 
         if not self.model_name and not self.model_path:
@@ -98,10 +96,11 @@ class PictureModel(Step):
         self.criterion = torch.nn.CrossEntropyLoss()
         self.lora_model_config = peft.LoraConfig(r=8, target_modules=target_modules, modules_to_save=["head"])
 
-        if not device:
-            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        if 'device' in self._config.embedding.keys():
+            self.device = self._config.embedding.device
         else:
-            self.device = device
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 
     def fit(self, train_dataset : Dataset, val_dataset : Dataset = None):
 

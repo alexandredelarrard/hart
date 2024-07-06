@@ -16,9 +16,6 @@ from src.utils.timing import timing
 from src.utils.utils_crawler import (read_json,
                                      save_json)
 from src.modelling.transformers.PictureModel import PictureModel, ArtDataset
-from src.modelling.transformers.ChromaCollection import ChromaCollection
-
-from src.constants.variables import (CHROMA_PICTURE_DB_NAME)
 
 from omegaconf import DictConfig
 
@@ -45,10 +42,6 @@ class StepPictureClassification(Step):
 
         self.save_model = save_model
         self.today = datetime.today().strftime("%d_%m_%Y")
-
-        self.chroma_collection = ChromaCollection(context=self._context,
-                                                 data_name=CHROMA_PICTURE_DB_NAME, 
-                                                 config=self._config)
 
     @timing
     def training(self):

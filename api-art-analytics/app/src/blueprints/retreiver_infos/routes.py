@@ -62,6 +62,7 @@ def post_ids_infos():
             return jsonify({"error": "No IDs provided"}), 400
         
         if isinstance(ids, List) and isinstance(distances, List):
+                
             # try:
                 # get description per id_unique
                 result_desc_id =  AllItems.query.filter(AllItems.ID_UNIQUE.in_(ids)).all()

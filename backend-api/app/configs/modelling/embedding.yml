@@ -2,11 +2,14 @@ embedding:
   manual_cluster: /data/default/manuel_cluster_mapping_word.json
   device: cuda
   n_top_neighbors: 96
-  text_model: 'intfloat/multilingual-e5-large-instruct'
-  picture_model: /data/models/peft_block23_vit_large_patch14_clip_224_280416
+  text_model: 
+    text_embeddings_english: 'Alibaba-NLP/gte-large-en-v1.5'
+    text_embeddings_french: "dangvantuan/sentence-camembert-large"
+  picture_model: /data/models/peft_block23_vit_large_patch14_clip_224_060624_286
   prompt_name : clustering
   prompt:
-      clustering: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
+      text_embeddings_french: "Identifie le type d'objet d'art auquel se réfère la description suivante: "
+      text_embeddings_english: "You are an art expert grouping art piece description together: " # do not change !! all embeddings were built with this 
   text:
       batch_size : 64
   picture:

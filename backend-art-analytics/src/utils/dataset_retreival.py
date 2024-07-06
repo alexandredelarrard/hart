@@ -154,7 +154,6 @@ class DatasetRetreiver(Step):
                     "id_picture": self.name.id_picture,
                     "seller": self.name.seller,
                     "is_picture": self.name.is_picture,
-                    "pict_path": vector,
                     "total_description": self.name.total_description,
                     "base_path":self.root,
                     "limite": limit
@@ -165,12 +164,12 @@ class DatasetRetreiver(Step):
         logging.info(formatted_query)
         df = self.read_sql_data(formatted_query)
         df[vector] = df[[self.name.id_picture, self.name.seller]].apply(lambda x: "/".join([self.root, x[self.name.seller], 
-                                                                                            "pictures", x[self.name.id_picture] + ".jpg"]), 
-                                                                                            axis=1)
+                                                                        "pictures", x[self.name.id_picture] + ".jpg"]), 
+                                                                        axis=1)
         logging.info(f"GETTING {df.shape}")
         return df
     
-    def get_all_text(self, data_name:str=None, limit:int=None):
+    def get_all_text(self, data_name:str=None, language:str = None, limit:int=None):
 
         if data_name==None:
             data_name= self._config.cleaning.full_data_per_item
@@ -184,8 +183,8 @@ class DatasetRetreiver(Step):
                 {
                     "table_name": data_name,
                     "id_item": self.name.id_item,
-                    "seller": self.name.seller,
-                    "total_description": self.name.total_description,
+                    "title": language + "_TITLE",
+                    "description": language + "_DESCRIPTION",
                     "limite": limit
                 },
             )

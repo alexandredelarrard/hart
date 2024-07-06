@@ -8,9 +8,7 @@ from src.utils.step import Step
 from src.utils.timing import timing
 from src.modelling.transformers.Clustering import TopicClustering
 from src.utils.utils_crawler import copy_picture
-from src.modelling.transformers.ChromaCollection import ChromaCollection
 
-from src.constants.variables import (CHROMA_PICTURE_DB_NAME)
 from omegaconf import DictConfig
 
 class StepPictureClustering(Step):
@@ -30,10 +28,7 @@ class StepPictureClustering(Step):
         self.n_words_cluster = self.params.n_words_cluster
 
         self.step_cluster = TopicClustering(params=self.params)
-        self.chroma_collection = ChromaCollection(context=self._context,
-                                                 data_name=CHROMA_PICTURE_DB_NAME, 
-                                                 config=self._config)
-    
+
     @timing
     def run(self):
 
@@ -58,12 +53,6 @@ class StepPictureClustering(Step):
 
         if self.save_pictures:
             self.save_clustered_pictures(df_desc)
-            
-        if self.params["verbose"] ==1:
-            plot_reduced_embedding = self.step_embedding.embedding_reduction(self.embeddings, 
-                                                                             method_dim_reduction="tsne")
-            df_desc["x"], df_desc["y"] = zip(*plot_reduced_embedding)
-            self.step_cluster.plot_clusters(df_desc)
 
     @timing
     def check_is_file(self, df_desc):

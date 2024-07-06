@@ -1,9 +1,6 @@
-import os 
-from tqdm import tqdm
 from typing import Dict
 from pathlib import Path
 from torch.utils.data import Dataset
-import pandas as pd 
 import logging
 
 import timm
@@ -12,7 +9,6 @@ from timm.data import resolve_data_config
 from timm.data.transforms_factory import create_transform
 from PIL import Image
 import peft
-import torchvision.transforms as T
 
 from src.context import Context
 from src.utils.step import Step
@@ -92,158 +88,27 @@ class PictureModel(Step):
         self.batching = {}
 
         # model params
-        target_modules = ['blocks.23.mlp.fc2', 'blocks.23.mlp.fc1'] #r"blocks.23.*\.mlp\.fc\d" # , 'blocks.22.mlp.fc2', 'blocks.23.mlp.fc1'
-        self.criterion = torch.nn.CrossEntropyLoss()
-        self.lora_model_config = peft.LoraConfig(r=8, target_modules=target_modules, modules_to_save=["head"])
-
         if not device:
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         else:
             self.device = device
 
-    def fit(self, train_dataset : Dataset, val_dataset : Dataset = None):
-
-        # batching data
-        self.batching_data(train_dataset, mode="train")
-        if isinstance(val_dataset, Dataset):
-            self.batching_data(val_dataset, mode="validation")
-
-        # train model 
-        self.peft_model = peft.get_peft_model(self.model, self.lora_model_config).to(self.device)
-        self.optimizer = torch.optim.Adam(self.peft_model.parameters(), lr=2e-4)
-        self.peft_model.print_trainable_parameters()
-
-        # iterate per epoch
-        for epoch in range(self.epochs):
-            train_loss = self.train_epoch(train_data = self.batching["train"])
-            train_loss_total = self.evaluate(train_loss, mode="train")
-            to_print = f"{epoch=:<2}  {train_loss_total=:.4f}"
-
-            if isinstance(val_dataset, Dataset):
-                valid_loss, n_total, correct = self.evaluate_epoch(self.batching["validation"])
-                valid_loss_total = self.evaluate(valid_loss, mode="validation")
-                valid_acc_total = correct / n_total
-                to_print += f" {valid_loss_total=:.4f} {valid_acc_total=:.4f}"
-
-            self._log.info(to_print)
-    
-
-    def train_epoch(self, train_data):
-        self.peft_model.train()
-        train_loss = 0
-
-        for batch in train_data:
-            xb, yb = batch["image"], batch["labels"]
-            xb, yb = xb.to(self.device), yb.to(self.device)
-            outputs = self.peft_model(xb)
-
-            lsm = torch.nn.functional.log_softmax(outputs, dim=-1)
-            loss = self.criterion(lsm, yb)
-            train_loss += loss.detach().float()
-            loss.backward()
-            self.optimizer.step()
-            self.optimizer.zero_grad()
-        
-        return train_loss
-
-
-    def evaluate_epoch(self, validation_data):
-
-        self.peft_model.eval()
-        valid_loss = 0
-        correct = 0
-        n_total = 0
-        for batch in validation_data:
-            xb, yb = batch["image"], batch["labels"]
-            xb, yb = xb.to(self.device), yb.to(self.device)
-            with torch.no_grad():
-                outputs = self.peft_model(xb)
-            lsm = torch.nn.functional.log_softmax(outputs, dim=-1)
-            loss = self.criterion(lsm, yb)
-            valid_loss += loss.detach().float()
-
-            correct += (outputs.argmax(-1) == yb).sum().item()
-            n_total += len(yb)
-        
-        return valid_loss, n_total, correct
-    
-    def predict(self, test_dataset : Dataset):
-
-        self.batching_data(test_dataset, mode="test")
-        self.new_model.to(self.device).eval()
-
-        sorties = []
-        for batch in tqdm(self.batching["test"]):
-            xb = batch["image"]
-            xb = xb.to(self.device)
-            with torch.no_grad():
-                outputs = self.new_model(xb)
-            lsm = torch.nn.functional.softmax(outputs, dim=-1)
-            answers = torch.topk(lsm, k=self.top_k)
-            sorties.append(answers)
-
-        return self.clean_sorties(sorties)
-    
-    def predict_embedding(self, test_dataset : Dataset):
-
-        self.batching_data(test_dataset, mode="test")
-        self.new_model.to(self.device).eval()
-
-        sorties = []
-        for batch in tqdm(self.batching["test"]):
-            xb = batch["image"]
-            xb = xb.to(self.device)
-            with torch.no_grad():
-                outputs = self.new_model.forward_features(xb)
-            last = self.new_model.forward_head(outputs, pre_logits=True)
-            sorties.append(last.cpu().numpy())
-        
-        return sorties
-    
     def one_embedding_on_the_fly(self, image):
         image = self.pict_transformer(image).unsqueeze(0)
         xb = image.to(self.device)
-        self.new_model.to(self.device).eval()
         with torch.no_grad():
             outputs = self.new_model.forward_features(xb)
-        last = self.new_model.forward_head(outputs, pre_logits=True)
+            last = self.new_model.forward_head(outputs, pre_logits=True)
         return last.cpu().numpy()
 
-    def batching_data(self, data, mode="train"):
-        self.batching[mode] = torch.utils.data.DataLoader(data, shuffle=False, batch_size=self.batch_size)
-        
     def define_model_transformer(self, is_training : bool =True):
         self.model = timm.create_model(self.model_name, pretrained=True, num_classes=self.num_classes)
         data_config = resolve_data_config(self.model.pretrained_cfg, model=self.model)
         return create_transform(**data_config, is_training=is_training)
-
-    def save_model(self, save_path):
-        self.peft_model.save_pretrained(save_path)
-
-        for file_name in os.listdir(save_path):
-            file_size = os.path.getsize(save_path + "/" + file_name)
-            self._log.info(f"File Name: {file_name}; File Size: {file_size / 1024:.2f}KB")
 
     def load_trained_model(self, model_path):
         self.base_model = timm.create_model(self.model_name, pretrained=True, num_classes=self.num_classes)
         self.new_model = peft.PeftModel.from_pretrained(self.base_model, model_path)
         self.data_config = resolve_data_config(self.new_model.pretrained_cfg, model=self.new_model)
         self.pict_transformer = create_transform(**self.data_config)
-
-    def evaluate(self, loss, mode="train"):
-        loss_total = (loss / len(self.batching[mode])).item()
-        return loss_total
-
-    def clean_sorties(self, sorties):
-
-        proba_cols = [f"PROBA_{i}" for i in range(self.top_k)]
-        columns = proba_cols + [f"TOP_{i}" for i in range(self.top_k)]
-        total = pd.DataFrame()
-        for batch in sorties:
-            probas, classes = batch[0].cpu().numpy(), batch[1].cpu().numpy()
-            batch_total = pd.concat([pd.DataFrame(probas), pd.DataFrame(classes)], axis=1)
-            total = pd.concat([total, batch_total], axis=0)
-        total.columns = columns
-
-        return total.reset_index(drop=True)
-    
+        self.new_model.to(self.device).eval()

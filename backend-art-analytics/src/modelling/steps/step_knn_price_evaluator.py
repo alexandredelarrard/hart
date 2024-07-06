@@ -5,12 +5,10 @@ from tqdm import tqdm
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-from src.modelling.transformers.ChromaCollection import ChromaCollection
 from src.modelling.transformers.Embedding import StepEmbedding
 from src.modelling.transformers.ModelEvaluator import ModelEvaluator
 from omegaconf import DictConfig
 
-from src.constants.variables import CHROMA_TEXT_DB_NAME
 
 
 class StepKNNPriceEvaluator(Step):
@@ -26,10 +24,6 @@ class StepKNNPriceEvaluator(Step):
         self.prompt_name= self._config.embedding.prompt_name
         self.n_top_results = 20
 
-        self.collection = ChromaCollection(context=self._context,
-                                            data_name=CHROMA_TEXT_DB_NAME, 
-                                            config=self._config,
-                                            n_top_results=self.n_top_results)
         self.step_embedding = StepEmbedding(context=context, config=config, 
                                             type="text")
         self.evaluator = ModelEvaluator()
@@ -46,7 +40,8 @@ class StepKNNPriceEvaluator(Step):
                                                             prompt_name=self.prompt_name)
         
         # reshape results
-        text_results = self.collection.query_collection(embeddings)
+        # text_results = self.collection.query_collection(embeddings)
+        # TODO replace with postgres query
         df_results = self.clean_text_results(liste_ids_tested, text_results)
         
         df_estimate = df_results[["ID_ITEM_ORIGIN", self.name.eur_min_estimate, 

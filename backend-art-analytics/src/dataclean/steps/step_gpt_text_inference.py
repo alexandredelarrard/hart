@@ -163,14 +163,14 @@ class StepTextInferenceGpt(Step):
     
     def create_prompt(self):
         prompt = PromptTemplate(
-            template=self.introduction + " \n JSON Instruction: {format_instructions} \n Art Description: {query}",
+            template=self.introduction + " \n {format_instructions} \n Art Description: {query} \n Extraction in JSON format: ",
             input_variables=["query"],
             partial_variables={"format_instructions": self.parser.get_format_instructions().replace("```", "")},
         )
         return prompt
     
     def invoke_llm(self, prompt, chain):
-        message_content = chain.invoke({"query": "Art Description: " + prompt[self.name.total_description]})
+        message_content = chain.invoke({"query": prompt[self.name.total_description]})
         try:
             message_content = eval(message_content.json())
         except Exception:

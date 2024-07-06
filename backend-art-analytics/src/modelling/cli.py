@@ -16,16 +16,17 @@ from src.constants.command_line_interface import (
     OBJECT_ARGS,
     OBJECT_KWARGS,
     GPT_METHODE_ARGS, 
-    GPT_METHODE_KWARGS
+    GPT_METHODE_KWARGS,
+    INPUT_TYPE_ARGS, 
+    INPUT_TYPE_KWARGS
 )
 
 from src.context import get_config_context
 from src.utils.cli_helper import SpecialHelpOrder
 from src.modelling.steps.step_text_clustering import StepTextClustering
-from src.modelling.steps.step_fill_chroma_pictures import StepFillChromaPictures
+from src.modelling.steps.step_fill_db_embeddings import StepFillDBEmbeddings
 from src.modelling.steps.step_picture_classification import StepPictureClassification
-from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
-from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
+from src.dataclean.steps.step_gpt_text_inference import StepTextInferenceGpt
 
 @click.group(cls=SpecialHelpOrder)
 def cli():
@@ -60,17 +61,20 @@ def step_embed_art_house(
     help_priority=1,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-def step_fill_chroma_pictures(
-    config_path
+@click.option(*INPUT_TYPE_ARGS, **INPUT_TYPE_KWARGS)
+def step_fill_db_embeddings(
+    config_path, input_type
 ):
     
     config, context = get_config_context(config_path, use_cache = False, save=False)
-    enrich_chroma_picts = StepFillChromaPictures(config=config, context=context)
+    enrich_chroma_picts = StepFillDBEmbeddings(config=config, 
+                                               context=context,
+                                               type=input_type)
 
     # embeddings and saving for queries 
     enrich_chroma_picts.run()
     
-    #python -m src modelling step-fill-chroma-pictures
+    # python -m src modelling step-fill-db-embeddings -inpt text_en
 
 @cli.command(
     help="Extract Json from description with gpt3.5",
@@ -87,7 +91,7 @@ def step_train_picture_classification(
     # get crawling_function 
     step_inference.training()
 
-    #python -m src modelling step-train-picture-classification
+    # python -m src modelling step-train-picture-classification
 
 @cli.command(
     help="Extract Json from description with gpt3.5",
@@ -131,4 +135,5 @@ def step_inference_gpt(
     step_inference.run()
 
     #python -m src modelling step-inference-gpt -t 8 -sqs 50 --object reformulate --gpt-methode open_ai,groq,google
+    
     

@@ -12,6 +12,7 @@ class SqlHelper:
             context : Context, 
     ):
         self._context = context
+        self._log = context.log
         self.db_tables = pd.read_sql("SELECT table_name FROM information_schema.tables", 
                                   con=self._context.db_con)["table_name"].tolist()
 
@@ -68,9 +69,13 @@ class SqlHelper:
 
     @timing
     def remove_rows_sql_data(self, values, column, table_name):
-        nbr_elements = pd.read_sql(f"SELECT \"{column}\" FROM \"{table_name}\" WHERE \"{column}\" IN {str(values)}", 
-                                   con=self._context.db_con)
-        with self._context.db_con.begin() as conn:
-            conn.execute(text(f"""DELETE FROM \"{table_name}\"
-                            WHERE \"{column}\" IN {str(values)}"""))
-        self._log.info(f"REMOVED {nbr_elements.shape} OBS FROM TABLE {table_name}")
+        if table_name in self.db_tables:
+            values = str(tuple(values))
+            nbr_elements = pd.read_sql(f"SELECT \"{column}\" FROM \"{table_name}\" WHERE \"{column}\" IN {values}", 
+                                    con=self._context.db_con)
+            with self._context.db_con.begin() as conn:
+                conn.execute(text(f"""DELETE FROM \"{table_name}\"
+                                WHERE \"{column}\" IN {values}"""))
+            self._log.info(f"REMOVED {nbr_elements.shape} OBS FROM TABLE {table_name}")
+        else:
+            self._log.warning(f"{table_name} does not exist in the Database")

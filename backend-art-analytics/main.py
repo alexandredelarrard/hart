@@ -10,17 +10,18 @@ from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 from src.dataclean.steps.step_text_clean_crawling import StepCleanCrawling
 from src.dataclean.steps.step_text_clean_artists import StepTextCleanArtists
 from src.dataclean.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
+from src.dataclean.steps.step_gpt_text_inference import StepTextInferenceGpt
+from src.dataclean.steps.step_gpt_clean_inference import StepCleanGptInference
+from src.dataclean.steps.step_gpt_category_inference import StepCategoryGptInference
 
 from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_picture_clustering import StepPictureClustering
 from src.modelling.steps.old.step_manual_cluster import StepManualCluster
 from src.modelling.steps.step_picture_classification import StepPictureClassification
-from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
-from src.modelling.steps.step_gpt_clean_inference import StepCleanGptInference
 from src.modelling.steps.step_gbm_price_evaluator import StepGBMPriceEvaluator
 from src.modelling.steps.step_knn_price_evaluator import StepKNNPriceEvaluator
 from src.modelling.steps.step_text_classification import StepTextClassification
-from src.modelling.steps.step_fill_chroma_pictures import StepFillChromaPictures
+from src.modelling.steps.step_fill_db_embeddings import StepFillDBEmbeddings
 
 from src.modelling.transformers.TextModel import TextModel
 from src.datacrawl.transformers.Crawling import Crawling
@@ -44,7 +45,7 @@ if __name__ == "__main__":
 
     # self = StepTextClustering(context=context, config=config)
     # self = StepPictureClustering(context=context, config=config)
-    self = StepFillChromaPictures(context=context, config=config)
+    # self = StepFillDBEmbeddings(context=context, config=config, type="text_en")
 
     # self = StepManualCluster(context=context, config=config, database_name="all")
 
@@ -53,7 +54,10 @@ if __name__ == "__main__":
  
     # self = StepTextInferenceGpt(context=context, config=config, methode=["groq"], object="reformulate")
     # self = StepCleanGptInference(context=context, config=config, category="reformulate")
+    self = StepCategoryGptInference(context=context, config=config)
+    self.run()
     
+
     # self = StepGBMPriceEvaluator(context=context, config=config, category="vase")
     # self.training()
 

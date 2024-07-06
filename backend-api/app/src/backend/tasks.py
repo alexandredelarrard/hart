@@ -6,23 +6,37 @@ celery = Celery('src.backend.tasks', broker=config.celery.url)
 celery.config_from_object('celeryconfig')
 
 if os.getenv('FLASK_ENV') == 'celery_worker':
-    from src.transformers.ChromaCollection import ChromaCollection
+    from src.transformers.EmbeddingCollection import EmbeddingCollection
     from src.transformers.Embedding import StepEmbedding
+        
+    from src.constants.variables import (TEXT_DB_EN,
+                                        TEXT_DB_FR,
+                                        PICTURE_DB)
 
     # initialize gpu consumptions steps for celery workers only
-    step_chromadb = ChromaCollection(context=context, config=config)
+    step_collection = EmbeddingCollection(context=context, config=config)
 
     # embeddings 
-    step_embedding = StepEmbedding(context=context, config=config, 
-                                    type=["text", "picture"])
+    step_embedding = StepEmbedding(context=context, 
+                                   config=config, 
+                                   type=[PICTURE_DB,TEXT_DB_EN,TEXT_DB_FR])
     
 @celery.task(time_limit=300)
 def process_request(image, text):
     results = {"image" : None, "text": None}
+
     if image:
+        picture_db = step_collection.get_db_pict_name()
+        query = step_collection.get_query(picture_db)
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
-        results['image'] = step_chromadb.query_collection_postgres(pict_embedding)
+        results['image'] = step_collection.query_collection_postgres(query, pict_embedding, picture_db)
     if text:
-        text_embedding = step_embedding.get_text_embedding(text, prompt_name=config.embedding.prompt_name)
-        results['text'] = step_chromadb.query_collection(text_embedding)
+        language_db = step_collection.detect_language(text)
+        query = step_collection.get_query(language_db)
+        text_embedding = step_embedding.get_text_embedding(language_db, text)
+        results['text'] = step_collection.query_collection_postgres(query, text_embedding, language_db)
+
+    if text and image: # TODO: multiembedding model distance (multimodal)
+        results["image"] = step_collection.multi_embedding_strat(results["image"], results["text"])
+
     return results  

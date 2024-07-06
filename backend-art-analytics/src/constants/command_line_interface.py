@@ -160,3 +160,14 @@ OBJECT_KWARGS= {
         "Kind of art object to create embedding & co"
     )
 }
+
+INPUT_TYPE_ARGS=("--input-type", "-inpt", "input_type") 
+INPUT_TYPE_KWARGS= {
+    "type" : str, 
+    "default" : "picture", 
+    "required" : True,
+    "show_default" : True,
+    "help": (
+        "type fo intput to have the embedding from. Can be either 'picture', 'text_en', 'text_fr'"
+    )
+}

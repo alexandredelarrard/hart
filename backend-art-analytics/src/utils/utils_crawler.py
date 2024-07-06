@@ -45,18 +45,23 @@ def read_crawled_pickles(path : str):
     # read all csvs
     files = glob(path + "/*.pickle")
     not_read = []
-    
     liste_dfs = []
+    
     for file in tqdm(files): 
         try:
             df_file = read_pickle(file)
+            file_time = os.path.getmtime(file)
+            file_name = os.path.basename(file)
             if isinstance(df_file, dict):
-                df_file["FILE"] = os.path.basename(file)
+                df_file["FILE_CREATION_DATE"] = file_time
+                df_file["FILE"] = file_name
                 liste_dfs.append(df_file)
             elif isinstance(df_file, list):
-                if len(df_file) !=0:
+                if len(df_file) != 0:
                     if isinstance(df_file[0], list):
                         df_file = [x[0] for x in df_file]
+                    df_file= [dict(item, **{'FILE_CREATION_DATE': file_time,
+                                            "FILE" : file_name}) for item in df_file]
                 liste_dfs += df_file
         except Exception:
             not_read.append(file)
@@ -72,7 +77,7 @@ def read_crawled_pickles(path : str):
 
 def read_pickle(path : str):
     with open(path, "rb") as f:
-        df_file = pickle.load(f)
+        df_file = pickle.load(f, encoding="latin-1")
     return df_file
 
 def read_json(path : str):
