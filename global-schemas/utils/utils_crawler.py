@@ -11,7 +11,7 @@ import json
 import shutil
 
 from omegaconf import DictConfig
-from src.constants.variables import date_format
+from src.constants.variables import DATE_FORMAT
 
 def read_crawled_csvs(path : str):
 

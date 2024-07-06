@@ -109,7 +109,7 @@ class Artists:
         self.artist_year_death = "ARTIST_YEAR_DEATH"
 
 # date format 
-date_format = "%Y-%m-%d"
+DATE_FORMAT = "%Y-%m-%d"
 
 #for data cleaning
 currencies = 'USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB|TRY|SEK|ZAR'

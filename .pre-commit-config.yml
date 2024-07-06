@@ -1,0 +1,75 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.1.0  # Specify the version of Black you want to use
+    hooks:
+      - id: black
+        language_version: python3.12 
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0  
+    hooks:
+      - id: detect-secrets
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1024']
+
+  - repo: https://github.com/awslabs/git-secrets
+    rev: v1.3.0  # Specify the version of git-secrets you want to use
+    hooks:
+      - id: git-secrets
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.26.3  # Specify the version of yamllint you want to use
+    hooks:
+      - id: yamllint
+        files: \.yml$|\.yaml$
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.8.0  # Specify the version of hadolint you want to use
+    hooks:
+      - id: hadolint
+
+  - repo: https://github.com/lukasmartinelli/hadolint
+    rev: v1.18.0  # Specify the version of hadolint you want to use
+    hooks:
+      - id: hadolint
+
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.2.0  # Specify the version of pre-commit-golang you want to use
+    hooks:
+      - id: golangci-lint
+
+  - repo: https://github.com/docker/compose
+    rev: v1.29.2  # Specify the version of Docker Compose you want to use
+    hooks:
+      - id: docker-compose
+
+  - repo: https://github.com/PyCQA/pylint
+    rev: v2.12.2  # Specify the version of pylint you want to use
+    hooks:
+      - id: pylint
+        args: [--max-line-length=110]
+        language_version: python3.12 
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.812  # Specify the version of mypy you want to use
+    hooks:
+      - id: mypy
+        language_version: python3.12 
+
+  - repo: https://github.com/pre-commit/mirrors-flake8
+    rev: v3.9.1  # Specify the version of flake8 you want to use
+    hooks:
+      - id: flake8
+        args: [--max-line-length=110]
+        language_version: python3.12 
+
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.0  # Specify the version of bandit you want to use
+    hooks:
+      - id: bandit
+        args: [--recursive, .]
+        language_version: python3.12 

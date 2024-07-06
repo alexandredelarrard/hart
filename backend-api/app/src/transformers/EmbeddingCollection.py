@@ -7,6 +7,7 @@ from src.utils.timing import timing
 from src.constants.variables import (TEXT_DB_EN,
                                      TEXT_DB_FR,
                                      PICTURE_DB)
+from src.constants.models import EmbeddingsResults
 
 from src.utils.step import Step
 from omegaconf import DictConfig
@@ -36,36 +37,32 @@ class EmbeddingCollection(Step):
         return PICTURE_DB
     
     @timing
-    def get_query(self, db_name):
-        if db_name == PICTURE_DB:
-            return """
-                    BEGIN;
-                    SET LOCAL hnsw.ef_search = 100;
-                    SELECT "id_unique" AS ids, ("embedding" <=> %s::vector) AS distances 
-                    FROM {table}
-                    ORDER BY distances 
-                    LIMIT 100
-                    """
-        else:
-            return """
-                    BEGIN;
-                    SET LOCAL hnsw.ef_search = 100;
-                    SELECT "id_item" AS ids, ("embedding" <=> %s::vector) AS distances 
-                    FROM {table}
-                    ORDER BY distances 
-                    LIMIT 100
-                    """
+    def get_query(self, table: str):
+        query= """
+                BEGIN;
+                SET LOCAL hnsw.ef_search = 100;
+                SELECT {id} AS ids, ("embedding" <=> %s::vector) AS distances 
+                FROM {table}
+                ORDER BY distances 
+                LIMIT 100
+                """
+        unique_id = self.name.id_unique.lower() if table == PICTURE_DB else self.name.id_item.lower()
+        query = query.format(table=table, id=unique_id)
+        return query
         
     @timing
-    def query_collection_postgres(self, query: str, query_embedded: np.array, table: str) -> Dict:
-
-        query = query.format(table=table)
+    def query_collection_postgres(self, query: str, query_embedded: np.array) -> Dict:
        
         df = pd.read_sql(query, 
                          con=self._context.db_con, 
                          params=(query_embedded.tolist()[0], ))
         
-        return {"ids": df["ids"].tolist(), "distances": df["distances"].tolist()}
+        result = EmbeddingsResults(
+            ids=df["ids"].tolist(),
+            distances= df["distances"].tolist()
+        )
+        
+        return result
     
     @timing
     def get_id_item_from_pict(self, liste_ids_pict):
