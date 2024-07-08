@@ -25,7 +25,7 @@
     },
     "sidebar": {
       "logout": "Log Out",
-      "optimize": "Optimize Your Sale",
+      "optimize": "Organize your Auction",
       "closest": "Automatic Estimation",
       "search": "Search Your Artworks",
       "deleteconfirm": "Are you sure you want to delete the item",
@@ -51,7 +51,7 @@
       "searchdesc": "TODO"
     },
     "optimize": {
-      "optimizetitle": "Optimize Your Sales and Boost Your Revenue",
+      "optimizetitle": "Organize Your Sales and Boost Your Revenue",
       "optimizedesc": "TODO"
     },
     "artidentify": {},

@@ -44,7 +44,7 @@ const useFetchExperts = (setExperts) => {
             }
         };
         fetchExperts();
-    }, [setExperts]);
+    }, []);
 };
 
 export default useFetchExperts;

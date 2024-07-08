@@ -5,33 +5,39 @@ import axiosInstance_back from '../general/axiosInstanceBack';
 import { checkAuth } from '../general/identification';
 import useLogActivity from '../general/useLogActivity';
 import { URL_UPLOAD } from '../../utils/constants';
+import  { timeout } from '../../utils/general';
 
 const useNewSearchSubmit = ({
       file,
       text,
       setFile,
       setText,
+      searchfile,
+      searchtext,
+      setSearchFile,
+      setSearchText,
+      setSelectedImage,
       setTaskId,
       setResult,
       setBotResult,
       setChatBotResultFetched,
       setAnalysisInProgress,
+      setNewResultSaved,
       setAdditionalData,
       setAvgMinEstimates,
       setAvgMaxEstimates,
-      setAvgFinalResult,
-      setNewResultSaved
+      setAvgFinalResult
 }) => {
 
   const [fileUrl, setFileUrl] = useState(null);
   const LogActivity = useLogActivity();
 
   const handleSearchFileChange = (e) => {
-    setFile(e);
+    setSearchFile(e);
   };
 
   const handleSearchTextChange = (e) => {
-    setText(e.target.value);
+    setSearchText(e.target.value);
   };
 
   const handleSearchSubmit = async (e) => {
@@ -42,11 +48,11 @@ const useNewSearchSubmit = ({
 
       const userdataString = Cookies.get("userdata");
       const formData = new FormData();
-      if (file) {
-        formData.append('file', file);
+      if (searchfile) {
+        formData.append('file', searchfile);
       }
-      if (text) {
-        formData.append('text', text);
+      if (searchtext) {
+        formData.append('text', searchtext);
       }
       formData.append('user_id', JSON.parse(userdataString).id);
 
@@ -57,8 +63,12 @@ const useNewSearchSubmit = ({
           },
         });
 
-        setFile(file);
-        setText(text);
+        // to enable backend to create the new element for sidebar
+        await timeout(1000);
+
+        setSelectedImage('');
+        setFile(searchfile);
+        setText(searchtext);
         setBotResult(null);
         setChatBotResultFetched(false);
         setAnalysisInProgress(true);
@@ -69,6 +79,8 @@ const useNewSearchSubmit = ({
         setAvgMaxEstimates(0);
         setAvgFinalResult(0);
         setNewResultSaved(false);
+        setSearchFile('');
+        setSearchText('');
 
         // log activity
         if(file && text){
@@ -102,8 +114,6 @@ const useNewSearchSubmit = ({
   }, [file]);
 
   return {
-    file,
-    text,
     fileUrl,
     handleSearchFileChange,
     handleSearchTextChange,

@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 
-import {organizeResults} from './upload_utils/organizeSidebar.js';
+import { organizeResults } from './upload_utils/organizeSidebar.js';
 import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
 
-import { logout } from '../../hooks/general/identification';
+import { logout, checkAuth } from '../../hooks/general/identification';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
-import useFetchPastResults from '../../hooks/plateforme/useFetchPastResults.js';
+import FetchPastResults from '../../hooks/plateforme/FetchPastResults.js';
+
 
 import '../../css/Sidebar.css';
 
@@ -18,59 +19,56 @@ function Sidebar({
   userData,
   setUserData,
   onMenuClick,
-  setFile,
-  setText,
-  setTaskId,
-  setResult,
-  setBotResult,
-  setChatBotResultFetched,
-  setAdditionalData,
-  setAvgMaxEstimates,
-  setAvgMinEstimates,
-  setAnalysisInProgress,
-  newResultSaved,
-  setMinPrice,
-  setMaxPrice,
-  setMinDate,
-  setMaxDate,
+  uploadFormHandlers,
+  uploadFormState,
   t
 }) {
-  const [activeMenu, setActiveMenu] = useState('search-art');
+  const {
+    analysisInProgress,
+    newResultSaved
+  } = uploadFormState;
+
   const [formerResults, setFormerResults] = useState([]);
+  const [activeMenu, setActiveMenu] = useState('search-art');
+  const [activeLi, setActiveLi] = useState('');
+  const [clickResult, setClickResult] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const { i18n } = useTranslation('/analytics');
   const LogActivity = useLogActivity();
 
-  //logout on click button
+  // Logout on click button
   const handleLogout = async () => {
-
-    // log activity
-    const success = await LogActivity("click_log_out", "")
+    const success = await LogActivity("click_log_out", "");
     if (success) {
       console.log('Activity logged successfully');
     } else {
       console.log('Failed to log activity');
     }
 
-    setResult(null);
-    setText('');
-    setFile(null);
-    setAdditionalData([]);
-    setBotResult(null);
-    setMinPrice('');
-    setMaxPrice('');
-    setMinDate('');
-    setMaxDate('');
+    uploadFormHandlers.setResult(null);
+    uploadFormHandlers.setText('');
+    uploadFormHandlers.setFile(null);
+    uploadFormHandlers.setAdditionalData([]);
+    uploadFormHandlers.setBotResult(null);
+    uploadFormHandlers.setMinPrice('');
+    uploadFormHandlers.setMaxPrice('');
+    uploadFormHandlers.setMinDate('');
+    uploadFormHandlers.setMaxDate('');
 
     await logout();
   };
 
   const toggleResults = (e) => {
-    if(e===true&&showResults===true){setShowResults(false);}
-    else{setShowResults(e);}
+    if (e === true && showResults === true) {
+      setShowResults(false);
+    } else {
+      setShowResults(e);
+    }
   };
 
   const handleResultClick = (result) => {
+    setClickResult(!clickResult);
+
     const byteCharacters = atob(result.file);
     const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -79,51 +77,44 @@ function Sidebar({
     const byteArray = new Uint8Array(byteNumbers);
     const blob = new Blob([byteArray], { type: 'image/jpg' });
 
-    setFile(blob);
-    setText(result.text);
-    setResult({answer: result.answer});
-    setTaskId(result.task_id);
-    setAnalysisInProgress(false);
-    setAdditionalData([]);
-    setAvgMinEstimates(0);
-    setAvgMaxEstimates(0);
-    setMinPrice('');
-    setMaxPrice('');
-    setMinDate('');
-    setMaxDate('');
-    if(result.llm_result){
+    uploadFormHandlers.setFile(blob);
+    uploadFormHandlers.setText(result.text);
+    uploadFormHandlers.setResult({ answer: result.answer });
+    uploadFormHandlers.setTaskId(result.task_id);
+    uploadFormHandlers.setAnalysisInProgress(false);
+    uploadFormHandlers.setAdditionalData([]);
+    uploadFormHandlers.setAvgMinEstimates(null);
+    uploadFormHandlers.setAvgMaxEstimates(null);
+    uploadFormHandlers.setAvgFinalResult(null);
+    uploadFormHandlers.setMinPrice('');
+    uploadFormHandlers.setMaxPrice('');
+    uploadFormHandlers.setMinDate('');
+    uploadFormHandlers.setMaxDate('');
+    if (result.llm_result) {
       const llm_result = JSON.parse(JSON.stringify(result.llm_result));
-      setBotResult(llm_result)
-      setChatBotResultFetched(true);
+      uploadFormHandlers.setBotResult(llm_result);
+      uploadFormHandlers.setChatBotResultFetched(true);
     } else {
-      setBotResult(null)
-      setChatBotResultFetched(false);
+      uploadFormHandlers.setBotResult(null);
+      uploadFormHandlers.setChatBotResultFetched(false);
     }
 
-    // menu is clicked
     onMenuClick('closest-lots');
-
-    // log activity
-    LogActivity("click_former_result", result.task_id)
-
+    LogActivity("click_former_result", result.task_id);
   };
 
   const handleDeleteResult = (taskId, title) => {
     const token = Cookies.get('token');
     const confirmDelete = window.confirm(`${t("plateforme.sidebar.deleteconfirm")} \n ${title || taskId}?`);
     if (confirmDelete) {
-      axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      axios.delete(`${URL_API + URL_DELETE_TASK_RESULT}/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then(response => {
-          // Remove the deleted result from the state
           setFormerResults(formerResults.filter(result => result.task_id !== taskId));
-          // log activity
-          LogActivity("delete_former_result", taskId)
+          LogActivity("delete_former_result", taskId);
         })
         .catch(error => {
           console.error('Error deleting the result:', error);
@@ -131,14 +122,29 @@ function Sidebar({
     }
   };
 
-  // retrieve past results
-  useFetchPastResults(newResultSaved, setFormerResults, setUserData);
+  useEffect(() => {
+    const isAuthenticated = checkAuth();
+    const userdataCookie = Cookies.get('userdata');
+
+      if (isAuthenticated) {
+        if (userdataCookie) {
+            const parsedUserdata = JSON.parse(userdataCookie);
+            setUserData(parsedUserdata);
+        }
+      }
+
+  }, [setUserData]);
+
+  useEffect(() => {
+    FetchPastResults(setFormerResults);
+  }, [clickResult, analysisInProgress, newResultSaved]);
+
   const organizedResults = organizeResults(formerResults, t);
 
   return (
     <aside className="sidebar">
       <div className="login-area">
-        <FontAwesomeIcon icon={faUserCircle} className="sidebar-avatar"/>
+        <FontAwesomeIcon icon={faUserCircle} className="sidebar-avatar" />
         <div className="user-info">
           <p className="user-name">{userData.name || t("plateforme.sidebar.defaultusername")}</p>
           <p className="user-name">{userData.surname || t("plateforme.sidebar.defaultusername")}</p>
@@ -169,20 +175,24 @@ function Sidebar({
                   {organizedResults[category].map((result, index) => (
                     <li
                       key={index}
-                      className="submenu-item"
-                      onClick={() => handleResultClick(result)}
+                      className={`submenu-item ${activeLi === index ? 'selected' : ''}`}
+                      onClick={() => { setActiveLi(index); handleResultClick(result);}}
                     >
                       <span>
-                          {result.llm_result ? (
-                            i18n.language === "fr" ? (
-                              result.llm_result.french_title || result.taskId
-                            ) : (
-                              result.llm_result.english_title || result.taskId
-                            )
+                        {result.llm_result ? (
+                          i18n.language === "fr" ? (
+                            result.llm_result.french_title || result.taskId
                           ) : (
-                            result.taskId
-                          )}
-                        </span>
+                            result.llm_result.english_title || result.taskId
+                          )
+                        ) : (
+                          i18n.language === "fr" ? (
+                            'Nouvelle requête' || result.taskId
+                          ) : (
+                            "New query" || result.taskId
+                          )
+                        )}
+                      </span>
                       <FontAwesomeIcon
                         icon={faTrash}
                         className="delete-icon"

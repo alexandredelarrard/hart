@@ -27,7 +27,7 @@ const useGetTaskResult = (taskId, analysisInProgress, setResult, setAnalysisInPr
           } catch (error) {
             console.error('Error fetching task result', error);
           }
-        }, 1000); // Poll every X sec
+        }, 1500); // Poll every X sec
         return () => clearInterval(interval);
     } else {
       navigate("/login");

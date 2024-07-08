@@ -6,6 +6,7 @@ import base64
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from celery.result import AsyncResult
+from celery.utils import uuid
 from datetime import datetime
 
 from src.backend.tasks import process_request
@@ -26,29 +27,25 @@ def process():
 
         user_id = request.form["user_id"]
 
-        text = None
-        if "text" in request.form:
-            text = request.form["text"]
-
-        file = None
-        image = None
-        if "file" in request.files:
-            file = request.files["file"]
-
-            # Read the file content
-            image = file.read()
+        text = request.form.get("text", None)
+        file = request.files.get("file", None)
+        image = file.read() if file else None
 
         if not image and not text:
             return jsonify({"error": "Missing image and text"}), 400
 
-        task = process_request.apply_async(args=[image, text])
-
         # save the task in db
-        image = base64.b64encode(image).decode("utf-8") if image else None
+        result_image = base64.b64encode(image).decode("utf-8") if image else None
+
+        # Generate a unique task ID
+        task_id = uuid()
+
+        # Save the new result in the database
+        # TODO: pydantic for llm_result & JSON type instead of str
         new_result = CloseResult(
             user_id=user_id,
-            task_id=task.id,
-            file=image,
+            task_id=task_id,
+            file=result_image,
             text=text,
             creation_date=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             status="SENT",
@@ -56,6 +53,9 @@ def process():
         )
         db.session.add(new_result)
         db.session.commit()
+
+        # create new task after having a new element
+        task = process_request.apply_async(args=[image, text], task_id=task_id)
 
         # update the volume of search with -1 with the last payment plan
         payment = (

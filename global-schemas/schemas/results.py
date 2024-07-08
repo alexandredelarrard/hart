@@ -27,6 +27,7 @@ class CloseResult(db.Model):
             "file": self.file,
             "text": self.text,
             "result_date": self.result_date,
+            "creation_date": self.creation_date,
             "visible_item": self.visible_item,
             "llm_result": (
                 ast.literal_eval(self.llm_result) if self.llm_result else None

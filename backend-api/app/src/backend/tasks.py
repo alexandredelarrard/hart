@@ -1,10 +1,11 @@
 import os
 from celery import Celery
+from datetime import datetime
 
 from src.extensions import config, context
 from src.constants.models import EmbeddingsResults
+from src.schemas.results import CloseResult
 from src.utils.dataset_retreival import DatasetRetreiver
-
 
 celery = Celery("src.backend.tasks", broker=config.celery.url)
 celery.config_from_object("celeryconfig")
@@ -26,10 +27,11 @@ if os.getenv("FLASK_ENV") == "celery_worker":
     data_retreiver = DatasetRetreiver(context=context, config=config)
 
 
-@celery.task(time_limit=300)
-def process_request(image, text) -> dict[str, EmbeddingsResults]:
+@celery.task(bind=True, time_limit=300)
+def process_request(self, image, text) -> dict[str, EmbeddingsResults]:
 
     new_index = step_collection.name.id_item.lower()
+    task_id = self.request.id
 
     if image:
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
@@ -60,4 +62,14 @@ def process_request(image, text) -> dict[str, EmbeddingsResults]:
         final = step_collection.fill_EmbeddingsResults(
             liste_results=results_image.set_index(new_index).to_dict(orient="index")
         )
+
+    # save result to back
+    with context.session_scope() as session:
+        result = session.query(CloseResult).filter_by(task_id=task_id).first()
+        if result:
+            result.answer = final.dict()["answer"]
+            result.status = "SUCCESS"
+            result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+            session.commit()
+
     return final.dict()

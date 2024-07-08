@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Cookies from 'js-cookie';
+import React, { useState, useRef } from 'react';
 import { CARDS_PER_PAGE } from '../../utils/constants';
 
 import SearchForm from "./upload_utils/SearchForm.js";
@@ -8,208 +7,138 @@ import Sorting from './upload_utils/Sorting.js';
 import Filtering from './upload_utils/Filtering.js';
 import ExpertCard from './upload_utils/ExpertCard.js';
 import Card from './upload_utils/Card.js';
-import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 
 import CookieConsent from '../landing_page/CookieConsent.js';
 
 import useFetchComplentaryResultData from '../../hooks/plateforme/useFetchComplentaryResultData.js';
-import useGetTaskResult from '../../hooks/plateforme/useGetTaskResult.js';
 import useFetchExperts from "../../hooks/plateforme/useFetchExperts.js";
 import useNewSearchSubmit from '../../hooks/plateforme/useNewSearchSubmit.js';
 import useLLMDesignation from '../../hooks/plateforme/useLLMDesignation.js';
 
-import {formatPrice} from '../../utils/general.js';
+import { formatPrice } from '../../utils/general.js';
+import {
+  handlePageChange,
+  toggleShowAll,
+  handleSortChange,
+  handlePriceFilter,
+  handleDateFilter,
+  usePlanExpirationEffect,
+  useClickOutsideEffect,
+  getPaginatedData
+} from './upload_utils/uploadFormUtils.js';
 
 import '../../css/UploadForm.css';
 
 function UploadForm({
-  setFile,
-  setText,
-  setTaskId,
-  taskId,
-  file,
-  text,
-  result,
-  setResult,
-  botresult,
-  setBotResult,
-  chatBotResultFetched,
-  setChatBotResultFetched,
-  additionalData,
-  setAdditionalData,
-  avgMinEstimates,
-  avgMaxEstimates,
-  setAvgMaxEstimates,
-  setAvgMinEstimates,
-  avgFinalResult,
-  setAvgFinalResult,
-  analysisInProgress,
-  setAnalysisInProgress,
-  setNewResultSaved,
-  setExperts,
-  experts,
-  handleMenuClick,
-  setMinPrice,
-  setMaxPrice,
-  setMinDate,
-  setMaxDate,
-  minPrice,
-  maxPrice,
-  minDate,
-  maxDate,
+  uploadFormState,
+  uploadFormHandlers,
   setPlanExpired,
   planExpired,
-  changeLanguage,
+  handleMenuClick,
   i18n,
   t
 }) {
+  const {
+    searchfile,
+    searchtext,
+    file,
+    text,
+    taskId,
+    result,
+    botresult,
+    chatBotResultFetched,
+    additionalData,
+    avgMinEstimates,
+    avgMaxEstimates,
+    avgFinalResult,
+    experts,
+    minPrice,
+    maxPrice,
+    minDate,
+    maxDate,
+  } = uploadFormState;
+
+  const {
+    setSearchFile,
+    setSearchText,
+    setFile,
+    setText,
+    setTaskId,
+    setResult,
+    setBotResult,
+    setChatBotResultFetched,
+    setAdditionalData,
+    setAvgMaxEstimates,
+    setAvgMinEstimates,
+    setAvgFinalResult,
+    setAnalysisInProgress,
+    setNewResultSaved,
+    setExperts,
+    setMinPrice,
+    setMaxPrice,
+    setMinDate,
+    setMaxDate,
+  } = uploadFormHandlers;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('relevance_desc');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [closestVolumeExpired, setclosestVolumeExpired] = useState(false);
+  const [closestVolumeExpired, setClosestVolumeExpired] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const sortRef = useRef(null);
   const filterRef = useRef(null);
 
   const onDrop = acceptedFiles => {
     handleSearchFileChange(acceptedFiles[0]);
-    setResult(null);
-    setAdditionalData([]);
-    setBotResult(null);
-    setMinPrice('');
-    setMaxPrice('');
-    setMinDate('');
-    setMaxDate('');
   };
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+  const handleRemoveImage = (event) => {
+    event.stopPropagation();
+    setSelectedImage(null);
+    setFile(null);
   };
-
-  const toggleShowAll = () => {
-    setShowAll(!showAll);
-  };
-
-  const handleSortChange = (newSortOrder) => {
-    setSortOrder(newSortOrder);
-    setDropdownOpen(false);
-  };
-
-  const handlePriceFilter = (min, max) => {
-    setMinPrice(min);
-    setMaxPrice(max);
-  };
-
-  const handleDateFilter = (min, max) => {
-    setMinDate(min);
-    setMaxDate(max);
-  };
-
-  useEffect(() => {
-    const remaining_closest_volume = Cookies.get('remaining_closest_volume');
-    const plan_end_date = Cookies.get('plan_end_date');
-    if (plan_end_date) {
-      const planEndDate = new Date(plan_end_date);
-      const currentDate = new Date();
-      if (currentDate > planEndDate) {
-        setPlanExpired(true);
-      }
-      if (0 >= remaining_closest_volume) {
-        setclosestVolumeExpired(true);
-      }
-    }
-  }, [setPlanExpired, setclosestVolumeExpired]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sortRef.current && !sortRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setFilterOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [sortRef, filterRef]);
-
-  const sortData = (data, sortOrder) => {
-    const sortedData = data.sort((a, b) => {
-      let comparison = 0;
-      switch (sortOrder) {
-        case 'relevance_desc':
-          comparison = a.distance - b.distance;
-          break;
-        // case 'relevance_asc':
-        //   comparison = b.distance - a.distance;
-        //   break;
-        case 'price_desc':
-          comparison = b.final_result - a.final_result;
-          break;
-        case 'price_asc':
-          comparison = a.final_result - b.final_result;
-          break;
-        case 'date_desc':
-          comparison = new Date(b.date) - new Date(a.date);
-          break;
-        case 'date_asc':
-          comparison = new Date(a.date) - new Date(b.date);
-          break;
-        default:
-          break;
-      }
-      return comparison;
-    });
-
-    return sortedData;
-  };
-
-  const filterData = (data, minPrice, maxPrice, minDate, maxDate) => {
-    return data.filter(item => {
-      const priceValid = (!minPrice || item.final_result >= minPrice) && (!maxPrice || item.final_result <= maxPrice);
-      const dateValid = (!minDate || new Date(item.date) >= new Date(minDate)) && (!maxDate || new Date(item.date) <= new Date(maxDate));
-      return priceValid && dateValid;
-    });
-  };
-
-  const filteredData = filterData([...additionalData], minPrice, maxPrice, minDate, maxDate);
-  const sortedData = sortData(filteredData, sortOrder);
-
-  const paginatedData = showAll ? sortedData : sortedData.slice(
-    (currentPage - 1) * CARDS_PER_PAGE,
-    currentPage * CARDS_PER_PAGE
-  );
-
-  const totalPages = showAll ? 1 : Math.ceil(filteredData.length / CARDS_PER_PAGE);
 
   const { fileUrl, handleSearchFileChange, handleSearchTextChange, handleSearchSubmit } = useNewSearchSubmit({
-    file, text,
-    setFile, setText, setTaskId, setResult, setBotResult, setChatBotResultFetched, setAnalysisInProgress,
-    setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved
+    file, text, setFile, setText,
+    searchfile, searchtext, setSearchFile, setSearchText,
+    setSelectedImage,
+    setTaskId, setResult,
+    setBotResult, setChatBotResultFetched,
+    setAnalysisInProgress, setNewResultSaved,
+    setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult
   });
+
+  const handlePageChangeHandler = handlePageChange(setCurrentPage);
+  const toggleShowAllHandler = toggleShowAll(showAll, setShowAll);
+  const handleSortChangeHandler = handleSortChange(setSortOrder, setDropdownOpen);
+  const handlePriceFilterHandler = handlePriceFilter(setMinPrice, setMaxPrice);
+  const handleDateFilterHandler = handleDateFilter(setMinDate, setMaxDate);
+
+  usePlanExpirationEffect(setPlanExpired, setClosestVolumeExpired);
+  useClickOutsideEffect(sortRef, filterRef, setDropdownOpen, setFilterOpen);
+
+  const { paginatedData, totalPages } = getPaginatedData(additionalData, minPrice, maxPrice,
+    minDate, maxDate, sortOrder, showAll, currentPage, CARDS_PER_PAGE);
+
   useFetchExperts(setExperts);
-  useGetTaskResult(taskId, analysisInProgress, setResult, setAnalysisInProgress);
-  useFetchComplentaryResultData(result, setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved);
-  useLLMDesignation(taskId, additionalData, setNewResultSaved, chatBotResultFetched, setBotResult, setChatBotResultFetched);
+  useFetchComplentaryResultData(result, setAdditionalData, setAvgMinEstimates,
+    setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved);
+  useLLMDesignation(taskId, additionalData, setNewResultSaved,
+    chatBotResultFetched, setBotResult, setChatBotResultFetched);
 
   return (
-    <div className="upload-form-container">
-      <HeaderPlateforme
-        changeLanguage={changeLanguage}
-        handleMenuClick={handleMenuClick}
-        t={t}
-      />
+    <div>
       <h2>{t("plateforme.uploadform.supertitle")}</h2>
       <SearchForm
-        text={text}
+        searchText={searchtext}
         onDrop={onDrop}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
         planExpired={planExpired}
+        handleRemoveImage= {handleRemoveImage}
         closestVolumeExpired={closestVolumeExpired}
         handleSearchTextChange={handleSearchTextChange}
         handleSearchSubmit={handleSearchSubmit}
@@ -266,14 +195,14 @@ function UploadForm({
               <Pagination
                 totalPages={totalPages}
                 currentPage={currentPage}
-                handlePageChange={handlePageChange}
+                handlePageChange={handlePageChangeHandler}
                 showAll={showAll}
-                toggleShowAll={toggleShowAll}
+                toggleShowAll={toggleShowAllHandler}
                 t={t}/>
                <div className='sorting-container'>
                   <Sorting
                     sortOrder={sortOrder}
-                    handleSortChange={handleSortChange}
+                    handleSortChange={handleSortChangeHandler}
                     dropdownOpen={dropdownOpen}
                     setDropdownOpen={setDropdownOpen}
                     sortRef={sortRef}
@@ -283,10 +212,10 @@ function UploadForm({
                     setFilterOpen={setFilterOpen}
                     minPrice={minPrice}
                     maxPrice={maxPrice}
-                    handlePriceFilter={handlePriceFilter}
+                    handlePriceFilter={handlePriceFilterHandler}
                     minDate={minDate}
                     maxDate={maxDate}
-                    handleDateFilter={handleDateFilter}
+                    handleDateFilter={handleDateFilterHandler}
                     filterRef={filterRef}
                     t={t}/>
                 </div>
@@ -304,9 +233,9 @@ function UploadForm({
               <Pagination
                 totalPages={totalPages}
                 currentPage={currentPage}
-                handlePageChange={handlePageChange}
+                handlePageChange={handlePageChangeHandler}
                 showAll={showAll}
-                toggleShowAll={toggleShowAll}
+                toggleShowAll={toggleShowAllHandler}
                 t={t}/>
             </div>
           </div>

@@ -56,8 +56,29 @@
   margin: 0;
 }
 
+.remove-image-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: none;
+  border: none;
+  color: gray;
+  font-size: 1.1rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.remove-image-button:hover {
+  color: #dc3545;
+}
+
+.image-preview-container {
+  position: relative;
+  display: inline-block;
+}
+
 .dropzone-image-preview {
-  width: 50px;
+  max-width: 100%;
   height: 50px;
   object-fit: cover;
   border-radius: 5px;

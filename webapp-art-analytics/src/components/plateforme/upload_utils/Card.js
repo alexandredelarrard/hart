@@ -1,5 +1,5 @@
 import React from 'react';
-import { ROOT_PICTURE, NO_PICTURE, FAKE_PICTURE } from '../../../utils/constants';
+import { ROOT_PICTURE} from '../../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../../../utils/general.js';
 import '../../../css/Card.css';

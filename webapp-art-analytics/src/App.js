@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import './css/packages/bootstrap.min.css';
+import './App.css';
 
 import Sidebar from './components/plateforme/Sidebar';
 import UploadForm from './components/plateforme/UploadForm';
@@ -12,6 +13,7 @@ import ArtIdentify from './components/plateforme/ArtIdentify';
 import CardDetail from './components/plateforme/upload_utils/CardDetail';
 import Settings from './components/plateforme/Settings';
 import Offers from './components/plateforme/Offers';
+import HeaderPlateforme from "./components/plateforme/upload_utils/HeaderPlateforme.js";
 
 import Home from './components/Home';
 import Trial from './components/landing_page/Trial';
@@ -28,42 +30,86 @@ import Confirm from './components/connectors/Confirm';
 
 import './i18n';
 
-import './App.css';
 
 function App() {
 
   const { i18n } = useTranslation();
 
   const changeLanguage = (lng) => {
-        i18n.changeLanguage(lng);
-    };
+    i18n.changeLanguage(lng);
+  };
 
   const [userData, setUserData] = useState({});
-  const [file, setFile] = useState('');
-  const [text, setText] = useState('');
-  const [taskId, setTaskId] = useState(null);
-  const [result, setResult] = useState(null);
-  const [botresult, setBotResult] = useState(null);
-  const [additionalData, setAdditionalData] = useState([]);
-  const [avgMinEstimates, setAvgMinEstimates] = useState(0);
-  const [avgMaxEstimates, setAvgMaxEstimates] = useState(0);
-  const [avgFinalResult, setAvgFinalResult] = useState(0);
-  const [chatBotResultFetched, setChatBotResultFetched] = useState(false);
-  const [analysisInProgress, setAnalysisInProgress] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('search-art');
-  const [newResultSaved, setNewResultSaved] = useState(false);
-  const [experts, setExperts] = useState([]);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [minDate, setMinDate] = useState('');
-  const [maxDate, setMaxDate] = useState('');
-  const [scrolled, setScrolled] = useState(false);
+  const [uploadFormState, setUploadFormState] = useState({
+    searchfile: '',
+    searchtext: '',
+    file: '',
+    text: '',
+    file_area: '',
+    text_area: '',
+    taskId: null,
+    result: null,
+    botresult: null,
+    additionalData: [],
+    avgMinEstimates: 0,
+    avgMaxEstimates: 0,
+    avgFinalResult: 0,
+    chatBotResultFetched: false,
+    analysisInProgress: false,
+    newResultSaved: false,
+    experts: [],
+    minPrice: '',
+    maxPrice: '',
+    minDate: '',
+    maxDate: ''
+  });
+
+  const [searchArtState, setSearchArtState] = useState({
+    searchResults: [],
+    trendData: null,
+  });
+
   const [planExpired, setPlanExpired] = useState(false);
+  const [activeMenu, setActiveMenu] = useState('search-art');
+  const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
 
-  // SearchArt
-  const [searchResults, setSearchResults] = useState([]);
-  const [trendData, setTrendData] = useState(null);
+  const updateUploadFormState = (newState) => {
+    setUploadFormState((prevState) => ({ ...prevState, ...newState }));
+  };
+
+  const uploadFormHandlers = {
+    setSearchFile: (searchfile) => updateUploadFormState({searchfile}),
+    setSearchText: (searchtext) => updateUploadFormState({searchtext}),
+    setFile: (file) => updateUploadFormState({file}),
+    setText: (text) => updateUploadFormState({text}),
+    setFileSummaryArea: (file_area) => updateUploadFormState({ file_area }),
+    setTextSummaryArea: (text_area) => updateUploadFormState({ text_area }),
+    setTaskId: (taskId) => updateUploadFormState({ taskId }),
+    setResult: (result) => updateUploadFormState({ result }),
+    setBotResult: (botresult) => updateUploadFormState({ botresult }),
+    setChatBotResultFetched: (chatBotResultFetched) => updateUploadFormState({ chatBotResultFetched }),
+    setAdditionalData: (additionalData) => updateUploadFormState({ additionalData }),
+    setAvgMaxEstimates: (avgMaxEstimates) => updateUploadFormState({ avgMaxEstimates }),
+    setAvgMinEstimates: (avgMinEstimates) => updateUploadFormState({ avgMinEstimates }),
+    setAvgFinalResult: (avgFinalResult) => updateUploadFormState({ avgFinalResult }),
+    setAnalysisInProgress: (analysisInProgress) => updateUploadFormState({ analysisInProgress }),
+    setMinPrice: (minPrice) => updateUploadFormState({ minPrice }),
+    setMaxPrice: (maxPrice) => updateUploadFormState({ maxPrice }),
+    setMinDate: (minDate) => updateUploadFormState({ minDate }),
+    setMaxDate: (maxDate) => updateUploadFormState({ maxDate }),
+    setNewResultSaved: (newResultSaved) => updateUploadFormState({ newResultSaved }),
+    setExperts: (experts) => updateUploadFormState({experts}),
+  };
+
+  const updateSearchArtState = (newState) => {
+    setSearchArtState((prevState) => ({ ...prevState, ...newState }));
+  };
+
+  const searchArtHandlers = {
+    setSearchResults: (searchResults) => updateSearchArtState({ searchResults }),
+    setTrendData: (trendData) => updateSearchArtState({ trendData }),
+  };
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -73,86 +119,31 @@ function App() {
     switch (activeMenu) {
       case 'search-art':
         return <SearchArt
+                searchArtState={searchArtState}
+                searchArtHandlers={searchArtHandlers}
+                setPlanExpired={setPlanExpired}
+                planExpired={planExpired}
+                handleMenuClick={handleMenuClick}
+                t={t}
+              />;
+      case 'closest-lots':
+        return <UploadForm
+                  uploadFormState={uploadFormState}
+                  uploadFormHandlers={uploadFormHandlers}
                   setPlanExpired={setPlanExpired}
                   planExpired={planExpired}
                   handleMenuClick={handleMenuClick}
-                  searchResults={searchResults}
-                  setSearchResults={setSearchResults}
-                  trendData={trendData}
-                  setTrendData={setTrendData}
-                  changeLanguage={changeLanguage}
+                  i18n={i18n}
                   t={t}
               />;
-      case 'closest-lots':
-        return (
-          <UploadForm
-            setFile={setFile}
-            setText={setText}
-            setTaskId={setTaskId}
-            taskId={taskId}
-            file={file}
-            text={text}
-            result={result}
-            setResult={setResult}
-            botresult={botresult}
-            setBotResult={setBotResult}
-            chatBotResultFetched={chatBotResultFetched}
-            setChatBotResultFetched={setChatBotResultFetched}
-            setAvgMaxEstimates={setAvgMaxEstimates}
-            additionalData={additionalData}
-            setAdditionalData={setAdditionalData}
-            avgMaxEstimates={avgMaxEstimates}
-            setAvgMinEstimates={setAvgMinEstimates}
-            avgMinEstimates={avgMinEstimates}
-            avgFinalResult={avgFinalResult}
-            setAvgFinalResult={setAvgFinalResult}
-            analysisInProgress={analysisInProgress}
-            setAnalysisInProgress={setAnalysisInProgress}
-            setNewResultSaved={setNewResultSaved}
-            experts={experts}
-            setExperts={setExperts}
-            handleMenuClick={handleMenuClick}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
-            setMinDate={setMinDate}
-            setMaxDate={setMaxDate}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            minDate={minDate}
-            maxDate={maxDate}
-            setPlanExpired={setPlanExpired}
-            planExpired={planExpired}
-            changeLanguage={changeLanguage}
-            i18n={i18n}
-            t={t}
-        />
-        );
       case 'optimize-sale':
-        return <OptimizeSale
-                handleMenuClick={handleMenuClick}
-                changeLanguage={changeLanguage}
-                t={t}
-              />;
+        return <OptimizeSale t={t} />;
       case 'authentify-art':
-        return <ArtIdentify
-                handleMenuClick={handleMenuClick}
-                changeLanguage={changeLanguage}
-                t={t}
-                />;
+        return <ArtIdentify t={t} />;
       case 'account-settings':
-        return <Settings
-                  userData={userData}
-                  setUserData={setUserData}
-                  handleMenuClick={handleMenuClick}
-                  changeLanguage={changeLanguage}
-                  t={t}
-                />;
+        return <Settings userData={userData} setUserData={setUserData} t={t} />;
       case 'my-offers':
-        return <Offers
-                  handleMenuClick={handleMenuClick}
-                  changeLanguage={changeLanguage}
-                  t={t}
-                />;
+        return <Offers t={t} />;
       default:
         return null;
     }
@@ -162,11 +153,7 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home
-                                    scrolled={scrolled}
-                                    setScrolled={setScrolled}
-                                    changeLanguage={changeLanguage}
-                                    t={t}/>} />
+          <Route path="/" element={<Home scrolled={scrolled} setScrolled={setScrolled} changeLanguage={changeLanguage} t={t}/>} />
           <Route path="/login" element={<Login scrolled={true} t={t}/>} />
           <Route path="/trial" element={<Trial scrolled={true} t={t}/>} />
           <Route path="/contact" element={<ContactUs scrolled={true} t={t}/>} />
@@ -185,37 +172,27 @@ function App() {
                   userData={userData}
                   setUserData={setUserData}
                   onMenuClick={handleMenuClick}
-                  setFile={setFile}
-                  setText={setText}
-                  setTaskId={setTaskId}
-                  analysisInProgress={analysisInProgress}
-                  setResult={setResult}
-                  setBotResult={setBotResult}
-                  setChatBotResultFetched={setChatBotResultFetched}
-                  setAvgMaxEstimates={setAvgMaxEstimates}
-                  setAdditionalData={setAdditionalData}
-                  setAvgMinEstimates={setAvgMinEstimates}
-                  setAvgFinalResult={setAvgFinalResult}
-                  setAnalysisInProgress={setAnalysisInProgress}
-                  newResultSaved={newResultSaved}
-                  setMinPrice={setMinPrice}
-                  setMaxPrice={setMaxPrice}
-                  setMinDate={setMinDate}
-                  setMaxDate={setMaxDate}
+                  uploadFormHandlers={uploadFormHandlers}
+                  uploadFormState={uploadFormState}
                   t={t}
                 />
-                {renderContent()}
+                <div className="upload-form-container">
+                  <HeaderPlateforme
+                    changeLanguage={changeLanguage}
+                    handleMenuClick={handleMenuClick}
+                    t={t}
+                  />
+                  {renderContent()}
+                </div>
               </div>
             }
           />
-           <Route
+          <Route
             path="/analytics/card/:id"
             element={
-                <div style={{ display: 'flex' }}>
-                  <CardDetail
-                  i18n={i18n}
-                  t={t}/>
-                </div>
+              <div style={{ display: 'flex' }}>
+                <CardDetail i18n={i18n} t={t}/>
+              </div>
             }
           />
         </Routes>

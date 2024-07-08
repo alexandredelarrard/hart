@@ -43,3 +43,7 @@ export const generateDatesRange = (startDate, endDate) => {
   }
   return dates;
 };
+
+export const timeout = (delay) => {
+  return new Promise( res => setTimeout(res, delay) );
+}

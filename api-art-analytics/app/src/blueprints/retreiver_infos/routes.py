@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from typing import Dict, Any
 import math
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 import numpy as np
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
@@ -156,8 +156,10 @@ def get_past_results():
     if request.method == "GET":
         user_id = request.args.get("user_id")
         if user_id:
-            results = CloseResult.query.filter_by(
-                user_id=user_id, status="SUCCESS", visible_item=True
+            results = CloseResult.query.filter(
+                CloseResult.user_id == user_id,
+                or_(CloseResult.status == "SUCCESS", CloseResult.status == "SENT"),
+                CloseResult.visible_item == True,
             ).all()
             list_results = [item.to_dict() for item in results]
             return jsonify({"results": list_results}), 200

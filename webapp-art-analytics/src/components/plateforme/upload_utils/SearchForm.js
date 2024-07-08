@@ -1,22 +1,23 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faSearch, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 import "../../../css/SearchForm.css";
 
 const SearchForm = ({
-  text,
+  searchText,
   onDrop,
+  selectedImage,
+  setSelectedImage,
   planExpired,
   closestVolumeExpired,
+  handleRemoveImage,
   handleSearchTextChange,
   handleSearchSubmit,
   handleMenuClick,
   t
 }) => {
-
-  const [selectedImage, setSelectedImage] = useState(null);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
@@ -28,7 +29,7 @@ const SearchForm = ({
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png'],
     },
-    disabled: planExpired || closestVolumeExpired // Disable dropzone if errors exist
+    disabled: planExpired || closestVolumeExpired
   });
 
   const isError = planExpired || closestVolumeExpired;
@@ -40,7 +41,12 @@ const SearchForm = ({
           <div {...getRootProps({ className: `dropzone ${isError ? 'dropzone-error' : ''}` })}>
             <input {...getInputProps()} />
             {selectedImage ? (
-              <img src={selectedImage} alt="Selected" className="dropzone-image-preview" />
+              <div className="image-preview-container">
+                <img src={selectedImage} alt="Selected" className="dropzone-image-preview" />
+                <button type="button" className="remove-image-button" onClick={handleRemoveImage}>
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </button>
+              </div>
             ) : (
               <p className="dropzone-text">
                 <FontAwesomeIcon icon={faUpload} className="upload-icon" />
@@ -50,7 +56,7 @@ const SearchForm = ({
           </div>
           <input
             type="text"
-            value={text || ''}
+            value={searchText || ''}
             onChange={handleSearchTextChange}
             placeholder={t("plateforme.search.textareadesc")}
             className={`search-input ${isError ? 'input-error' : ''}`}

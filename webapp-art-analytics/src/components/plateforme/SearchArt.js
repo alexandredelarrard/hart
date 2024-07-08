@@ -5,25 +5,32 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Card from './upload_utils/Card.js';
-import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 import SearchBar from './search_utils/SearchBar.js';
 import * as d3 from 'd3';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 function SearchArt({
+  searchArtState,
+  searchArtHandlers,
   setPlanExpired,
   planExpired,
   handleMenuClick,
-  searchResults,
-  setSearchResults,
-  trendData,
-  setTrendData,
-  changeLanguage,
-  t }) {
+  t
+}) {
+  const {
+    searchResults,
+    trendData,
+  } = searchArtState;
+
+  const {
+    setSearchResults,
+    setTrendData,
+  } = searchArtHandlers;
+
   const [searchText, setSearchText] = useState('');
   const [mapData, setMapData] = useState([]);
-  const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);
+  const [searchVolumeExpired, setSearchVolumeExpired] = useState(false);
 
   useEffect(() => {
     const remaining_search_volume = Cookies.get('remaining_search_volume');
@@ -36,10 +43,10 @@ function SearchArt({
         setPlanExpired(true);
       }
       if (0 >= remaining_search_volume) {
-        setsearchVolumeExpired(true);
+        setSearchVolumeExpired(true);
       }
     }
-  }, [setPlanExpired, setsearchVolumeExpired]);
+  }, [setPlanExpired, setSearchVolumeExpired]);
 
   useEffect(() => {
     if (searchResults.length > 0) {
@@ -93,15 +100,10 @@ function SearchArt({
         count,
       })));
     }
-  }, [searchResults]);
+  }, [searchResults, setTrendData]);
 
   return (
-    <div className="upload-form-container">
-      <HeaderPlateforme
-        changeLanguage={changeLanguage}
-        handleMenuClick={handleMenuClick}
-        t={t}
-      />
+    <div>
       <h2>{t("plateforme.searchart.searchtitle")}</h2>
       <SearchBar
         searchText={searchText}
@@ -112,7 +114,7 @@ function SearchArt({
         handleMenuClick={handleMenuClick}
         t={t}
       />
-    <div className="result-container">
+      <div className="result-container">
         {trendData && (
           <div className="summary-area">
             <div className="part1-search">
@@ -169,19 +171,20 @@ function SearchArt({
             </div>
           </div>
         )}
-      <div className="delimiter-line"></div>
-      {searchResults.length > 0 ? (
-        <div className="additional-data">
-          <div className="card-container">
-            {searchResults.map((item, index) => (
-              <Card key={index} item={item} t={t} />
-            ))}
+        <div className="delimiter-line"></div>
+        {searchResults.length > 0 ? (
+          <div className="additional-data">
+            <div className="card-container">
+              {searchResults.map((item, index) => (
+                <Card key={index} item={item} t={t} />
+              ))}
+            </div>
           </div>
-          </div>) : (
+        ) : (
           <></>
         )}
+      </div>
     </div>
-  </div>
   );
 }
 

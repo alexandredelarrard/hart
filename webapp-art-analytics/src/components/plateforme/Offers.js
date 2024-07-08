@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 import Pricing from '../landing_page/Pricing.js';
 
 import '../../css/ProfileSettings.css';
 
-function Offers({changeLanguage, handleMenuClick, t}) {
+function Offers({t}) {
   const [activePlan, setActivePlan] = useState('individual_plan');
   const [closestQueries, setclosestQueries] = useState('');
   const [remainingDays, setremainingDays] = useState('');
@@ -41,12 +40,7 @@ function Offers({changeLanguage, handleMenuClick, t}) {
   }, [setActivePlan, setclosestQueries]);
 
   return (
-    <div className="upload-form-container">
-        <HeaderPlateforme
-        changeLanguage={changeLanguage}
-        handleMenuClick={handleMenuClick}
-        t={t}
-      />
+    <div>
         <div className="billing-section">
             <div className="plans">
                 <Pricing

@@ -11,10 +11,10 @@ export const organizeResults = (results, t) => {
   const now = new Date();
 
   // Sort results by date in descending order (most recent first)
-  results.sort((a, b) => new Date(b.result_date) - new Date(a.result_date));
+  results.sort((a, b) => new Date(b.creation_date) - new Date(a.creation_date));
 
   results.forEach(result => {
-    const resultDate = new Date(result.result_date);
+    const resultDate = new Date(result.creation_date);
     const differenceInDays = Math.floor((now - resultDate) / (1000 * 60 * 60 * 24));
     result.llm_result = JSON.parse(JSON.stringify(result.llm_result));
 

@@ -5,12 +5,14 @@ import sys
 from logging.config import dictConfig
 from sqlalchemy import create_engine
 from pgvector.sqlalchemy import Vector
+from sqlalchemy.orm import sessionmaker, scoped_session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig, OmegaConf
+from contextlib import contextmanager
 
 from src.utils.config import read_config
 
@@ -76,6 +78,9 @@ class Context:
         # JWT manager
         self.jwt = JWTManager()
 
+        # Session management
+        self.Session = scoped_session(sessionmaker(bind=self.db_con))
+
     @property
     def config(self) -> DictConfig:
         return self._config
@@ -91,6 +96,19 @@ class Context:
     @property
     def random_state(self) -> int:
         return self._config.seed
+
+    @contextmanager
+    def session_scope(self):
+        """Provide a transactional scope around a series of operations."""
+        session = self.Session()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
 
 
 def get_config_context(config_path: str, use_cache: bool, save: bool):
