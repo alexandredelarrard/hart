@@ -1,4 +1,6 @@
 from flask import request, jsonify
+from typing import Dict, Any
+import math
 from sqlalchemy import and_
 import numpy as np
 from flask_cors import cross_origin
@@ -12,6 +14,14 @@ from src.extensions import front_server
 from . import infos_blueprint
 
 
+def filter_non_null_values(data: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        k: v
+        for k, v in data.items()
+        if v is not None and not (isinstance(v, float) and math.isnan(v))
+    }
+
+
 def enrich_dict(
     answer: EmbeddingsResults, additional_info_dict: KnnFullResultInfos
 ) -> KnnFullResultInfos:
@@ -19,7 +29,9 @@ def enrich_dict(
     new_list = []
     for element in additional_info_dict.answer:
         if element.id_item in answer.keys():
-            updated_element = element.copy(update=answer[element.id_item])
+            updated_element = element.copy(
+                update=filter_non_null_values(answer[element.id_item])
+            )
             new_list.append(updated_element)
         else:
             new_list.append(element)
@@ -27,8 +39,6 @@ def enrich_dict(
 
 
 def fetch_additional_infos(answer: EmbeddingsResults) -> KnnFullResultInfos:
-
-    # get all pictures per id_unique
     filtered_items = (
         db.session.query(AllPerItem)
         .filter(
@@ -39,7 +49,6 @@ def fetch_additional_infos(answer: EmbeddingsResults) -> KnnFullResultInfos:
         )
         .all()
     )
-
     return KnnFullResultInfos(answer=[item.to_dict_search() for item in filtered_items])
 
 

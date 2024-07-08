@@ -12,7 +12,7 @@
   margin-bottom: 40px;
   margin-left: auto;
   flex-direction: column; /* Stack items vertically */
-  /* padding-bottom: 1rem; Added padding to accommodate error message   */
+  /* padding-bottom: 1rem; Added padding to accommodate error message */
 }
 
 .search-form {
@@ -41,6 +41,9 @@
   background: #fff;
   text-align: center;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dropzone-error {
@@ -50,6 +53,15 @@
 .dropzone-text {
   font-size: 1rem;
   color: #666;
+  margin: 0;
+}
+
+.dropzone-image-preview {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .upload-icon {

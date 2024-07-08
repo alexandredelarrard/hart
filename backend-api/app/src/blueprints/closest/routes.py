@@ -24,18 +24,19 @@ def process():
 
     if request.method == "POST":
 
-        text = None
-        if "file" not in request.files:
-            return jsonify({"error": "Missing picture"}), 400
-
         user_id = request.form["user_id"]
-        file = request.files["file"]
 
+        text = None
         if "text" in request.form:
             text = request.form["text"]
 
-        # Read the file content
-        image = file.read()
+        file = None
+        image = None
+        if "file" in request.files:
+            file = request.files["file"]
+
+            # Read the file content
+            image = file.read()
 
         if not image and not text:
             return jsonify({"error": "Missing image and text"}), 400
@@ -43,10 +44,11 @@ def process():
         task = process_request.apply_async(args=[image, text])
 
         # save the task in db
+        image = base64.b64encode(image).decode("utf-8") if image else None
         new_result = CloseResult(
             user_id=user_id,
             task_id=task.id,
-            file=base64.b64encode(image).decode("utf-8"),
+            file=image,
             text=text,
             creation_date=datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
             status="SENT",
@@ -94,7 +96,6 @@ def task_status():
                 result = CloseResult.query.filter_by(task_id=task_id).first_or_404()
 
                 if result:
-                    # Update the user as confirmed
                     result.answer = task.result["answer"]
                     result.status = task.state
                     result.result_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")

@@ -1,6 +1,6 @@
 SET LOCAL hnsw.ef_search = {limite};
 WITH dist_table AS (
-    SELECT DISTINCT "{id_unique_lower}", "{id_picture_lower}", ("embedding" <=> {embedding}::vector) AS distance
+     SELECT DISTINCT "{id_unique_lower}", "{id_picture_lower}", ("embedding" <=> {embedding}::vector) AS distance
     FROM "{table}"
     ORDER BY distance
     LIMIT {limite}

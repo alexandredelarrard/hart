@@ -1,5 +1,7 @@
 import langid
 import pandas as pd
+import math
+from typing import Dict, Any
 from src.context import Context
 from src.utils.timing import timing
 from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
@@ -61,6 +63,17 @@ class EmbeddingCollection(Step):
 
     @timing
     def fill_EmbeddingsResults(self, liste_results):
+
+        def filter_non_null_values(data: Dict[str, Any]) -> Dict[str, Any]:
+            return {
+                k: v
+                for k, v in data.items()
+                if v is not None and not (isinstance(v, float) and math.isnan(v))
+            }
+
         return EmbeddingsResults(
-            answer={k: BaseResult(**v) for k, v in liste_results.items()}
+            answer={
+                k: BaseResult(**filter_non_null_values(v))
+                for k, v in liste_results.items()
+            }
         )

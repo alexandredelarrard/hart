@@ -255,4 +255,5 @@ class DatasetRetreiver(Step):
 
         # 3. Fetch results
         df = self.read_sql_data(formatted_query)
+        df.to_csv("query_plan_text_output.csv", index=False)
         return df

@@ -13,6 +13,7 @@
               "currency": "€",
               "pleaseconnect": "Connectez-vous à votre compte",
               "alreadyenrolled": "Déjà inscrit ?",
+              "no_picture": "Image non disponible",
               "starttrial": "Essayer gratuitement"},
   "plateforme": {
     "header": {"myprofile": "Mon profile",

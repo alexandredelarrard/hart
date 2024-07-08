@@ -5,7 +5,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Card from './upload_utils/Card.js';
-import { useNavigate } from 'react-router-dom';
 import HeaderPlateforme from "./upload_utils/HeaderPlateforme.js";
 import SearchBar from './search_utils/SearchBar.js';
 import * as d3 from 'd3';
@@ -25,8 +24,6 @@ function SearchArt({
   const [searchText, setSearchText] = useState('');
   const [mapData, setMapData] = useState([]);
   const [searchVolumeExpired, setsearchVolumeExpired] = useState(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const remaining_search_volume = Cookies.get('remaining_search_volume');

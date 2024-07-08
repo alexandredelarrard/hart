@@ -81,10 +81,7 @@ function Sidebar({
 
     setFile(blob);
     setText(result.text);
-    setResult({
-      distances: result.closest_distances.split(','),
-      ids: result.closest_ids.split(',')
-    });
+    setResult({answer: result.answer});
     setTaskId(result.task_id);
     setAnalysisInProgress(false);
     setAdditionalData([]);

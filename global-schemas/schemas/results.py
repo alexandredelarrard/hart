@@ -11,8 +11,7 @@ class CloseResult(db.Model):
     text = db.Column(db.String(10000), nullable=False)
     file = db.Column(db.String(10000), nullable=False)
     creation_date = db.Column(db.String(120), nullable=False)
-    closest_ids = db.Column(db.String(99000), nullable=False)
-    closest_distances = db.Column(db.String(1000), nullable=False)
+    answer = db.Column(db.JSON, nullable=False)
     status = db.Column(db.String(120), nullable=False)
     result_date = db.Column(db.String(120), nullable=False)
     visible_item = db.Column(db.Boolean, nullable=False)
@@ -24,8 +23,7 @@ class CloseResult(db.Model):
             "task_id": self.task_id,
             "user_id": self.user_id,
             "status": self.status,
-            "closest_distances": self.closest_distances,
-            "closest_ids": self.closest_ids,
+            "answer": self.answer,
             "file": self.file,
             "text": self.text,
             "result_date": self.result_date,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -16,8 +16,14 @@ const SearchForm = ({
   t
 }) => {
 
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
+    onDrop: (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      setSelectedImage(URL.createObjectURL(file));
+      onDrop(acceptedFiles);
+    },
     multiple: false,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png'],
@@ -33,10 +39,14 @@ const SearchForm = ({
         <div className="form-row">
           <div {...getRootProps({ className: `dropzone ${isError ? 'dropzone-error' : ''}` })}>
             <input {...getInputProps()} />
-            <p className="dropzone-text">
-              <FontAwesomeIcon icon={faUpload} className="upload-icon" />
-              {t("plateforme.search.dropzonedesc")}
-            </p>
+            {selectedImage ? (
+              <img src={selectedImage} alt="Selected" className="dropzone-image-preview" />
+            ) : (
+              <p className="dropzone-text">
+                <FontAwesomeIcon icon={faUpload} className="upload-icon" />
+                {t("plateforme.search.dropzonedesc")}
+              </p>
+            )}
           </div>
           <input
             type="text"

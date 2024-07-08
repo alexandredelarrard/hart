@@ -1,5 +1,4 @@
 import os
-import logging
 from celery import Celery
 
 from src.extensions import config, context

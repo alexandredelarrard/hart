@@ -17,6 +17,23 @@ function CardDetail({i18n, t}) {
     return <div>Item not found</div>;
   }
 
+  const renderImage = (pictureId) => {
+    if (item.id_picture === "NO_PICTURE" || pictureId === "FAKE_PICTURE") {
+      return (
+        <div className="card-detail-placeholder">
+          {t("overall.no_picture")}
+        </div>
+      );
+    } else {
+      return (
+        <img
+          src={`${ROOT_PICTURE}/${item.seller}/pictures/${pictureId}.jpg`}
+          alt={item.title}
+        />
+      );
+    }
+  };
+
   return (
     <div className="card-detail-container">
       <button className="back-button" onClick={() => navigate(-1)}>Back</button>
@@ -26,10 +43,7 @@ function CardDetail({i18n, t}) {
             {item.pictures.map((pictureId, index) => (
               <Carousel.Item key={index}>
                 <div className="card-detail-image">
-                  <img
-                    src={`${ROOT_PICTURE}/${item.seller}/pictures/${pictureId}.jpg`}
-                    alt={item.title}
-                  />
+                  {renderImage(pictureId)}
                 </div>
               </Carousel.Item>
             ))}

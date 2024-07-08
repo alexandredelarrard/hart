@@ -15,7 +15,8 @@
     "currency": "€",
     "pleaseconnect": "Please Log in to Your Account",
     "alreadyenrolled": "Already Enrolled?",
-    "starttrial": "Start Free Trial"
+    "starttrial": "Start Free Trial",
+    "no_picture": "Picture not available"
   },
   "plateforme": {
     "header": {

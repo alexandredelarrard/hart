@@ -55,7 +55,7 @@ class TextModel(Step):
                 text,
                 convert_to_tensor=True,
                 device=self.device,
-                prompt_name=prompt_name,
+                # prompt_name=prompt_name,
             )
             .cpu()
             .numpy()

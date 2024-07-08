@@ -21,7 +21,7 @@ const useFetchComplentaryResultData = (result, setAdditionalData, setAvgMinEstim
 
               // Ensure response.data is an array
               if (Array.isArray(response.data.result.answer)) {
-                setAdditionalData(response.data.result.answer);
+                setAdditionalData(response.data.result.answer); // Is a list
                 setAvgMinEstimates(response.data.min_estimate);
                 setAvgMaxEstimates(response.data.max_estimate);
                 setAvgFinalResult(response.data.final_result);
