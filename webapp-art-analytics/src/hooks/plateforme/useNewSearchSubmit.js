@@ -5,7 +5,6 @@ import axiosInstance_back from '../general/axiosInstanceBack';
 import { checkAuth } from '../general/identification';
 import useLogActivity from '../general/useLogActivity';
 import { URL_UPLOAD } from '../../utils/constants';
-import  { timeout } from '../../utils/general';
 
 const useNewSearchSubmit = ({
       file,
@@ -63,9 +62,6 @@ const useNewSearchSubmit = ({
           },
         });
 
-        // to enable backend to create the new element for sidebar
-        await timeout(1000);
-
         setSelectedImage('');
         setFile(searchfile);
         setText(searchtext);
@@ -79,7 +75,7 @@ const useNewSearchSubmit = ({
         setAvgMaxEstimates(0);
         setAvgFinalResult(0);
         setNewResultSaved(false);
-        setSearchFile('');
+        setSearchFile(null);
         setSearchText('');
 
         // log activity
@@ -110,6 +106,9 @@ const useNewSearchSubmit = ({
 
       // Cleanup function to revoke the object URL
       return () => URL.revokeObjectURL(url);
+    } else {
+      setFileUrl(null);
+      return () => null;
     }
   }, [file]);
 

@@ -45,8 +45,6 @@ function App() {
     searchtext: '',
     file: '',
     text: '',
-    file_area: '',
-    text_area: '',
     taskId: null,
     result: null,
     botresult: null,
@@ -61,7 +59,10 @@ function App() {
     minPrice: '',
     maxPrice: '',
     minDate: '',
-    maxDate: ''
+    maxDate: '',
+    activeMenu: 'search-art',
+    activeLi: '',
+    showResults: false
   });
 
   const [searchArtState, setSearchArtState] = useState({
@@ -70,7 +71,6 @@ function App() {
   });
 
   const [planExpired, setPlanExpired] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('search-art');
   const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
 
@@ -83,8 +83,6 @@ function App() {
     setSearchText: (searchtext) => updateUploadFormState({searchtext}),
     setFile: (file) => updateUploadFormState({file}),
     setText: (text) => updateUploadFormState({text}),
-    setFileSummaryArea: (file_area) => updateUploadFormState({ file_area }),
-    setTextSummaryArea: (text_area) => updateUploadFormState({ text_area }),
     setTaskId: (taskId) => updateUploadFormState({ taskId }),
     setResult: (result) => updateUploadFormState({ result }),
     setBotResult: (botresult) => updateUploadFormState({ botresult }),
@@ -100,6 +98,9 @@ function App() {
     setMaxDate: (maxDate) => updateUploadFormState({ maxDate }),
     setNewResultSaved: (newResultSaved) => updateUploadFormState({ newResultSaved }),
     setExperts: (experts) => updateUploadFormState({experts}),
+    setActiveMenu : (activeMenu) => updateUploadFormState({activeMenu}),
+    setActiveLi : (activeLi) => updateUploadFormState({activeLi}),
+    setShowResults : (showResults) => updateUploadFormState({showResults}),
   };
 
   const updateSearchArtState = (newState) => {
@@ -111,19 +112,15 @@ function App() {
     setTrendData: (trendData) => updateSearchArtState({ trendData }),
   };
 
-  const handleMenuClick = (menu) => {
-    setActiveMenu(menu);
-  };
-
   const renderContent = () => {
-    switch (activeMenu) {
+    switch (uploadFormState.activeMenu) {
       case 'search-art':
         return <SearchArt
                 searchArtState={searchArtState}
                 searchArtHandlers={searchArtHandlers}
                 setPlanExpired={setPlanExpired}
                 planExpired={planExpired}
-                handleMenuClick={handleMenuClick}
+                handleMenuClick={uploadFormHandlers.setActiveMenu}
                 t={t}
               />;
       case 'closest-lots':
@@ -132,7 +129,6 @@ function App() {
                   uploadFormHandlers={uploadFormHandlers}
                   setPlanExpired={setPlanExpired}
                   planExpired={planExpired}
-                  handleMenuClick={handleMenuClick}
                   i18n={i18n}
                   t={t}
               />;
@@ -171,7 +167,6 @@ function App() {
                 <Sidebar
                   userData={userData}
                   setUserData={setUserData}
-                  onMenuClick={handleMenuClick}
                   uploadFormHandlers={uploadFormHandlers}
                   uploadFormState={uploadFormState}
                   t={t}
@@ -179,7 +174,7 @@ function App() {
                 <div className="upload-form-container">
                   <HeaderPlateforme
                     changeLanguage={changeLanguage}
-                    handleMenuClick={handleMenuClick}
+                    handleMenuClick={uploadFormHandlers.setActiveMenu}
                     t={t}
                   />
                   {renderContent()}
@@ -191,7 +186,9 @@ function App() {
             path="/analytics/card/:id"
             element={
               <div style={{ display: 'flex' }}>
-                <CardDetail i18n={i18n} t={t}/>
+                <CardDetail
+                  i18n={i18n}
+                  t={t}/>
               </div>
             }
           />

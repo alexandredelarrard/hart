@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 import axiosInstance_back from '../general/axiosInstanceBack';
-import { useNavigate } from 'react-router-dom';
 import { checkAuth } from '../general/identification';
 import { URL_GET_TASK } from '../../utils/constants';
 
-const useGetTaskResult = (taskId, analysisInProgress, setResult, setAnalysisInProgress) => {
-  const navigate = useNavigate();
+const useGetTaskResult = (taskId, result, setResult, setActiveLi) => {
   useEffect(() => {
-    if (taskId && analysisInProgress) {
+    if (taskId && !result) {
       const isAuthenticated = checkAuth();
 
       if (isAuthenticated){
@@ -21,8 +19,8 @@ const useGetTaskResult = (taskId, analysisInProgress, setResult, setAnalysisInPr
 
             if (response.data.state === 'SUCCESS') {
               setResult(response.data.result);
+              setActiveLi(0);
               clearInterval(interval);
-              setAnalysisInProgress(false);
             }
           } catch (error) {
             console.error('Error fetching task result', error);
@@ -30,10 +28,10 @@ const useGetTaskResult = (taskId, analysisInProgress, setResult, setAnalysisInPr
         }, 1500); // Poll every X sec
         return () => clearInterval(interval);
     } else {
-      navigate("/login");
+      window.location.href = "/login"
     }
   }
-  }, [taskId, analysisInProgress, setResult, setAnalysisInProgress]);
+  }, [taskId, setResult]);
 };
 
 export default useGetTaskResult;

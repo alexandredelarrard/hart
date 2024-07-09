@@ -11,6 +11,7 @@ import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
 import { logout, checkAuth } from '../../hooks/general/identification';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
 import FetchPastResults from '../../hooks/plateforme/FetchPastResults.js';
+import useGetTaskResult from '../../hooks/plateforme/useGetTaskResult.js';
 
 
 import '../../css/Sidebar.css';
@@ -18,7 +19,6 @@ import '../../css/Sidebar.css';
 function Sidebar({
   userData,
   setUserData,
-  onMenuClick,
   uploadFormHandlers,
   uploadFormState,
   t
@@ -26,25 +26,27 @@ function Sidebar({
   const {
     analysisInProgress,
     newResultSaved,
-    chatBotResultFetched
+    taskId,
+    result,
+    activeMenu,
+    activeLi,
+    showResults
   } = uploadFormState;
 
+  const {
+    setActiveMenu,
+    setActiveLi,
+    setShowResults
+  } = uploadFormHandlers;
+
   const [formerResults, setFormerResults] = useState([]);
-  const [activeMenu, setActiveMenu] = useState('search-art');
-  const [activeLi, setActiveLi] = useState('');
   const [clickResult, setClickResult] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const { i18n } = useTranslation('/analytics');
-  const LogActivity = useLogActivity();
+  const LogActivity = useLogActivity()
 
   // Logout on click button
   const handleLogout = async () => {
-    const success = await LogActivity("click_log_out", "");
-    if (success) {
-      console.log('Activity logged successfully');
-    } else {
-      console.log('Failed to log activity');
-    }
+    await LogActivity("click_log_out", "");
 
     uploadFormHandlers.setResult(null);
     uploadFormHandlers.setText('');
@@ -70,15 +72,18 @@ function Sidebar({
   const handleResultClick = (result) => {
     setClickResult(!clickResult);
 
-    const byteCharacters = atob(result.file);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    if (result.file) {
+      const byteCharacters = atob(result.file);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpg' });
+      uploadFormHandlers.setFile(blob);
+    } else {
+      uploadFormHandlers.setFile(null);
     }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'image/jpg' });
-
-    uploadFormHandlers.setFile(blob);
     uploadFormHandlers.setText(result.text);
     uploadFormHandlers.setResult({ answer: result.answer });
     uploadFormHandlers.setTaskId(result.task_id);
@@ -100,7 +105,6 @@ function Sidebar({
       uploadFormHandlers.setChatBotResultFetched(false);
     }
 
-    // onMenuClick('closest-lots');
     LogActivity("click_former_result", result.task_id);
   };
 
@@ -136,21 +140,12 @@ function Sidebar({
 
   }, [setUserData]);
 
-  useEffect(() => {
-    if (!chatBotResultFetched) {
-      // Function to call FetchResult every 5 seconds for 1 minute
-      const interval = setInterval(() => FetchPastResults(setFormerResults), 5000);
-      const timeout = setTimeout(() => clearInterval(interval), 180000);
+  useGetTaskResult(taskId, result, uploadFormHandlers.setResult, setActiveLi);
 
-      // Cleanup function to clear interval and timeout if the component unmounts
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-      };
-    } else {
-      FetchPastResults(setFormerResults);
-    }
-  }, [clickResult, analysisInProgress, newResultSaved]);
+  useEffect(() => {
+    console.log("Fetch")
+    FetchPastResults(setFormerResults);
+  }, [clickResult, analysisInProgress, newResultSaved, setActiveMenu]);
 
   const organizedResults = organizeResults(formerResults, t);
 
@@ -166,14 +161,14 @@ function Sidebar({
       <ul className="menu">
         <li
           className={`menu-item ${activeMenu === 'search-art' ? 'active' : ''}`}
-          onClick={() => { setActiveMenu('search-art'); onMenuClick('search-art'); toggleResults(false); }}
+          onClick={() => { setActiveMenu('search-art'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
           {t("plateforme.sidebar.search")}
         </li>
         <li
           className={`menu-item ${activeMenu === 'closest-lots' ? 'active' : ''}`}
-          onClick={() => { setActiveMenu('closest-lots'); onMenuClick('closest-lots'); toggleResults(true); }}
+          onClick={() => { setActiveMenu('closest-lots'); toggleResults(true); }}
         >
           <FontAwesomeIcon icon={faImage} className="menu-icon" />
           {t("plateforme.sidebar.closest")}
@@ -200,7 +195,7 @@ function Sidebar({
                           )
                         ) : (
                           i18n.language === "fr" ? (
-                            'Nouvelle requête' || result.taskId
+                            'Nouvelle recherche' || result.taskId
                           ) : (
                             "New query" || result.taskId
                           )
@@ -228,7 +223,7 @@ function Sidebar({
         )}
         <li
           className={`menu-item ${activeMenu === 'optimize-sale' ? 'active' : ''}`}
-          onClick={() => { setActiveMenu('optimize-sale'); onMenuClick('optimize-sale'); toggleResults(false); }}
+          onClick={() => { setActiveMenu('optimize-sale'); toggleResults(false); }}
         >
           <FontAwesomeIcon icon={faEdit} className="menu-icon" />
           {t("plateforme.sidebar.optimize")}

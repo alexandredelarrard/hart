@@ -34,7 +34,6 @@ function UploadForm({
   uploadFormHandlers,
   setPlanExpired,
   planExpired,
-  handleMenuClick,
   i18n,
   t
 }) {
@@ -78,6 +77,7 @@ function UploadForm({
     setMaxPrice,
     setMinDate,
     setMaxDate,
+    setActiveMenu
   } = uploadFormHandlers;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,8 +126,8 @@ function UploadForm({
   useFetchExperts(setExperts);
   useFetchComplentaryResultData(result, setAdditionalData, setAvgMinEstimates,
     setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved);
-  useLLMDesignation(taskId, additionalData, setNewResultSaved,
-    chatBotResultFetched, setBotResult, setChatBotResultFetched);
+  // useLLMDesignation(taskId, additionalData, setNewResultSaved,
+  //   chatBotResultFetched, setBotResult, setChatBotResultFetched);
 
   return (
     <div>
@@ -142,7 +142,7 @@ function UploadForm({
         closestVolumeExpired={closestVolumeExpired}
         handleSearchTextChange={handleSearchTextChange}
         handleSearchSubmit={handleSearchSubmit}
-        handleMenuClick={handleMenuClick}
+        setActiveMenu={setActiveMenu}
         t={t}
       />
       {(fileUrl || text ) &&
@@ -151,7 +151,13 @@ function UploadForm({
           <div className="part1">
             <div className="part-content">
               <div className="left">
-                {fileUrl && <img src={fileUrl} alt="Uploaded" className="summary-image" />}
+                { fileUrl  ? (
+                    <img src={fileUrl} alt="Uploaded" className="summary-image" />
+                  ):(
+                    <div className="card-detail-placeholder">
+                      {t("overall.no_picture")}
+                    </div>
+                  ) }
               </div>
               <div className="middle">
                 <div className="part-header common-title">

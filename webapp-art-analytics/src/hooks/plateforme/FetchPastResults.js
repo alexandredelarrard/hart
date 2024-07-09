@@ -18,7 +18,6 @@ const FetchPastResults = async (setFormerResults) => {
               },
             });
 
-            console.log(response.data.results);
             setFormerResults(response.data.results);
 
           } catch (error) {

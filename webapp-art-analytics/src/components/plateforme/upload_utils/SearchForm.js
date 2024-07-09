@@ -15,7 +15,7 @@ const SearchForm = ({
   handleRemoveImage,
   handleSearchTextChange,
   handleSearchSubmit,
-  handleMenuClick,
+  setActiveMenu,
   t
 }) => {
 
@@ -70,12 +70,12 @@ const SearchForm = ({
       <div className={`error-message-search ${isError ? 'show' : ''}`}>
         {planExpired && (
           <div className="plan-expired-message">
-            {t("plateforme.search.errorplanexpired")} <button className='button-error-plan' onClick={() => { handleMenuClick("my-offers")}}>{t("plateforme.search.upgradebutton")}</button>
+            {t("plateforme.search.errorplanexpired")} <button className='button-error-plan' onClick={() => { setActiveMenu("my-offers")}}>{t("plateforme.search.upgradebutton")}</button>
           </div>
         )}
         {closestVolumeExpired && (
           <div className="query-expired-message">
-            {t("plateforme.search.errorsearchclosevolume")} <button className='button-error-plan' onClick={() => { handleMenuClick("my-offers")}}>{t("plateforme.search.upgradebutton")}</button>
+            {t("plateforme.search.errorsearchclosevolume")} <button className='button-error-plan' onClick={() => { setActiveMenu("my-offers")}}>{t("plateforme.search.upgradebutton")}</button>
           </div>
         )}
       </div>
