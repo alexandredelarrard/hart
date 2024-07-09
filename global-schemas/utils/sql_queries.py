@@ -3,6 +3,7 @@ from pathlib import Path
 from re import DOTALL, sub
 from types import SimpleNamespace
 from typing import Any, Dict, Optional
+from src.utils.timing import timing
 
 import sqlparse
 

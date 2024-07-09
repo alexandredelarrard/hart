@@ -1,9 +1,13 @@
 import logging
-from src.context import Context
+import pandas as pd
 from omegaconf import DictConfig
+from typing import List
+
+from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-import pandas as pd
+
+from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
 
 
 class DatasetRetreiver(Step):
@@ -15,6 +19,8 @@ class DatasetRetreiver(Step):
     ):
         super().__init__(config=config, context=context)
         self.root = self._config.crawling.root_path
+        self.full_items_and_pictures = self._config.cleaning.full_data_auction_houses
+        self.full_per_item = self._config.cleaning.full_data_per_item
 
     def get_text_to_cluster(self, data_name: str = None):
 
@@ -138,12 +144,13 @@ class DatasetRetreiver(Step):
         self._log.info(formatted_query)
         return self.read_sql_data(formatted_query)
 
+    @timing
     def get_all_pictures(
         self, data_name: str = None, vector: str = "PICTURES", limit: int = None
     ):
 
         if data_name == None:
-            data_name = self._config.cleaning.full_data_auction_houses
+            data_name = self.full_items_and_pictures
 
         if not limit:
             limit = 1e11
@@ -186,7 +193,7 @@ class DatasetRetreiver(Step):
     ):
 
         if data_name == None:
-            data_name = self._config.cleaning.full_data_per_item
+            data_name = self.full_per_item
 
         if not limit:
             limit = 1e11
@@ -209,9 +216,8 @@ class DatasetRetreiver(Step):
         logging.info(f"GETTING {df.shape}")
         return df
 
-    def get_picture_embedding_dist(
-        self, table: str, embedding: str = None, limit: int = None
-    ):
+    @timing
+    def get_picture_embedding_dist(self, embedding: str = None, limit: int = None):
 
         if not limit:
             limit = 100
@@ -221,20 +227,37 @@ class DatasetRetreiver(Step):
             raw_query,
             {  # because embedding table need lower
                 "id_unique_lower": self.name.id_unique.lower(),
-                "id_unique": self.name.id_unique,
                 "id_picture_lower": self.name.id_picture.lower(),
-                "id_item": self.name.id_item,
-                "embedding": f"ARRAY{embedding.tolist()[0]}",
-                "table": table,
-                "table_all": self._config.cleaning.full_data_auction_houses,
+                "table": PICTURE_DB,
                 "limite": limit,
             },
         )
 
         # 3. Fetch results
-        df = self.read_sql_data(formatted_query)
+        df = self.read_sql_data(formatted_query, params=(embedding.tolist()[0],))
         return df
 
+    @timing
+    def get_id_item_from_pictures(self, list_id_unique: List[str]):
+
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "id_item_from_id_unique"))
+        formatted_query = self.sql_queries.format_query(
+            raw_query,
+            {  # because embedding table need lower
+                "id_item": self.name.id_item,
+                "id_unique": self.name.id_unique,
+                "table": self.full_items_and_pictures,
+                "liste_id_unique": tuple(list_id_unique),
+            },
+        )
+
+        # 3. Fetch results
+        df = self.read_sql_data(formatted_query)
+        df.columns = [x.lower() for x in df.columns]
+
+        return df
+
+    @timing
     def get_text_embedding_dist(
         self, table: str, embedding: str = None, limit: int = None
     ):
@@ -247,13 +270,11 @@ class DatasetRetreiver(Step):
             raw_query,
             {
                 "id_item_lower": self.name.id_item.lower(),
-                "embedding": f"ARRAY{embedding.tolist()[0]}",
                 "table": table,
                 "limite": limit,
             },
         )
 
         # 3. Fetch results
-        df = self.read_sql_data(formatted_query)
-        df.to_csv("query_plan_text_output.csv", index=False)
+        df = self.read_sql_data(formatted_query, params=(embedding.tolist()[0],))
         return df

@@ -31,13 +31,21 @@ if os.getenv("FLASK_ENV") == "celery_worker":
 def process_request(self, image, text) -> dict[str, EmbeddingsResults]:
 
     new_index = step_collection.name.id_item.lower()
+    lower_id_unique = step_collection.name.id_unique.lower()
     task_id = self.request.id
 
     if image:
         pict_embedding = step_embedding.get_fast_picture_embedding(image)
         results_image = data_retreiver.get_picture_embedding_dist(
-            table=PICTURE_DB, embedding=pict_embedding, limit=100
+            embedding=pict_embedding, limit=100
         )
+        df_id_item_pict = data_retreiver.get_id_item_from_pictures(
+            list_id_unique=results_image[lower_id_unique].tolist()
+        )
+        results_image = results_image.merge(
+            df_id_item_pict, on=lower_id_unique, how="left", validate="1:1"
+        )
+        del results_image[lower_id_unique]
         results_image = results_image.drop_duplicates(new_index)
 
     if text:

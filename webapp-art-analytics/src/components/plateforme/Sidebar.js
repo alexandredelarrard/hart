@@ -25,7 +25,8 @@ function Sidebar({
 }) {
   const {
     analysisInProgress,
-    newResultSaved
+    newResultSaved,
+    chatBotResultFetched
   } = uploadFormState;
 
   const [formerResults, setFormerResults] = useState([]);
@@ -99,7 +100,7 @@ function Sidebar({
       uploadFormHandlers.setChatBotResultFetched(false);
     }
 
-    onMenuClick('closest-lots');
+    // onMenuClick('closest-lots');
     LogActivity("click_former_result", result.task_id);
   };
 
@@ -136,7 +137,19 @@ function Sidebar({
   }, [setUserData]);
 
   useEffect(() => {
-    FetchPastResults(setFormerResults);
+    if (!chatBotResultFetched) {
+      // Function to call FetchResult every 5 seconds for 1 minute
+      const interval = setInterval(() => FetchPastResults(setFormerResults), 5000);
+      const timeout = setTimeout(() => clearInterval(interval), 180000);
+
+      // Cleanup function to clear interval and timeout if the component unmounts
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    } else {
+      FetchPastResults(setFormerResults);
+    }
   }, [clickResult, analysisInProgress, newResultSaved]);
 
   const organizedResults = organizeResults(formerResults, t);

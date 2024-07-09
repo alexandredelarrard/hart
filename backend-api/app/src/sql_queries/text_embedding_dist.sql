@@ -1,6 +1,5 @@
 SET LOCAL hnsw.ef_search = {limite};
-EXPLAIN ANALYZE
-SELECT DISTINCT "{id_item_lower}", ("embedding" <=> {embedding}::vector) AS distance
+SELECT "{id_item_lower}", ("embedding" <=> %s::vector) AS distance
 FROM "{table}"
 ORDER BY distance
 LIMIT {limite};

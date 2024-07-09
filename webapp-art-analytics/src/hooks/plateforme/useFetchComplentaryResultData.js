@@ -25,7 +25,6 @@ const useFetchComplentaryResultData = (
   }, [setAdditionalData, setAvgMinEstimates, setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved]);
 
   useEffect(() => {
-    console.log(result)
     if (result && result.answer) {
       const fetchData = async () => {
         try {

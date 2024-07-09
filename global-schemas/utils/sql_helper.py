@@ -18,9 +18,9 @@ class SqlHelper:
             "SELECT table_name FROM information_schema.tables", con=self._context.db_con
         )["table_name"].tolist()
 
-    def read_sql_data(self, table_name):
+    def read_sql_data(self, table_name, params=None):
         try:
-            return pd.read_sql(table_name, con=self._context.db_con)
+            return pd.read_sql(table_name, con=self._context.db_con, params=params)
         except Exception as e:
             raise Exception(f"table name does not exist in SQL : {table_name}", e)
 

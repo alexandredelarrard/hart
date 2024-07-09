@@ -2,6 +2,7 @@ import langid
 import pandas as pd
 import math
 from typing import Dict, Any
+import numpy as np
 from src.context import Context
 from src.utils.timing import timing
 from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
