@@ -31,7 +31,7 @@ const useGetTaskResult = (taskId, result, setResult, setActiveLi) => {
       window.location.href = "/login"
     }
   }
-  }, [taskId, setResult]);
+  }, [taskId, result, setResult, setResult, setActiveLi]);
 };
 
 export default useGetTaskResult;

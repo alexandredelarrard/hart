@@ -1,4 +1,4 @@
-https://artlitycs.com {
+https://arlitycs.com {
     root * /usr/share/caddy
     file_server
 

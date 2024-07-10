@@ -1,12 +1,10 @@
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance_middle from '../general/axiosInstance';
 import { checkAuth } from '../general/identification';
 import { URL_GET_PAYMENTS } from '../../utils/constants';
 
 const useFetchPayments = (setPayments) => {
-  const navigate = useNavigate();
   useEffect(() => {
         const isAuthenticated = checkAuth();
         const userdataCookie = Cookies.get('userdata');
@@ -24,7 +22,7 @@ const useFetchPayments = (setPayments) => {
             });
         }
       } else {
-        navigate("/login");
+        window.location.href = "/login";
       }
       }, [setPayments]);
 };

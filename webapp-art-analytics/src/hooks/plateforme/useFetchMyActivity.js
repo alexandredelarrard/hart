@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import axiosInstance_middle from '../general/axiosInstance';
 import { checkAuth } from '../general/identification';
 import { URL_MY_ACTIVITY } from '../../utils/constants';
@@ -6,7 +6,7 @@ import {generateDatesRange} from '../../utils/general.js';
 
 const useFetchMyActivity = (setActivityData) => {
 
-  const fetchActivityData = async () => {
+  const fetchActivityData = useCallback(async () => {
       const isAuthenticated = checkAuth();
 
       if(isAuthenticated){
@@ -40,11 +40,11 @@ const useFetchMyActivity = (setActivityData) => {
           console.error("Error fetching activity data", error);
         }
       }
-    }
+    }, [setActivityData]);
 
     useEffect(() => {
       fetchActivityData();
-      }, []);
+      }, [fetchActivityData]);
 
 };
 

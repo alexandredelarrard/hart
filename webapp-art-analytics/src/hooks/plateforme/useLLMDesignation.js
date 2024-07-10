@@ -1,11 +1,9 @@
 import { useEffect, useRef } from 'react';
 import axiosInstance_back from '../general/axiosInstanceBack';
 import { checkAuth } from '../general/identification';
-import { useNavigate } from 'react-router-dom';
 import { URL_GET_CHATBOT } from '../../utils/constants';
 
 const useLLMDesignation = (taskId, additionalData, setNewResultSaved, chatBotResultFetched, setBotResult, setChatBotResultFetched) => {
-    const navigate = useNavigate();
 
     const setNewResultSavedRef = useRef(setNewResultSaved);
     const setBotResultRef = useRef(setBotResult);
@@ -48,10 +46,10 @@ const useLLMDesignation = (taskId, additionalData, setNewResultSaved, chatBotRes
             if (isAuthenticated) {
                 fetchLLM();
             } else {
-                navigate('/login');
+                window.location.href = "/login";
             }
         }
-    }, [taskId, additionalData, chatBotResultFetched, navigate]);
+    }, [taskId, additionalData, chatBotResultFetched]);
 
 };
 

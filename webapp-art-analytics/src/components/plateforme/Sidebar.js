@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faEdit, faUserCircle, faSignOutAlt, faChevronRight, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -41,13 +41,21 @@ function Sidebar({
   const [formerResults, setFormerResults] = useState([]);
   const [clickResult, setClickResult] = useState(false);
   const { i18n } = useTranslation('/analytics');
-  const LogActivity = useLogActivity()
+  const LogActivity = useLogActivity();
+
+  const memoizedSetResult = useCallback((newResult) => {
+    uploadFormState.setResult(newResult);
+  }, [uploadFormState]);
+
+  const memoizedSetActiveLi = useCallback((index) => {
+    setActiveLi(index);
+  }, [setActiveLi]);
 
   // Logout on click button
   const handleLogout = async () => {
     await LogActivity("click_log_out", "");
 
-    uploadFormHandlers.setResult(null);
+    memoizedSetResult(null);
     uploadFormHandlers.setText('');
     uploadFormHandlers.setFile(null);
     uploadFormHandlers.setAdditionalData([]);
@@ -84,7 +92,7 @@ function Sidebar({
       uploadFormHandlers.setFile(null);
     }
     uploadFormHandlers.setText(result.text);
-    uploadFormHandlers.setResult({ answer: result.answer });
+    memoizedSetResult({ answer: result.answer });
     uploadFormHandlers.setTaskId(result.task_id);
     uploadFormHandlers.setAnalysisInProgress(false);
     uploadFormHandlers.setAdditionalData([]);
@@ -139,7 +147,7 @@ function Sidebar({
 
   }, [setUserData]);
 
-  useGetTaskResult(taskId, result, uploadFormHandlers.setResult, setActiveLi);
+  useGetTaskResult(taskId, result, memoizedSetResult, memoizedSetActiveLi);
 
   useEffect(() => {
     if (activeMenu === 'closest-lots') {
@@ -184,7 +192,7 @@ function Sidebar({
                     <li
                       key={index}
                       className={`submenu-item ${activeLi === index ? 'selected' : ''}`}
-                      onClick={() => { setActiveLi(index); handleResultClick(result);}}
+                      onClick={() => { memoizedSetActiveLi(index); handleResultClick(result);}}
                     >
                       <span>
                         {result.llm_result ? (
