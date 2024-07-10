@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Card from './upload_utils/Card.js';
 import SearchBar from './search_utils/SearchBar.js';
@@ -29,7 +29,7 @@ function SearchArt({
   } = searchArtHandlers;
 
   const [searchText, setSearchText] = useState('');
-  const [mapData, setMapData] = useState([]);
+  const [mapdata, setMapData] = useState([]);
   const [searchVolumeExpired, setSearchVolumeExpired] = useState(false);
 
   useEffect(() => {
@@ -99,8 +99,9 @@ function SearchArt({
         localisation,
         count,
       })));
+      console.log(mapdata)
     }
-  }, [searchResults, setTrendData]);
+  }, [searchResults, setTrendData, mapdata]);
 
   return (
     <div>
