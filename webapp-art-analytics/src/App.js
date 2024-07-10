@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import './css/packages/bootstrap.min.css';
-import './App.css';
+
 
 import Sidebar from './components/plateforme/Sidebar';
 import UploadForm from './components/plateforme/UploadForm';
@@ -29,6 +29,7 @@ import SetNewPassword from './components/connectors/SetNewPassword';
 import Confirm from './components/connectors/Confirm';
 import {PATHS} from "./utils/constants.js"
 
+import './App.css';
 import './i18n';
 
 
