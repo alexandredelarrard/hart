@@ -2,9 +2,9 @@
 // export const URL_API_BACK='http://127.0.0.1:2000'; //backend nginx
 // export const ROOT_PICTURE='http://localhost:4000'; // picture s3
 export const COMPANY_NAME='Arlitycs';
-export const URL_API = 'https://Arlitycs.com/api';
-export const URL_API_BACK = 'https://Arlitycs.com/backend';
-export const ROOT_PICTURE = 'https://Arlitycs.com/pictures';
+export const URL_API = 'https://api.arlitycs.com';
+export const URL_API_BACK = 'https://backend.arlitycs.com';
+export const ROOT_PICTURE = 'https://pictures.arlitycs.com';
 export const URL_LOGIN='/login';
 export const URL_CHECK_LOGIN = "/protected";
 export const URL_LOGOUT = "/logout";

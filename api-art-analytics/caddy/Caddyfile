@@ -1,0 +1,31 @@
+{
+    email a.larrard@gmail.com
+    acme_ca https://acme-v02.api.letsencrypt.org/directory
+}
+
+api.arlitycs.com {
+    reverse_proxy http://localhost:80
+    tls {
+        dns cloudflare {
+            api_token {env.CLOUDFLARE_API_TOKEN}
+        }
+    }
+}
+
+backend.arlitycs.com {
+    reverse_proxy http://localhost:2000
+    tls {
+        dns cloudflare {
+            api_token {env.CLOUDFLARE_API_TOKEN}
+        }
+    }
+}
+
+pictures.arlitycs.com {
+    reverse_proxy http://localhost:4000
+    tls {
+        dns cloudflare {
+            api_token {env.CLOUDFLARE_API_TOKEN}
+        }
+    }
+}

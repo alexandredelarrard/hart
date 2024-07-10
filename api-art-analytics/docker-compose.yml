@@ -5,7 +5,7 @@ services:
             context: ./app
             dockerfile: dockerfile
         expose:
-            - 8888
+            - "8888"
         volumes:
             - ./app:/app
             - ../global-schemas/schemas:/app/src/schemas
@@ -24,8 +24,8 @@ services:
     nginx:
         image: nginx:latest
         container_name: middle_nginx
-        ports:
-            - 80:80
+        expose:
+            - "80"
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
         restart: always
@@ -35,14 +35,19 @@ services:
             - shared_net
 
     caddy:
-        image: caddy:latest
         container_name: middle_caddy
+        build:
+            context: ./caddy
+            dockerfile: Dockerfile
         ports:
+            - "80:80"
             - "443:443"
         volumes:
-            - ./Caddyfile:/etc/caddy/Caddyfile
+            - ./caddy/Caddyfile:/etc/caddy/Caddyfile
             - caddy_data:/data
             - caddy_config:/config
+        env_file:
+            - ../global-schemas/.env
         restart: always
         networks:
             - shared_net

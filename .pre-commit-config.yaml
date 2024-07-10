@@ -21,15 +21,10 @@ repos:
   #   hooks:
   #     - id: detect-secrets
 
-  - repo: https://github.com/hadolint/hadolint
-    rev: v2.13.0-beta  # Specify the version of hadolint you want to use
-    hooks:
-      - id: hadolint
-
-  - repo: https://github.com/lukasmartinelli/hadolint
-    rev: v2.13.0-beta  # Specify the version of hadolint you want to use
-    hooks:
-      - id: hadolint
+  # - repo: https://github.com/hadolint/hadolint
+  #   rev: v2.13.0-beta  # Specify the version of hadolint you want to use
+  #   hooks:
+  #     - id: hadolint
 
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.1  # Specify the version of pre-commit-golang you want to use
