@@ -58,14 +58,14 @@ class StepFillDBEmbeddings(Step):
         if self.type == PICTURE_TYPE:
             self.vector = "pict_path"
             df_desc = self.data_retreiver.get_all_pictures(
-                data_name=self.full_data, vector=self.vector, limit=4500000
+                data_name=self.full_data, vector=self.vector, limit=4200000
             )
             return df_desc.drop_duplicates(self.name.id_picture)
 
         elif self.type in [TEXT_TYPE_FR, TEXT_TYPE_EN]:
             langue = "FRENCH" if self.type.split("_")[-1] == "fr" else "ENGLISH"
             df_desc = self.data_retreiver.get_all_text(
-                data_name=self.full_data, language=langue, limit=3100000
+                data_name=self.full_data, language=langue, limit=4200000
             )
 
             # create output var

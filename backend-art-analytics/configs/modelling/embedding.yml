@@ -9,7 +9,7 @@ embedding:
   prompt:
       clustering: "You are an art expert grouping art piece description together: "
   text:
-      batch_size : 24
+      batch_size : 16
   picture:
       batch_size : 92
   dim_reduc:

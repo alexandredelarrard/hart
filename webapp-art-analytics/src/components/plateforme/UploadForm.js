@@ -126,8 +126,8 @@ function UploadForm({
   useFetchExperts(setExperts);
   useFetchComplentaryResultData(result, setAdditionalData, setAvgMinEstimates,
     setAvgMaxEstimates, setAvgFinalResult, setNewResultSaved);
-  // useLLMDesignation(taskId, additionalData, setNewResultSaved,
-  //   chatBotResultFetched, setBotResult, setChatBotResultFetched);
+  useLLMDesignation(taskId, additionalData, setNewResultSaved,
+    chatBotResultFetched, setBotResult, setChatBotResultFetched);
 
   return (
     <div>

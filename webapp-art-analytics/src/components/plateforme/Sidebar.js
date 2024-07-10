@@ -24,19 +24,18 @@ function Sidebar({
   t
 }) {
   const {
-    analysisInProgress,
-    newResultSaved,
     taskId,
     result,
     activeMenu,
     activeLi,
-    showResults
+    showResults,
+    chatBotResultFetched
   } = uploadFormState;
 
   const {
     setActiveMenu,
     setActiveLi,
-    setShowResults
+    setShowResults,
   } = uploadFormHandlers;
 
   const [formerResults, setFormerResults] = useState([]);
@@ -143,9 +142,10 @@ function Sidebar({
   useGetTaskResult(taskId, result, uploadFormHandlers.setResult, setActiveLi);
 
   useEffect(() => {
-    console.log("Fetch")
-    FetchPastResults(setFormerResults);
-  }, [clickResult, analysisInProgress, newResultSaved, setActiveMenu]);
+    if (activeMenu === 'closest-lots') {
+      FetchPastResults(setFormerResults);
+    }
+  }, [clickResult, activeMenu, chatBotResultFetched]);
 
   const organizedResults = organizeResults(formerResults, t);
 

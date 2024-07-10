@@ -86,7 +86,7 @@ class TextModel(Step):
                 # self.text_model(**batch)
                 embeddings.append(batch_embeddings.cpu())
 
-                for _ in range(50):
+                for _ in range(5):
                     torch.cuda.empty_cache()
                     gc.collect()
                     time.sleep(0.1)

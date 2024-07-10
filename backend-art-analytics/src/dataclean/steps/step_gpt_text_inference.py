@@ -4,6 +4,7 @@ import ast
 from queue import Queue
 from typing import List
 from threading import Thread
+from pathlib import Path
 
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import PromptTemplate
@@ -26,7 +27,7 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
-SCOPES = ["https://www.googleapis.com/auth/contacts.readonly"]
+SCOPES = []
 
 
 class StepTextInferenceGpt(Step):
@@ -234,7 +235,7 @@ class StepTextInferenceGpt(Step):
             for i in range(remaining):
                 if i % 5 == 0:
                     self.queues["clients"].put(
-                        self.prompt | self.initialize_client("open_ai") | self.parser
+                        self.prompt | self.initialize_client("google") | self.parser
                     )
                 elif i % 4 == 0:
                     self.queues["clients"].put(
