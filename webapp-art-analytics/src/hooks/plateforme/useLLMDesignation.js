@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import axiosInstance_back from '../general/axiosInstanceBack';
 import { checkAuth } from '../general/identification';
-import { URL_GET_CHATBOT } from '../../utils/constants';
+import { URL_GET_CHATBOT, PATHS } from '../../utils/constants';
 
 const useLLMDesignation = (taskId, additionalData, setNewResultSaved, chatBotResultFetched, setBotResult, setChatBotResultFetched) => {
 
@@ -46,7 +46,7 @@ const useLLMDesignation = (taskId, additionalData, setNewResultSaved, chatBotRes
             if (isAuthenticated) {
                 fetchLLM();
             } else {
-                window.location.href = "/login";
+                window.location.href = PATHS["LOGIN"];
             }
         }
     }, [taskId, additionalData, chatBotResultFetched]);

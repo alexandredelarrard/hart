@@ -1,7 +1,7 @@
 import axiosInstance_middle from '../general/axiosInstance';
 import { checkAuth } from '../general/identification';
 import Cookies from 'js-cookie';
-import { URL_GET_TASK_RESULTS } from '../../utils/constants';
+import { URL_GET_TASK_RESULTS, PATHS } from '../../utils/constants';
 
 const FetchPastResults = async (setFormerResults) => {
 
@@ -25,7 +25,7 @@ const FetchPastResults = async (setFormerResults) => {
           }
         }
       } else {
-        window.location.href = '/login';
+        window.location.href = PATHS["LOGIN"];
       }
 };
 

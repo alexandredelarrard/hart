@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { ModifyProfile } from '../../../hooks/plateforme/ModifyProfile.js';
 import { useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../../hooks/general/identification.js';
+import {PATHS} from '../../../utils/constants.js';
 
 function ProfileSettings({
   userData,
@@ -33,9 +34,9 @@ function ProfileSettings({
         setValidationDate(parsedUserdata.creation_date || null);
         }
   } else {
-    navigate("/login");
+    navigate(PATHS["LOGIN"]);
   }
-  }, [setUserData, setName, setSurname, setAddress, setEmailValidated, setValidationDate]);
+  }, [setUserData, setName, setSurname, setAddress, setEmailValidated, setValidationDate, navigate]);
 
   const handleEditToggle = () => {
     setEditMode(!editMode);

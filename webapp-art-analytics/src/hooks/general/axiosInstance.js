@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { URL_API, URL_REFRESH_LOGIN } from '../../utils/constants';
+import { URL_API, URL_REFRESH_LOGIN, PATHS } from '../../utils/constants';
 
 const axiosInstance_middle = axios.create({
   baseURL: URL_API,
@@ -52,7 +52,7 @@ axiosInstance_middle.interceptors.response.use(
           Cookies.remove('remaining_closest_volume');
           Cookies.remove('remaining_search_volume');
 
-          window.location.href = '/login';
+          window.location.href = PATHS["LOGIN"];
           return Promise.reject(refreshError);
         }
       } else {
@@ -64,7 +64,7 @@ axiosInstance_middle.interceptors.response.use(
         Cookies.remove('remaining_closest_volume');
         Cookies.remove('remaining_search_volume');
 
-        window.location.href = '/login';
+        window.location.href = PATHS["LOGIN"];
         return Promise.reject(error);
       }
     }

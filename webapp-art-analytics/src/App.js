@@ -27,6 +27,7 @@ import Login from './components/connectors/Login';
 import ResetPassword from './components/connectors/ResetPassword';
 import SetNewPassword from './components/connectors/SetNewPassword';
 import Confirm from './components/connectors/Confirm';
+import {PATHS} from "./utils/constants.js"
 
 import './i18n';
 
@@ -149,19 +150,19 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home scrolled={scrolled} setScrolled={setScrolled} changeLanguage={changeLanguage} t={t}/>} />
-          <Route path="/login" element={<Login scrolled={true} t={t}/>} />
-          <Route path="/trial" element={<Trial scrolled={true} t={t}/>} />
-          <Route path="/contact" element={<ContactUs scrolled={true} t={t}/>} />
-          <Route path="/about" element={<About scrolled={true} t={t}/>} />
-          <Route path="/terms" element={<Terms scrolled={true} t={t}/>} />
-          <Route path="/cgv" element={<CGV scrolled={true} t={t}/>} />
-          <Route path="/enroll" element={<Checkout scrolled={true} t={t}/>} />
-          <Route path="/reset-password" element={<ResetPassword scrolled={true} t={t}/>} />
-          <Route path="/confirm/:token" element={<Confirm scrolled={true} t={t}/>} />
-          <Route path="/set-new-password/:token" element={<SetNewPassword scrolled={true} t={t}/>} />
+          <Route path={PATHS["HOME"]} element={<Home scrolled={scrolled} setScrolled={setScrolled} changeLanguage={changeLanguage} t={t}/>} />
+          <Route path={PATHS["LOGIN"]} element={<Login scrolled={true} t={t}/>} />
+          <Route path={PATHS["TRIAL"]} element={<Trial scrolled={true} t={t}/>} />
+          <Route path={PATHS["CONTACT"]} element={<ContactUs scrolled={true} t={t}/>} />
+          <Route path={PATHS["ABOUT"]} element={<About scrolled={true} t={t}/>} />
+          <Route path={PATHS["TERMS"]} element={<Terms scrolled={true} t={t}/>} />
+          <Route path={PATHS["CGV"]} element={<CGV scrolled={true} t={t}/>} />
+          <Route path={PATHS["ENROLL"]} element={<Checkout scrolled={true} t={t}/>} />
+          <Route path={PATHS["RESET_PWD"]} element={<ResetPassword scrolled={true} t={t}/>} />
+          <Route path={PATHS["CONFIRM_PWD"]} element={<Confirm scrolled={true} t={t}/>} />
+          <Route path={PATHS["SET_NEW_PWD"]} element={<SetNewPassword scrolled={true} t={t}/>} />
           <Route
-            path="/analytics"
+            path={PATHS["ANALYTICS"]}
             element={
               <div style={{ display: 'flex' }}>
                 <Sidebar
@@ -183,7 +184,7 @@ function App() {
             }
           />
           <Route
-            path="/analytics/card/:id"
+            path={PATHS["CARD_ID"]}
             element={
               <div style={{ display: 'flex' }}>
                 <CardDetail

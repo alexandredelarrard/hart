@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from './Header.js';
 import Payment from "./Payment.js";
 import {login, checkAuth} from "../../hooks/general/identification.js";
+import {PATHS} from '../../utils/constants.js';
 import LoginElement from '../connectors/LoginElement.js';
 
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
@@ -48,7 +49,7 @@ const Checkout = ({t}) => {
           setStep(2);
         }
       } else {
-        navigate('/login');
+        navigate(PATHS["LOGIN"]);
       }
     };
 
@@ -91,7 +92,7 @@ const Checkout = ({t}) => {
     };
 
     try {
-      const response = await axios.post('/api/payment', paymentData, {
+      await axios.post('/api/payment', paymentData, {
         headers: {
           'Content-Type': 'application/json',
         },

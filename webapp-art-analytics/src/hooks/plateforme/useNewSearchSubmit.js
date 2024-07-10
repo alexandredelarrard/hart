@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import axiosInstance_back from '../general/axiosInstanceBack';
 import { checkAuth } from '../general/identification';
 import useLogActivity from '../general/useLogActivity';
-import { URL_UPLOAD } from '../../utils/constants';
+import { URL_UPLOAD, PATHS } from '../../utils/constants';
 
 const useNewSearchSubmit = ({
       file,
@@ -95,7 +95,7 @@ const useNewSearchSubmit = ({
         console.error('Error uploading file', error);
       }
     } else {
-      window.location.href = '/login';
+      window.location.href = PATHS["LOGIN"];
     }
   };
 

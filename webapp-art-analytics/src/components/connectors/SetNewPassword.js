@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Header from "../landing_page/Header.js";
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { URL_API, URL_SET_NEW_PASSWORD } from '../../utils/constants.js';
+import { URL_API, URL_SET_NEW_PASSWORD, PATHS } from '../../utils/constants.js';
+
 import '../../css/SetNewPassword.css';
 
 function SetNewPassword({t}) {
@@ -21,7 +22,7 @@ function SetNewPassword({t}) {
         },
       });
       setMessage(response.data.message);
-      navigate('/login');
+      navigate(PATHS["LOGIN"]);
     } catch (error) {
       setError(t("landing_page.trial.errorglobal"));
     }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import axiosInstance_middle from '../general/axiosInstance';
-import { URL_GET_IDS_INFO } from '../../utils/constants';
+import { URL_GET_IDS_INFO, PATHS } from '../../utils/constants';
 import { checkAuth } from '../general/identification';
 
 const useFetchComplentaryResultData = (
@@ -49,7 +49,7 @@ const useFetchComplentaryResultData = (
               console.error('Unexpected response format:', response.data);
             }
           } else {
-            window.location.href = '/login';
+            window.location.href = PATHS["LOGIN"];
             throw new Error('User not authenticated');
           }
         } catch (error) {

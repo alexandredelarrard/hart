@@ -5,6 +5,8 @@ import useLogActivity from '../../hooks/general/useLogActivity.js';
 import {login, checkAuth} from '../../hooks/general/identification.js';
 import LoginElement from './LoginElement.js';
 import Cookies from 'js-cookie';
+
+import {PATHS} from '../../utils/constants.js';
 import '../../css/Login.css';
 
 function Login({t}) {
@@ -26,7 +28,7 @@ function Login({t}) {
       // log activity
       const success = await LogActivity("click_log_in", "")
       if (success) {
-        navigate('/analytics');
+        navigate(PATHS["ANALYTICS"]);
       } else {
         console.log('Failed to log activity');
       }
@@ -47,9 +49,9 @@ function Login({t}) {
       const isAuthenticated = await checkAuth();
       const userdataString = Cookies.get("userdata");
       if (isAuthenticated && userdataString) {
-        navigate('/analytics');
+        navigate(PATHS["ANALYTICS"]);
       } else {
-        navigate('/login');
+        navigate(PATHS["LOGIN"]);
       }
     };
 

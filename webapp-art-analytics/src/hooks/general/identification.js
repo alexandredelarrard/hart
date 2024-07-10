@@ -1,6 +1,6 @@
   import Cookies from 'js-cookie';
   import axiosInstance_middle from './axiosInstance';
-  import { URL_CHECK_LOGIN, URL_LOGIN, URL_LOGOUT, URL_REFRESH_LOGIN } from '../../utils/constants';
+  import { URL_CHECK_LOGIN, URL_LOGIN, URL_LOGOUT, URL_REFRESH_LOGIN, PATHS } from '../../utils/constants';
 
   export const login = async (email, password) => {
     try {
@@ -41,7 +41,7 @@
         Cookies.remove('remaining_closest_volume');
         Cookies.remove('remaining_search_volume');
 
-        window.location.href = '/login';
+        window.location.href = PATHS["LOGIN"];
       }
     } catch (error) {
       console.error('Error logging out:', error);

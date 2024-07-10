@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import axiosInstance_back from '../general/axiosInstanceBack';
 import { checkAuth } from '../general/identification';
-import { URL_GET_TASK } from '../../utils/constants';
+import { URL_GET_TASK, PATHS } from '../../utils/constants';
 
 const useGetTaskResult = (taskId, result, setResult, setActiveLi) => {
   useEffect(() => {
@@ -28,10 +28,10 @@ const useGetTaskResult = (taskId, result, setResult, setActiveLi) => {
         }, 1500); // Poll every X sec
         return () => clearInterval(interval);
     } else {
-      window.location.href = "/login"
+      window.location.href = PATHS["LOGIN"];
     }
   }
-  }, [taskId, result, setResult, setResult, setActiveLi]);
+  }, [taskId, result, setResult, setActiveLi]);
 };
 
 export default useGetTaskResult;

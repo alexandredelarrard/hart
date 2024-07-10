@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 
 import { organizeResults } from './upload_utils/organizeSidebar.js';
-import { URL_API, URL_DELETE_TASK_RESULT } from '../../utils/constants';
+import { URL_API, URL_DELETE_TASK_RESULT, PATHS } from '../../utils/constants';
 
 import { logout, checkAuth } from '../../hooks/general/identification';
 import useLogActivity from '../../hooks/general/useLogActivity.js';
@@ -40,7 +40,7 @@ function Sidebar({
 
   const [formerResults, setFormerResults] = useState([]);
   const [clickResult, setClickResult] = useState(false);
-  const { i18n } = useTranslation('/analytics');
+  const { i18n } = useTranslation(PATHS["ANALYTICS"]);
   const LogActivity = useLogActivity();
 
   const memoizedSetResult = useCallback((newResult) => {

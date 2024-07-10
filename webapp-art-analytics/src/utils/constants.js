@@ -26,3 +26,24 @@ export const URL_SEARCH_DB='/search-items';
 export const URL_GET_CHATBOT='/chatbot';
 export const URL_ADD_TO_NEWSLETTER = "/add-newsletter";
 export const URL_MY_ACTIVITY = "/user-my-activity-settings";
+
+// website href path internal to react
+export const PATHS = {
+    "LOGIN": "/login",
+    "HOME": "/",
+    "HOME_PRICING": "/#pricing",
+    "HOME_PRODUCT": "/#product",
+    "ANALYTICS": "/analytics",
+    "TRIAL": "/trial",
+    "CONTACT": "/contact",
+    "ABOUT": "/about",
+    "TERMS": "/terms",
+    "CGV": "/cgv",
+    "BLOG": "/blog",
+    "ENROLL": "/enroll",
+    "RESET_PWD": "/reset-password",
+    "CONFIRM_PWD": "/confirm/:token",
+    "SET_NEW_PWD": "/set-new-password/:token",
+    "CARD_ID": "/analytics/card/:id",
+    "CARD_ID_ROOT": "/analytics/card/"
+}

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { COMPANY_NAME } from "../../utils/constants";
+import { COMPANY_NAME, PATHS } from "../../utils/constants";
 import { Link } from 'react-router-dom';
 import { US, FR } from 'country-flag-icons/react/3x2';
 import logo from '../../assets/logo.jpg';
 import logo_blanc from '../../assets/logo_fond_blanc.jpg';
+
 import '../../css/Header.css';
 
 const Header = ({ t, changeLanguage, scrolled }) => {
@@ -14,7 +15,7 @@ const Header = ({ t, changeLanguage, scrolled }) => {
         <div className="firm-presentation">
             <header className={`${scrolled ? "navbar white-background" : "navbar"} ${menuOpen ? "show-menu" : ""}`}>
                 <div className="logo-container">
-                    <a href="/" className="logo">
+                    <a href={PATHS["HOME"]} className="logo">
                         <img src={scrolled ? logo_blanc : logo} alt="Firm Logo" className="firm-logo" />
                     </a>
                     <span className={`company-name ${scrolled ? "company-name-scrolled" : ""}`}>{COMPANY_NAME}</span>
@@ -24,9 +25,9 @@ const Header = ({ t, changeLanguage, scrolled }) => {
                 </div>
                 <div className={`menu-header ${ menuOpen ? "menu-content show": "menu-content"}`}>
                     <nav className="nav-links">
-                        <a href="/#product">{t("landing_page.header.products")}</a>
-                        <a href="/#pricing">{t("landing_page.header.offers")}</a>
-                        <a href="/blog">{t("landing_page.header.blog")}</a>
+                        <a href={PATHS["HOME_PRODUCT"]}>{t("landing_page.header.products")}</a>
+                        <a href={PATHS["HOME_PRICING"]}>{t("landing_page.header.offers")}</a>
+                        <a href={PATHS["BLOG"]}>{t("landing_page.header.blog")}</a>
                     </nav>
                     <div className="language-container">
                         <button className="menu-item-plateforme lang-button" onClick={() => changeLanguage('en')}>
@@ -39,7 +40,7 @@ const Header = ({ t, changeLanguage, scrolled }) => {
                         </button>
                     </div>
                     <div className="menu-container">
-                        <Link to="/login">
+                        <Link to={PATHS["LOGIN"]}>
                             <button className="account-button">{t("landing_page.header.myaccount")}</button>
                         </Link>
                     </div>

@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react';
 import axiosInstance_middle from '../general/axiosInstance';
 import Cookies from 'js-cookie';
 import { checkAuth} from '../general/identification';
-import { URL_GET_EXPERTS } from '../../utils/constants';
+import { URL_GET_EXPERTS, PATHS } from '../../utils/constants';
 
 const useFetchExperts = (setExperts) => {
 
@@ -37,7 +37,7 @@ const useFetchExperts = (setExperts) => {
                 }
             }
         } else {
-            window.location.href = "/login";
+            window.location.href = PATHS["LOGIN"];
         }
     }, [setExperts]);
 

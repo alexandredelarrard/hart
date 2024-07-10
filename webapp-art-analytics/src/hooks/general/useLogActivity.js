@@ -1,12 +1,10 @@
 import { useCallback } from 'react';
 import Cookies from 'js-cookie';
 import axiosInstance_middle from '../general/axiosInstance';
-import { useNavigate } from 'react-router-dom';
 import { checkAuth} from './identification';
-import { LOG_ACTIVITY } from '../../utils/constants';
+import { LOG_ACTIVITY, PATHS } from '../../utils/constants';
 
 const useLogActivity = () => {
-  const navigate = useNavigate();
   const logActivity = useCallback(async (activityType, activityDetails) => {
     try {
       const isAuthenticated = await checkAuth();
@@ -36,7 +34,7 @@ const useLogActivity = () => {
           return false;
         }
     } else {
-      navigate('/login');
+      window.Location.href = PATHS["LOGIN"];
     }
     } catch (error) {
       console.error('Error logging activity:', error);

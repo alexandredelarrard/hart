@@ -1,5 +1,5 @@
 import React from 'react';
-import { ROOT_PICTURE} from '../../../utils/constants';
+import { ROOT_PICTURE, PATHS} from '../../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../../../utils/general.js';
 import '../../../css/Card.css';
@@ -8,7 +8,7 @@ function Card({ i18n, item, t }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/analytics/card/${item.id_item}`, { state: { item } });
+    navigate(`${PATHS["CARD_ID_ROOT"]}${item.id_item}`, { state: { item } });
   };
 
   const renderImage = () => {

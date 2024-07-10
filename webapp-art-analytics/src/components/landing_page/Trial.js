@@ -5,9 +5,10 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import {URL_API, URL_SIGNIN} from '../../utils/constants';
+import {URL_API, URL_SIGNIN, PATHS} from '../../utils/constants';
 import {validateEmail, validatePassword} from '../../utils/general.js';
 import Header from "../landing_page/Header.js";
+
 import '../../css/Trial.css';
 
 const Trial = () => {
@@ -68,7 +69,7 @@ const Trial = () => {
           Cookies.set('token', response.data.access_token, { expires: 0.5 });
           Cookies.set('userdata', JSON.stringify(response.data.userdata), { expires: 0.5 });
           setMessage(response.data.message);
-          navigate('/analytics');
+          navigate(PATHS["ANALYTICS"]);
         } catch (error) {
           if (error.response && error.response.status === 401) {
             setError(t("landing_page.trial.error401"));
@@ -175,7 +176,7 @@ const Trial = () => {
                 {error && <p className="error">{error}</p>}
                 <hr className="login-delimiter" />
                 <div className='login-trial'>
-                    <p>{t("overall.alreadyenrolled")} <Link to="/login">{t("overall.pleaseconnect")}</Link>.</p>
+                    <p>{t("overall.alreadyenrolled")} <Link to={PATHS["LOGIN"]}>{t("overall.pleaseconnect")}</Link>.</p>
                 </div>
             </section>
         </div>

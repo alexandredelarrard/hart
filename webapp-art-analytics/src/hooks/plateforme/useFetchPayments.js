@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import axiosInstance_middle from '../general/axiosInstance';
 import { checkAuth } from '../general/identification';
-import { URL_GET_PAYMENTS } from '../../utils/constants';
+import { URL_GET_PAYMENTS, PATHS } from '../../utils/constants';
 
 const useFetchPayments = (setPayments) => {
   useEffect(() => {
@@ -22,7 +22,7 @@ const useFetchPayments = (setPayments) => {
             });
         }
       } else {
-        window.location.href = "/login";
+        window.location.href = PATHS["LOGIN"];
       }
       }, [setPayments]);
 };
