@@ -25,6 +25,7 @@ export const URL_SEARCH_DB='/search-items';
 export const URL_GET_CHATBOT='/chatbot';
 export const URL_ADD_TO_NEWSLETTER = "/add-newsletter";
 export const URL_MY_ACTIVITY = "/user-my-activity-settings";
+export const URL_CONTACT_US = "/contact-us"
 
 // website href path internal to react
 export const PATHS = {
@@ -36,6 +37,7 @@ export const PATHS = {
     "TRIAL": "/trial",
     "CONTACT": "/contact",
     "ABOUT": "/about",
+    "SOON": "/coming-soon",
     "TERMS": "/terms",
     "CGV": "/cgv",
     "BLOG": "/blog",

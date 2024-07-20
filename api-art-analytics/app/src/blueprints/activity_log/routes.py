@@ -3,7 +3,7 @@ from sqlalchemy import func, case, cast, Date
 from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.extensions import db
-from src.schemas.activity import ActivityLog, Newsletter
+from src.schemas.activity import ActivityLog, Newsletter, ContactUs
 
 from . import activity_blueprint
 
@@ -43,6 +43,34 @@ def log_activity():
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": "Failed to log activity", "details": str(e)}), 500
+
+
+@activity_blueprint.route("/contact-us", methods=["POST"])
+def contact_us():
+
+    data = request.get_json()
+
+    if not data["email_content"]:
+        return jsonify({"error": "Email already in the Newsletter"}), 404
+
+    data = data.get("email_content")
+
+    new_contact = ContactUs(
+        name=data["name"],
+        email=data["email"],
+        title=data["subject"],
+        message=data["message"],
+        creation_date=datetime.now(),
+    )
+
+    try:
+        db.session.add(new_contact)
+        db.session.commit()
+        return jsonify({"message": "Contact added successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to add contact", "details": str(e)}), 500
 
 
 @activity_blueprint.route("/add-newsletter", methods=["POST"])

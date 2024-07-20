@@ -15,15 +15,16 @@ import Offers from './components/plateforme/Offers';
 import HeaderPlateforme from "./components/plateforme/upload_utils/HeaderPlateforme.js";
 
 import Home from './components/Home';
-import Trial from './components/landing_page/Trial';
+// import Trial from './components/landing_page/Trial';
 import ContactUs from './components/landing_page/ContactUs';
 import Terms from './components/landing_page/Terms';
 import CGV from './components/landing_page/CGV';
 import About from './components/landing_page/About';
-import Checkout from './components/landing_page/Checkout';
+// import Checkout from './components/landing_page/Checkout';
+import ComingSoon from './components/landing_page/ComingSoon.js';
 
 import Login from './components/connectors/Login';
-import ResetPassword from './components/connectors/ResetPassword';
+// import ResetPassword from './components/connectors/ResetPassword';
 import SetNewPassword from './components/connectors/SetNewPassword';
 import ProtectedRoute from './components/connectors/ProtectedRoute';
 import Confirm from './components/connectors/Confirm';
@@ -153,15 +154,20 @@ function App() {
         <Routes>
           <Route path={PATHS["HOME"]} element={<Home scrolled={scrolled} setScrolled={setScrolled} changeLanguage={changeLanguage} t={t}/>} />
           <Route path={PATHS["LOGIN"]} element={<Login scrolled={true} t={t} changeLanguage={changeLanguage}/>} />
-          <Route path={PATHS["TRIAL"]} element={<Trial scrolled={true} t={t}/>} />
-          <Route path={PATHS["CONTACT"]} element={<ContactUs scrolled={true} t={t}/>} />
-          <Route path={PATHS["ABOUT"]} element={<About scrolled={true} t={t}/>} />
-          <Route path={PATHS["TERMS"]} element={<Terms scrolled={true} t={t}/>} />
-          <Route path={PATHS["CGV"]} element={<CGV scrolled={true} t={t}/>} />
-          <Route path={PATHS["ENROLL"]} element={<Checkout scrolled={true} t={t}/>} />
-          <Route path={PATHS["RESET_PWD"]} element={<ResetPassword scrolled={true} t={t}/>} />
-          <Route path={PATHS["CONFIRM_PWD"]} element={<Confirm scrolled={true} t={t}/>} />
-          <Route path={PATHS["SET_NEW_PWD"]} element={<SetNewPassword scrolled={true} t={t}/>} />
+          {/* <Route path={PATHS["TRIAL"]} element={<Trial scrolled={true} t={t}/>} /> */}
+          <Route path={PATHS["TRIAL"]} element={<ComingSoon changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["CONTACT"]} element={<ContactUs changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["ABOUT"]} element={<About changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["SOON"]} element={<ComingSoon changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["TERMS"]} element={<Terms changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["CGV"]} element={<CGV changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          {/* <Route path={PATHS["ENROLL"]} element={<Checkout scrolled={true} t={t}/>} /> */}
+          <Route path={PATHS["ENROLL"]} element={<ComingSoon changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          {/* <Route path={PATHS["RESET_PWD"]} element={<ResetPassword changeLanguage={changeLanguage} scrolled={true} t={t}/>} /> */}
+          <Route path={PATHS["RESET_PWD"]} element={<ComingSoon changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["CONFIRM_PWD"]} element={<Confirm changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+          <Route path={PATHS["SET_NEW_PWD"]} element={<SetNewPassword changeLanguage={changeLanguage} scrolled={true} t={t}/>} />
+
           <Route
             path={PATHS["ANALYTICS"]}
             element={<ProtectedRoute />}>

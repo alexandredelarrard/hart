@@ -6,7 +6,7 @@ import { URL_API, URL_SET_NEW_PASSWORD, PATHS } from '../../utils/constants.js';
 
 import '../../css/SetNewPassword.css';
 
-function SetNewPassword({t}) {
+function SetNewPassword({changeLanguage, t}) {
   const { token } = useParams();
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -30,7 +30,7 @@ function SetNewPassword({t}) {
 
   return (
     <div>
-      <Header scrolled={true} t={t}/>
+      <Header changeLanguage={changeLanguage} scrolled={true} t={t}/>
       <div className="set-new-password-container">
         <h2>{t("landing_page.setnewpassword.title")}</h2>
         <form onSubmit={handleSubmit}>

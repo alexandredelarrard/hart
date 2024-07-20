@@ -139,7 +139,7 @@ def signin():
                     name=name,
                     surname=surname,
                     job=job,
-                    creation_date=datetime.today().strftime("%Y-%m-%d %H:%M"),
+                    creation_date=datetime.now(),
                     email_confirmed=False,
                     active=True,
                     plan="free",

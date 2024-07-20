@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import Header from "./Header.js";
+import axiosInstance_middle from '../../hooks/general/axiosInstance';
+import { URL_CONTACT_US } from "../../utils/constants";
+import {validateEmail} from '../../utils/general.js';
 import '../../css/ContactUs.css';
 
-const ContactUs = ({t}) => {
+const ContactUs = ({changeLanguage, t}) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -10,22 +13,41 @@ const ContactUs = ({t}) => {
         message: ""
     });
 
+    const [responseMessage, setResponseMessage] = useState("");
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here, such as sending the email
-        console.log("Form data submitted:", formData);
+        try {
+            const response = await axiosInstance_middle.post(URL_CONTACT_US, {
+                'email_content': formData
+            },{
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                setResponseMessage("Email data saved successfully!");
+            } else {
+                setResponseMessage("Failed to save email data. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error saving email data:", error);
+            setResponseMessage("An error occurred. Please try again later.");
+        }
     };
 
     return (
         <div>
-        <Header scrolled={true} t={t}/>
+        <Header changeLanguage={changeLanguage} scrolled={true} t={t}/>
         <section className="contact-us-container">
             <h2>{t("overall.contactus")}</h2>
+            {!responseMessage && (
             <form className="contact-us-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>{t("overall.name")}</label>
@@ -44,7 +66,10 @@ const ContactUs = ({t}) => {
                     <textarea name="message" value={formData.message} onChange={handleChange} required></textarea>
                 </div>
                 <button type="submit" className="contact-us-button">{t("landing_page.contactus.sendmessage")}</button>
-            </form>
+            </form>)}
+            {responseMessage &&
+                <div className="quote">{responseMessage}</div>
+            }
         </section>
     </div>
     );

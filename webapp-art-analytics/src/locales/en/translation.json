@@ -16,6 +16,8 @@
     "pleaseconnect": "Please Log in to Your Account",
     "alreadyenrolled": "Already Enrolled?",
     "starttrial": "Start Free Trial",
+    "coming_soon": "Coming soon",
+    "building_process": "Finalizing development phaze",
     "no_picture": "Picture not available"
   },
   "plateforme": {
@@ -120,7 +122,7 @@
       "reviews": "Testimonials",
       "blog": "Our Blog",
       "references": "References",
-      "addedtothelist": "You have been successfully added !"
+      "addedtothelist": "You have been successfully added to our newsletter!"
     },
     "header": {
       "myaccount": "My Account",
@@ -146,7 +148,7 @@
       "expertcriterion1": "Unlimited queries",
       "expertcriterion2": "Dedicated estimation limit",
       "expertcriterion3": "Sales support",
-      "expertcriterion4": "Bespoke authentication",
+      "expertcriterion4": "Auction tool fully accessible",
       "monthlypricepassion": "19",
       "yearlypricepassion": "199",
       "remainingdays": "Remaining days of your plan",
@@ -289,7 +291,25 @@
       "confirmationdesc1": "Thank you for your trust! Your invoice should appear in your email inbox within a few minutes.",
       "confirmationdesc2": "If you have not received a confirmation email after a few minutes, please contact support."
     },
-    "about": {},
+    "about": {
+      "h1_title": "About {COMPANY_NAME}",
+      "h2_title_1": "Our Mission",
+      "h2_title_2": "Generative AI at the Service of Art",
+      "mission_statement_1": "At {COMPANY_NAME}, we are revolutionizing the art market by combining our unique expertise in both the art domain and artificial intelligence. Our mission is to streamline and bring transparency to the art market, whether for sellers or buyers.",
+      "quote": "\"The call for greater openness and accountability has come from all sectors of the art world, including artists, collectors, and buyers.\"",
+      "mission_statement_2": "We understand the challenges faced by individuals and experts in the art world. Sellers often lack knowledge about the value of their items, while experts are constantly searching for exceptional works. This manual and slow search process limits the potential for future sales.",
+      "mission_statement_3": "{COMPANY_NAME} addresses these issues by offering innovative solutions through three main avenues:",
+      "aim_1": "Enable individuals and institutions to quickly and accurately estimate the value of their artworks with minimal knowledge.",
+      "aim_2": "Provide art experts with advanced and transparent price analysis tools, facilitating the understanding of valuation and subsequent sale of artworks.",
+      "aim_3": "Create a unified and easy-to-use platform for auctions, increasing experts' ability to attract art enthusiasts from around the world.",
+      "how_1": "We leverage the most advanced artificial intelligence models, including language models (LLMs) and statistical models, to analyze artworks. These technologies allow us to process vast volumes of data in record time, identify common factors among artworks, and compare them scientifically.",
+      "how_2": "Our expertise in both the art and technology domains allows us to offer unprecedented solutions. We are the first to propose such a combination of technologies to solve age-old problems in the art market. Our tools include:",
+      "tool_1": "Extraction, aggregation, and homogenization of art data worldwide to make them comparable.",
+      "tool_2": "Interpretable artificial intelligence models that break down each component of an artwork's price.",
+      "tool_3": "Studies of long-term temporal and geographical trends of an artwork, an artist, or any object available for sale.",
+      "how_3": "We also integrate human expertise for the most complex cases, ensuring the best possible outcomes. By combining the power of AI with human expertise, we guarantee unparalleled accuracy and reliability in the estimation and sale of artworks.",
+      "contact_us": "Want to learn more or join this adventure? Contact us."
+    },
     "advantages": {
         "title": "Increase your sales without increasing your costs",
         "title_1": "Full service, 7 days a week",

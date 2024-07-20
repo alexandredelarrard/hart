@@ -1,57 +1,81 @@
+.about-intro {
+    width: 100%;
+    height: 700px; /* Adjust the height as needed */
+    position: relative;
+    overflow: hidden;
+}
+
+.about-intro img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.about-intro h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    font-size: 4em;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+}
+
 .about-container {
     max-width: 800px;
-    margin: 150px auto;
+    margin: 20px auto;
     padding: 20px;
-    text-align: center;
+    text-align: justify;
 }
 
-.about-container h1 {
+.about-container h2 {
     font-size: 3em;
-    margin-bottom: 20px;
-    color: #002955;
+    margin: 40px;
+    color: rgb(0, 41, 85);
 }
 
-.about-aim, .about-team, .about-backers {
-    margin-bottom: 40px;
+.about-container ul{
+    font-size: 1.2em;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: justify;
 }
 
-.about-aim h2, .about-team h2, .about-backers h2 {
-    font-size: 2em;
-    margin-bottom: 20px;
-    color: #002955;
-}
-
-.about-aim p, .about-backers p {
+.about-container p {
     font-size: 1.2em;
     margin-bottom: 10px;
     color: #333;
-    text-align: left;
+    text-align: justify;
 }
 
-.about-team {
+.about-container ul {
+    list-style: none;
+    padding-left: 40px;
+}
+
+.about-container ul li {
+    margin-bottom: 10px;
+    margin-top: 30px;
     display: flex;
-    justify-content: space-around;
-    text-align: left;
+    align-items: center;
 }
 
-.team-member {
-    max-width: 45%;
+.about-container ul li::before {
+    margin-right: 10px;
 }
 
-.team-member img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-bottom: 10px;
+.contact-us{
+    width: 80%;
+    padding-top: 50px;
+    margin:auto;
 }
 
-.team-member h3 {
-    font-size: 1.5em;
-    color: #002955;
-    margin-bottom: 10px;
-}
-
-.team-member p {
-    font-size: 1.2em;
-    color: #333;
+.icon{
+    color:#0056b3;
+    width: 40px;
+    height: 40px;
+    padding-right: 30px;
 }

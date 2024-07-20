@@ -1,48 +1,53 @@
 import React from "react";
 import Header from "./Header.js";
-import founder1 from "../../assets/avatar.png"; // Placeholder for founder 1 image
-import founder2 from "../../assets/avatar.png"; // Placeholder for founder 2 image
-import '../../css/About.css';
+import illustration from '../../assets/landing_background_2.jpg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDatabase, faDashboard, faCommentsDollar, faSitemap, faBrain, faChartSimple } from '@fortawesome/free-solid-svg-icons';
 
-const About = ({t}) => {
+import '../../css/About.css';
+import { COMPANY_NAME } from "../../utils/constants.js";
+
+const About = ({ changeLanguage, t }) => {
+    const replaceCompanyName = (text) => text.replace(/{COMPANY_NAME}/g, COMPANY_NAME);
     return (
         <div>
-        <Header scrolled={true} t={t}/>
-        <div className="about-container">
-            <h1>About Artycs</h1>
-            <section className="about-aim">
-                <h2>Our Aim</h2>
-                <p>
-                    Leverage the very large number of past sales, auctions and external data to help art actors to better estimate, track and value art goods.
-                    Our DNA is very much analytical since we would like to help the art world to be more accessible to the public, more transparent for buyers
-                    and sellers, and overall make the sale process more fluid.
-                </p>
-                <p>
-                    Our goal is also to fight against fake art pieces, fraudulent signatures which our AI tool will soon be able to help with.
-                </p>
-            </section>
-            <section className="about-team">
-                <h2>Our Team</h2>
-                <div className="team-member">
-                    <img src={founder1} alt="Founder 1" />
-                    <h3>Founder 1 Name</h3>
-                    <p>Brief description of founder 1, their background, and role in the company.</p>
-                </div>
-                <div className="team-member">
-                    <img src={founder2} alt="Founder 2" />
-                    <h3>Founder 2 Name</h3>
-                    <p>Brief description of founder 2, their background, and role in the company.</p>
-                </div>
-            </section>
-            <section className="about-backers">
-                <h2>Our Backers</h2>
-                <p>
-                    Our backers include art experts from art auction houses and 2 commissaires priseurs who are driving our approach on a day-to-day basis to
-                    fine-tune our value proposition as much as possible.
-                </p>
-            </section>
+            <Header changeLanguage={changeLanguage} scrolled={true} t={t} />
+            <div className="about-intro">
+                <img src={illustration} alt="Illustration" />
+                <h1>{replaceCompanyName(t('landing_page.about.h1_title'))}</h1>
+            </div>
+            <div className="about-container">
+                <section className="about-aim">
+                    <h2>{t('landing_page.about.h2_title_1')}</h2>
+                    <p>{replaceCompanyName(t('landing_page.about.mission_statement_1'))}</p>
+                    <div className="quote">{t('landing_page.about.quote')}</div>
+                    <p>{t('landing_page.about.mission_statement_2')}</p>
+                    <p>{replaceCompanyName(t('landing_page.about.mission_statement_3'))}</p>
+                    <ul>
+                        <li><FontAwesomeIcon icon={faDashboard} className="icon" />{t('landing_page.about.aim_1')}</li>
+                        <li><FontAwesomeIcon icon={faCommentsDollar} className="icon" />{t('landing_page.about.aim_2')}</li>
+                        <li><FontAwesomeIcon icon={faSitemap} className="icon" />{t('landing_page.about.aim_3')}</li>
+                    </ul>
+                </section>
+                <section className="about-how">
+                    <h2>{t('landing_page.about.h2_title_2')}</h2>
+                    <p>{t('landing_page.about.how_1')}</p>
+                    <p>{t('landing_page.about.how_2')}</p>
+                    <ul>
+                        <li><FontAwesomeIcon icon={faDatabase} className="icon" />{t('landing_page.about.tool_1')}</li>
+                        <li><FontAwesomeIcon icon={faBrain} className="icon" />{t('landing_page.about.tool_2')}</li>
+                        <li><FontAwesomeIcon icon={faChartSimple} className="icon" />{t('landing_page.about.tool_3')}</li>
+                    </ul>
+                    <p>{t('landing_page.about.how_3')}</p>
+                </section>
+                <section className="contact-us">
+                    <p>{t('landing_page.about.contact_us')}</p>
+                    <div className="button-container">
+                        <button className="firm-presentation-cta-button" onClick={() => window.location.href='/contact'}>{t("overall.contactus")}</button>
+                    </div>
+                </section>
+            </div>
         </div>
-    </div>
     );
 }
 

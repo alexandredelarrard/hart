@@ -4,11 +4,11 @@ import { COMPANY_NAME } from "../../utils/constants.js";
 import { Link } from 'react-router-dom';
 import '../../css/Terms.css';
 
-const CGV = ({t}) => {
+const CGV = ({changeLanguage, t}) => {
   const replaceCompanyName = (text) => text.replace(/{COMPANY_NAME}/g, COMPANY_NAME);
   return (
     <div>
-      <Header scrolled={true} t={t}/>
+      <Header changeLanguage={changeLanguage} scrolled={true} t={t}/>
       <div className="terms-container">
         <h1>{t("landing_page.cgv.supertitle")}</h1>
 

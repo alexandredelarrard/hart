@@ -40,3 +40,17 @@ class Newsletter(db.Model):
 
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class ContactUs(db.Model):
+    __tablename__ = "contact_us"
+    __table_args__ = {"extend_existing": True}
+    contact_id = db.Column(db.Integer, unique=True, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    message = db.Column(db.String(120), nullable=False)
+    creation_date = db.Column(db.String(120), nullable=False)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

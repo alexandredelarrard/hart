@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import {PATHS} from '../../utils/constants.js';
 
 function LoginElement({
     handleSubmit,
@@ -42,7 +43,7 @@ function LoginElement({
           {error && <p className="error">{error}</p>}
           <hr className="login-delimiter" />
           <div className='login-trial'>
-            <p><Link to="/reset-password">{t("landing_page.login.forgottenpassword")}</Link> | {t("landing_page.login.notyetenrolled")} <Link to="/trial">{t("overall.starttrial")}</Link></p>
+            <p><Link to={PATHS["RESET_PWD"]}>{t("landing_page.login.forgottenpassword")}</Link> | {t("landing_page.login.notyetenrolled")} <Link to={PATHS["TRIAL"]}>{t("overall.starttrial")}</Link></p>
           </div>
         </div>
   );

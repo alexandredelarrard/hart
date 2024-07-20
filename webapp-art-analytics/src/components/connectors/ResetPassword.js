@@ -3,7 +3,7 @@ import Header from "../landing_page/Header.js";
 import axios from 'axios';
 import { URL_API, URL_RESET_PASSWORD } from '../../utils/constants.js';
 
-function ResetPassword({t}) {
+function ResetPassword({changeLanguage, t}) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -27,7 +27,7 @@ function ResetPassword({t}) {
 
   return (
     <div>
-        <Header scrolled={true} t={t}/>
+        <Header changeLanguage={changeLanguage} scrolled={true} t={t}/>
         <div className="login-container">
           <div className="login-form">
             <h2>{t("landing_page.resetpassword.title")}</h2>

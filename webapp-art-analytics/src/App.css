@@ -40,3 +40,14 @@
 h2{
   text-align: center;
 }
+
+.quote{
+  font-style: italic;
+  font-size: 1.4em;
+  padding: 30px;
+  width: 90%;
+  margin: auto;
+  color: #555353;
+  font-weight: 500;
+  text-align: center;
+}

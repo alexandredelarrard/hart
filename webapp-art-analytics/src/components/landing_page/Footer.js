@@ -7,7 +7,7 @@ import { faLinkedin, faInstagram, faTwitter } from '@fortawesome/free-brands-svg
 // import useLogActivity from '../../hooks/general/useLogActivity.js';
 import {validateEmail} from '../../utils/general.js';
 import axiosInstance_middle from '../../hooks/general/axiosInstance';
-import { COMPANY_NAME, URL_ADD_TO_NEWSLETTER } from "../../utils/constants";
+import { COMPANY_NAME, PATHS, URL_ADD_TO_NEWSLETTER } from "../../utils/constants";
 import '../../css/Footer.css';
 
 const Footer = ({t}) => {
@@ -96,13 +96,14 @@ const Footer = ({t}) => {
                     <a href="#product_3">{t("landing_page.footer.optimize")}</a>
                     {/* <a href="#product_4">{t("landing_page.footer.authentification")}</a> */}
                     <a href="#pricing">{t("landing_page.footer.offers")}</a>
-                    <Link to="/terms">{t("landing_page.footer.legal")}</Link>
+
                 </div>
                 <div className="footer-column">
                     <h3>{COMPANY_NAME}</h3>
-                    <Link to="/about">{t("landing_page.footer.about").replace("{COMPANY_NAME}", COMPANY_NAME)}</Link>
-                    <Link to="/contact">{t("overall.contactus")}</Link>
-                    <Link to="/team">{t("landing_page.footer.team")}</Link>
+                    <Link to={PATHS["ABOUT"]}>{t("landing_page.footer.about").replace("{COMPANY_NAME}", COMPANY_NAME)}</Link>
+                    <Link to={PATHS["CONTACT"]}>{t("overall.contactus")}</Link>
+                    <Link to={PATHS["TERMS"]}>{t("landing_page.footer.legal")}</Link>
+                    {/* <Link to="/team">{t("landing_page.footer.team")}</Link> */}
                     {/* <Link to="/career">Career</Link> */}
                 </div>
                 {/* <div className="footer-column">
