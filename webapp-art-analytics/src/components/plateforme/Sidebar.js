@@ -36,6 +36,7 @@ function Sidebar({
     setActiveMenu,
     setActiveLi,
     setShowResults,
+    setResult
   } = uploadFormHandlers;
 
   const [formerResults, setFormerResults] = useState([]);
@@ -44,7 +45,7 @@ function Sidebar({
   const LogActivity = useLogActivity();
 
   const memoizedSetResult = useCallback((newResult) => {
-    uploadFormState.setResult(newResult);
+    setResult(newResult);
   }, [uploadFormState]);
 
   const memoizedSetActiveLi = useCallback((index) => {
@@ -143,6 +144,8 @@ function Sidebar({
             const parsedUserdata = JSON.parse(userdataCookie);
             setUserData(parsedUserdata);
         }
+      } else {
+        window.location.href = PATHS["LOGIN"];
       }
 
   }, [setUserData]);
@@ -190,9 +193,9 @@ function Sidebar({
                 <ul className="submenu">
                   {organizedResults[category].map((result, index) => (
                     <li
-                      key={index}
-                      className={`submenu-item ${activeLi === index ? 'selected' : ''}`}
-                      onClick={() => { memoizedSetActiveLi(index); handleResultClick(result);}}
+                      key={category + index}
+                      className={`submenu-item ${activeLi === category + index ? 'selected' : ''}`}
+                      onClick={() => { memoizedSetActiveLi(category + index); handleResultClick(result);}}
                     >
                       <span>
                         {result.llm_result ? (

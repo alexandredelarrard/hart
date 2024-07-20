@@ -1,21 +1,21 @@
 .product-container {
-  width: 70%;
+  width: 65%;
   margin: 0 auto;
   text-align: center;
-  margin-top: 120px;
-  margin-bottom: 120px;
+  margin-top: 100px;
+  margin-bottom: 100px;
 }
 
 .product-container h1 {
-  font-size: 3.5em;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  font-size: 3em;
+  margin-top: 30px;
+  margin-bottom: 30px;
   text-align: center; /* Center the title */
+  color: #154d89;
 }
 
 .product-container p {
   font-size: 1.6em;
-  margin-bottom: 50px;
 }
 
 .problematic-area {
@@ -23,8 +23,8 @@
   justify-content: space-between;
   align-items: center;
   text-align: left;
-  margin-top: 100px;
-  margin-bottom: 100px;
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
 .problematic-area.reverse {
@@ -32,19 +32,23 @@
 }
 
 .problematic-image {
-  flex: 1;
-  max-width: 45%;
-  height: 100%;
+  width: 45%;
+  height: auto;
+  margin: auto;
+  display: block;
+  align-items: center;
+  justify-content: center;
 }
 
-.problematic-image video {
+.problematic-image video,
+.problematic-image img {
   width: 100%;
-  height: auto;
-  border-radius: 10px;
+  height: 100%;
+  object-fit: cover; /* Ensures the video or image covers the container */
 }
+
 
 .problematic-text {
-  flex: 1;
   max-width: 55%;
   padding-left: 50px;
   padding-right: 50px;
@@ -58,8 +62,8 @@
 
 .problematic-text p {
   font-size: 1.2em;
-  margin-bottom: 40px;
-  text-align: center; /* Center the subtitle */
+  margin: 5px;
+  text-align: left; /* Center the subtitle */
 }
 
 .pain-solution-container {
@@ -69,7 +73,9 @@
 
 .pain-points,
 .solutions {
-  flex: 1;
+  width: 75%;
+  align-content: center;
+  margin: auto;
 }
 
 .pain-points {
@@ -79,9 +85,8 @@
 .pain,
 .solution {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  height: 80px;
+  align-items: center;
+  min-height: 50px;
 }
 
 .pain p,
@@ -96,10 +101,7 @@
   color: #154d89;
   font-size: 2em; /* Larger icon size */
   padding-right: 10px;
-}
-
-.faicon.green {
-  color: #218838; /* Green color for ticks */
+  opacity: 66%;
 }
 
 .contentainer-product-button {
@@ -118,12 +120,30 @@
   margin: 40px 0;
 }
 
+.bubble {
+  position: relative;
+  display: inline-block;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  font-weight: bold;
+  margin-right: 10px;
+  min-width: 80px;
+  min-height: 80px;
+  margin: 7px;
+  font-size: 1.4em;
+  background: linear-gradient(235deg, white 20%, #154d89 20%, #154d89 100%);
+  border-radius: 50%;
+}
+
 /* Media Queries for responsive design */
 @media (max-width: 1200px) {
   .product-container {
     width: 90%;
-    margin-top: 60px;
-    margin-bottom: 60px;
+    margin-top: 30px;
+    margin-bottom: 30px;
   }
 
   .product-container h1 {
@@ -151,9 +171,13 @@
     margin-bottom: 60px;
   }
 
-  .problematic-image, .problematic-text {
+  .problematic-text {
     max-width: 100%;
     padding: 0;
+  }
+
+  .problematic-image{
+    height: 100%;
   }
 
   .problematic-text {
@@ -178,10 +202,6 @@
     align-items: center;
   }
 
-  .pain-points, .solutions {
-    margin-right: 0;
-  }
-
   .pain-points {
     margin-bottom: 20px;
   }
@@ -190,7 +210,6 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 10px;
-    height: 60px;
   }
 
   .pain{
@@ -225,7 +244,6 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 10px;
-    height: 50px;
   }
 
   .pain{
@@ -238,5 +256,4 @@
 .pain-solution-container{
   display: none;
 }
-
 }

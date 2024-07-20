@@ -1,6 +1,6 @@
 .background-section {
     width: 100%;
-    background: linear-gradient(to bottom, #ddecef 50%, #fff 50%);
+    background: linear-gradient(to bottom, #ddecef 10%, #fff 100%);
     display: flex;
     justify-content: center;
     align-items: center;

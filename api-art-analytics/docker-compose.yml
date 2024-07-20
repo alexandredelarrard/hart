@@ -26,6 +26,8 @@ services:
         container_name: middle_nginx
         expose:
             - "80"
+        ports:
+            - "80:80"
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
         restart: always
@@ -34,23 +36,23 @@ services:
         networks:
             - shared_net
 
-    caddy:
-        container_name: middle_caddy
-        build:
-            context: ./caddy
-            dockerfile: Dockerfile
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-            - caddy_data:/data
-            - caddy_config:/config
-        env_file:
-            - ../global-schemas/.env
-        restart: always
-        networks:
-            - shared_net
+    # caddy:
+    #     container_name: middle_caddy
+    #     build:
+    #         context: ./caddy
+    #         dockerfile: Dockerfile
+    #     ports:
+    #         - "80:80"
+    #         - "443:443"
+    #     volumes:
+    #         - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+    #         - caddy_data:/data
+    #         - caddy_config:/config
+    #     env_file:
+    #         - ../global-schemas/.env
+    #     restart: always
+    #     networks:
+    #         - shared_net
 
 networks:
   shared_net:

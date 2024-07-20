@@ -1,5 +1,5 @@
 .pricing-section {
-  background-color: #002955;
+  background-color: #ddecef;
   width: 100%;
   padding: 150px 0;
 }
@@ -26,7 +26,7 @@
 .pricing-subsection h1 {
   font-size: 4em;
   margin-bottom: 60px;
-  color: white;
+  color: #002955;
 }
 
 .pricing-subsection-plateforme h1{
@@ -65,18 +65,32 @@
 }
 
 .features-list {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
-  text-align: center;
+  text-align: left; /* Center-align the ul */
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+  margin: auto;
 }
 
 .features-list li {
+  font-size: 16px;
+  font-weight: bold;
+  color: #666;
+  margin-bottom: 10px;
   display: flex;
+  justify-content: left;
   align-items: center;
-  margin-bottom: 4px;
-  margin-left: 15px;
-  font-size: 17px;
-  font-weight: 600;
+  height: auto; /* Set fixed height for li */
+}
+
+.features-list li::before {
+  color: #002955;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+  margin-right: 1.5em;
 }
 
 .feature-list-logedin {

@@ -52,7 +52,7 @@ header {
 .nav-links {
   display: flex;
   gap: 40px;
-  font-size: larger;
+  font-size: 1.4em;
   padding: 10px;
   flex: 1;
   justify-content: center;

@@ -72,18 +72,32 @@ class Ring(BaseModel):
     ring_typology: str = Field(
         description="Ring typologie. For instance, a solitary, a perl ring, an alliance, engagement, three stones settings, margueritte, etc."
     )
-    ring_brand: str = Field(description="Ring brand, signature or ring maker")
+    ring_brand: str = Field(
+        description="Ring brand, ring maker or engraved mark / hallmark. For instance, Cartier, Lecoutre, etc."
+    )
     ring_material: str = Field(
-        description="Material the ring is made of. For instance, gold, white gold, silver, etc."
+        description="Material of the ring. For instance, yellow gold, white gold, platinium and silver, etc. Only render material inforamtion. "
     )
     ring_material_purety: str = Field(
         description="Purety of the metal which makes the ring. For instance 14k, 18k, 800/1000, 750 °/°°, etc."
     )
     central_ring_stone_kind: str = Field(
-        description="What kind of stone the ring has in its center ? For instance: Ruby, Diamond, Saphir, Opal, Emerald, Perle, etc."
+        description="If there is a central stone, what kind of stone is it ? For instance: Ruby, Diamond, Saphir, Opal, Emerald, Perle, etc."
     )
     central_ring_stone_weight: str = Field(
-        description="Weight of central ring. Can be in grammes of in carats (written sometimes ct or cts)"
+        description="Total weight of central ring. Can be in grammes of in carats (written sometimes ct or cts)"
+    )
+    central_ring_stone_number: str = Field(
+        description="Number of stones the central part has. For instance for 2 x 0.5 carats, answer 2"
+    )
+    central_ring_stone_color: str = Field(
+        description="If central stone is a diamond, the color of the diamond. Can take values as capital letters between D and Z. Usually J, K, L, M."
+    )
+    central_ring_stone_purity: str = Field(
+        description="Purity or the central ring stone. Usually FL, IF, VVS 1 or 2, VS 1 or 2, SI 1 or 2, etc. "
+    )
+    central_ring_stone_cut: str = Field(
+        description="Central stone cut quality. Can go from very poor to excellent."
     )
     central_ring_stone_size: str = Field(
         description="Diameter of the central stone. Can be in mm if this is a pearl."
@@ -92,22 +106,25 @@ class Ring(BaseModel):
         description="Stone number the ring has around the central stone, if any. Only give a number if there is a central stone"
     )
     side_ring_kind: str = Field(
-        description="Kind of stone the ring has around its center (diamond usually, can be perls, etc.)."
+        description="Kind of stone the ring has around its center if any (diamond, perls, rubys, stone, etc.)."
     )
     side_ring_weight: str = Field(
-        description="Weight of side rings. Can be in grammes of in carats (written sometimes ct or cts)"
+        description="Weight of side rings. Can be in grammes of in carats (written ct, cts or carats)"
     )
     total_ring_weight: str = Field(
-        description="Total weight of the ring. Should be written in grammes."
+        description="Total weight of the ring. Usually written in grammes."
     )
     ring_period_or_year: str = Field(
         description="Year, circa year, periode or century when the ring was created."
     )
     ring_size: str = Field(
-        description="What finger size is the ring ? Around 54 usually. Can be identified by TDD (tour de doigt)."
+        description="What finger size is the ring ? Can be identified by TDD (tour de doigt) or size. Values between 40 to 60"
     )
     ring_condition: str = Field(
-        description="Condition of the ring. Any missing part, scratch or lack of luminosity should appear here"
+        description="Condition of the ring. Any missing part, scratch or lack of luminosity should appear here. Summarize condition in maximum 5 words"
+    )
+    number_objects_described: str = Field(
+        description="Number of rings / objects described in the text. If only one element is described, answer '1'"
     )
 
 

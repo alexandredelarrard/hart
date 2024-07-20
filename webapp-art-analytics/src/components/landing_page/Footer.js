@@ -94,7 +94,7 @@ const Footer = ({t}) => {
                     <a href="#product_1">{t("landing_page.footer.search")}</a>
                     <a href="#product_2">{t("landing_page.footer.estimate")}</a>
                     <a href="#product_3">{t("landing_page.footer.optimize")}</a>
-                    <a href="#product_4">{t("landing_page.footer.authentification")}</a>
+                    {/* <a href="#product_4">{t("landing_page.footer.authentification")}</a> */}
                     <a href="#pricing">{t("landing_page.footer.offers")}</a>
                     <Link to="/terms">{t("landing_page.footer.legal")}</Link>
                 </div>
@@ -105,12 +105,12 @@ const Footer = ({t}) => {
                     <Link to="/team">{t("landing_page.footer.team")}</Link>
                     {/* <Link to="/career">Career</Link> */}
                 </div>
-                <div className="footer-column">
+                {/* <div className="footer-column">
                     <h3>{t("landing_page.footer.community")}</h3>
                     <Link to="/reviews">{t("landing_page.footer.reviews")}</Link>
                     <Link to="/blog">{t("landing_page.footer.blog")}</Link>
-                    {/* <Link to="/external-links">{t("landing_page.footer.references")}</Link> */}
-                </div>
+                    <Link to="/external-links">{t("landing_page.footer.references")}</Link>
+                </div> */}
             </div>
         </footer>
     );

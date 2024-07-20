@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 import {PATHS} from '../../utils/constants.js';
 import '../../css/Login.css';
 
-function Login({t}) {
+function Login({t, changeLanguage}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -60,7 +60,7 @@ function Login({t}) {
 
   return (
     <div>
-      <Header scrolled={true} t={t}/>
+      <Header changeLanguage={changeLanguage} scrolled={true} t={t}/>
       <div className="login-container">
         <LoginElement
           handleSubmit={handleSubmit}

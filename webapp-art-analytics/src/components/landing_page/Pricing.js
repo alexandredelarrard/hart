@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBuilding, faShieldAlt, faCheck} from '@fortawesome/free-solid-svg-icons';
 
 import "../../css/Pricing.css";
-import { COMPANY_NAME } from '../../utils/constants';
+import { COMPANY_NAME, PATHS } from '../../utils/constants';
 
 const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) => {
     const [selectedPrice, setSelectedPrice] = useState({});
@@ -16,10 +16,10 @@ const Pricing = ({isplateforme, activePlan, remainingDays, closestQueries, t}) =
         console.log(`Selected price for ${category}:`, selectedPrice[category]);
         // Add logic for form submission, e.g., redirect to payment with selected price
         if(category === 'beginner'){
-            window.location.href = '/trial';
+            window.location.href = PATHS["TRIAL"];
         }
         else{
-            window.location.href = '/enroll';
+            window.location.href = PATHS["ENROLL"];
         }
     };
 

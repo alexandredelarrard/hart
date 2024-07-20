@@ -14,7 +14,7 @@ repos:
       - id: check-yaml
       - id: check-json
       - id: check-added-large-files
-        args: ['--maxkb=1024']
+        args: ['--maxkb=2048']
 
   # - repo: https://github.com/Yelp/detect-secrets
   #   rev: v1.4.0  # Specify the version of detect-secrets you want to use

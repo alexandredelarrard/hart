@@ -135,4 +135,4 @@ def step_inference_gpt(
     # get crawling_function
     step_inference.run()
 
-    # python -m src modelling step-inference-gpt -t 8 -sqs 50 --object reformulate --gpt-methode open_ai,groq,google
+    # python -m src modelling step-inference-gpt -t 10 -sqs 50 --object reformulate --gpt-methode open_ai,groq,google

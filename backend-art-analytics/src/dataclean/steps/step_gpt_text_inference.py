@@ -27,8 +27,6 @@ from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
 
-SCOPES = []
-
 
 class StepTextInferenceGpt(Step):
 
@@ -52,9 +50,6 @@ class StepTextInferenceGpt(Step):
         self.seed = self._config.gpt.seed
         self.llm_model = self._config.gpt.llm_model
         self.save_queue_path = "/".join([self._config.gpt.save_path, self.object])
-        self.introduction = self._config.gpt.introduction["features"]
-        if self.object == "reformulate":
-            self.introduction = self._config.gpt.introduction["reformulate"]
 
         self.save_in_queue = True
         self.queues = {"descriptions": Queue(), "results": Queue(), "clients": Queue()}
@@ -78,6 +73,9 @@ class StepTextInferenceGpt(Step):
             id_done = df_done[self.name.id_item].tolist()
             df = df.loc[~df[self.name.id_item].isin(id_done)]
 
+        # read prompts
+        self.read_prompts()
+
         # get parser
         self.schema = get_mapping_pydentic_object(self.object)
         self.parser = PydanticOutputParser(pydantic_object=self.schema)
@@ -97,6 +95,17 @@ class StepTextInferenceGpt(Step):
         self.queues["descriptions"].join()
         self._log.info("*** Done in {0}".format(time.time() - t0))
 
+    def read_prompts(self):
+
+        # prompt template
+        self.system_prompt = self.read_prompt_file(
+            Path(self._config.gpt.prompt_path)
+            / f"{self._config.gpt.llm_action}_system_prompt.md"
+        )
+        self.user_prompt = self.read_prompt_file(
+            Path(self._config.gpt.prompt_path) / f"{self.object}_prompt.md"
+        )
+
     def initialize_client(self, methode):
         if methode == "open_ai":
             client = self.initialize_client_open_ai()
@@ -113,6 +122,7 @@ class StepTextInferenceGpt(Step):
 
     def get_api_keys(self):
         self.api_keys = {"openai": [], "groq": [], "google": []}
+        self.api_keys_index = {"openai": 0, "groq": 0, "google": 0}
         for key, item in os.environ.items():
             if "OPENAI_API_KEY" in key:
                 self.api_keys["openai"].append(item)
@@ -125,13 +135,16 @@ class StepTextInferenceGpt(Step):
             raise Exception("Please provide an API KEY in .env file for OPENAI")
 
     def initialize_client_open_ai(self):
+        self.api_keys_index["openai"] = (self.api_keys_index["openai"] + 1) % len(
+            self.api_keys["openai"]
+        )
         client = ChatOpenAI(
-            openai_api_key=self.api_keys["openai"][0],
+            openai_api_key=self.api_keys["openai"][self.api_keys_index["openai"]],
             model=self.llm_model["open_ai"],
             model_kwargs={"response_format": {"type": "json_object"}},
             temperature=0.2,
-            seed=self.seed,
         )
+        self._log.info(f"OPEN API_KEY INDEX {self.api_keys_index['openai']}")
         return client
 
     def initialize_client_local(self):
@@ -141,7 +154,6 @@ class StepTextInferenceGpt(Step):
             model=self.llm_model["local"],
             model_kwargs={"response_format": {"type": "json_object"}},
             temperature=0.2,
-            seed=self.seed,
         )
         return client
 
@@ -150,14 +162,13 @@ class StepTextInferenceGpt(Step):
             groq_api_key=self.api_keys["groq"][0],
             model=self.llm_model["groq"],
             temperature=0.2,
-            max_tokens=2048,
-            seed=self.seed,
+            max_tokens=4096,
         )
         return client
 
     def initialize_client_google(self):
         creds = Credentials.from_authorized_user_file(
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"], SCOPES
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"], []
         )
         vertexai.init(
             project=creds.quota_project_id, location="europe-west1", credentials=creds
@@ -168,7 +179,7 @@ class StepTextInferenceGpt(Step):
             responseMimeType="application/json",
             responseSchema=self.parser,
             temperature=0.2,
-            max_tokens=2048,
+            max_tokens=4096,
             location="europe-west1",
             seed=self.seed,
         )
@@ -186,16 +197,33 @@ class StepTextInferenceGpt(Step):
 
     def create_prompt(self):
         prompt = PromptTemplate(
-            template=self.introduction
-            + " \n {format_instructions} \n Art Description: {query} \n Extraction in JSON format: ",
+            template=self.system_prompt + self.user_prompt,
             input_variables=["query"],
-            partial_variables={
-                "format_instructions": self.parser.get_format_instructions().replace(
-                    "```", ""
-                )
-            },
+            partial_variables={"_format": self.schema.schema_json()},
         )
         return prompt
+
+    def read_prompt_file(self, path: Path) -> str:
+        """Get the content of a file as a string.
+
+        Args:
+            path (Path): The path to the file.
+
+        Raises:
+            FileNotFoundError: If the file does not exist or is a directory
+
+        Returns:
+            str: The content of the file
+        """
+        if os.path.isdir(path):
+            raise FileNotFoundError(
+                f"Provided path {str(path)} is a directory, not a file"
+            )
+        if os.path.exists(path):
+            with open(path, "r") as fp:
+                return fp.read()
+
+        raise FileNotFoundError(f"Missing file {path} in path {str(path)}")
 
     def invoke_llm(self, prompt, chain):
         message_content = chain.invoke({"query": prompt[self.name.total_description]})
@@ -233,18 +261,9 @@ class StepTextInferenceGpt(Step):
         if self.threads > len(self.methode):
             remaining = self.threads - len(self.methode)
             for i in range(remaining):
-                if i % 5 == 0:
-                    self.queues["clients"].put(
-                        self.prompt | self.initialize_client("google") | self.parser
-                    )
-                elif i % 4 == 0:
-                    self.queues["clients"].put(
-                        self.prompt | self.initialize_client("groq") | self.parser
-                    )
-                else:
-                    self.queues["clients"].put(
-                        self.prompt | self.initialize_client("open_ai") | self.parser
-                    )
+                self.queues["clients"].put(
+                    self.prompt | self.initialize_client("open_ai") | self.parser
+                )
 
     def queue_gpt(self, queues):
 

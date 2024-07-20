@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import './css/packages/bootstrap.min.css';
 
-
 import Sidebar from './components/plateforme/Sidebar';
 import UploadForm from './components/plateforme/UploadForm';
 import OptimizeSale from './components/plateforme/OptimizeSale';
@@ -26,6 +25,7 @@ import Checkout from './components/landing_page/Checkout';
 import Login from './components/connectors/Login';
 import ResetPassword from './components/connectors/ResetPassword';
 import SetNewPassword from './components/connectors/SetNewPassword';
+import ProtectedRoute from './components/connectors/ProtectedRoute';
 import Confirm from './components/connectors/Confirm';
 import {PATHS} from "./utils/constants.js"
 
@@ -152,7 +152,7 @@ function App() {
       <div>
         <Routes>
           <Route path={PATHS["HOME"]} element={<Home scrolled={scrolled} setScrolled={setScrolled} changeLanguage={changeLanguage} t={t}/>} />
-          <Route path={PATHS["LOGIN"]} element={<Login scrolled={true} t={t}/>} />
+          <Route path={PATHS["LOGIN"]} element={<Login scrolled={true} t={t} changeLanguage={changeLanguage}/>} />
           <Route path={PATHS["TRIAL"]} element={<Trial scrolled={true} t={t}/>} />
           <Route path={PATHS["CONTACT"]} element={<ContactUs scrolled={true} t={t}/>} />
           <Route path={PATHS["ABOUT"]} element={<About scrolled={true} t={t}/>} />
@@ -164,36 +164,44 @@ function App() {
           <Route path={PATHS["SET_NEW_PWD"]} element={<SetNewPassword scrolled={true} t={t}/>} />
           <Route
             path={PATHS["ANALYTICS"]}
-            element={
-              <div style={{ display: 'flex' }}>
-                <Sidebar
-                  userData={userData}
-                  setUserData={setUserData}
-                  uploadFormHandlers={uploadFormHandlers}
-                  uploadFormState={uploadFormState}
-                  t={t}
-                />
-                <div className="upload-form-container">
-                  <HeaderPlateforme
-                    changeLanguage={changeLanguage}
-                    handleMenuClick={uploadFormHandlers.setActiveMenu}
-                    t={t}
-                  />
-                  {renderContent()}
+            element={<ProtectedRoute />}>
+              <Route
+                path=""
+                element={
+                <div style={{ display: 'flex' }}>
+                    <Sidebar
+                      userData={userData}
+                      setUserData={setUserData}
+                      uploadFormHandlers={uploadFormHandlers}
+                      uploadFormState={uploadFormState}
+                      t={t}
+                    />
+                    <div className="upload-form-container">
+                      <HeaderPlateforme
+                        changeLanguage={changeLanguage}
+                        handleMenuClick={uploadFormHandlers.setActiveMenu}
+                        t={t}
+                      />
+                      {renderContent()}
+                    </div>
                 </div>
-              </div>
-            }
-          />
+              }
+              />
+          </Route>
           <Route
             path={PATHS["CARD_ID"]}
-            element={
-              <div style={{ display: 'flex' }}>
-                <CardDetail
-                  i18n={i18n}
-                  t={t}/>
-              </div>
-            }
-          />
+            element={<ProtectedRoute />}>
+            <Route
+              path=""
+              element={
+                  <div style={{ display: 'flex' }}>
+                    <CardDetail
+                      i18n={i18n}
+                      t={t}/>
+                  </div>
+              }
+            />
+          </Route>
         </Routes>
       </div>
     </Router>

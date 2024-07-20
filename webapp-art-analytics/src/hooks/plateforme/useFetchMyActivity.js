@@ -7,9 +7,6 @@ import {generateDatesRange} from '../../utils/general.js';
 const useFetchMyActivity = (setActivityData) => {
 
   const fetchActivityData = useCallback(async () => {
-      const isAuthenticated = checkAuth();
-
-      if(isAuthenticated){
         try {
           const response = await axiosInstance_middle.get(URL_MY_ACTIVITY);
           const rawData = response.data.result;
@@ -39,11 +36,13 @@ const useFetchMyActivity = (setActivityData) => {
         } catch (error) {
           console.error("Error fetching activity data", error);
         }
-      }
     }, [setActivityData]);
 
     useEffect(() => {
-      fetchActivityData();
+      const isAuthenticated = checkAuth();
+      if(isAuthenticated){
+        fetchActivityData();
+      }
       }, [fetchActivityData]);
 
 };
