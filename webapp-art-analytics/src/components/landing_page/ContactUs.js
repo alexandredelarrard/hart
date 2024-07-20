@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Header from "./Header.js";
 import axiosInstance_middle from '../../hooks/general/axiosInstance';
 import { URL_CONTACT_US } from "../../utils/constants";
-import {validateEmail} from '../../utils/general.js';
 import '../../css/ContactUs.css';
 
 const ContactUs = ({changeLanguage, t}) => {

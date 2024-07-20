@@ -46,7 +46,7 @@ function Sidebar({
 
   const memoizedSetResult = useCallback((newResult) => {
     setResult(newResult);
-  }, [uploadFormState]);
+  }, [setResult]);
 
   const memoizedSetActiveLi = useCallback((index) => {
     setActiveLi(index);
