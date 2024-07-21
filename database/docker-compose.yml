@@ -26,3 +26,5 @@ networks:
 
 volumes:
     pgdata:
+
+# si pas de memory left, juste prune le cash 20GB free
