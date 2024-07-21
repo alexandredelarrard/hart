@@ -1,4 +1,3 @@
-import logging
 import pandas as pd
 from sqlalchemy import text
 
@@ -14,9 +13,12 @@ class SqlHelper:
     ):
         self._context = context
         self._log = context.log
-        self.db_tables = pd.read_sql(
-            "SELECT table_name FROM information_schema.tables", con=self._context.db_con
-        )["table_name"].tolist()
+
+        with self._context.db_con.connect() as conn:
+            self.db_tables = pd.read_sql(
+                "SELECT table_name FROM information_schema.tables", con=conn.connection
+            )
+        self.db_tables = self.db_tables["table_name"].tolist()
 
     def read_sql_data(self, table_name):
         try:

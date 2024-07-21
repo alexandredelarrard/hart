@@ -36,9 +36,7 @@ class MillonItems(Crawling):
                 nbr_pages = int(page_nbr[-1].text.replace("of", "").strip())
                 self._log.info(f"PAGINATION NUMBER IS= {page_nbr[-1].text}")
             except Exception as e:
-                self._log.error(
-                    f"PAGINATION NUMBER IS= {page_nbr[-1].text.replace("of", "").strip()} \n {e}"
-                )
+                self._log.error(f"PAGINATION NUMBER IS= {page_nbr[-1].text} \n {e}")
                 nbr_pages = 1
         else:
             nbr_pages = 1

@@ -9,6 +9,7 @@ from omegaconf import DictConfig
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from chromedriver_py import binary_path
 
 from src.context import Context
 from src.utils.step import Step
@@ -49,8 +50,6 @@ class Crawl(Step):
         if save_queue_path:
             self.save_queue_path = save_queue_path
 
-        # if self.proxy:
-        #     self.launch_tor()
         self.count_to_restart_driver = 8000 // threads
 
         self.missed_urls = []
@@ -122,13 +121,6 @@ class Crawl(Step):
 
         options = Options()
 
-        if self.proxy:
-            PROXIES = {
-                "http": "socks5://localhost:9050",
-                "https": "socks5://localhost:9050",
-            }
-            # options.add_argument('--proxy-server=%s' % '127.0.0.1:8118')
-
         prefs = {
             "disk-cache-size": 8000,
             "profile.default_content_setting_values.notifications": 2,
@@ -152,19 +144,22 @@ class Crawl(Step):
         options.add_experimental_option("prefs", prefs)
 
         # if self.text_only:
-        # options.add_argument("--headless") # Runs Chrome in headless mode.
-
+        options.add_argument("--headless")  # Runs Chrome in headless mode.
         options.add_argument("--incognito")
         options.add_argument("--no-sandbox")  # Bypass OS security model
         options.add_argument("--disable-gpu")  # applicable to windows os only
+        options.add_argument(
+            "--disable-dev-shm-usage"
+        )  # Overcome limited resource problems
         options.add_argument("--disable-infobars")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-extensions")
         options.add_argument("--enable-javascript")
         options.add_argument("--window-size=1125,955")
-        # # options.add_argument('start-maximized')
+        options.add_argument("--remote-debugging-port=9222")
 
-        driver = webdriver.Chrome(options=options)
+        svc = webdriver.ChromeService(executable_path=binary_path)
+        driver = webdriver.Chrome(options=options, service=svc)
         driver.delete_all_cookies()
         driver.set_page_load_timeout(300)
 

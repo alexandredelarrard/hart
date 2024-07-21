@@ -21,6 +21,7 @@ pydantic==2.8.2
 python-dotenv==1.0.1
 scikit-learn==1.4.2
 selenium==4.20.0
+chromedriver-py==126.0.6478.182
 seaborn==0.13.2
 sentence_transformers==2.7.0
 shap==0.45.0

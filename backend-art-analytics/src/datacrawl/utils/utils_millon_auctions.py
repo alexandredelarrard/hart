@@ -36,7 +36,7 @@ class MillonAuctions(Crawling):
             self._log.info(f"PAGINATION NUMBER IS= {page_nbr[-1].text}")
         except Exception as e:
             self._log.error(
-                f"PAGINATION NUMBER IS= {page_nbr[-1].text.replace("of", "").strip()} \n {e}"
+                f"PAGINATION NUMBER IS= {page_nbr[-1].text.replace('of', '').strip()} \n {e}"
             )
             nbr_pages = 0
 

@@ -201,7 +201,7 @@ class TextCleaner(Step):
 
         # keep ID picture when picture is available for drouot ~2.3M
         picture_path = df[self.name.id_picture].apply(
-            lambda x: f"{paths["pictures"]}/{x}.jpg"
+            lambda x: f"{paths['pictures']}/{x}.jpg"
         )
         df[self.name.is_picture] = picture_path.swifter.apply(
             lambda x: os.path.isfile(x)
