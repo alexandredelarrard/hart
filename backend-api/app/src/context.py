@@ -15,6 +15,7 @@ from omegaconf import DictConfig, OmegaConf
 from contextlib import contextmanager
 
 from src.utils.config import read_config
+from src.utils.utils_crawler import define_global_paths
 
 
 class DBeaver:
@@ -46,6 +47,9 @@ class Context:
     def __init__(self, config: DictConfig, use_cache: bool, save: bool):
 
         self._config = config
+
+        # define paths
+        self.paths = define_global_paths(self._config)
 
         # creqte logging buffer
         buffer = StringIO()

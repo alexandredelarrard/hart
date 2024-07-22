@@ -5,17 +5,11 @@ crawling:
         ExitNodes : '{FR},{ES},{PT},{IT},{DE},{UK},{BE},{SW}'
         CookieAuthentication : '1'
         MaxCircuitDirtiness : '600'
-    root_path: D:/data
-    path_new: new
-    picture_path: pictures
-    infos_path: infos
-    details_path: details
-    auctions_path: auctions
     met:
         webpage_url : https://www.metmuseum.org
-        url_path : D:/data/met/infos/MetObjects.csv
-        save_picture_path : D:/data/met/pictures
-        save_data_path : D:/data/met/
+        url_path : /met/infos/MetObjects.csv
+        save_picture_path : /met/pictures
+        save_data_path : /met/
         settings :
             browser : chrome
             nodes : 1
@@ -121,7 +115,7 @@ crawling:
         history_start_year: 1999
         webpage_url : https://www.christies.com/en/auction/
         auctions_url : https://www.christies.com/en/results?language=en& #month=3&year=2024
-        correction_urls_auction : D:/data/christies/auctions/correction_urls_auctions.pickle
+        correction_urls_auction : /christies/auctions/correction_urls_auctions.pickle
         auctions:
             crawler_infos:
                 url_sleep: 1

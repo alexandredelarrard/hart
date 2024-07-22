@@ -11,7 +11,7 @@ from src.schemas.results import CloseResult
 from src.extensions import db
 
 if os.getenv("FLASK_ENV") == "flask_worker":
-    from src.transformers.GptChat import GptChat
+    from src.gpt_caller import GptChat
 
     step_gpt = GptChat(config=config, context=context, methode="open_ai")
 
@@ -21,8 +21,8 @@ if os.getenv("FLASK_ENV") == "flask_worker":
 @jwt_required()
 def designation_chat():
 
-    number_ex = 24
-    steps = 4
+    number_ex = 8
+    steps = 3
     query_status = 400
     llm_results = {}
 
@@ -36,9 +36,9 @@ def designation_chat():
 
         while query_status != 200 and steps != 0:  # max 4 retries
             llm_results, query_status = step_gpt.get_answer(
-                prompt=art_pieces[:number_ex]
-            )  # list of example
-            number_ex -= 1
+                llm_input=art_pieces[:number_ex], chain=step_gpt.chain
+            )
+            number_ex -= 2
             steps -= 1
 
         result = CloseResult.query.filter_by(task_id=task_id).first_or_404()

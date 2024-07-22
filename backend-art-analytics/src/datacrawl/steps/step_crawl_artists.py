@@ -21,8 +21,9 @@ class StepCrawlingArtists(Crawling):
             text_only=False,
         )
 
+        self.root_path = self._config.crawling.root_path
         self.root_url = self._config.side_crawling.artist_db.webpage_url
-        self.infos_data_path = self._config.side_crawling.artist_db.save_data_path
+        self.target_path = self._config.side_crawling.artist_db.save_data_path
         self.today = datetime.today()
 
         self.pages_infos = self._config.side_crawling.artist_db.pages
@@ -56,6 +57,6 @@ class StepCrawlingArtists(Crawling):
             list_infos = list_infos + new_infos
 
         df_infos = pd.DataFrame().from_dict(list_infos)
-        save_infos(df_infos, path=self.infos_data_path + f"/{file_id}.csv")
+        save_infos(df_infos, path=self.root_path + self.target_path + f"/{file_id}.csv")
 
         return driver, list_infos

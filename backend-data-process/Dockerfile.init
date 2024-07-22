@@ -1,0 +1,61 @@
+FROM apache/airflow:latest-python3.12
+
+# Set environment variables
+ENV AIRFLOW_HOME=/opt/airflow
+
+USER root
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    default-libmysqlclient-dev \
+    apt-utils \
+    gcc \
+    curl \
+    gnupg \
+    unzip \
+    libnss3 \
+    libgconf-2-4 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxi6 \
+    libxtst6 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libxrandr2 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    && apt-get autoremove -yqq --purge \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Chrome and ChromeDriver dependencies
+RUN apt-get update && \
+    apt-get install -y wget gnupg2 && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable && \
+    google-chrome --version
+
+# Install Airflow and other Python packages
+COPY requirements.txt .
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+USER airflow
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Set working directory
+WORKDIR /opt/airflow
+
+# Set entrypoint
+ENTRYPOINT ["/entrypoint.sh"]

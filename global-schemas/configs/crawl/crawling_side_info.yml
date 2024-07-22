@@ -1,7 +1,6 @@
 side_crawling:
   artist_db:
     webpage_url: https://www.artprice.com/artists/all/
-    save_data_path : D:/data/artists/
     pages:
       liste_elements :
           by_type: XPATH

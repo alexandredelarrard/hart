@@ -16,9 +16,10 @@ class CleanChristies(TextCleaner):
     def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config)
-        self.correction_urls_auction = self._config.crawling[
-            "christies"
-        ].correction_urls_auction
+        self.root_path = self._config.crawling.root_path
+        self.correction_urls_auction = (
+            self.root_path + self._config.crawling["christies"].correction_urls_auction
+        )
 
     @timing
     def clean_auctions(self, df_auctions):

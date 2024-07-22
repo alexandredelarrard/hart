@@ -14,9 +14,10 @@ class ChristiesItems(Crawling):
     def __init__(self, context: Context, config: DictConfig):
 
         super().__init__(context=context, config=config)
-        self.correction_urls_auction = self._config.crawling[
-            "christies"
-        ].correction_urls_auction
+        self.root_path = self._config.crawling.root_path
+        self.correction_urls_auction = (
+            self.root_path + self._config.crawling["christies"].correction_urls_auction
+        )
         self.to_replace = ("&page=2&sortby=lotnumber", "/?loadall=true")
         self.to_split = []
 

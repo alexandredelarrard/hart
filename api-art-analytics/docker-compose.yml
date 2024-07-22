@@ -8,13 +8,14 @@ services:
             - "8888"
         volumes:
             - ./app:/app
-            - ../global-schemas/schemas:/app/src/schemas
-            - ../global-schemas/utils:/app/src/utils
-            - ../global-schemas/constants:/app/src/constants
+            - ../global-schemas/src/schemas:/app/src/schemas
+            - ../global-schemas/src/utils:/app/src/utils
+            - ../global-schemas/src/constants:/app/src/constants
             - ../global-schemas/configs:/app/configs
         command: gunicorn --bind 0.0.0.0:8888 --workers 4 --threads 4 --timeout 120 app:app
         environment:
             - FLASK_ENV=development
+            - ROOT_PATH=/app/data
         env_file:
             - ../global-schemas/.env
         restart: always

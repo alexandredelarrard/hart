@@ -1,3 +1,19 @@
+paths:
+  root: D:/data
+  crawl: ''
+  crawl_picture_path: pictures
+  crawl_infos_path: infos
+  crawl_details_path: details
+  crawl_auctions_path: auctions
+  crawl_path_new: new
+  model: models
+  default: default
+  artist: artists
+  llm: llm_extracts
+  features_to_extract: features_to_extract
+  llm_extraction: extraction
+  picture_training: pictures_training
+  text_training: text_training
 
 celery:
   url: "redis://:apasswd@redis:6379/0"

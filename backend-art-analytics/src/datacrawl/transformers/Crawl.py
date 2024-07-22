@@ -270,7 +270,7 @@ class Crawl(Step):
                 queue_url.task_done()
                 queues["drivers"].put(driver)
 
-            if queue_url.qsize() == 0:
+            if queue_url.qsize() == 0 and self.save_in_queue:
                 file_name = encode_file_name(url)
                 save_queue_to_file(
                     queues["results"],

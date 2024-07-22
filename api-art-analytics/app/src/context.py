@@ -15,6 +15,7 @@ from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig, OmegaConf
 
 from src.utils.config import read_config
+from src.utils.utils_crawler import define_global_paths
 
 
 class DBeaver:

@@ -15,6 +15,10 @@ class StepCrawlingMet(Crawling):
 
         super().__init__(context=context, config=config, threads=threads)
         self.seller = "met"
+        self.root_path = self._config.crawling.root_path
+        self.picture_path = (
+            self.root_path + self._config.crawling[self.seller].save_picture_path
+        )
 
     def get_urls(self):
 
@@ -24,14 +28,14 @@ class StepCrawlingMet(Crawling):
             return root + x.split("\\")[-1].replace("_", "/")
 
         # get all retrieved images already done
-        list_images = glob.glob(
-            self._config.crawling[self.seller].save_picture_path + "/*.jpg"
-        )
+        list_images = glob.glob(self.picture_path + "/*.jpg")
         output_list = list(map(find_url, list_images))
 
         # finalize the url list
-        if self._config.crawling[self.seller]["url_path"] != "":
-            df = pd.read_csv(self._config.crawling[self.seller]["url_path"])
+        if self._config.crawling[self.seller].url_path != "":
+            df = pd.read_csv(
+                self.root_path + self._config.crawling[self.seller].url_path
+            )
             urls = df["Link Resource"].to_list()
             urls = list(set(urls) - set(output_list))[::-1]
 
@@ -40,20 +44,18 @@ class StepCrawlingMet(Crawling):
         else:
             return []
 
-    def crawling_function(self, driver, config):
+    def crawling_function(self, driver):
 
-        crawl_conf = config.crawling[self.seller]
-        image_path = crawl_conf.save_picture_path
         message = ""
 
         try:
             a = driver.find_element(By.XPATH, "//img[@id='artwork__image']")
             src = a.get_attribute("src")
 
-            image_name = driver.current_url.replace(crawl_conf.webpage_url, "").replace(
-                "/", "_"
-            )
-            urllib.request.urlretrieve(src, image_path + f"/{image_name}.jpg")
+            image_name = driver.current_url.replace(
+                self._config.crawling[self.seller].webpage_url, ""
+            ).replace("/", "_")
+            urllib.request.urlretrieve(src, self.picture_path + f"/{image_name}.jpg")
 
         except Exception as e:
             message = e

@@ -9,12 +9,15 @@ services:
         command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 --timeout 120 app:app
         volumes:
             - ./app:/app
-            - ../global-schemas/schemas:/app/src/schemas
-            - ../global-schemas/utils:/app/src/utils
-            - ../global-schemas/constants:/app/src/constants
+            - ../global-schemas/src/utils:/app/src/utils
+            - ../global-schemas/src/constants:/app/src/constants
+            - ../global-schemas/src/schemas:/app/src/schemas
+            - ../global-schemas/src/modelling/prompt_templates:/app/src/modelling/prompt_templates
             - ../global-schemas/configs:/app/configs
+            - ../global-schemas/src/modelling/transformers:/app/src/modelling/transformers
         environment:
             - FLASK_ENV=flask_worker
+            - ROOT_PATH=/app/data
         env_file:
             - ../global-schemas/.env
         restart: always
@@ -40,17 +43,20 @@ services:
         container_name: back_celery
         volumes:
             - ./app:/app
-            - D:/data/models:/data/models
-            - D:/data/default:/data/default
-            - ../global-schemas/schemas:/app/src/schemas
-            - ../global-schemas/utils:/app/src/utils
-            - ../global-schemas/constants:/app/src/constants
+            - D:/data/models:/app/data/models
+            - D:/data/default:/app/data/default
             - ../global-schemas/configs:/app/configs
+            - ../global-schemas/src/utils:/app/src/utils
+            - ../global-schemas/src/constants:/app/src/constants
+            - ../global-schemas/src/schemas:/app/src/schemas
+            - ../global-schemas/src/sql_queries:/app/src/sql_queries
+            - ../global-schemas/src/modelling/transformers:/app/src/modelling/transformers
         command: 'celery -A src.backend.tasks worker --pool=solo --loglevel=info --concurrency=1'
         env_file:
             - ../global-schemas/.env
         environment:
             - FLASK_ENV=celery_worker
+            - ROOT_PATH=/app/data
         deploy:
             resources:
                 reservations:

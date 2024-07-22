@@ -2,6 +2,7 @@ import os
 from celery import Celery
 from datetime import datetime
 
+from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
 from src.extensions import config, context
 from src.constants.models import EmbeddingsResults
 from src.schemas.results import CloseResult
@@ -11,10 +12,8 @@ celery = Celery("src.backend.tasks", broker=config.celery.url)
 celery.config_from_object("celeryconfig")
 
 if os.getenv("FLASK_ENV") == "celery_worker":
-    from src.transformers.EmbeddingCollection import EmbeddingCollection
-    from src.transformers.Embedding import StepEmbedding
-
-    from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
+    from src.modelling.transformers.EmbeddingCollection import EmbeddingCollection
+    from src.modelling.transformers.Embedding import StepEmbedding
 
     # initialize gpu consumptions steps for celery workers only
     step_collection = EmbeddingCollection(context=context, config=config)

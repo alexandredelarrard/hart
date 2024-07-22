@@ -1,5 +1,4 @@
 cleaning:
-  path_mapping_country: D:/data/default/mapping_country.json
   full_data_auction_houses : ALL_ITEMS
   full_data_per_item: GPT_TRANSLATE_CATEGORIZE
   artists:
