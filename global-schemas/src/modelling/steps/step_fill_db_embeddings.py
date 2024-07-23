@@ -24,9 +24,9 @@ class StepFillDBEmbeddings(Step):
         super().__init__(context=context, config=config)
 
         if type == PICTURE_DB:
-            self.full_data = self._config.cleaning.full_data_auction_houses
+            self.full_data = self._config.table_names.full_data_auction_houses
         elif type in [TEXT_DB_EN, TEXT_DB_FR]:
-            self.full_data = self._config.cleaning.full_data_per_item
+            self.full_data = self._config.table_names.full_data_per_item
         else:
             raise Exception(
                 f"Either {TEXT_DB_EN}, {TEXT_DB_FR} or {PICTURE_DB} values for type"

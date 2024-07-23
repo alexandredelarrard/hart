@@ -112,11 +112,10 @@ class StepTextInferenceGpt(GptExtracter):
             dict_inputs["ANSWER"], query_status = self.get_answer(llm_input, chain)
             dict_inputs["METHODE"] = chain.to_json()["kwargs"]["middle"][0].__module__
 
-            if query_status != "200":
-                # queues["descriptions"].put(prompt)
+            if query_status == 400:
                 self._log.critical(f"Error for {dict_inputs[self.name.id_item]}")
 
-            if self.save_in_queue and query_status == "200":
+            if self.save_in_queue and query_status == 200:
                 queues["results"].put(dict_inputs)
                 queue_desc.task_done()
 

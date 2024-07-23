@@ -19,11 +19,11 @@ class EmbeddingCollection(Step):
         super().__init__(context=context, config=config)
 
         self.n_top_results = self._config.embedding.n_top_neighbors
-        self.full_data = self._config.cleaning.full_data_auction_houses
+        self.full_data = self._config.table_names.full_data_auction_houses
         self.table_id = {
-            PICTURE_DB: self._config.cleaning.full_data_auction_houses,
-            TEXT_DB_FR: self._config.cleaning.full_data_per_item,
-            TEXT_DB_EN: self._config.cleaning.full_data_per_item,
+            PICTURE_DB: self._config.table_names.full_data_auction_houses,
+            TEXT_DB_FR: self._config.table_names.full_data_per_item,
+            TEXT_DB_EN: self._config.table_names.full_data_per_item,
         }
         self.unique_id_type = {
             PICTURE_DB: self.name.id_unique,

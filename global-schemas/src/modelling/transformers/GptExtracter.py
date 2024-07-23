@@ -1,5 +1,5 @@
 import os
-import ast
+import json
 from pathlib import Path
 from os.path import dirname, abspath
 
@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_google_vertexai import ChatVertexAI
 from google.oauth2.credentials import Credentials
+from pydantic import ValidationError
 import vertexai
 
 from omegaconf import DictConfig
@@ -137,7 +138,7 @@ class GptExtracter(Step):
         prompt = PromptTemplate(
             template=self.system_prompt + "\n" + self.user_prompt,
             input_variables=["query"],
-            partial_variables={"_format": schema.schema_json()},
+            partial_variables={"_format": self.parser.get_format_instructions()},
         )
         return prompt
 
@@ -166,21 +167,23 @@ class GptExtracter(Step):
     def invoke_llm(self, llm_input, chain):
         message_content = chain.invoke({"query": llm_input})
         try:
-            message_content = ast.literal_eval(message_content.json())
-        except Exception:
-            pass
-        return message_content
+            message_content = json.loads(message_content.json())
+            return message_content
+        except json.JSONDecodeError as e:
+            self._log.error(f"Error decoding JSON: {e}")
+            return None
+        except ValidationError as e:
+            self._log.error(f"Validation error: {e}")
+            return None
 
     def get_answer(self, llm_input, chain):
 
-        message_content = ""
-        try:
-            message_content = self.invoke_llm(llm_input, chain)
-            query_status = "200"
-            self._log.info(message_content)
+        message_content = self.invoke_llm(llm_input, chain)
 
-        except Exception as e:
-            self._log.error(e)
-            query_status = "400"
+        if not message_content:
+            query_status = 400
+        else:
+            query_status = 200
+            self._log.info(message_content)
 
         return message_content, query_status

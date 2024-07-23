@@ -19,9 +19,9 @@ class DatasetRetreiver(Step):
     ):
         super().__init__(config=config, context=context)
 
-        self.root = self._config.paths.root
-        self.full_items_and_pictures = self._config.cleaning.full_data_auction_houses
-        self.full_per_item = self._config.cleaning.full_data_per_item
+        self.root = self._context.paths["ROOT"]
+        self.full_items_and_pictures = self._config.table_names.full_data_auction_houses
+        self.full_per_item = self._config.table_names.full_data_per_item
 
     def get_text_to_cluster(self, data_name: str = None):
 
@@ -75,10 +75,10 @@ class DatasetRetreiver(Step):
         formatted_query = self.sql_queries.format_query(
             raw_query,
             {
-                "drouot_name": self._config.cleaning.drouot.origine_table_name.history,
-                "christies_name": self._config.cleaning.christies.origine_table_name.history,
-                "sothebys_name": self._config.cleaning.sothebys.origine_table_name.history,
-                "millon_name": self._config.cleaning.millon.origine_table_name.history,
+                "drouot_name": self._config.table_names.drouot.origine_table_name.history,
+                "christies_name": self._config.table_names.christies.origine_table_name.history,
+                "sothebys_name": self._config.table_names.sothebys.origine_table_name.history,
+                "millon_name": self._config.table_names.millon.origine_table_name.history,
                 "id_unique": self.name.id_unique,
                 "id_item": self.name.id_item,
                 "id_picture": self.name.id_picture,
@@ -114,10 +114,10 @@ class DatasetRetreiver(Step):
         formatted_query = self.sql_queries.format_query(
             raw_query,
             {
-                "drouot_name": self._config.cleaning.drouot.origine_table_name.new,
-                "christies_name": self._config.cleaning.christies.origine_table_name.new,
-                "sothebys_name": self._config.cleaning.sothebys.origine_table_name.new,
-                "millon_name": self._config.cleaning.sothebys.origine_table_name.new,
+                "drouot_name": self._config.table_names.drouot.origine_table_name.new,
+                "christies_name": self._config.table_names.christies.origine_table_name.new,
+                "sothebys_name": self._config.table_names.sothebys.origine_table_name.new,
+                "millon_name": self._config.table_names.sothebys.origine_table_name.new,
                 "id_unique": self.name.id_unique,
                 "id_item": self.name.id_item,
                 "id_picture": self.name.id_picture,
@@ -178,7 +178,7 @@ class DatasetRetreiver(Step):
         df[vector] = df[[self.name.id_picture, self.name.seller]].apply(
             lambda x: "/".join(
                 [
-                    self.root,
+                    str(self.root),
                     x[self.name.seller],
                     "pictures",
                     x[self.name.id_picture] + ".jpg",

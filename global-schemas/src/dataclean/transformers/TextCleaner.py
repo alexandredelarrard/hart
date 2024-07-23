@@ -89,11 +89,11 @@ class TextCleaner(Step):
     def get_sql_db_name(self, seller: str, mode: str = "history"):
         try:
             if mode == "history":
-                return self._config.cleaning[seller].origine_table_name.history
+                return self._config.table_names[seller].origine_table_name.history
             else:
-                return self._config.cleaning[seller].origine_table_name.new
+                return self._config.table_names[seller].origine_table_name.new
         except Exception as e:
-            raise Exception(f"SELLER not found in config cleaning : {seller} - {e}")
+            raise Exception(f"SELLER not found in config table_names : {seller} - {e}")
 
     def get_list_element_from_text(self, variable, liste=currencies):
         return variable.apply(

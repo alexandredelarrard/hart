@@ -25,7 +25,7 @@ class StepKNNPriceEvaluator(Step):
 
     def predict(self):
 
-        df = self.read_sql_data(self._config.cleaning.full_data_auction_houses)
+        df = self.read_sql_data(self._config.table_names.full_data_auction_houses)
         sub_df = df.loc[
             df[self.name.total_description].apply(
                 lambda x: " vase " in " " + str(x).lower() + " "

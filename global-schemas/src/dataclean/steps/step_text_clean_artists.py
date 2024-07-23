@@ -18,7 +18,7 @@ class StepTextCleanArtists(TextCleaner):
         super().__init__(context=context, config=config)
 
         self.artist_data_path = self._context.paths["ARTIST"]
-        self.sql_table_name = self._config.cleaning.artists.origine_table_name
+        self.sql_table_name = self._config.table_names.artists
 
     @timing
     def run(self):

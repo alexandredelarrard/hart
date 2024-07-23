@@ -2,9 +2,10 @@ from pgvector.sqlalchemy import Vector
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker, scoped_session
 from typing import Dict
-from src.utils.step import Step
 import numpy as np
 from tqdm import tqdm
+
+from src.utils.step import Step
 from src.constants.variables import (
     TEXT_DB_EN,
     TEXT_DB_FR,
@@ -22,7 +23,7 @@ class SchemaEmbeddings(Step):
         db = context.flask_db
 
         class _Picture_Embeddings(db.Model):
-            __tablename__ = "picture_embeddings"
+            __tablename__ = self.config.table_names.picture_embeddings
             __table_args__ = {"extend_existing": True}
             id_unique = db.Column(db.String(120), unique=True, primary_key=True)
             id_picture = db.Column(db.String(120), nullable=True)
@@ -34,7 +35,7 @@ class SchemaEmbeddings(Step):
                 return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
         class _Text_Embeddings_fr(db.Model):
-            __tablename__ = "text_embeddings_french"
+            __tablename__ = self.config.table_names.text_embeddings_french
             __table_args__ = {"extend_existing": True}
             id_item = db.Column(db.String(120), unique=True, primary_key=True)
             created_at = db.Column(db.DateTime, nullable=False)
@@ -44,7 +45,7 @@ class SchemaEmbeddings(Step):
                 return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
         class _Text_Embeddings_en(db.Model):
-            __tablename__ = "text_embeddings_english"
+            __tablename__ = self.config.table_names.text_embeddings_english
             __table_args__ = {"extend_existing": True}
             id_item = db.Column(db.String(120), unique=True, primary_key=True)
             created_at = db.Column(db.DateTime, nullable=False)
@@ -67,7 +68,9 @@ class FillDBEmbeddings(SchemaEmbeddings):
         if type in [PICTURE_DB, TEXT_DB_FR, TEXT_DB_EN]:
             self.collection = self.collections[type]
         else:
-            raise Exception("Either text_fr, text_en or picture values for type")
+            raise Exception(
+                f"Should be in {[PICTURE_DB, TEXT_DB_FR, TEXT_DB_EN]} values for type"
+            )
 
         self.db = context.flask_db
         self.id_column = ID_UNIQUE.lower() if type == PICTURE_DB else ID_TEXT.lower()

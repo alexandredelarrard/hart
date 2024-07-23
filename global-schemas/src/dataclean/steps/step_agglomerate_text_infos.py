@@ -23,7 +23,7 @@ class StepAgglomerateTextInfos(TextCleaner):
 
         super().__init__(context=context, config=config)
 
-        self.sql_table_name = self._config.cleaning.full_data_auction_houses
+        self.sql_table_name = self._config.table_names.full_data_auction_houses
         self.sql_table_name_per_item = self.sql_table_name + "_per_item"
         self.country_mapping = self._config.cleaning.mapping.country
         self.localisation_mapping = self._config.cleaning.mapping.localisation

@@ -1,5 +1,5 @@
 from src.extensions import db
-from src.constants.models import KnnFullResultInfos, FullResultInfos
+from src.constants.models import FullResultInfos
 
 
 class AllItems(db.Model):

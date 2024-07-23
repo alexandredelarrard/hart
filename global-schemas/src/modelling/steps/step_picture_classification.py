@@ -32,7 +32,7 @@ class StepPictureClassification(Step):
         self.test_batch_size = self._config.picture_classification.test_batch_size
         self.device = self._config.picture_classification.device
         self.epochs = self._config.picture_classification.epochs
-        self.full_data = self._config.cleaning.full_data_auction_houses
+        self.full_data = self._config.table_names.full_data_auction_houses
 
         self.picture_path = self._context.paths["TRAINING_PICTURES"]
         self.fine_tuned_model_name = self._context.paths["MODEL"] / Path(

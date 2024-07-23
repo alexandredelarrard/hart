@@ -48,7 +48,7 @@ class StepTextClustering(Step):
 
         # exrtract data from dbeaver
         self.vector = self.name.total_description
-        data_name = self._config.cleaning.full_data_auction_houses
+        data_name = self._config.table_names.full_data_auction_houses
         df_desc = self.data_retreiver.get_all_pictures(data_name=data_name)
         df_desc = df_desc.sample(frac=0.1)
 

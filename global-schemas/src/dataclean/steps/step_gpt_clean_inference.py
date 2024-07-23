@@ -29,6 +29,7 @@ class StepCleanGptInference(GPTCleaner):
         self._mapping_path = self._context.paths["LLM_TO_EXTRACT"] / Path(
             self._config.evaluator.mappings_path[self.category.lower()]
         )
+        self.sql_table_name = self._config.table_names.gpt_features_root
 
         self.clean_info_with_mapping = self._config.evaluator.info_to_mapping
         self.mappings = self._config.evaluator.cleaning_mapping
@@ -85,11 +86,11 @@ class StepCleanGptInference(GPTCleaner):
         self.remove_rows_sql_data(
             values=sub_df[self.name.id_item].tolist(),
             column=self.name.id_item,
-            table_name=f"GPT_FEATURES_{self.category}",
+            table_name=f"{self.sql_table_name}{self.category}",
         )
         self.write_sql_data(
             dataframe=sub_df,
-            table_name=f"GPT_FEATURES_{self.category}",
+            table_name=f"{self.sql_table_name}{self.category}",
             if_exists="append",
         )
 

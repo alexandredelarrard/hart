@@ -21,11 +21,6 @@ if os.getenv("FLASK_ENV") == "flask_worker":
 @jwt_required()
 def designation_chat():
 
-    number_ex = 8
-    steps = 3
-    query_status = 400
-    llm_results = {}
-
     if request.method == "POST":
         data = request.get_json()
         task_id = data.get("task_id")
@@ -34,12 +29,8 @@ def designation_chat():
         if not art_pieces:
             return jsonify({"error": "No question / art piece provided"}), 400
 
-        while query_status != 200 and steps != 0:  # max 4 retries
-            llm_results, query_status = step_gpt.get_answer(
-                llm_input=art_pieces[:number_ex], chain=step_gpt.chain
-            )
-            number_ex -= 2
-            steps -= 1
+        # retreive llm_info
+        llm_results = step_gpt.get_llm_result(art_pieces)
 
         result = CloseResult.query.filter_by(task_id=task_id).first_or_404()
         if result:

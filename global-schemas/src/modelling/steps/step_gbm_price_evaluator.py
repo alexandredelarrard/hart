@@ -98,7 +98,7 @@ class StepGBMPriceEvaluator(Step):
                 "auction_date": self.name.date,
                 "localisation": self.name.localisation,
                 "seller": self.name.seller,
-                "table_name_full": self._config.cleaning.full_data_auction_houses,
+                "table_name_full": self._config.table_names.full_data_auction_houses,
             },
         )
 

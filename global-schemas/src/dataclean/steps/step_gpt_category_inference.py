@@ -22,7 +22,7 @@ class StepCategoryGptInference(GPTCleaner):
         super().__init__(context=context, config=config)
 
         self.category = "reformulate"
-
+        self.sql_table_name = self._config.table_names.gpt_translate_categorize
         self.clean_info_with_mapping = self._config.evaluator.info_to_mapping
         self.mappings = self._config.evaluator.cleaning_mapping
 
@@ -222,8 +222,8 @@ class StepCategoryGptInference(GPTCleaner):
         self.remove_rows_sql_data(
             values=df_done[self.name.id_item].tolist(),
             column=self.name.id_item,
-            table_name="GPT_TRANSLATE_CATEGORIZE",
+            table_name=self.sql_table_name,
         )
         self.write_sql_data(
-            dataframe=df_done, table_name="GPT_TRANSLATE_CATEGORIZE", if_exists="append"
+            dataframe=df_done, table_name=self.sql_table_name, if_exists="append"
         )

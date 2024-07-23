@@ -67,10 +67,10 @@ class Painting(BaseModel):
 
 class Ring(BaseModel):
     object_category: str = Field(
-        description="Kind of object this description is talking about. Be very specific in the object category. for instance: Painting, table, chair, serigraphie, ring, etc."
+        description="Kind of object this description is talking about. It should be a ring, if not, be very specific, for instance: Painting, table, chair, serigraphie, ring, etc."
     )
     ring_typology: str = Field(
-        description="Ring typologie. For instance, a solitary, a perl ring, an alliance, engagement, three stones settings, margueritte, etc."
+        description="Ring typologie. For instance, a solitary, a perl ring, an alliance, engagement, three stones settings, marguerite, etc."
     )
     ring_brand: str = Field(
         description="Ring brand, ring maker or engraved mark / hallmark. For instance, Cartier, Lecoutre, etc."
@@ -112,7 +112,7 @@ class Ring(BaseModel):
         description="Weight of side rings. Can be in grammes of in carats (written ct, cts or carats)"
     )
     total_ring_weight: str = Field(
-        description="Total weight of the ring. Usually written in grammes."
+        description="Total weight of the ring. Usually written in grammes. Render only the ring weight and not the stone weight."
     )
     ring_period_or_year: str = Field(
         description="Year, circa year, periode or century when the ring was created."

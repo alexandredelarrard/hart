@@ -2,3 +2,41 @@ server:
   database: vectordb #host.docker.internal
   host: host.docker.internal #container of the database
   port: 5433 # 5432
+
+table_names:
+  full_data_auction_houses : ALL_ITEMS
+  full_data_per_item: ALL_ITEMS_per_item
+  artists: ARTISTS_DB_PRICE
+  drouot :
+    origine_table_name:
+      history: DROUOT_202403
+      new: DROUOT_NEW
+      auction: _raw_drouot_auction
+      item: _raw_drouot_item
+      detail: _raw_drouot_detail
+  christies :
+    origine_table_name:
+      history: CHRISTIES_202403
+      new: CHRISTIES_NEW
+      auction: _raw_christies_auction
+      item: _raw_christies_item
+      detail: _raw_christies_detail
+  sothebys :
+    origine_table_name:
+      history: SOTHEBYS_202403
+      new: SOTHEBYS_NEW
+      auction: _raw_sothebys_auction
+      item: _raw_sothebys_item
+      detail: _raw_sothebys_detail
+  millon :
+    origine_table_name:
+      history: MILLON_202405
+      new: MILLON_NEW
+      auction: _raw_millon_auction
+      item: _raw_millon_item
+      detail: _raw_millon_detail
+  picture_embeddings: picture_embeddings
+  text_embeddings_english: text_embeddings_english
+  text_embeddings_french: text_embeddings_french
+  gpt_translate_categorize: GPT_TRANSLATE_CATEGORIZE
+  gpt_features_root: GPT_FEATURES_
