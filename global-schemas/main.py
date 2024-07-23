@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # self = StepTextClassification(context=context, config=config)
 
     self = StepTextInferenceGpt(
-        context=context, config=config, methode=["groq"], object="ring"
+        context=context, config=config, methode=["open_ai"], object="ring"
     )
     # self = StepCleanGptInference(context=context, config=config, category="reformulate")
     # self = StepCategoryGptInference(context=context, config=config)

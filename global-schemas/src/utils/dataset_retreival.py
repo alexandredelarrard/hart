@@ -6,7 +6,8 @@ from typing import List
 from src.context import Context
 from src.utils.step import Step
 from src.utils.timing import timing
-
+from src.schemas.gpt_cleaning import GptTranslateCategorize
+from src.schemas.gpt_schemas import LlmExtraction
 from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
 
 
@@ -22,29 +23,6 @@ class DatasetRetreiver(Step):
         self.root = self._context.paths["ROOT"]
         self.full_items_and_pictures = self._config.table_names.full_data_auction_houses
         self.full_per_item = self._config.table_names.full_data_per_item
-
-    def get_text_to_cluster(self, data_name: str = None):
-
-        if data_name == None:
-            data_name = "PICTURES_CATEGORY_20_04_2024"
-
-        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_text_to_cluster"))
-        formatted_query = self.sql_queries.format_query(
-            raw_query,
-            {
-                "id_item": self.name.id_item,
-                "table_name": data_name,
-                "class_prediction": "TOP_0",
-                "picture_path": "PICTURES",
-                "text_vector": self.name.total_description,
-                "proba_var": "PROBA_0",
-                "proba_threshold": 0.9,
-            },
-        )
-
-        # 3. Fetch results
-        logging.info(formatted_query)
-        return self.read_sql_data(formatted_query)
 
     def get_text_to_cluster(self, data_name: str = None):
 
@@ -260,11 +238,8 @@ class DatasetRetreiver(Step):
 
     @timing
     def get_text_embedding_dist(
-        self, table: str, embedding: str = None, limit: int = None
+        self, table: str, embedding: str = None, limit: int = 100
     ):
-
-        if not limit:
-            limit = 100
 
         raw_query = str.lower(getattr(self.sql_queries.SQL, "text_embedding_dist"))
         formatted_query = self.sql_queries.format_query(
@@ -277,5 +252,57 @@ class DatasetRetreiver(Step):
         )
 
         # 3. Fetch results
-        df = self.read_sql_data(formatted_query, params=(embedding.tolist()[0],))
-        return df
+        return self.read_sql_data(formatted_query, params=(embedding.tolist()[0],))
+
+    @timing
+    def get_gpt_category_input(self):
+
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "gpt_category_input"))
+        formatted_query = self.sql_queries.format_query(
+            raw_query,
+            {
+                "id_item": self.name.id_item,
+                "item_title_detailed": self.name.detailed_title,
+                "total_description": self.name.total_description,
+                "table": self.full_per_item,
+                "raw_table_gpt": LlmExtraction.__tablename__,
+                "id_item_gpt": LlmExtraction.__fields__["id_item"].name,
+                "schema_prompt_col": LlmExtraction.__fields__["prompt_schema"].name,
+                "schema_prompt_value": "reformulate",
+            },
+        )
+
+        # 3. Fetch results
+        return self.read_sql_data(formatted_query)
+
+    @timing
+    def get_gpt_object_extract_input(self, object_value: str, schema_prompt_value: str):
+
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "gpt_object_extract_input"))
+        formatted_query = self.sql_queries.format_query(
+            raw_query,
+            {
+                "gpt_translate_categorize": GptTranslateCategorize.__tablename__,
+                "id_item": GptTranslateCategorize.__fields__["ID_ITEM"].name,
+                "total_description": GptTranslateCategorize.__fields__[
+                    "TOTAL_DESCRIPTION"
+                ].name,
+                "english_title": GptTranslateCategorize.__fields__[
+                    "ENGLISH_TITLE"
+                ].name,
+                "english_description": GptTranslateCategorize.__fields__[
+                    "ENGLISH_DESCRIPTION"
+                ].name,
+                "category_object": GptTranslateCategorize.__fields__[
+                    "CLEAN_OBJECT_CATEGORY"
+                ].name,
+                "object_value": object_value,
+                "raw_table_gpt": LlmExtraction.__tablename__,
+                "id_item_gpt": LlmExtraction.__fields__["id_item"].name,
+                "schema_prompt_col": LlmExtraction.__fields__["prompt_schema"].name,
+                "schema_prompt_value": schema_prompt_value,
+            },
+        )
+
+        # 3. Fetch results
+        return self.read_sql_data(formatted_query)

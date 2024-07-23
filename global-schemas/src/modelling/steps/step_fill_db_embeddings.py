@@ -5,7 +5,7 @@ from src.utils.step import Step
 from src.utils.timing import timing
 from src.modelling.transformers.Embedding import StepEmbedding
 from src.utils.dataset_retreival import DatasetRetreiver
-from src.schemas.postgres_schemas import FillDBEmbeddings
+from src.schemas.embedding_schemas import FillDBEmbeddings
 from src.constants.variables import (
     TEXT_DB_EN,
     TEXT_DB_FR,

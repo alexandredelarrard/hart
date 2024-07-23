@@ -25,7 +25,7 @@ from src.utils.cli_helper import SpecialHelpOrder
 from src.modelling.steps.step_text_clustering import StepTextClustering
 from src.modelling.steps.step_fill_db_embeddings import StepFillDBEmbeddings
 from src.modelling.steps.step_picture_classification import StepPictureClassification
-from src.dataclean.steps.step_gpt_text_inference import StepTextInferenceGpt
+from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
 
 
 @click.group(cls=SpecialHelpOrder)
@@ -114,20 +114,16 @@ def step_predict_picture_classification(config_path):
     help_priority=2,
 )
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
-@click.option(*QUEUE_SIZE_ARGS, **QUEUE_SIZE_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
 @click.option(*OBJECT_ARGS, **OBJECT_KWARGS)
 @click.option(*GPT_METHODE_ARGS, **GPT_METHODE_KWARGS)
-def step_inference_gpt(
-    config_path, threads: int, save_queue_size: int, object: str, methode: str
-):
+def step_inference_gpt(config_path, threads: int, object: str, methode: str):
 
     config, context = get_config_context(config_path, use_cache=False, save=False)
     step_inference = StepTextInferenceGpt(
         config=config,
         context=context,
         threads=threads,
-        save_queue_size=save_queue_size,
         object=object,
         methode=methode.split(","),
     )
@@ -135,4 +131,4 @@ def step_inference_gpt(
     # get crawling_function
     step_inference.run()
 
-    # python -m src modelling step-inference-gpt -t 3 -sqs 15 --object reformulate --gpt-methode open_ai,groq,google
+    # python -m src modelling step-inference-gpt -t 10 --object ring --gpt-methode open_ai,groq,google

@@ -128,6 +128,7 @@ class Artists:
 
 # date format
 DATE_FORMAT = "%Y-%m-%d"
+DATE_HOUR_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # for data cleaning
 currencies = "USD|CAD|GBP|CHF|EUR|MAD|JPY|AED|MXN|CZK|PLN|CNY|HKD|NLG|AUD|ESP|SGD|DEM|ITL|INR|FRF|TWD|RMB|TRY|SEK|ZAR"

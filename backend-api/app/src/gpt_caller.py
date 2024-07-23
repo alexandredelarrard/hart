@@ -5,6 +5,7 @@ from src.utils.step import Step
 from src.modelling.transformers.GptExtracter import GptExtracter
 
 from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.pydantic_v1 import BaseModel
 from src.context import Context
 
 from omegaconf import DictConfig
@@ -51,6 +52,10 @@ class GptChat(GptExtracter):
             llm_results, query_status = self.get_answer(
                 llm_input=string_art_pieces, chain=self.chain
             )
+
+            if isinstance(llm_results, BaseModel):
+                llm_results = llm_results.dict()
+
             number_ex -= 2
             steps -= 1
 

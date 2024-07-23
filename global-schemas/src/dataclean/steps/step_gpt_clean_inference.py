@@ -45,7 +45,6 @@ class StepCleanGptInference(GPTCleaner):
         self.col_mapping = read_json(self._mapping_path)
 
         df_done = read_crawled_pickles(path=self.save_queue_path)
-        df_names = self.read_sql_data("ARTISTS_DB_PRICE")
 
         # extract json and features
         df_done = self.eval_json(df_done)
@@ -56,7 +55,6 @@ class StepCleanGptInference(GPTCleaner):
         df_done = self.clean_text(df_done)
         df_done = self.clean_binary(df_done)
         df_done = self.clean_values(df_done)
-        df_done = self.clean_names(df_done)
 
         self.save_infos_to_tables(df_done)
 

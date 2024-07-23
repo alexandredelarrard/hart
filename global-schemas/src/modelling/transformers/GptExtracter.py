@@ -123,16 +123,6 @@ class GptExtracter(Step):
         )
         return client
 
-    def initialize_queue_description(self, df):
-        for row in df.to_dict(orient="records"):
-            item = {
-                self.name.id_item: row[self.name.id_item],
-                self.name.total_description: row[self.name.detailed_title].lower()
-                + "\n "
-                + row[self.name.total_description],
-            }
-            self.queues["descriptions"].put(item)
-
     def create_prompt(self, schema):
 
         prompt = PromptTemplate(
@@ -165,16 +155,10 @@ class GptExtracter(Step):
         raise FileNotFoundError(f"Missing file {path} in path {str(path)}")
 
     def invoke_llm(self, llm_input, chain):
-        message_content = chain.invoke({"query": llm_input})
         try:
-            message_content = json.loads(message_content.json())
-            return message_content
-        except json.JSONDecodeError as e:
-            self._log.error(f"Error decoding JSON: {e}")
-            return None
-        except ValidationError as e:
-            self._log.error(f"Validation error: {e}")
-            return None
+            return chain.invoke({"query": llm_input})
+        except Exception as e:
+            self._log.error(f"Something went wrong : {e}")
 
     def get_answer(self, llm_input, chain):
 

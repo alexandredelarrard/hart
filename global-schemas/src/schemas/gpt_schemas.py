@@ -1,8 +1,32 @@
 from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Optional
+from datetime import datetime
+from src.constants.variables import DATE_HOUR_FORMAT
 
 
-class Reformulate(BaseModel):
+class LlmExtraction(BaseModel):
+    __tablename__ = "_raw_gpt_extraction"
+    __table_args__ = {"extend_existing": True}
+    id_item: str = Field(None, description="unique id of the extraction to do")
+    methode: str = Field(None, description="LLM methode used to extract json")
+    input: str = Field("", description="Input sent to the LLM")
+    prompt_schema: str = Field(None, description="Schema to follow as an output")
+    answer: BaseModel | dict = Field({}, description="LLM output")
+    date_run: str = Field(
+        datetime.now().strftime(DATE_HOUR_FORMAT), description="Date when the LLM ran"
+    )
+
+
+class BaseFeature(BaseModel):
+    object_category: str = Field(
+        description="The specific category of the described object. Be very specific, write the answer in English only. Examples include: painting, table, serigraphy, vase, lamp, ring, etc. Never give generic categories such as 'accessories', 'jewelry', 'furniture', 'decorative object'"
+    )
+    number_objects_described: str = Field(
+        description="The number of objects described in the text. If only one object is described, enter '1'. If it is a pair, enter '2', etc."
+    )
+
+
+class Reformulate(BaseFeature):
     french_title: str = Field(
         description="Few words in French, presenting what the art description is about."
     )
@@ -15,18 +39,9 @@ class Reformulate(BaseModel):
     english_description: str = Field(
         description="The detailed art description in English."
     )
-    object_category: str = Field(
-        description="The specific category of the described object. Be very specific and provide the answer in English only. Examples include: painting, table, serigraphy, vase, lamp, ring, or another specific item."
-    )
-    number_objects_described: str = Field(
-        description="The number of objects described in the text. If only one object is described, enter '1'. If it is a pair, enter '2', etc."
-    )
 
 
-class Painting(BaseModel):
-    object_category: str = Field(
-        description="What kind of object this description is talking about? Be very specific in the object category. for instance: painting, table, chair, serigraphie, vase, lamp, etc."
-    )
+class Painting(BaseFeature):
     artirst_surname: str = Field(description="Surname of the artist")
     artirst_name: str = Field(description="Name of the artist")
     painting_title: str = Field(description="Title of the painting")
@@ -60,15 +75,9 @@ class Painting(BaseModel):
     painting_period_or_year: str = Field(
         description="Year, circa year or century when the painting was painted."
     )
-    number_objects_described: str = Field(
-        description="Number of objects described in the text. If only one element is described, answer '1'"
-    )
 
 
-class Ring(BaseModel):
-    object_category: str = Field(
-        description="Kind of object this description is talking about. It should be a ring, if not, be very specific, for instance: Painting, table, chair, serigraphie, ring, etc."
-    )
+class Ring(BaseFeature):
     ring_typology: str = Field(
         description="Ring typologie. For instance, a solitary, a perl ring, an alliance, engagement, three stones settings, marguerite, etc."
     )
@@ -92,6 +101,9 @@ class Ring(BaseModel):
     )
     central_ring_stone_color: str = Field(
         description="If central stone is a diamond, the color of the diamond. Can take values as capital letters between D and Z. Usually J, K, L, M."
+    )
+    central_ring_stone_shape: str = Field(
+        description="Shape of central stone. For example caboshon, pear sahpe, round shape, etc."
     )
     central_ring_stone_purity: str = Field(
         description="Purity or the central ring stone. Usually FL, IF, VVS 1 or 2, VS 1 or 2, SI 1 or 2, etc. "
@@ -123,12 +135,9 @@ class Ring(BaseModel):
     ring_condition: str = Field(
         description="Condition of the ring. Any missing part, scratch or lack of luminosity should appear here. Summarize condition in maximum 5 words"
     )
-    number_objects_described: str = Field(
-        description="Number of rings / objects described in the text. If only one element is described, answer '1'"
-    )
 
 
-class Sculpture(BaseModel):
+class Sculpture(BaseFeature):
     object_category: str = Field(
         description="What kind of object this description is talking about? Be very specific in the object category. for instance: Painting, table, chair, serigraphie, etc."
     )
@@ -169,7 +178,7 @@ class Sculpture(BaseModel):
     )
 
 
-class Vase(BaseModel):
+class Vase(BaseFeature):
     object_category: str
     number_described_objects: int
     is_a_vase: bool
@@ -185,7 +194,7 @@ class Vase(BaseModel):
     vase_origin_country: str
 
 
-class Watch(BaseModel):
+class Watch(BaseFeature):
     watch_brand: str
     watch_category: str
     watch_model_or_collection_name: str

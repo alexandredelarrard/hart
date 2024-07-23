@@ -1,9 +1,12 @@
 import logging
+import json
 import pandas as pd
 from sqlalchemy import text
 
 from src.context import Context
 from src.utils.timing import timing
+
+type_to_placeholder = {str: "?", dict: "{}", list: "[]"}
 
 
 class SqlHelper:
@@ -107,3 +110,45 @@ class SqlHelper:
             self._log.info(f"REMOVED {nbr_elements.shape} OBS FROM TABLE {table_name}")
         else:
             self._log.warning(f"{table_name} does not exist in the Database")
+
+    @timing
+    def insert_raw_to_table(self, row_dict: dict, table_name: str):
+
+        if table_name in self.db_tables:
+
+            keys_to_string = ", ".join(list(row_dict.keys()))
+            values = tuple(
+                json.dumps(value) if isinstance(value, dict) else value
+                for value in row_dict.values()
+            )
+            placeholders = ", ".join(["%s"] * len(values))
+            query = f"""INSERT INTO {table_name} ({keys_to_string}) VALUES ({placeholders}) """
+
+            with self._context.db_con.begin() as conn:
+                conn.execute(query, values)
+
+    @timing
+    def create_table_if_not_exist(self, table_schema):
+        # TODO
+
+        col_tuple = ""
+        features = table_schema.schema()["properties"]
+
+        create_table_query = f"""
+            CREATE TABLE IF NOT EXISTS {table_schema.__tablename__} (
+                id_item TEXT,
+                methode TEXT,
+                input TEXT,
+                answer TEXT,
+                date TEXT,
+                french_title TEXT,
+                french_description TEXT,
+                english_title TEXT,
+                english_description TEXT,
+                object_category TEXT,
+                number_objects_described TEXT
+            )
+            """
+
+        with self._context.db_con.begin() as conn:
+            conn.execute(create_table_query)
