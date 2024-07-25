@@ -39,5 +39,5 @@ table_names:
   text_embeddings_english: text_embeddings_english
   text_embeddings_french: text_embeddings_french
   gpt_translate_categorize: GPT_TRANSLATE_CATEGORIZE
-  gpt_features_root: GPT_FEATURES_
+  gpt_features_root: GPT_FEATURES
   gpt_raw_extract: _raw_gpt_extraction

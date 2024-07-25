@@ -1,37 +1,30 @@
 evaluator:
     category_mapping_path: object_category_mapping.json
-    mappings_path:
-        watch: watch_features.json
-        vase: vase_features.json
-        all: category_features.json
-        painting: paintings_features.json
-        reformulate: reformulate_features.json
-
     info_to_mapping:
         shape_mapping:
-            _SHAPE: [_SHAPE]
+            _shape: [_shape]
         country_mapping:
-            _COUNTRY: [_COUNTRY]
+            _country: [_country]
         color_mapping:
-            _COLOR: [_COLOR]
+            _color: [_color]
         material_mapping:
-            VASE_MATERIAL: [VASE_MATERIAL, VASE_COLOR]
-            PAINTING_SUPPORT_MATERIAL: [PAINTING_SUPPORT_MATERIAL, PAINTING_MATERIAL]
+            vase_material: [vase_material, vase_color]
+            painting_support_material: [painting_support_material, painting_material]
         painting_material_mapping:
-            PAINTING_MATERIAL: [PAINTING_MATERIAL, PAINTING_SUPPORT_MATERIAL]
+            painting_material: [painting_material, painting_support_material]
         style_mapping:
-            _STYLE: [_PERIODE_OR_CIRCA_YEAR, _STYLE"]
+            _style: [_periode_or_circa_year, _style"]
         condition_mapping:
-            _CONDITION: [_CONDITION]
+            _condition: [_condition]
         decorations_mapping:
-            _DECORATIONS: [_DECORATIONS]
+            _decorations: [_decorations]
         object_category_mapping:
-            OBJECT_CATEGORY: [OBJECT_CATEGORY]
+            object_category: [object_category]
 
-    handle_dates: ["_PERIODE_OR_CIRCA_YEAR", "_PERIOD_OR_YEAR"]
-    handle_cm: ["_HEIGHT", "_LENGTH", "_WIDTH"]
-    cols_to_float: ["_HEIGHT", "_DIAMETER", "_LENGTH", "_YEAR", "_PERIODE_OR_CIRCA_YEAR", "_PERIODE_OR_YEAR", "NUMBER_DESCRIBED_OBJECTS"]
-    binary_cols: ["IS_SIGNED", "_SIGNED", "IS_FRAMED", "IS_DATED", "IS_PAINTED_BY_ARTIST"]
+    handle_dates: ["_periode_or_circa_year", "_periode_or_year"]
+    handle_cm: ["_height", "_length", "_width"]
+    cols_to_float: ["_height", "_diameter", "_length", "_year", "_periode_or_circa_year", "_periode_or_year", "number_described_objects"]
+    binary_cols: ["is_signed", "_signed", "is_framed", "is_dated", "is_painted_by_artist"]
 
     cleaning_mapping:
         period_mapping: {
@@ -315,50 +308,4 @@ evaluator:
             "color": ["polychrome decoration", "colorful"],
             "glass": ["glass", "transparent"],
             "patterns" : ["blue and white", "designs", "patterns", "intricate", "geometric", "abstract", "traditional chinese motifs"]
-        }
-
-        object_category_mapping: {
-            "painting": ["pair of portraits", "still life", "tableaux", "gouache on paper", "pair of portraits", "watercolor studies", "panneau", "scroll", "still life", "aquarel", "lot of paintings", "set of two watercolour and ink works on paper within artist's sketchbook",
-                        'folio of watercolours', 'etching and aquatint', "aquarell", "gouache pictures", "tableau", "pair of paintings", "pair of gouaches", "composition", "aquatint", "aquatinte", "papier peint",
-                        "pair of oil paintings", "watercolour", "peinture", "portrait", "painting", "watercolor", "aquarelle", "pastel", "gouache", "pair of paintings", 'oil painting', "collage", "pair of watercolors"],
-            "print": ["linocut", "impression", "chromogenic print", "photolithographie", 'lithographie en couleurs', "lithographs", "illustration", "lithographie offset", "offset",
-                    "vintage poster", "poster", "affiche", "lithographie couleurs", "color lithograph", "lithographies", "lithographie", "lithograph", "lithography", "estampe litho couleur",
-                    "lithographie originale", "lithographic print", "offset lithograph","granolithographie",
-                    "prints", 'c-print', "silkscreen", "serigraphie", "serigraph", "impression", "screenprint", "print", "giclee print", "giclee", "estampe", "screen print",
-                    "estampe", "estampes", "lithograph and screenprint", "chromolithographie", "serigrafia", "serigraphy"],
-            "drawing": ["drawing", "dessin"],
-            "book": ["book", "livre d'heures", "manuscript"],
-            "icon": ["icon", "icons", "icone"],
-            "miniature": ["miniatures", "miniature", "miniature portrait", "portrait miniature", "miniature peinte"],
-            "gravure": ["heliogravure", "wood engraving", "etchings", "gravures", "eau-forte", 'gravure en serie en couleur', "linoleum cut", "etching", "gravure", "engraving", "gravure en couleurs", "engravings",
-                       "gravure au carborundum", "woodcut", "gravure sur bois", "linogravure"],
-            "plaque": ["plaque", "enameled plaque", 'plaque en cuivre emaillee polychrome', ""],
-            "vase": ["vase"],
-            "wine": ["wine", "wine bottle"],
-            "sculpture": ["sculpture", 'statuette', "bronze sculpture"],
-            "figurine": ["figurine", "figurines"],
-            "tapestry": ["tapestry", "tapisserie"],
-            "retable": ["retable"],
-            "relief": ["relief"],
-            "triptyque": ["triptyque", "triptyc", "triptych"],
-            "table": ["table", "table top"],
-            "carpet": ["woolen carpet", "carpet", "tapis", "rug"],
-            "photography": ["album", "photograph", "photography", "photographie"],
-            "assiette": ["ceramic plate", "collection of plates", "assiette", "assiettes", "pair of porcelain plates"],
-            "plateau": ["plateau de service", "plateau", "plate"],
-            "plat": ["plat"],
-            "box": ['cigar case', "box"],
-            "chair": ["chair"],
-            "sac": ["sac"],
-            "lamp": ['table lamp', 'lamp'],
-            "paravent": ["paravant"],
-            "tile": ["tile", 'ceramic tile'],
-            "frame": ["frame", "cadre", "cadre de tableau"],
-            "mirror": ["mirror"],
-            "broderie": ["broderie"],
-            "ring": ["ring", "rings", "bague"],
-            "earring": ["earring", "earrings", "boucle oreille"],
-            "necklace" : ["necklace"],
-            "watch": ["watch"],
-
         }

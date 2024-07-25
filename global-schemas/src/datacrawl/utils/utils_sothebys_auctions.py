@@ -2,11 +2,12 @@ from typing import Dict
 import pandas as pd
 import time
 from datetime import timedelta
+from omegaconf import DictConfig
 
 from src.constants.variables import DATE_FORMAT
-from omegaconf import DictConfig
 from src.context import Context
 from src.datacrawl.transformers.Crawling import Crawling
+from src.utils.utils_crawler import keep_files_to_do
 
 
 class SothebysAuctions(Crawling):
@@ -25,7 +26,7 @@ class SothebysAuctions(Crawling):
         nbr_days = (date - self.ref["date"]).days
         return self.ref["value"] + nbr_days * self.ref["step_size"]
 
-    def urls_to_crawl(self, start_date, end_date, url_auctions):
+    def new_urls(self, start_date, end_date, url_auctions):
 
         start_year = max(start_date.year, self.history_start_year)
         to_crawl = []
@@ -59,6 +60,17 @@ class SothebysAuctions(Crawling):
                 )
 
         return to_crawl
+
+    def urls_to_crawl(self, start_date, end_date, url_auctions, already_crawled):
+        to_crawl = self.new_urls(start_date, end_date, url_auctions)
+        if start_date.year == self.history_start_year:
+            to_list = to_crawl[len(already_crawled) :]
+            self._log.info(
+                f"ALREADY CRAWLED {len(already_crawled)} REMAINING {len(to_list)} / {len(to_crawl)}"
+            )
+        else:
+            to_list = keep_files_to_do(to_crawl, already_crawled)
+        return to_list
 
     def load_all_page(self, driver, config: Dict):
 

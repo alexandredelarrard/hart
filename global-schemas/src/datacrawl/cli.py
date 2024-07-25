@@ -25,7 +25,7 @@ from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
 from src.datacrawl.steps.step_crawl_artists import StepCrawlingArtists
 from src.datacrawl.steps.step_crawler_items import StepCrawlingItems
 from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
-from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
+from src.datacrawl.steps.step_crawler_details import StepCrawlingDetails
 from src.datacrawl.steps.step_crawler_pictures import StepCrawlingPictures
 
 
@@ -62,14 +62,12 @@ def step_crawling_met(config_path, threads: int):
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
 @click.option(*START_DATE_ARGS, **START_DATE_KWARGS)
 @click.option(*END_DATE_ARGS, **END_DATE_KWARGS)
-@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
 def step_crawling_auctions(
     config_path,
     threads: int,
     seller: str,
     start_date: str,
     end_date: str,
-    crawling_mode: str,
 ):
 
     config, context = get_config_context(config_path, use_cache=False, save=False)
@@ -80,13 +78,12 @@ def step_crawling_auctions(
         seller=seller,
         start_date=start_date,
         end_date=end_date,
-        mode=crawling_mode,
     )
 
     # get crawling_function
     crawl.run(crawl.get_auctions_urls_to_crawl(), crawl.crawling_auctions_iteratively)
 
-    # python -m src datacrawl step-crawling-auctions -t 1 --seller sothebys --start-date "2024-03-01" --crawling-mode new
+    # python -m src datacrawl step-crawling-auctions -t 1 --seller sothebys --start-date "2024-03-01"
 
 
 @cli.command(
@@ -96,8 +93,7 @@ def step_crawling_auctions(
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
-@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
-def step_crawling_items(config_path, threads: int, seller: str, crawling_mode: str):
+def step_crawling_items(config_path, threads: int, seller: str):
 
     config, context = get_config_context(config_path, use_cache=False, save=False)
     crawl = StepCrawlingItems(
@@ -105,7 +101,6 @@ def step_crawling_items(config_path, threads: int, seller: str, crawling_mode: s
         context=context,
         threads=threads,
         seller=seller,
-        mode=crawling_mode,
     )
 
     # get crawling_function
@@ -121,24 +116,18 @@ def step_crawling_items(config_path, threads: int, seller: str, crawling_mode: s
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-@click.option(*QUEUE_SIZE_ARGS, **QUEUE_SIZE_KWARGS)
-@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
-def step_crawling_detailed(
-    config_path, threads: int, seller: str, save_queue_size: int, crawling_mode: str
-):
+def step_crawling_details(config_path, threads: int, seller: str):
 
     config, context = get_config_context(config_path, use_cache=False, save=False)
-    crawl = StepCrawlingDetailed(
+    crawl = StepCrawlingDetails(
         config=config,
         context=context,
         threads=threads,
         seller=seller,
-        save_queue_size=save_queue_size,
-        mode=crawling_mode,
     )
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-detailed -t 1 -s christies -sqs 10 --crawling-mode new
+    # python -m src datacrawl step-crawling-details -t 1 -s christies
 
 
 @cli.command(

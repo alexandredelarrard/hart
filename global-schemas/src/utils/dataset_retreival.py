@@ -283,18 +283,16 @@ class DatasetRetreiver(Step):
             raw_query,
             {
                 "gpt_translate_categorize": GptTranslateCategorize.__tablename__,
-                "id_item": GptTranslateCategorize.__fields__["ID_ITEM"].name,
-                "total_description": GptTranslateCategorize.__fields__[
-                    "TOTAL_DESCRIPTION"
-                ].name,
+                "id_item": GptTranslateCategorize.__fields__["id_item"].name,
+                "total_description": GptTranslateCategorize.__fields__["input"].name,
                 "english_title": GptTranslateCategorize.__fields__[
-                    "ENGLISH_TITLE"
+                    "english_title"
                 ].name,
                 "english_description": GptTranslateCategorize.__fields__[
-                    "ENGLISH_DESCRIPTION"
+                    "english_description"
                 ].name,
                 "category_object": GptTranslateCategorize.__fields__[
-                    "CLEAN_OBJECT_CATEGORY"
+                    "clean_object_category"
                 ].name,
                 "object_value": object_value,
                 "raw_table_gpt": LlmExtraction.__tablename__,

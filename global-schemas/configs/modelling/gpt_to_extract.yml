@@ -1,7 +1,7 @@
 gpt:
   llm_model:
     groq: llama3-70b-8192 #llama3-8b-8192 free so no need of limiting - 30/Min
-    open_ai: gpt-4o-mini #gpt-3.5-turbo
+    open_ai: gpt-3.5-turbo #gpt-4o-mini #
     local: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF
     google: gemini-1.5-flash
   llm_action: "extract"

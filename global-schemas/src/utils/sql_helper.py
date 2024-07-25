@@ -1,12 +1,9 @@
-import logging
 import json
 import pandas as pd
 from sqlalchemy import text
 
 from src.context import Context
 from src.utils.timing import timing
-
-type_to_placeholder = {str: "?", dict: "{}", list: "[]"}
 
 
 class SqlHelper:
@@ -97,35 +94,56 @@ class SqlHelper:
         if table_name in self.db_tables:
             values = str(tuple(values))
             nbr_elements = pd.read_sql(
-                f'SELECT "{column}" FROM "{table_name}" WHERE "{column}" IN {values}',
+                f"""SELECT {column} FROM {table_name} WHERE {column} IN {values} """,
                 con=self._context.db_con,
             )
             with self._context.db_con.begin() as conn:
                 conn.execute(
-                    text(
-                        f"""DELETE FROM \"{table_name}\"
-                                WHERE \"{column}\" IN {values}"""
-                    )
+                    f"""DELETE FROM {table_name}
+                            WHERE {column} IN {values}"""
                 )
             self._log.info(f"REMOVED {nbr_elements.shape} OBS FROM TABLE {table_name}")
         else:
             self._log.warning(f"{table_name} does not exist in the Database")
 
-    @timing
-    def insert_raw_to_table(self, row_dict: dict, table_name: str):
+    def insert_raw_to_table(self, unique_id_col: str, row_dict: dict, table_name: str):
 
         if table_name in self.db_tables:
 
-            keys_to_string = ", ".join(list(row_dict.keys()))
+            keys_to_string = ", ".join([f'"{x}"' for x in row_dict.keys()])
             values = tuple(
                 json.dumps(value) if isinstance(value, dict) else value
                 for value in row_dict.values()
             )
             placeholders = ", ".join(["%s"] * len(values))
-            query = f"""INSERT INTO {table_name} ({keys_to_string}) VALUES ({placeholders}) """
+            update_columns = ", ".join(
+                [
+                    (
+                        f'"{k}" = \'{json.dumps(v).replace("\'", "\'\'")}\''
+                        if isinstance(v, (list, dict))
+                        else f'"{k}" = \'{str(v).replace("\'", "\'\'")}\''
+                    )
+                    for k, v in list(row_dict.items())
+                    if k != unique_id_col
+                ]
+            )
+
+            query = f"""INSERT INTO {table_name} ({keys_to_string})
+                        VALUES ({placeholders})
+                        ON CONFLICT ({unique_id_col})
+                        DO UPDATE SET {update_columns}"""
 
             with self._context.db_con.begin() as conn:
-                conn.execute(query, values)
+                try:
+                    conn.execute(query, values)
+
+                except Exception as e:
+                    if "value violates unique constraint" in str(e):
+                        self._log.warning(f"Row already saved in db {table_name}")
+                    else:
+                        self._log.error(f"Something wrong happened {e}")
+                finally:
+                    pass
 
     @timing
     def create_table_if_not_exist(self, table_schema):

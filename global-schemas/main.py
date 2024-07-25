@@ -3,7 +3,7 @@ from src.context import get_config_context
 from src.datacrawl.steps.step_crawl_artists import StepCrawlingArtists
 from src.datacrawl.steps.step_crawler_pictures import StepCrawlingPictures
 from src.datacrawl.steps.step_crawler_met import StepCrawlingMet
-from src.datacrawl.steps.step_crawler_detailed import StepCrawlingDetailed
+from src.datacrawl.steps.step_crawler_details import StepCrawlingDetails
 from src.datacrawl.steps.step_crawler_items import StepCrawlingItems
 from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 
@@ -11,7 +11,6 @@ from src.dataclean.steps.step_text_clean_crawling import StepCleanCrawling
 from src.dataclean.steps.step_text_clean_artists import StepTextCleanArtists
 from src.dataclean.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
 from src.dataclean.steps.step_gpt_clean_inference import StepCleanGptInference
-from src.dataclean.steps.step_gpt_category_inference import StepCategoryGptInference
 
 from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
 from src.modelling.steps.step_text_clustering import StepTextClustering
@@ -34,9 +33,11 @@ if __name__ == "__main__":
 
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
 
-    # self = StepCrawlingDetailed(context=context, config=config, threads=1, seller="drouot", mode="new")
-    # self = StepCrawlingAuctions(context=context, config=config, threads=1, seller="christies", start_date="2024-03-01", end_date="2024-05-01")
-    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="sothebys", mode="new")
+    # self = StepCrawlingDetails(context=context, config=config, threads=1, seller="drouot")
+    self = StepCrawlingAuctions(
+        context=context, config=config, threads=1, seller="millon"
+    )
+    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot", mode="history")
     # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="christies", mode="new")
 
     # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="history")
@@ -53,10 +54,10 @@ if __name__ == "__main__":
     # self = StepPictureClassification(context=context, config=config)
     # self = StepTextClassification(context=context, config=config)
 
-    self = StepTextInferenceGpt(
-        context=context, config=config, methode=["open_ai"], object="ring"
-    )
-    # self = StepCleanGptInference(context=context, config=config, category="reformulate")
+    # self = StepTextInferenceGpt(
+    #     context=context, config=config, methode=["open_ai"], object="ring"
+    # )
+    # self = StepCleanGptInference(context=context, config=config, object="reformulate")
     # self = StepCategoryGptInference(context=context, config=config)
     # self.run()
 

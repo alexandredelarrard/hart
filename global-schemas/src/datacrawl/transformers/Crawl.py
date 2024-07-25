@@ -67,52 +67,23 @@ class Crawl(Step):
     @timing
     def run(self, liste_urls: List, function_crawling):
 
-        # initialize the drivers
-        self.initialize_queue_drivers()
+        if len(liste_urls) != 0:
+            # initialize the drivers
+            self.initialize_queue_drivers()
 
-        # initalize the urls queue
-        self.initialize_queue_urls(liste_urls)
+            # initalize the urls queue
+            self.initialize_queue_urls(liste_urls)
 
-        # start the crawl
-        self.start_threads_and_queues(function_crawling)
+            # start the crawl
+            self.start_threads_and_queues(function_crawling)
 
-        t0 = time.time()
-        self.queues["urls"].join()
-        self._log.info("*** Done in {0}".format(time.time() - t0))
+            t0 = time.time()
+            self.queues["urls"].join()
+            self._log.info("*** Done in {0}".format(time.time() - t0))
 
-        self.close_queue_drivers()
-
-    def initialize_driver_firefox(self):
-        """
-        Initialize the web driver with Firefox driver as principal driver geckodriver
-        parameters are here to not load images and keep the default css --> make page loading faster
-        """
-
-        firefox_profile = webdriver.FirefoxProfile()
-
-        firefox_profile.set_preference("permissions.default.stylesheet", 2)
-        firefox_profile.set_preference(
-            "dom.ipc.plugins.enabled.libflashplayer.so", "false"
-        )
-        firefox_profile.set_preference("disk-cache-size", 8000)
-        firefox_profile.set_preference("http.response.timeout", 300)
-        firefox_profile.set_preference("dom.disable_open_during_load", True)
-
-        if self.text_only:
-            firefox_profile.set_preference("permissions.default.image", 2)
-
-        firefox_profile.set_preference("network.proxy.type", 1)
-        self.current_proxy_index = (self.current_proxy_index + 1) % len(self.proxies)
-
-        firefox_capabilities = webdriver.DesiredCapabilities.FIREFOX
-        firefox_capabilities["marionette"] = True
-
-        driver = webdriver.Firefox(capabilities=firefox_capabilities)
-        # log_path= os.environ["DIR_PATH"] + "/crawling/geckodriver.log"
-        driver.delete_all_cookies()
-        driver.set_page_load_timeout(300)
-
-        return driver
+            self.close_queue_drivers()
+        else:
+            self._log.info("Already up to date")
 
     def initialize_driver_chrome(self):
         """
@@ -145,7 +116,7 @@ class Crawl(Step):
         options.add_experimental_option("prefs", prefs)
 
         # if self.text_only:
-        options.add_argument("--headless")  # Runs Chrome in headless mode.
+        # options.add_argument("--headless")  # Runs Chrome in headless mode.
         options.add_argument("--incognito")
         options.add_argument("--no-sandbox")  # Bypass OS security model
         options.add_argument("--disable-gpu")  # applicable to windows os only
@@ -157,7 +128,7 @@ class Crawl(Step):
         options.add_argument("--disable-extensions")
         options.add_argument("--enable-javascript")
         options.add_argument("--window-size=1125,955")
-        options.add_argument("--remote-debugging-port=9222")
+        # options.add_argument("--remote-debugging-port=9222")
 
         svc = webdriver.ChromeService(executable_path=binary_path)
         driver = webdriver.Chrome(options=options, service=svc)
@@ -180,6 +151,7 @@ class Crawl(Step):
 
     def delete_driver(self, driver):
         driver.close()
+        time.sleep(1)
 
     def restart_driver(self, driver):
 
@@ -206,7 +178,7 @@ class Crawl(Step):
 
         for i in range(self.queues["drivers"].qsize()):
             driver = self.queues["drivers"].get()
-            driver.close()
+            self.delete_driver(driver)
 
     def start_threads_and_queues(self, function):
 
@@ -232,13 +204,10 @@ class Crawl(Step):
 
     def queue_calls(self, function, queues, *args):
 
-        queue_url = queues["urls"]
-        self.missed_urls = []
-
         #### extract all articles
         while True:
             driver = queues["drivers"].get()
-            url = queue_url.get()
+            url = queues["urls"].get()
 
             try:
                 driver = self.get_url(driver, url)
@@ -260,20 +229,23 @@ class Crawl(Step):
                     with queues["count"].mutex:
                         queues["count"].queue.clear()
 
-                queues["drivers"].put(driver)
-                queue_url.task_done()
-
-                self._log.info(f"[OOF {queue_url.qsize()}] CRAWLED URL {url}")
-
             except Exception as e:
                 logging.error(url, e)
-                self.missed_urls.append(url)
-                queue_url.task_done()
+
+            queues["urls"].task_done()
+            if queues["urls"].qsize() == 0:
+                break
+            else:
                 queues["drivers"].put(driver)
 
-            if queue_url.qsize() == 0 and self.save_in_queue:
+            self._log.info(f"[OOF {queues['urls'].qsize()}] CRAWLED URL {url}")
+
+            if queues["urls"].qsize() == 0 and self.save_in_queue:
                 file_name = encode_file_name(url)
                 save_queue_to_file(
                     queues["results"],
                     path=self.save_queue_path / Path(f"/{file_name}.pickle"),
                 )
+
+        # when all urls are done then kill the driver
+        self.delete_driver(driver)

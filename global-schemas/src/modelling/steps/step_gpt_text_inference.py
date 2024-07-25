@@ -2,7 +2,6 @@ import time
 from queue import Queue
 from typing import List
 from threading import Thread
-from pathlib import Path
 
 from langchain_core.output_parsers import PydanticOutputParser
 from omegaconf import DictConfig
@@ -10,12 +9,7 @@ from src.schemas.gpt_schemas import get_mapping_pydentic_object
 from src.modelling.transformers.GptExtracter import GptExtracter
 from src.utils.dataset_retreival import DatasetRetreiver
 
-from src.utils.utils_crawler import (
-    encode_file_name,
-    read_crawled_pickles,
-    save_queue_to_file,
-)
-from src.schemas.gpt_schemas import LlmExtraction
+from src.schemas.gpt_schemas import LlmExtraction, ColName
 from src.context import Context
 from src.utils.timing import timing
 
@@ -82,14 +76,17 @@ class StepTextInferenceGpt(GptExtracter):
             # all columns avialable except id_item
             input_string = ""
             for key, value in row.items():
-                if key != self.name.id_item:
+                if key != ColName.id_item:
                     input_string += f"{key} : {value} \n"
 
-            item = {
-                "id": row[self.name.id_item],
-                "input": input_string,
-            }
-            self.queues["descriptions"].put(item)
+            # create futur response
+            new_response = LlmExtraction(
+                id_item=row[ColName.id_item],
+                input=input_string,
+                prompt_schema=self.object,
+            )
+
+            self.queues["descriptions"].put(new_response)
 
     def start_threads_and_queues(self, queues):
 
@@ -118,15 +115,7 @@ class StepTextInferenceGpt(GptExtracter):
         while True:
 
             # get the input from queue
-            dict_inputs = queue_desc.get()
-
-            # create futur response
-            new_response = LlmExtraction(
-                id_item=dict_inputs["id"],
-                input=dict_inputs["input"],
-                methode=chain.to_json()["kwargs"]["middle"][0].__module__,
-                prompt_schema=self.object,
-            )
+            new_response = queue_desc.get()
 
             # get llm answer
             answer, query_status = self.get_answer(new_response.input, chain)
@@ -134,9 +123,20 @@ class StepTextInferenceGpt(GptExtracter):
             if query_status == 400:
                 self._log.critical(f"Error for {new_response.id_item}")
 
-            new_response.answer = answer.dict()
-            self.insert_raw_to_table(new_response.dict(), self.sql_gpt_table_raw)
+            else:
+                # compleat the answer / response for db
+                new_response.methode = chain.to_json()["kwargs"]["middle"][0].__module__
+                new_response.answer = answer.dict()
+
+                # save in db
+                self.insert_raw_to_table(
+                    unique_id_col="id_item",
+                    row_dict=new_response.dict(),
+                    table_name=self.sql_gpt_table_raw,
+                )
+                self._log.info(
+                    f"[OOF {queue_desc.qsize()}] QUERIED {new_response.id_item}"
+                )
 
             # done task
             queues["clients"].put(chain)
-            self._log.info(f"[OOF {queue_desc.qsize()}] QUERIED {new_response.id_item}")

@@ -20,7 +20,7 @@ def clean_url_picture_list(x):
             re.findall('url\\("(.+?)"\\)', str(x))[0].replace(
                 "size=small", "size=phare"
             )
-            if "url" in str(x)
+            if "url(" in str(x)
             else str(x).replace("size=small", "size=phare")
         )
     except Exception:

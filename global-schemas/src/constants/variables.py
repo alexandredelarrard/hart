@@ -1,6 +1,12 @@
 # for crawling & cleaning steps : naming
 class Naming:
     def __init__(self):
+
+        self.low_id_item = "id_item"
+        self.low_id_auction = "id_auction"
+        self.low_id_picture = "id_picture"
+        self.low_id_unique = "id_unique"
+
         self.seller = "SELLER"
         self.auction_infos = "AUCTION_INFOS"
         self.item_infos = "ITEM_INFOS"
@@ -18,6 +24,7 @@ class Naming:
         self.house = "HOUSE"
         self.place = "PLACE"
 
+        self.url_crawled = "URL_CRAWLED"
         self.url_detail = "URL_DETAIL"
         self.url_full_detail = "URL_FULL_DETAILS"
         self.url_auction = "URL_AUCTION"
@@ -29,9 +36,11 @@ class Naming:
         self.eur_min_estimate = "EUR_MIN_ESTIMATION"
         self.max_estimate = "MAX_ESTIMATION"
         self.eur_max_estimate = "EUR_MAX_ESTIMATION"
+        self.estimate = "ESTIMATE"
         self.brut_estimate = "BRUT_ESTIMATE"
         self.brut_result = "BRUT_RESULT"
         self.item_result = "FINAL_RESULT"
+        self.result = "RESULT"
         self.eur_item_result = "EUR_FINAL_RESULT"
         self.is_item_result = "IS_FINAL_RESULT"
         self.auctionner_estimate = "EXPERT_ESTIMATION"

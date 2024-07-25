@@ -14,10 +14,10 @@ crawling:
             browser : chrome
             nodes : 1
             retry : 1
-    drouot: # 3.3M
+    drouot: # 3.3M / 17 M - only 2023 done
         history_start_year: 2000
         webpage_url : https://www.gazette-drouot.com/recherche/lot/
-        auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?isForAgenda=true&typeName=passees
+        auctions_url : https://www.gazette-drouot.com/ventes-aux-encheres/passees?query=&queryName=&type=past&
         auctions:
             liste_elements :
                 by_type: CLASS_NAME
@@ -26,7 +26,7 @@ crawling:
                 AUCTION_TITLE:
                     by_type: CLASS_NAME
                     value_css: nomVente
-                DATE:
+                AUCTION_DATE:
                     by_type: CLASS_NAME
                     value_css: capitalize-fl
                 TYPE_SALE:
@@ -42,7 +42,7 @@ crawling:
             functions:
                 - 'self.scrowl_driver(driver, Y=200)'
             global_element:
-                DATE:
+                AUCTION_DATE:
                     by_type: CLASS_NAME
                     value_css: capitalize-fl
                 TYPE_SALE:
@@ -70,7 +70,7 @@ crawling:
                 ITEM_TITLE:
                     by_type: CLASS_NAME
                     value_css: lotArtisteListe
-                ITEM_INFOS:
+                ITEM_DESCRIPTION:
                     by_type: CLASS_NAME
                     value_css: lotDescriptionListe
                 RESULT:
@@ -79,24 +79,20 @@ crawling:
                 ESTIMATE:
                     by_type: CLASS_NAME
                     value_css: lotEstimationListe
-                URL_FULL_DETAIL:
+                URL_FULL_DETAILS:
                     by_type: TAG_NAME
                     value_css: a
                     attribute: href
-                URL_PICTURE:
-                    by_type: CLASS_NAME
-                    value_css: imgLot
-                    value_of_css_element: background-image
         detailed:
             per_element :
                 URL_AUCTION:
                     by_type : CLASS_NAME
                     value_css : breadcumTitreVente
                     attribute: href
-                TITLE:
+                DETAIL_TITLE:
                     by_type : CLASS_NAME
                     value_css : lotArtisteFiche
-                DETAIL:
+                DETAIL_DESCRIPTION:
                     by_type : XPATH
                     value_css : //div[@class='lotDescriptionFiche']/h2
                 URL_PICTURE:
@@ -140,6 +136,9 @@ crawling:
                 LOCALISATION:
                     by_type : CLASS_NAME
                     value_css : chr-label-s
+                AUCTION_DATE:
+                    by_type: CLASS_NAME
+                    value_css: chr-event-tile__status
         items:
             crawler_infos:
                 url_sleep: 0.5
@@ -154,19 +153,26 @@ crawling:
                 by_type: XPATH
                 value_css: //div[@class='container-fluid']/ul/li
             per_element:
-                URL_FULL_DETAIL:
+                URL_FULL_DETAILS:
                     by_type: CLASS_NAME
                     value_css: chr-lot-tile__link
                     attribute: href
-                LOT:
+                LOT_NUMBER:
                     by_type: CLASS_NAME
                     value_css: chr-lot-tile__content-header
-                ITEM_INFOS:
+                AUCTION_DATE:
+                    by_type: XPATH
+                    value_css: //div[@class='chr-auction-header-next__auction-status']/p/strong
+                ITEM_TITLE:
                     by_type: CLASS_NAME
-                    value_css: chr-lot-tile__content
+                    value_css: chr-lot-tile__link
+                    attribute: text
+                ITEM_DESCRIPTION:
+                    by_type: CLASS_NAME
+                    value_css: chr-lot-tile__titles
                 ESTIMATE:
                     by_type: CLASS_NAME
-                    value_css: chr-lot-tile__price-value
+                    value_css: chr-lot-tile__price-container
                 RESULT:
                     by_type: CLASS_NAME
                     value_css: chr-lot-tile__dynamic-price
@@ -184,15 +190,18 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: chr-breadcrumb__link
                     attribute: href
-                ARTIST:
-                    by_type : CLASS_NAME
-                    value_css : chr-lot-header__artist-name
-                TITLE:
+                DETAIL_TITLE:
                     by_type : CLASS_NAME
                     value_css : chr-lot-header__title
-                DETAIL:
+                DETAIL_DESCRIPTION:
                     by_type : CLASS_NAME
                     value_css: chr-accordion
+                ESTIMATE:
+                    by_type: XPATH
+                    value_css: //div[@class='chr-lot-header__estimate-details']/span
+                RESULT:
+                    by_type: XPATH
+                    value_css: //div[@class='chr-lot-header__bid-current']/span
                 URL_PICTURE:
                     functions:
                         - "self.click_element(driver, 'CLASS_NAME', 'chr-lot-header__image-container')"
@@ -219,7 +228,7 @@ crawling:
                 AUCTION_TITLE:
                     by_type : CLASS_NAME
                     value_css : Card-title
-                DATE:
+                AUCTION_DATE:
                     by_type : CLASS_NAME
                     value_css : Card-details
                 TYPE_SALE:
@@ -243,7 +252,7 @@ crawling:
                     by_type: XPATH
                     value_css: //div[@aria-label='List of lots']/div/div
                 per_element:
-                    URL_FULL_DETAIL:
+                    URL_FULL_DETAILS:
                         by_type: TAG_NAME
                         value_css: a
                         attribute: href
@@ -268,14 +277,14 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: AuctionsModule-results-item
                 per_element:
-                    URL_FULL_DETAIL:
+                    URL_FULL_DETAILS:
                         by_type: TAG_NAME
                         value_css: a
                         attribute: href
                     ITEM_TITLE:
                         by_type: CLASS_NAME
                         value_css: title
-                    ITEM_INFOS:
+                    ITEM_DESCRIPTION:
                         by_type: CLASS_NAME
                         value_css: description
                     RESULT:
@@ -287,14 +296,10 @@ crawling:
         detailed :
             buy_url:
                 per_element :
-                    TITLE:
+                    DETAIL_TITLE:
                         by_type: CLASS_NAME
                         value_css: css-542wex
-                    URL_AUCTION:
-                        by_type: XPATH
-                        value_css: //div[@class='css-2v1h2i']/nav/span
-                        attribute: href
-                    DETAIL:
+                    DETAIL_DESCRIPTION:
                         by_type : ID
                         value_css : "LotDetails"
                     URL_PICTURE:
@@ -307,11 +312,7 @@ crawling:
                             attribute: srcset
             auctions_url:
                 per_element :
-                    URL_AUCTION:
-                        by_type: XPATH
-                        value_css: //div[@class='LotPage-breadcrumbs-breadcrumb']/a
-                        attribute: href
-                    DETAIL:
+                    DETAIL_DESCRIPTION:
                         by_type : CLASS_NAME
                         value_css : LotPage-details
                     URL_PICTURE:
@@ -351,14 +352,14 @@ crawling:
                 ITEM_TITLE:
                     by_type: CLASS_NAME
                     value_css: card-title
-                URL_FULL_DETAIL:
+                URL_FULL_DETAILS:
                     by_type : CLASS_NAME
                     value_css : card-image
                     attribute: href
-                LOT:
+                LOT_NUMBER:
                     by_type: CLASS_NAME
                     value_css: lot
-                ITEM_INFOS:
+                ITEM_DESCRIPTION:
                     by_type: CLASS_NAME
                     value_css: content
                 FINAL_RESULT:
@@ -366,22 +367,16 @@ crawling:
                     value_css: estimation
         detailed:
             per_element :
-                AUCTION_DATE:
-                    by_type: CLASS_NAME
-                    value_css: sale--info
-                AUCTION_TITLE:
-                    by_type: XPATH
-                    value_css: //p[@class='sale--info']/a
                 ESTIMATE:
                     by_type: CLASS_NAME
                     value_css: box-estimation
                 RESULT:
                     by_type: CLASS_NAME
                     value_css: box-awarded
-                TITLE:
+                DETAIL_TITLE:
                     by_type : CLASS_NAME
                     value_css : wrap-title
-                DETAIL:
+                DETAIL_DESCRIPTION:
                     by_type : XPATH
                     value_css : //div[@class='detail']/div[1]
                 URL_PICTURE:

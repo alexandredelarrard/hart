@@ -29,6 +29,7 @@ class StepCrawlingPictures(Crawling):
         mode: str = "history",
     ):
 
+        self.today = datetime.today()
         self.seller = seller
         self.paths = define_save_paths(config, self.seller, mode=mode)
         kwargs = {"is_picture": False, "is_javascript": False, "is_cookie": False}
@@ -41,7 +42,6 @@ class StepCrawlingPictures(Crawling):
             kwargs=kwargs,
         )
 
-        self.today = datetime.today()
         self._infos = self._config.crawling[self.seller]
         self.utils = eval(
             f"Clean{self.seller.capitalize()}(context=context, config=config)"

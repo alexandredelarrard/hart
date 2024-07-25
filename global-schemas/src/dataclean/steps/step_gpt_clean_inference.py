@@ -1,35 +1,41 @@
 import numpy as np
 import swifter
-from typing import List, Dict
+from typing import List
 import pandas as pd
 from pathlib import Path
 
 pd.options.mode.copy_on_write = True
 
+from omegaconf import DictConfig
+from src.utils.utils_crawler import read_json
+from src.dataclean.transformers.GptCleaner import GPTCleaner
+from src.schemas.gpt_schemas import LlmExtraction, ColName
+from src.schemas.gpt_cleaning import GptTranslateCategorize
+
 from src.context import Context
 from src.utils.timing import timing
-
-from omegaconf import DictConfig
-from src.utils.utils_crawler import read_crawled_pickles, read_json
-from src.utils.utils_extraction_gpt import handle_answer, homogenize_keys_name
-from src.utils.utils_dataframe import remove_accents
-from src.dataclean.transformers.GptCleaner import GPTCleaner
 
 
 class StepCleanGptInference(GPTCleaner):
 
-    def __init__(
-        self, context: Context, config: DictConfig, category: str = "painting"
-    ):
+    def __init__(self, context: Context, config: DictConfig, object: str = "painting"):
 
         super().__init__(context=context, config=config)
 
-        self.category = category.upper()
-        self.save_queue_path = self._context.paths["LLM_EXTRACTED"] / Path(category)
-        self._mapping_path = self._context.paths["LLM_TO_EXTRACT"] / Path(
-            self._config.evaluator.mappings_path[self.category.lower()]
+        self.object = object
+
+        self.category_mapping_path = self._context.paths["LLM_TO_EXTRACT"] / Path(
+            self._config.evaluator.category_mapping_path
         )
-        self.sql_table_name = self._config.table_names.gpt_features_root
+
+        self.sql_input_table = LlmExtraction.__tablename__
+
+        if self.object == "reformulate":
+            self.sql_output_table_name = GptTranslateCategorize.__tablename__
+        else:
+            self.sql_output_table_name = "_".join(
+                [self._config.table_names.gpt_features_root, {self.object}]
+            )
 
         self.clean_info_with_mapping = self._config.evaluator.info_to_mapping
         self.mappings = self._config.evaluator.cleaning_mapping
@@ -38,108 +44,61 @@ class StepCleanGptInference(GPTCleaner):
         self.cols_to_float = self._config.evaluator.cols_to_float
         self.binary_cols = self._config.evaluator.binary_cols
 
+        # category mapping
+        self.mappings["object_category_mapping"] = read_json(self.category_mapping_path)
+
     @timing
     def run(self):
 
-        # get col_mapping:
-        self.col_mapping = read_json(self._mapping_path)
-
-        df_done = read_crawled_pickles(path=self.save_queue_path)
+        query_string = self.get_query_string()
+        df_done = self.read_sql_data(query_string)
 
         # extract json and features
-        df_done = self.eval_json(df_done)
         df_done = self.extract_features(df_done)
-        df_done = self.remove_outliers(df_done)
+        df_done = self.deduplicate(df_done)
+
+        # clean column values
         df_done = self.clean_dimensions(df_done)
         df_done = self.clean_dates(df_done)
         df_done = self.clean_text(df_done)
         df_done = self.clean_binary(df_done)
         df_done = self.clean_values(df_done)
 
+        # save to sql table
         self.save_infos_to_tables(df_done)
 
-    def save_infos_to_tables(self, df_done):
-
-        # save a table mapping desc to specific category
-        # any status KO will have to be redone with proper prompt
-        df_cat = df_done[
-            [self.name.id_item, self.name.category, "NUMBER_OBJECTS_DESCRIBED"]
-        ]
-        df_cat["STATUS"] = np.where(
-            df_cat["CLEAN_" + self.name.category] == self.category.lower(), "OK", "KO"
-        )
-        self.remove_rows_sql_data(
-            values=df_cat[self.name.id_item].tolist(),
-            column=self.name.id_item,
-            table_name="CATEGORY_MAPPING_GPT",
-        )
-        self.write_sql_data(
-            dataframe=df_cat, table_name="CATEGORY_MAPPING_GPT", if_exists="append"
-        )
-
-        # save the ones of proper category mapped to right prompt
-        sub_df = df_done.loc[
-            df_done["CLEAN_" + self.name.category] == self.category.lower()
-        ]
-        self.remove_rows_sql_data(
-            values=sub_df[self.name.id_item].tolist(),
-            column=self.name.id_item,
-            table_name=f"{self.sql_table_name}{self.category}",
-        )
-        self.write_sql_data(
-            dataframe=sub_df,
-            table_name=f"{self.sql_table_name}{self.category}",
-            if_exists="append",
-        )
-
     @timing
-    def eval_json(self, df_done):
+    def get_query_string(self):
+        query = f"""SELECT {ColName.id_item}, {ColName.input}, {ColName.answer}, {ColName.date_run}
+            FROM {self.sql_input_table}
+            WHERE {ColName.prompt_schema}='{self.object}' """
 
-        # evaluate string to Dict or List
-        df_done["ANSWER"] = df_done[[self.name.id_item, "ANSWER"]].apply(
-            lambda x: handle_answer(x), axis=1
-        )
-        df_done = df_done.loc[
-            (df_done["ANSWER"] != "{}") & (df_done["ANSWER"].notnull())
-        ]
+        if self.object == "reformulate":
+            query += f" OR {ColName.prompt_schema} IS NULL"
 
-        # remove lots of too many different objects
-        nbr_objects = df_done["ANSWER"].apply(
-            lambda x: len(x) if isinstance(x, List) else 1
-        )
-        self._log.info(nbr_objects.value_counts())
-        df_done = df_done.loc[3 >= nbr_objects]
-
-        # align multi objects with simple objects by exploding desc and keep thos existing
-        df_done["ANSWER"] = df_done["ANSWER"].apply(
-            lambda x: [x] if isinstance(x, Dict) else x
-        )
-        df_done = df_done.explode("ANSWER")
-
-        # remove non dict answers since we asked for a JSON format
-        is_dict = df_done["ANSWER"].apply(lambda x: isinstance(x, Dict))
-        df_done = df_done.loc[is_dict]
-
-        return df_done
+        return query
 
     @timing
     def extract_features(self, df_done):
 
         # handle features element
-        df_done = df_done.loc[df_done["ANSWER"].notnull()]
+        df_done = df_done.loc[df_done[ColName.answer].notnull()]
 
-        # clean dict
-        df_done["ANSWER"] = df_done["ANSWER"].swifter.apply(
-            lambda x: homogenize_keys_name(x, self.col_mapping)
-        )
+        # from series of dict to dataframe
+        df_answer = pd.json_normalize(df_done[ColName.answer])
 
-        for col in self.col_mapping.keys():
-            df_done[col.upper()] = df_done["ANSWER"].str.get(col)
-            df_done[col.upper()] = df_done[col.upper()].apply(
-                lambda x: ", ".join(x) if isinstance(x, List) else x
-            )
-            df_done[col.upper()] = np.where(
-                df_done[col.upper()].isin(
+        # Step 2: Concatenate the new DataFrame with the existing DataFrame
+        df_done = pd.concat([df_done, df_answer], axis=1)
+
+        # Step 3: Drop the original 'answer' column if needed
+        df_done.drop(columns=[ColName.answer], inplace=True)
+
+        # Step 4: clean values out of column generic way
+        for col in df_done.columns:
+            df_done[col] = np.where(
+                df_done[col]
+                .str.lower()
+                .isin(
                     [
                         "n/a",
                         "unspecified",
@@ -153,41 +112,24 @@ class StepCleanGptInference(GPTCleaner):
                         "na",
                         "nan",
                         "undefined",
-                        "Null",
+                        "null",
                         " ",
                         "non specified",
                         "not applicable",
                         "non specificato",
+                        "sans titre",
+                        "description de l'art",
+                        "description de l'art:",
+                        "untitled",
+                        "art description",
+                        "art description:",
                     ]
                 ),
                 np.nan,
-                df_done[col.upper()],
+                df_done[col],
             )
+
         return df_done
-
-    @timing
-    def remove_outliers(self, df_done):
-
-        shape_0 = df_done.shape[0]
-        df_done["NUMBER_OBJECTS_DESCRIBED"] = df_done[
-            "NUMBER_OBJECTS_DESCRIBED"
-        ].fillna("1")
-        df_done = df_done.loc[
-            df_done["NUMBER_OBJECTS_DESCRIBED"].isin(["0", "1", "2", "3"])
-        ]
-        self._log.info(
-            f"FILTERING {shape_0 - df_done.shape[0]} ({(shape_0 - df_done.shape[0])*100/shape_0:.1f}%) due to lack of info / mismatch"
-        )
-
-        df_done = df_done.reset_index(drop=True)
-        return df_done
-
-    def apply_mapping_func(self, vector, mapping_dict):
-        return vector.swifter.apply(
-            lambda x: self.map_value_to_key(
-                str(x).replace('"-"', '" "').replace('","', '""'), mapping_dict
-            )
-        )
 
     @timing
     def clean_dimensions(self, df_done):
@@ -220,37 +162,42 @@ class StepCleanGptInference(GPTCleaner):
                     col_name = self.col_names_with_category(target_column)
 
                     if col_name in df_columns:
-                        self._log.info(f"CLEANING {target_column}")
+                        self._log.info(f"CLEANING {col_name}")
 
-                        mapping_dict = self.order_mapping_dict(
+                        mapping_dict = self.invert_mapping_dict(
                             self.mappings[function_mapping]
                         )
-                        df_done["CLEAN_" + col_name] = self.apply_mapping_func(
-                            df_done[col_name], mapping_dict
-                        )
+
+                        if function_mapping == "object_category_mapping":
+                            truncate = df_done[col_name].swifter.apply(
+                                lambda x: self.pseudo_clean_category(x)
+                            )
+                        else:
+                            truncate = df_done[col_name]
+
+                        df_done["clean_" + col_name] = truncate.map(mapping_dict)
+
                 else:
                     col_name = self.col_names_with_category(target_column)
 
                     if col_name in df_columns:
                         self._log.info(f"CLEANING {target_column}")
 
-                        mapping_dict = self.order_mapping_dict(
+                        mapping_dict = self.invert_mapping_dict(
                             self.mappings[function_mapping]
                         )
-                        df_done["CLEAN_" + col_name] = self.apply_mapping_func(
-                            df_done[col_name], mapping_dict
+                        df_done["clean_" + col_name] = df_done[col_name].map(
+                            mapping_dict
                         )
 
                         for other_col_name in columns_name[1:]:
                             other_col_name = self.col_names_with_category(
                                 other_col_name
                             )
-                            df_done["CLEAN_" + col_name] = np.where(
-                                df_done["CLEAN_" + col_name].isnull(),
-                                self.apply_mapping_func(
-                                    df_done[other_col_name], mapping_dict
-                                ),
-                                df_done["CLEAN_" + col_name],
+                            df_done["clean_" + col_name] = np.where(
+                                df_done["clean_" + col_name].isnull(),
+                                df_done[other_col_name].map(mapping_dict),
+                                df_done["clean_" + col_name],
                             )
         return df_done
 
@@ -288,45 +235,44 @@ class StepCleanGptInference(GPTCleaner):
 
     @timing
     def clean_values(self, df_done):
+
         for col in self.cols_to_float:
             if col in df_done.columns:
                 df_done[col] = df_done[col].apply(lambda x: self.eval_number(str(x)))
 
         # relation d'ordre sur la condition de l'objet
-        if f"{self.category}_CONDITION" in df_done.columns:
-            df_done[f"{self.category}_CONDITION"] = df_done[
-                f"{self.category}_CONDITION"
+        if f"{self.object}_condition" in df_done.columns:
+            df_done[f"{self.object}_condition"] = df_done[
+                f"{self.object}_condition"
             ].map({"very good": 4, "good_": 3, "okay_": 2, "poor": 1})
-        # to be able to save into sql
-        df_done["ANSWER"] = df_done["ANSWER"].astype(str)
 
         return df_done
 
+    @timing
+    def deduplicate(self, df_done):
+        df_done = df_done.sort_values(ColName.date_run, ascending=0)
+        df_done = df_done.drop_duplicates(ColName.id_item)
+        return df_done.reset_index(drop=True)
+
+    @timing
+    def save_infos_to_tables(self, df_done):
+
+        self.remove_rows_sql_data(
+            values=df_done[ColName.id_item].tolist(),
+            column=ColName.id_item,
+            table_name=self.sql_output_table_name,
+        )
+        self.write_sql_data(
+            dataframe=df_done, table_name=self.sql_output_table_name, if_exists="append"
+        )
+
+    ## frequent calls ##
     def col_names_with_category(self, col_name):
         if col_name[0] == "_":
-            return self.category + col_name
+            return self.object + col_name
         return col_name
 
-    def order_mapping_dict(self, mapping_dict):
-        ordered_mapping_dict = {}
-        for k in sorted(mapping_dict, key=len, reverse=True):
-            ordered_mapping_dict[k] = mapping_dict[k]
-        return ordered_mapping_dict
-
-    #### FOR CHECKS
-    def get_all_keys(self, df_done):
-
-        def element_cleaner(x):
-            x = remove_accents(x.lower()).strip()
-            x = x.replace(" ", "_")
-            return x
-
-        all_keys = [
-            element_cleaner(element)
-            for dico in df_done["ANSWER"].tolist()
-            for element in dico.keys()
-        ]
-
-        value_counts = pd.Series(all_keys).value_counts()
-
-        return value_counts
+    def apply_mapping_func(self, vector, mapping_dict):
+        return vector.swifter.apply(
+            lambda x: self.exact_map_value_to_key(str(x), mapping_dict)
+        )

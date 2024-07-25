@@ -4,9 +4,20 @@ from datetime import datetime
 from src.constants.variables import DATE_HOUR_FORMAT
 
 
+class ColName:
+    id_item = "id_item"
+    id_auction = "id_auction"
+    id_picture_ = "id_picture"
+    answer = "answer"
+    input = "input"
+    prompt_schema = "prompt_schema"
+    date_run = "date_run"
+
+
 class LlmExtraction(BaseModel):
     __tablename__ = "_raw_gpt_extraction"
     __table_args__ = {"extend_existing": True}
+
     id_item: str = Field(None, description="unique id of the extraction to do")
     methode: str = Field(None, description="LLM methode used to extract json")
     input: str = Field("", description="Input sent to the LLM")

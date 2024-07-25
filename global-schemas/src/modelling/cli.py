@@ -10,8 +10,6 @@ from src.constants.command_line_interface import (
     SAVE_EMBEDDINGS_KWARGS,
     CRAWL_THREADS_ARG,
     CRAWL_THREADS_KWARG,
-    QUEUE_SIZE_ARGS,
-    QUEUE_SIZE_KWARGS,
     OBJECT_ARGS,
     OBJECT_KWARGS,
     GPT_METHODE_ARGS,

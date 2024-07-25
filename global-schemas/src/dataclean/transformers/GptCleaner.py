@@ -120,7 +120,7 @@ class GPTCleaner(TextCleaner):
     def exact_map_value_to_key(self, x, mapping_dict):
         for key, values in mapping_dict.items():
             for sub_value in values:
-                if str(sub_value) == x:
+                if sub_value == x:
                     return key.strip()
         return np.nan
 
@@ -245,3 +245,16 @@ class GPTCleaner(TextCleaner):
                 else:
                     new_term.append(word)
         return " ".join(new_term).strip()
+
+    def invert_mapping_dict(self, mapping_dict):
+        inverted_dict = {}
+        for key, values in mapping_dict.items():
+            for value in values:
+                inverted_dict[value.strip().lower()] = key.strip()
+        return inverted_dict
+
+    def order_mapping_dict(self, mapping_dict):
+        ordered_mapping_dict = {}
+        for k in sorted(mapping_dict, key=len, reverse=True):
+            ordered_mapping_dict[k] = mapping_dict[k]
+        return ordered_mapping_dict

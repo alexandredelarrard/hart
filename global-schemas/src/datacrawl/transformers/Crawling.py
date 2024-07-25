@@ -247,3 +247,24 @@ class Crawling(Crawl):
                 self._log.warning(f"ERROR happened for URL {driver.current_url} - {e}")
 
         return list_infos
+
+    def clean_url(self, url_current):
+        if "/sso?" not in url_current:
+            url_current = url_current.split("?")[0]  # everyone
+            url_current = url_current.split("/page")[0]  # milon
+
+        if url_current[-1] == "/":  # christies
+            url_current = url_current[:-1]
+
+        url_current = url_current.split(".html")[0]
+        return url_current
+
+    def get_real_url_from_sso(self, url_origine, driver):
+
+        if "/sso?" in url_origine:
+            driver.get(url_origine)
+            time.sleep(0.5)
+            self._log.info(f"Replaced URL SSO {url_origine} with {driver.current_url}")
+            return driver.current_url
+        else:
+            return url_origine

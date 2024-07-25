@@ -3,6 +3,7 @@ import time
 
 from src.context import Context
 from src.datacrawl.transformers.Crawling import Crawling
+from src.utils.utils_crawler import keep_files_to_do
 
 
 class ChristiesAuctions(Crawling):
@@ -12,7 +13,8 @@ class ChristiesAuctions(Crawling):
         super().__init__(context=context, config=config)
         self.history_start_year = self._config.crawling["christies"].history_start_year
 
-    def urls_to_crawl(self, start_date, end_date, url_auctions):
+    def new_urls(self, start_date, end_date, url_auctions):
+
         to_crawl = []
         start_year = max(start_date.year, self.history_start_year)
 
@@ -29,4 +31,9 @@ class ChristiesAuctions(Crawling):
 
             for month in range(start_month, end_month):
                 to_crawl.append(url_auctions + f"month={month}&year={year}")
+        return to_crawl
+
+    def urls_to_crawl(self, start_date, end_date, url_auctions, already_crawled):
+        to_crawl = self.new_urls(start_date, end_date, url_auctions)
+        to_crawl = keep_files_to_do(to_crawl, already_crawled)
         return to_crawl

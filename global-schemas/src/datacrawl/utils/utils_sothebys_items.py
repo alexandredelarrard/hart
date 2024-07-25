@@ -16,24 +16,12 @@ class SothebysItems(Crawling):
 
         self.mdp = os.environ["SOTHEBYS_MDP"]
         self.email = os.environ["SOTHEBYS_EMAIL"]
-
         self.root_url = self._config.crawling["sothebys"].webpage_url
-        self.to_replace = ("?lotFilter=AllLots", "")
-        self.to_split = ["?p=", 0]
 
         # TODO: include the F1 webpage formating from sothebys # weird webpage format regarding F1
         # weird formating: https://www.sothebys.com/en/buy/auction/2021/a-brilliant-menagerie
 
-    def urls_to_crawl(self, df_auctions):
-        to_crawl = (
-            df_auctions.loc[
-                (self.name.url_auction != "MISSING_URL_AUCTION")
-                & (df_auctions[self.name.url_auction].notnull()),
-                self.name.url_auction,
-            ]
-            .drop_duplicates()
-            .tolist()
-        )
+    def urls_to_crawl(self, to_crawl):
         to_crawl = [
             x for x in to_crawl if "/en/auctions" in x or "/en/buy/" in x
         ]  # no F1 and catalogue urls

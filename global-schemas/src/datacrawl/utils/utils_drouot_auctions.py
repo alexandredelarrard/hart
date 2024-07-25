@@ -14,10 +14,16 @@ class DrouotAuctions(Crawling):
         super().__init__(context=context, config=config)
         self.history_start_year = self._config.crawling["drouot"].history_start_year
 
-    def urls_to_crawl(self, start_date, end_date, url_auctions):
+    def urls_to_crawl(self, start_date, end_date, url_auctions, already_crawled):
         url_auctions = self.define_auction_url(start_date, end_date, url_auctions)
         nbr_pages = self.get_nbr_auction_pages(url_auctions)
-        to_crawl = self.get_pages_url(nbr_pages, url_auctions)
+
+        if start_date.year == self.history_start_year:
+            to_crawl = self.get_pages_url(
+                nbr_pages - len(already_crawled), url_auctions
+            )
+        else:
+            to_crawl = self.get_pages_url(nbr_pages, url_auctions)
         return to_crawl
 
     def define_auction_url(self, start_date, end_date, url_auctions):
@@ -31,7 +37,7 @@ class DrouotAuctions(Crawling):
         if isinstance(end_date, datetime):
             end_date = end_date.strftime("%d/%m/%Y")
         else:
-            raise Exception("start date must be a datetime format")
+            raise Exception("end date must be a datetime format")
 
         if year_start != self.history_start_year:
             url_auctions = (
@@ -51,7 +57,7 @@ class DrouotAuctions(Crawling):
             nbr_pages = int(page_nbr[-1].text)
             self._log.info(f"PAGINATION NUMBER IS= {page_nbr[-1].text}")
         except Exception as e:
-            self._log.error(f"PAGINATION NUMBER IS= {page_nbr[-1].text} \n {e}")
+            self._log.error(f"Something went wrong  during pagination getter \n {e}")
             nbr_pages = 0
 
         driver.close()
