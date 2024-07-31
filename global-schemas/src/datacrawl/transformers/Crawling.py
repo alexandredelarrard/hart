@@ -268,3 +268,6 @@ class Crawling(Crawl):
             return driver.current_url
         else:
             return url_origine
+
+    def urls_to_crawl(self, to_crawl) -> List[dict]:
+        return to_crawl

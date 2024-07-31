@@ -76,12 +76,12 @@ class StepTextInferenceGpt(GptExtracter):
             # all columns avialable except id_item
             input_string = ""
             for key, value in row.items():
-                if key != ColName.id_item:
+                if key != self.name.low_id_item:
                     input_string += f"{key} : {value} \n"
 
             # create futur response
             new_response = LlmExtraction(
-                id_item=row[ColName.id_item],
+                id_item=row[self.name.low_id_item],
                 input=input_string,
                 prompt_schema=self.object,
             )

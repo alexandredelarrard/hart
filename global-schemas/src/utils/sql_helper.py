@@ -1,4 +1,3 @@
-import json
 import pandas as pd
 from sqlalchemy import text
 
@@ -106,44 +105,53 @@ class SqlHelper:
         else:
             self._log.warning(f"{table_name} does not exist in the Database")
 
-    def insert_raw_to_table(self, unique_id_col: str, row_dict: dict, table_name: str):
+    def insert_raw_to_table(
+        self, unique_id_col: str, row_dict: dict, table_name: str, do_replace=True
+    ):
 
         if table_name in self.db_tables:
 
             keys_to_string = ", ".join([f'"{x}"' for x in row_dict.keys()])
-            values = tuple(
-                json.dumps(value) if isinstance(value, dict) else value
-                for value in row_dict.values()
-            )
-            placeholders = ", ".join(["%s"] * len(values))
+            placeholders = ", ".join([":{}".format(col) for col in row_dict.keys()])
             update_columns = ", ".join(
                 [
-                    (
-                        f'"{k}" = \'{json.dumps(v).replace("\'", "\'\'")}\''
-                        if isinstance(v, (list, dict))
-                        else f'"{k}" = \'{str(v).replace("\'", "\'\'")}\''
-                    )
+                    (f""""{k}" = :{k} """)
                     for k, v in list(row_dict.items())
-                    if k != unique_id_col
+                    if k not in [unique_id_col]
                 ]
             )
 
-            query = f"""INSERT INTO {table_name} ({keys_to_string})
-                        VALUES ({placeholders})
-                        ON CONFLICT ({unique_id_col})
-                        DO UPDATE SET {update_columns}"""
+            if do_replace:
+                query = f"""INSERT INTO {table_name} ({keys_to_string})
+                            VALUES ({placeholders})
+                            ON CONFLICT ({unique_id_col})
+                            DO UPDATE
+                            SET {update_columns} ;"""
+            else:
+                query = f"""INSERT INTO {table_name} ({keys_to_string})
+                             VALUES ({placeholders})"""
 
             with self._context.db_con.begin() as conn:
                 try:
-                    conn.execute(query, values)
+                    conn.execute(text(query), row_dict)
 
                 except Exception as e:
                     if "value violates unique constraint" in str(e):
                         self._log.warning(f"Row already saved in db {table_name}")
                     else:
-                        self._log.error(f"Something wrong happened {e}")
+                        self._log.error(f"Something wrong happened {e} \\ {query}")
                 finally:
                     pass
+
+    def update_raw_to_table(self, query):
+
+        with self._context.db_con.begin() as conn:
+            try:
+                conn.execute(query)
+            except Exception as e:
+                self._log.error(f"Something wrong happened {e}")
+            finally:
+                pass
 
     @timing
     def create_table_if_not_exist(self, table_schema):

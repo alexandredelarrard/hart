@@ -16,6 +16,7 @@ services:
         environment:
             - FLASK_ENV=development
             - ROOT_PATH=/app/data
+            - HOST=host.docker.internal
         env_file:
             - ../global-schemas/.env
         restart: always

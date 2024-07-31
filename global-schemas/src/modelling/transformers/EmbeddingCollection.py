@@ -25,11 +25,6 @@ class EmbeddingCollection(Step):
             TEXT_DB_FR: self._config.table_names.full_data_per_item,
             TEXT_DB_EN: self._config.table_names.full_data_per_item,
         }
-        self.unique_id_type = {
-            PICTURE_DB: self.name.id_unique,
-            TEXT_DB_FR: self.name.id_item,
-            TEXT_DB_EN: self.name.id_item,
-        }
 
     def detect_language(self, text):
         langue, _ = langid.classify(text)
@@ -48,7 +43,7 @@ class EmbeddingCollection(Step):
 
         df = result_image.merge(
             result_text,
-            on=self.name.id_item.lower(),
+            on=self.name.low_id_item,
             suffixes=("_PICT", "_TXT"),
             how="outer",
         )
@@ -57,10 +52,14 @@ class EmbeddingCollection(Step):
             max_dist = df[col].max()
             df[col] = df[col].fillna(max_dist)
 
-        df["distance"] = df[["distance_PICT", "distance_TXT"]].mean(axis=1)
-        df = df.sort_values("distance")
+        df[self.name.distance] = df[
+            [f"{self.name.distance}_PICT", f"{self.name.distance}_TXT"]
+        ].mean(axis=1)
+        df = df.sort_values(self.name.distance)
 
-        return df[[self.name.id_item.lower(), self.name.id_picture.lower(), "distance"]]
+        return df[
+            [self.name.low_id_item, self.name.id_picture.lower(), self.name.distance]
+        ]
 
     @timing
     def fill_EmbeddingsResults(self, liste_results):

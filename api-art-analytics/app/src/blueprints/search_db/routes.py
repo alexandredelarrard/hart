@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from sqlalchemy import or_
 from sqlalchemy.sql import func
-from src.schemas.items import AllPerItem
+from src.schemas.crawling_cleaning import AllItems
 
 # from flask_limiter import Limiter
 
@@ -27,10 +27,10 @@ def search_items():
             return jsonify({"error": "No Query provided"}), 400
 
         if isinstance(query, str) and len(query) < 300:
-            results = AllPerItem.query.filter(
+            results = AllItems.query.filter(
                 or_(
-                    AllPerItem.ITEM_TITLE_DETAIL.ilike(f"%{query}%"),
-                    AllPerItem.TOTAL_DESCRIPTION.ilike(f"%{query}%"),
+                    AllItems.DETAIL_TITLE.ilike(f"%{query}%"),
+                    AllItems.TOTAL_DESCRIPTION.ilike(f"%{query}%"),
                     # AllPerItem.HOUSE.ilike(f'%{query}%')
                 )
             ).all()

@@ -9,7 +9,6 @@ from src.datacrawl.steps.step_crawler_auctions import StepCrawlingAuctions
 
 from src.dataclean.steps.step_text_clean_crawling import StepCleanCrawling
 from src.dataclean.steps.step_text_clean_artists import StepTextCleanArtists
-from src.dataclean.steps.step_agglomerate_text_infos import StepAgglomerateTextInfos
 from src.dataclean.steps.step_gpt_clean_inference import StepCleanGptInference
 
 from src.modelling.steps.step_gpt_text_inference import StepTextInferenceGpt
@@ -34,15 +33,14 @@ if __name__ == "__main__":
     # self = StepCrawlingArtists(context=context, config=config, threads=1)
 
     # self = StepCrawlingDetails(context=context, config=config, threads=1, seller="drouot")
-    self = StepCrawlingAuctions(
-        context=context, config=config, threads=1, seller="millon"
-    )
-    # self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot", mode="history")
-    # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="christies", mode="new")
+    # self = StepCrawlingAuctions(
+    #     context=context, config=config, threads=1, seller="millon"
+    # )
+    self = StepCrawlingItems(context=context, config=config, threads=1, seller="drouot")
+    # self = StepCrawlingPictures(context=context, config=config, threads=1, seller="christies")
 
-    # self = StepCleanCrawling(context=context, config=config, seller="drouot", mode="history")
+    # self = StepCleanCrawling(context=context, config=config)
     # self = StepTextCleanArtists(context=context, config=config)
-    # self = StepAgglomerateTextInfos(context=context, config=config, mode="history")
     # self.run()
 
     # self = StepTextClustering(context=context, config=config)

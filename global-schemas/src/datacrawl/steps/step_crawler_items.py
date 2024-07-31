@@ -39,7 +39,6 @@ class StepCrawlingItems(Crawling):
             kwargs=kwargs,
         )
 
-        self.root_url = self._config.crawling[self.seller].webpage_url
         self.items_infos = self._config.crawling[self.seller]["items"]
 
         self.seller_utils = eval(
@@ -51,40 +50,54 @@ class StepCrawlingItems(Crawling):
 
         # AUCTIONS
         df_auctions = self.read_sql_data(
-            f"""SELECT DISTINCT auction.\"{self.name.url_auction}\"
+            f"""SELECT DISTINCT auction."{self.name.url_auction}" as url, auction.{self.name.low_id_auction}
                 FROM {self.sql_auction_table_raw} as auction
                 LEFT JOIN (
                     SELECT {self.name.low_id_auction}
                     FROM {self.sql_items_table_raw}
-                    WHERE \"{self.name.seller}\"='{self.seller}'
+                    WHERE "{self.name.seller}"='{self.seller}'
                 ) as items
                 ON auction.{self.name.low_id_auction} = items.{self.name.low_id_auction}
-                WHERE auction.\"{self.name.seller}\"='{self.seller}'
+                WHERE auction."{self.name.seller}"='{self.seller}'
                     AND items.{self.name.low_id_auction} IS NULL"""
         )
-        to_crawl = df_auctions[self.name.url_auction].tolist()
+        to_crawl = df_auctions.to_dict(orient="records")
         to_crawl = self.seller_utils.urls_to_crawl(to_crawl)
 
         self._log.info(f"Nbr auction pages To crawl {len(to_crawl)}")
 
         return to_crawl
 
-    def crawl_items_iteratively(self, driver):
+    def crawl_items_iteratively(self, driver, kwargs):
+
+        # crawl detail of one url
+        if self.name.low_id_auction in kwargs.keys():
+            low_id_auction = kwargs[self.name.low_id_auction]
+        else:
+            raise Exception(
+                f"Should have passed {self.name.low_id_auction} info along url, got {kwargs}"
+            )
+
+        # file naming
+        query = encode_file_name(driver.current_url)
 
         # crawl infos
-        query = encode_file_name(driver.current_url)
         list_infos = self.seller_utils.crawl_iteratively_seller(
             driver, self.items_infos
         )
         for row in list_infos:
-            if row[self.name.url_full_detail] and row[self.name.url_full_detail] != "":
+            if (
+                row[self.name.url_full_detail]
+                and row[self.name.url_full_detail] != ""
+                and "https" in row[self.name.url_full_detail]
+            ):
 
                 row[self.name.url_auction] = self.clean_url(row["CURRENT_URL"])
 
                 try:
                     new_result = Items(
                         id_item=encode_file_name(row[self.name.url_full_detail]),
-                        id_auction=encode_file_name(row[self.name.url_auction]),
+                        id_auction=low_id_auction,
                         URL_AUCTION=row[self.name.url_auction],
                         URL_FULL_DETAILS=row[self.name.url_full_detail],
                         AUCTION_DATE=(

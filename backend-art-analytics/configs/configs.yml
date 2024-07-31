@@ -1,7 +1,0 @@
-paths:
-  root: D:/data
-  crawl: ''
-  model: /models
-  default: /default
-  artist: /artists
-  llm: /llm_extracts

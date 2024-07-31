@@ -1,19 +1,44 @@
-from langchain_core.pydantic_v1 import BaseModel, Field
-from datetime import datetime
-from src.constants.variables import DATE_HOUR_FORMAT
-
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Float, Integer
 from src.constants.models import FullResultInfos
 
+Base = declarative_base()
 
-class AllItems(BaseModel):
+
+class AllItems(Base):
     __tablename__ = "ALL_ITEMS"
     __table_args__ = {"extend_existing": True}
 
+    id_item = Column(String, nullable=False, primary_key=True)
+    id_auction = Column(String, nullable=False)
+    ID_PICTURE = Column(String)
+    AUCTION_DATE = Column(String)
+    LOCALISATION = Column(String)
+    LOT_NUMBER = Column(Integer)
+    SELLER = Column(String)
+    HOUSE = Column(String)
+    TYPE_SALE = Column(Integer)
+    URL_AUCTION = Column(String)
+    URL_FULL_DETAILS = Column(String)
+    AUCTION_TITLE = Column(String)
+    DETAIL_TITLE = Column(String)
+    TOTAL_DESCRIPTION = Column(String)
+    CURRENCY = Column(String)
+    FINAL_RESULT = Column(Float)
+    MIN_ESTIMATION = Column(Float)
+    MAX_ESTIMATION = Column(Float)
+    EUR_FINAL_RESULT = Column(Float)
+    EUR_MIN_ESTIMATION = Column(Float)
+    EUR_MAX_ESTIMATION = Column(Float)
+    IS_FINAL_RESULT = Column(Integer)
+
+    class Config:
+        orm_mode = True
+
     def to_dict(self):
         return {
-            "id_unique": self.ID_UNIQUE,
+            "id_item": self.id_item,
             "id_picture": self.ID_PICTURE,
-            "id_item": self.ID_ITEM,
             "url_full_detail": self.URL_FULL_DETAILS,
             "estimate_min": self.EUR_MIN_ESTIMATION,
             "estimate_max": self.EUR_MAX_ESTIMATION,
@@ -23,24 +48,16 @@ class AllItems(BaseModel):
             "date": self.AUCTION_DATE,
             "house": self.HOUSE,
             "seller": self.SELLER,
-            "title": self.ITEM_TITLE_DETAIL,
+            "title": self.DETAIL_TITLE,
             "description": self.TOTAL_DESCRIPTION,
         }
 
-
-class AllPerItem(BaseModel):
-    __tablename__ = "ALL_ITEMS_per_item"
-    __table_args__ = {"extend_existing": True}
-
     def to_dict_search(self):
         return FullResultInfos(
-            id_item=self.ID_ITEM,
-            id_picture=str(self.ID_PICTURE)
-            .replace("{", "")
-            .replace("}", "")
-            .split(",")[0],
-            pictures=str(self.ID_PICTURE).replace("{", "").replace("}", "").split(","),
-            title=self.ITEM_TITLE_DETAIL,
+            id_item=self.id_item,
+            id_picture=str(self.ID_PICTURE).strip("[]").strip("{}").split(",")[0],
+            pictures=str(self.ID_PICTURE).strip("[]").strip("{}").split(","),
+            title=self.DETAIL_TITLE,
             description=self.TOTAL_DESCRIPTION,
             estimate_min=self.EUR_MIN_ESTIMATION,
             estimate_max=self.EUR_MAX_ESTIMATION,

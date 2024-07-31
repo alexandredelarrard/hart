@@ -1,18 +1,11 @@
 from pgvector.sqlalchemy import Vector
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker, scoped_session
-from typing import Dict
+from typing import Dict, List
 import numpy as np
-from tqdm import tqdm
 
 from src.utils.step import Step
-from src.constants.variables import (
-    TEXT_DB_EN,
-    TEXT_DB_FR,
-    PICTURE_DB,
-    ID_TEXT,
-    ID_UNIQUE,
-)
+from src.constants.variables import TEXT_DB_EN, TEXT_DB_FR, PICTURE_DB
 
 
 class SchemaEmbeddings(Step):
@@ -23,32 +16,30 @@ class SchemaEmbeddings(Step):
         db = context.flask_db
 
         class _Picture_Embeddings(db.Model):
-            __tablename__ = self.config.table_names.picture_embeddings
+            __tablename__ = self._config.table_names.picture_embeddings
             __table_args__ = {"extend_existing": True}
-            id_unique = db.Column(db.String(120), unique=True, primary_key=True)
-            id_picture = db.Column(db.String(120), nullable=True)
-            pict_path = db.Column(db.String(120), nullable=True)
-            created_at = db.Column(db.DateTime, nullable=False)
+            id_picture = db.Column(db.String(120), unique=True, primary_key=True)
+            date_creation = db.Column(db.DateTime, nullable=False)
             embedding = db.Column(Vector(1024))
 
             def to_dict(self):
                 return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
         class _Text_Embeddings_fr(db.Model):
-            __tablename__ = self.config.table_names.text_embeddings_french
+            __tablename__ = self._config.table_names.text_embeddings_french
             __table_args__ = {"extend_existing": True}
             id_item = db.Column(db.String(120), unique=True, primary_key=True)
-            created_at = db.Column(db.DateTime, nullable=False)
+            date_creation = db.Column(db.DateTime, nullable=False)
             embedding = db.Column(Vector(1024))
 
             def to_dict(self):
                 return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
         class _Text_Embeddings_en(db.Model):
-            __tablename__ = self.config.table_names.text_embeddings_english
+            __tablename__ = self._config.table_names.text_embeddings_english
             __table_args__ = {"extend_existing": True}
             id_item = db.Column(db.String(120), unique=True, primary_key=True)
-            created_at = db.Column(db.DateTime, nullable=False)
+            date_creation = db.Column(db.DateTime, nullable=False)
             embedding = db.Column(Vector(1024))
 
             def to_dict(self):
@@ -63,8 +54,9 @@ class SchemaEmbeddings(Step):
 class FillDBEmbeddings(SchemaEmbeddings):
 
     def __init__(self, context, config, type: str = PICTURE_DB):
-        super().__init__(context=context, config=config)
 
+        super().__init__(context=context, config=config)
+        self.type = type
         if type in [PICTURE_DB, TEXT_DB_FR, TEXT_DB_EN]:
             self.collection = self.collections[type]
         else:
@@ -73,64 +65,22 @@ class FillDBEmbeddings(SchemaEmbeddings):
             )
 
         self.db = context.flask_db
-        self.id_column = ID_UNIQUE.lower() if type == PICTURE_DB else ID_TEXT.lower()
 
-    def get_ids(self):
-        df = self.read_sql_data(
-            f'SELECT "{self.id_column}" FROM "{self.collection.__tablename__}"'
-        )
-        return df[self.id_column].tolist()
-
-    def save_collection(self, list_descriptions: Dict, results: np.array):
+    def save_collection(self, list_descriptions: List[Dict], results: np.array):
         self.session = scoped_session(sessionmaker(bind=self._context.db_con))
-        for key, values in results.items():
-            for observation, description in tqdm(zip(values, list_descriptions)):
-                if key in [TEXT_DB_FR, TEXT_DB_EN]:
-                    new_item = self.collection(
-                        id_item=description[self.name.id_item],
-                        created_at=datetime.now(),
-                        embedding=observation.tolist(),
-                    )
-                if key == PICTURE_DB:
-                    new_item = self.collection(
-                        id_unique=description[self.name.id_unique],
-                        id_picture=description[self.name.id_picture],
-                        pict_path=description["pict_path"],
-                        created_at=datetime.now(),
-                        embedding=observation.tolist(),
-                    )
-
-                self.session.add(new_item)
-            self.session.commit()
-        self.session.close()
-
-    def delete_duplicates(self):
-        self.session = scoped_session(sessionmaker(bind=self._context.db_con))
-
-        subquery = (
-            self.session.query(
-                self.id_column,
-                self.db.func.min(self.collection.created_at).label("min_created_at"),
-            )
-            .group_by(self.id_column)
-            .subquery()
-        )
-
-        duplicates = (
-            self.session.query(self.collection)
-            .join(
-                subquery,
-                (
-                    getattr(self.collection, self.id_column.name)
-                    == getattr(subquery.c, self.id_column.name)
+        for i, description in enumerate(list_descriptions):
+            if self.type in [TEXT_DB_FR, TEXT_DB_EN]:
+                new_item = self.collection(
+                    id_item=description[self.name.low_id_item],
+                    date_creation=datetime.now(),
+                    embedding=list(results[i]),
                 )
-                & (self.collection.created_at != subquery.c.min_created_at),
-            )
-            .all()
-        )
-
-        for duplicate in duplicates:
-            self.session.delete(duplicate)
-
-        self.session.commit()
+            if self.type == PICTURE_DB:
+                new_item = self.collection(
+                    id_picture=description[self.name.low_id_picture],
+                    date_creation=datetime.now(),
+                    embedding=list(results[i]),
+                )
+            self.session.add(new_item)
+            self.session.commit()
         self.session.close()

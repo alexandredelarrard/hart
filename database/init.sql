@@ -6,27 +6,25 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- Define your tables with constraints
 CREATE TABLE IF NOT EXISTS text_embeddings_english (
-  ID_ITEM text PRIMARY KEY UNIQUE,
-  CREATED_AT timestamptz DEFAULT now(),
-  EMBEDDING VECTOR(1024),
-  CONSTRAINT text_embeddings_id_item_unique UNIQUE (ID_ITEM)
+  id_item text PRIMARY KEY UNIQUE,
+  date_creation timestamptz DEFAULT now(),
+  embedding VECTOR(1024),
+  CONSTRAINT text_embeddings_id_item_unique UNIQUE (id_item)
 );
 
 -- Define your tables with constraints
 CREATE TABLE IF NOT EXISTS text_embeddings_french (
-  ID_ITEM text PRIMARY KEY UNIQUE,
-  CREATED_AT timestamptz DEFAULT now(),
-  EMBEDDING VECTOR(1024),
-  CONSTRAINT text_embeddings_id_item_unique UNIQUE (ID_ITEM)
+  id_item text PRIMARY KEY UNIQUE,
+  date_creation timestamptz DEFAULT now(),
+  embedding VECTOR(1024),
+  CONSTRAINT text_embeddings_id_item_unique UNIQUE (id_item)
 );
 
 CREATE TABLE IF NOT EXISTS picture_embeddings (
-  ID_UNIQUE text PRIMARY KEY UNIQUE UNIQUE,
-  ID_PICTURE Varchar,
-  pict_path Varchar,
-  CREATED_AT timestamptz DEFAULT now(),
-  EMBEDDING VECTOR(1024),
-  CONSTRAINT picture_embeddings_id_unique UNIQUE (ID_UNIQUE)
+  id_picture text PRIMARY KEY UNIQUE UNIQUE,
+  date_creation timestamptz DEFAULT now(),
+  embedding VECTOR(1024),
+  CONSTRAINT picture_embeddings_id_unique UNIQUE (id_picture)
 );
 
 -- Disable autovacuum

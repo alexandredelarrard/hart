@@ -207,11 +207,19 @@ class Crawl(Step):
         #### extract all articles
         while True:
             driver = queues["drivers"].get()
-            url = queues["urls"].get()
+            kwargs = queues["urls"].get()
+
+            if isinstance(kwargs, dict):
+                url = kwargs["url"]
+            elif isinstance(kwargs, str):
+                url = kwargs
+                kwargs = {"url": url}
+            else:
+                raise Exception("Can only handle dict or string values passed to queue")
 
             try:
                 driver = self.get_url(driver, url)
-                driver, information = function(driver, *args)
+                driver, information = function(driver, kwargs)
 
                 if self.save_in_queue:
                     queues["results"].put(information)

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from omegaconf import DictConfig
 
 from src.context import Context
@@ -11,15 +11,21 @@ class ChristiesItems(Crawling):
 
         super().__init__(context=context, config=config)
         self.root_path = self._context.paths["ROOT"]
-        self.to_replace = ("&page=2&sortby=lotnumber", "/?loadall=true")
-        self.to_split = []
 
-    # second crawling step  to get list of pieces per auction
-    def urls_to_crawl(self, to_crawl):
-
-        # AUCTIONS
-        to_crawl = [x[:-1] if x[-1] == "/" else x for x in to_crawl]
-        return [x + "/?loadall=true" for x in to_crawl]
+    # Update each URL and add to new_to_crawl list
+    def urls_to_crawl(self, to_crawl: List[dict]):
+        return [
+            {
+                **element,
+                "url": (
+                    element["url"][:-1]
+                    if element["url"].endswith("/")
+                    else element["url"]
+                )
+                + "/?loadall=true",
+            }
+            for element in to_crawl
+        ]
 
     def crawl_iteratively_seller(self, driver, config: Dict):
         return super().crawl_iteratively(driver, config)

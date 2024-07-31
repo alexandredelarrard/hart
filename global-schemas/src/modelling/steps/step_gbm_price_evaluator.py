@@ -85,7 +85,7 @@ class StepGBMPriceEvaluator(Step):
 
     def get_pricing_info(self):
 
-        raw_query = str.lower(getattr(self.sql_queries.SQL, "get_all_for_pricing"))
+        raw_query = str.lower(getattr(self.sql_queries.SQL, "_gbm_get_all_for_pricing"))
         formatted_query = self.sql_queries.format_query(
             raw_query,
             {

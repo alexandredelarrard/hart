@@ -18,6 +18,7 @@ services:
         environment:
             - FLASK_ENV=flask_worker
             - ROOT_PATH=/app/data
+            - HOST=host.docker.internal
         env_file:
             - ../global-schemas/.env
         restart: always
@@ -57,6 +58,7 @@ services:
         environment:
             - FLASK_ENV=celery_worker
             - ROOT_PATH=/app/data
+            - HOST=host.docker.internal
         deploy:
             resources:
                 reservations:

@@ -1,11 +1,11 @@
 from typing import List, Any
 
-from src.schemas.gpt_schemas import get_mapping_pydentic_object
+from src.schemas.gpt_schemas import get_mapping_pydentic_object, Reformulate
 from src.utils.step import Step
 from src.modelling.transformers.GptExtracter import GptExtracter
 
 from langchain_core.output_parsers import PydanticOutputParser
-from langchain_core.pydantic_v1 import BaseModel
+from pydantic import BaseModel
 from src.context import Context
 
 from omegaconf import DictConfig
@@ -46,6 +46,8 @@ class GptChat(GptExtracter):
         query_status = 400
         llm_results = {}
 
+        art_pieces = sorted(art_pieces, key=lambda x: x["distance"])
+
         while query_status != 200 and steps != 0:
             string_art_pieces = self.reshape_list_examples(art_pieces[:number_ex])
 
@@ -53,10 +55,10 @@ class GptChat(GptExtracter):
                 llm_input=string_art_pieces, chain=self.chain
             )
 
-            if isinstance(llm_results, BaseModel):
-                llm_results = llm_results.dict()
-
             number_ex -= 2
             steps -= 1
+
+        if isinstance(llm_results, (Reformulate, BaseModel)):
+            llm_results = llm_results.dict()
 
         return llm_results

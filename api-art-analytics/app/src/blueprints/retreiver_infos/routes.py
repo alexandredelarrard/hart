@@ -6,7 +6,7 @@ import numpy as np
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 
-from src.schemas.items import AllPerItem
+from src.schemas.crawling_cleaning import AllItems
 from src.schemas.results import CloseResult
 from src.extensions import db
 from src.constants.models import KnnFullResultInfos, EmbeddingsResults
@@ -40,13 +40,8 @@ def enrich_dict(
 
 def fetch_additional_infos(answer: EmbeddingsResults) -> KnnFullResultInfos:
     filtered_items = (
-        db.session.query(AllPerItem)
-        .filter(
-            and_(
-                AllPerItem.ID_ITEM.in_(list(answer.keys())),
-                AllPerItem.ID_PICTURE.isnot(None),
-            )
-        )
+        db.session.query(AllItems)
+        .filter(AllItems.id_item.in_(list(answer.keys())))
         .all()
     )
     return KnnFullResultInfos(answer=[item.to_dict_search() for item in filtered_items])

@@ -1,17 +1,7 @@
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 from src.constants.variables import DATE_HOUR_FORMAT
-
-
-class ColName:
-    id_item = "id_item"
-    id_auction = "id_auction"
-    id_picture_ = "id_picture"
-    answer = "answer"
-    input = "input"
-    prompt_schema = "prompt_schema"
-    date_run = "date_run"
 
 
 class LlmExtraction(BaseModel):

@@ -201,7 +201,7 @@ crawling:
                     value_css: //div[@class='chr-lot-header__estimate-details']/span
                 RESULT:
                     by_type: XPATH
-                    value_css: //div[@class='chr-lot-header__bid-current']/span
+                    value_css: //div[@class='chr-lot-header__bid-current']/span[2]
                 URL_PICTURE:
                     functions:
                         - "self.click_element(driver, 'CLASS_NAME', 'chr-lot-header__image-container')"
@@ -242,7 +242,7 @@ crawling:
                 is_javascript: True
             buy_url:
                 global_element:
-                    DATE:
+                    AUCTION_DATE:
                         by_type: CLASS_NAME
                         value_css: css-19ct9dd
                     AUCTION_TITLE:
@@ -252,6 +252,9 @@ crawling:
                     by_type: XPATH
                     value_css: //div[@aria-label='List of lots']/div/div
                 per_element:
+                    LOT_NUMBER:
+                        by_type: XPATH
+                        value_css: a/div/div[2]/div/div[1]
                     URL_FULL_DETAILS:
                         by_type: TAG_NAME
                         value_css: a
@@ -267,7 +270,7 @@ crawling:
                         value_css: a/div/div[2]/div/span[1]
             auctions_url:
                 global_element:
-                    DATE:
+                    AUCTION_DATE:
                         by_type: CLASS_NAME
                         value_css: AuctionsModule-auction-info
                     AUCTION_TITLE:
@@ -277,6 +280,9 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: AuctionsModule-results-item
                 per_element:
+                    LOT_NUMBER:
+                        by_type: CLASS_NAME
+                        value_css: title
                     URL_FULL_DETAILS:
                         by_type: TAG_NAME
                         value_css: a
@@ -312,13 +318,24 @@ crawling:
                             attribute: srcset
             auctions_url:
                 per_element :
+                    ESTIMATE:
+                        by_type: CLASS_NAME
+                        value_css: LotPage-estimateInfo
+                    DETAIL_TITLE:
+                        by_type: XPATH
+                        value_css: //h1[@class='LotPage-productTitle']
                     DETAIL_DESCRIPTION:
                         by_type : CLASS_NAME
                         value_css : LotPage-details
                     URL_PICTURE:
-                        by_type: XPATH
-                        value_css: //div[@class='VerticalNavGallerySlide-mediaContent']/picture/img
-                        attribute: srcset
+                        liste_elements :
+                            by_type: XPATH
+                            value_css: //div[@class='VerticalNavGallerySlide-mediaContent']/picture
+                        per_element :
+                            by_type: TAG_NAME
+                            value_css: img
+                            attribute: srcset
+
     millon: # 0.2M
         history_start_year: 2012
         webpage_url: https://www.millon.com/catalogue/ventes-passees/
@@ -345,13 +362,14 @@ crawling:
                     by_type: CLASS_NAME
                     value_css: sales-time
         items:
+            global_element:
+                AUCTION_DATE:
+                    by_type: XPATH
+                    value_css: //div[@class='info']/p
             liste_elements:
                 by_type: CLASS_NAME
                 value_css: item
             per_element:
-                ITEM_TITLE:
-                    by_type: CLASS_NAME
-                    value_css: card-title
                 URL_FULL_DETAILS:
                     by_type : CLASS_NAME
                     value_css : card-image
@@ -359,13 +377,19 @@ crawling:
                 LOT_NUMBER:
                     by_type: CLASS_NAME
                     value_css: lot
+                ITEM_TITLE:
+                    by_type: CLASS_NAME
+                    value_css: card-title
                 ITEM_DESCRIPTION:
                     by_type: CLASS_NAME
                     value_css: content
-                FINAL_RESULT:
+                RESULT:
                     by_type: CLASS_NAME
                     value_css: estimation
+                # no Estimate available
         detailed:
+            functions:
+                - "self.handle_click_element(driver, 'CLASS_NAME', 'cookiesjsr--app', 'CLASS_NAME', 'cookiesjsr-btn important allowAll')" # cookie
             per_element :
                 ESTIMATE:
                     by_type: CLASS_NAME
@@ -380,13 +404,13 @@ crawling:
                     by_type : XPATH
                     value_css : //div[@class='detail']/div[1]
                 URL_PICTURE:
-                    liste_elements :
+                    liste_elements:
                         by_type: XPATH
-                        value_css: //div[@class='slider__bottom slick-slider']/div
+                        value_css: //div[@class='slick-track']/div
                     per_element :
                         by_type: TAG_NAME
-                        value_css: img
-                        attribute: src
+                        value_css: source
+                        attribute: srcset
     bonhams: # 2M
         auctions_url: https://www.bonhams.com/fr/auctions/results/
     artcurial: #TODO:

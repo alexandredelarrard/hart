@@ -28,7 +28,7 @@ class DBeaver:
         self.user = os.environ["DATABASE_USERNAME"]
         self.pwd = os.environ["DATABASE_PWD"]
         self.port = self.server["port"]
-        self.host = self.server["host"]
+        self.host = os.getenv("HOST", self.server["host"])
         self.database = self.server["database"]
         self.connexion_string = f"postgresql+psycopg2://{self.user}:{self.pwd}@{self.host}:{self.port}/{self.database}"
 

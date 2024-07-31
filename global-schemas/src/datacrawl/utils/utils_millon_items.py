@@ -8,24 +8,7 @@ from src.datacrawl.transformers.Crawling import Crawling
 class MillonItems(Crawling):
 
     def __init__(self, context: Context, config: DictConfig):
-
         super().__init__(context=context, config=config)
-        self.to_replace = ()
-        self.to_split = ["/page", 0]
-
-    def urls_to_crawl(self, df_auctions) -> List[str]:
-
-        # CRAWLING TO DO
-        to_crawl = (
-            df_auctions.loc[
-                df_auctions[self.name.url_auction] != "MISSING_URL_AUCTION",
-                self.name.url_auction,
-            ]
-            .drop_duplicates()
-            .tolist()
-        )
-
-        return to_crawl
 
     def get_page_number(self, driver):
         page_nbr = self.get_elements(

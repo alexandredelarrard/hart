@@ -1,4 +1,4 @@
-from langchain_core.pydantic_v1 import Field
+from pydantic import Field
 from src.schemas.gpt_schemas import Reformulate
 
 

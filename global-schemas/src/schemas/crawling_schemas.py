@@ -1,4 +1,4 @@
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 from src.constants.variables import DATE_HOUR_FORMAT
@@ -37,7 +37,7 @@ class Items(BaseModel):
     LOT_NUMBER: str = Field(None, description="lot in the auction")
     ITEM_TITLE: str = Field(None, description=" title of the item")
     ITEM_DESCRIPTION: str | None = Field(None, description="infos from the item")
-    ESTIMATE: str = Field(description="price from the item")
+    ESTIMATE: str | None = Field(None, description="price from the item")
     RESULT: str | None = Field(None, description="result from the item")
     FILE: Optional[str] | None = Field(None, description="file name saved")
     SELLER: str = Field(description="website crawled, close to house except for drouot")
@@ -56,9 +56,9 @@ class Details(BaseModel):
     DETAIL_DESCRIPTION: str = Field(description="infos from the item")
     ESTIMATE: str | None = Field(None, description="price from the item")
     RESULT: str | None = Field(None, description="result from the item")
-    URL_PICTURE: List[str] = Field(description="url off the picture")
-    ID_PICTURE: List[str] = Field(
-        description="unique ID of the PICTURE based on its url"
+    URL_PICTURE: List[str] | None = Field(None, description="url off the picture")
+    ID_PICTURE: List[str] | None = Field(
+        None, description="unique ID of the PICTURE based on its url"
     )
     SELLER: str = Field(description="website crawled, close to house except for drouot")
     DATE_CREATION: str = Field(
@@ -70,24 +70,11 @@ class Pictures(BaseModel):
     __tablename__ = "_raw_pictures"
     __table_args__ = {"extend_existing": True}
 
-    id_unique: str = Field(
-        description="unique picture + item ID - concatenation of both and encoded"
-    )
     id_picture: str = Field(description="unique picture ID")
-    id_item: str = Field(description="unique item ID")
-    is_in_path: bool = Field(description="If the picture is downloaded")
+    list_id_item: List[str] = Field(description="unique item ID")
+    URL_PICTURE: str = Field(description="url off the picture")
+    IS_FILE: bool = Field(description="If the picture is downloaded and saved")
     SELLER: str = Field(description="seller from which the picture was downloaded")
-
-
-# df_crawled.rename(columns={"TITLE": "DETAIL_TITLE", "DETAIL": "DETAIL_DESCRIPTION", "CURRENT_URL": "URL_FULL_DETAILS"}, inplace=True)
-# df_crawled = df_crawled.drop(["AUCTION_DATE", "AUCTION_TITLE", "FILE_CREATION_DATE", "FILE"], axis=1)
-# df_crawled["ID_PICTURE"] = df_crawled["URL_PICTURE"].apply(lambda x: [encode_file_name(a) for a in x])
-# df_crawled["DATE_CREATION"] = datetime.now().strftime(DATE_HOUR_FORMAT)
-# df_crawled["SELLER"] = "drouot"
-# df_crawled["id_item"] = df_crawled["URL_FULL_DETAILS"].apply(lambda x: encode_file_name(x))
-
-# df = self.read_sql_data("_raw_crawling_details")
-# df["ESTIMATE"] = None
-# df["RESULT"] = None
-# df.to_sql("_raw_crawling_details", con=self._context.db_con, if_exists="replace", index=False)
-# df_crawled.to_sql("_raw_crawling_details", con=self._context.db_con, if_exists="append", index=False)
+    DATE_CREATION: str = Field(
+        datetime.now().strftime(DATE_HOUR_FORMAT), description="When it was crawled"
+    )

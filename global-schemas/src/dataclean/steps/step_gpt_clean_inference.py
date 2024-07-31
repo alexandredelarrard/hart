@@ -69,12 +69,12 @@ class StepCleanGptInference(GPTCleaner):
 
     @timing
     def get_query_string(self):
-        query = f"""SELECT {ColName.id_item}, {ColName.input}, {ColName.answer}, {ColName.date_run}
+        query = f"""SELECT {self.name.low_id_item}, {self.name.input}, {self.name.gpt_answer}, {self.name.date_run}
             FROM {self.sql_input_table}
-            WHERE {ColName.prompt_schema}='{self.object}' """
+            WHERE {self.name.prompt_schema}='{self.object}' """
 
         if self.object == "reformulate":
-            query += f" OR {ColName.prompt_schema} IS NULL"
+            query += f" OR {self.name.prompt_schema} IS NULL"
 
         return query
 
@@ -82,16 +82,16 @@ class StepCleanGptInference(GPTCleaner):
     def extract_features(self, df_done):
 
         # handle features element
-        df_done = df_done.loc[df_done[ColName.answer].notnull()]
+        df_done = df_done.loc[df_done[self.name.gpt_answer].notnull()]
 
         # from series of dict to dataframe
-        df_answer = pd.json_normalize(df_done[ColName.answer])
+        df_answer = pd.json_normalize(df_done[self.name.gpt_answer])
 
         # Step 2: Concatenate the new DataFrame with the existing DataFrame
         df_done = pd.concat([df_done, df_answer], axis=1)
 
         # Step 3: Drop the original 'answer' column if needed
-        df_done.drop(columns=[ColName.answer], inplace=True)
+        df_done.drop(columns=[self.name.gpt_answer], inplace=True)
 
         # Step 4: clean values out of column generic way
         for col in df_done.columns:
@@ -250,16 +250,16 @@ class StepCleanGptInference(GPTCleaner):
 
     @timing
     def deduplicate(self, df_done):
-        df_done = df_done.sort_values(ColName.date_run, ascending=0)
-        df_done = df_done.drop_duplicates(ColName.id_item)
+        df_done = df_done.sort_values(self.name.date_run, ascending=0)
+        df_done = df_done.drop_duplicates(self.name.low_id_item)
         return df_done.reset_index(drop=True)
 
     @timing
     def save_infos_to_tables(self, df_done):
 
         self.remove_rows_sql_data(
-            values=df_done[ColName.id_item].tolist(),
-            column=ColName.id_item,
+            values=df_done[self.name.low_id_item].tolist(),
+            column=self.name.low_id_item,
             table_name=self.sql_output_table_name,
         )
         self.write_sql_data(

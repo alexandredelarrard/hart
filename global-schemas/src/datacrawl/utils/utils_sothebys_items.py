@@ -16,25 +16,27 @@ class SothebysItems(Crawling):
 
         self.mdp = os.environ["SOTHEBYS_MDP"]
         self.email = os.environ["SOTHEBYS_EMAIL"]
-        self.root_url = self._config.crawling["sothebys"].webpage_url
 
         # TODO: include the F1 webpage formating from sothebys # weird webpage format regarding F1
         # weird formating: https://www.sothebys.com/en/buy/auction/2021/a-brilliant-menagerie
 
     def urls_to_crawl(self, to_crawl):
-        to_crawl = [
-            x for x in to_crawl if "/en/auctions" in x or "/en/buy/" in x
-        ]  # no F1 and catalogue urls
-        return to_crawl
+        return [
+            element
+            for element in to_crawl
+            if "/en/auctions" in element["url"] or "/en/buy/" in element["url"]
+        ]
 
     def check_loggedin(self, driver, counter=0):
         driver_log = self.get_element_infos(
             driver, "CLASS_NAME", "AuctionsModule-auction-info-total"
         )
         if driver_log == "":
-            driver_log = self.get_element_infos(driver, "CLASS_NAME", "PageHeader-hat")
+            driver_log = self.get_element_infos(
+                driver, "CLASS_NAME", "SothebysHat-items"
+            )
 
-        if "my account" in driver_log.lower():
+        if "log out" in driver_log.lower():
             return driver
 
         if "log in" in driver_log.lower():

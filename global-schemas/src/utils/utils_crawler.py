@@ -106,17 +106,21 @@ def save_pickle_file(df, path):
 
 
 def save_picture_crawled(url_picture, image_path, picture_id):
-    message = ""
+    message = False
     try:
-        if not os.path.isfile(image_path + f"/{picture_id}.jpg"):
+        if not os.path.isfile(image_path / Path(f"{picture_id}.jpg")):
             if "https" in url_picture:
                 urllib.request.urlretrieve(
-                    url_picture, image_path + f"/{picture_id}.jpg"
+                    url_picture, image_path / Path(f"{picture_id}.jpg")
                 )
+
+            if os.path.isfile(image_path / Path(f"{picture_id}.jpg")):
+                return True
+
     except Exception as e:
         logging.error(f"SAVING PICTURE FAILED : {e}")
-        message = e
         pass
+
     return message
 
 

@@ -19,20 +19,6 @@ class DrouotItems(Crawling):
 
         # TODO: handle pdfs downloading and extraction ... Low prio
 
-    def urls_to_crawl(self, df_auctions) -> List[str]:
-
-        # CRAWLING TO DO
-        to_crawl = (
-            df_auctions.loc[
-                df_auctions[self.name.url_auction] != "MISSING_URL_AUCTION",
-                self.name.url_auction,
-            ]
-            .drop_duplicates()
-            .tolist()
-        )
-
-        return to_crawl
-
     def check_loggedin(self, driver, counter=0):
 
         if "/catalogue/resultats/" in driver.current_url:

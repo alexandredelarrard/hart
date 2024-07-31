@@ -4,6 +4,7 @@ langid==1.1.6
 flask_cors==4.0.1
 flask_jwt_extended==4.6.0
 flask_sqlalchemy==3.1.1
+langchain_core==0.2.11
 omegaconf==2.3.0
 pandas==2.2.2
 pgvector==0.3.0

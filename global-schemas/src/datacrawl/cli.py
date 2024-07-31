@@ -5,12 +5,8 @@ from src.constants.command_line_interface import (
     CONFIG_KWARGS,
     CRAWL_THREADS_ARG,
     CRAWL_THREADS_KWARG,
-    TEXT_ONLY_ARGS,
-    TEXT_ONLY_KWARGS,
     SELLER_ARGS,
     SELLER_KWARGS,
-    QUEUE_SIZE_ARGS,
-    QUEUE_SIZE_KWARGS,
     START_DATE_ARGS,
     START_DATE_KWARGS,
     END_DATE_ARGS,
@@ -106,7 +102,7 @@ def step_crawling_items(config_path, threads: int, seller: str):
     # get crawling_function
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawl_items_iteratively)
 
-    # python -m src datacrawl step-crawling-items -t 1 --seller sothebys --crawling-mode new
+    # python -m src datacrawl step-crawling-items -t 1 --seller millon
 
 
 @cli.command(
@@ -127,7 +123,7 @@ def step_crawling_details(config_path, threads: int, seller: str):
     )
 
     crawl.run(crawl.get_list_items_to_crawl(), crawl.crawling_details_function)
-    # python -m src datacrawl step-crawling-details -t 1 -s christies
+    # python -m src datacrawl step-crawling-details -t 5 -s millon
 
 
 @cli.command(
@@ -137,8 +133,7 @@ def step_crawling_details(config_path, threads: int, seller: str):
 @click.option(*CONFIG_ARGS, **CONFIG_KWARGS)
 @click.option(*SELLER_ARGS, **SELLER_KWARGS)
 @click.option(*CRAWL_THREADS_ARG, **CRAWL_THREADS_KWARG)
-@click.option(*CRAWLING_MODE_ARGS, **CRAWLING_MODE_KWARGS)
-def step_crawling_pictures(config_path, threads: int, seller: str, crawling_mode: str):
+def step_crawling_pictures(config_path, threads: int, seller: str):
 
     config, context = get_config_context(config_path, use_cache=False, save=False)
     crawl = StepCrawlingPictures(
@@ -146,7 +141,6 @@ def step_crawling_pictures(config_path, threads: int, seller: str, crawling_mode
         context=context,
         threads=threads,
         seller=seller,
-        mode=crawling_mode,
     )
 
     # get crawling_function
@@ -155,7 +149,7 @@ def step_crawling_pictures(config_path, threads: int, seller: str, crawling_mode
     if seller == "drouot":
         crawl.run(crawl.get_list_items_to_crawl(mode="canvas"), crawl.crawling_canvas)
 
-    # python -m src datacrawl step-crawling-pictures -t 5 --seller drouot
+    # python -m src datacrawl step-crawling-pictures -t 1 --seller millon
 
 
 @cli.command(
