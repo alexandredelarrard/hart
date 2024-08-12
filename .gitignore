@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+application_default_credentials_*
+*.sh
+
 #npm library
 node_modules
 
@@ -168,6 +172,3 @@ art_env/
 ./api-art-analytics/app/.env
 
 *.csv
-
-application_default_credentials_*
-application_default_credentials_gardon.json
