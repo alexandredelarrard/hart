@@ -5,7 +5,7 @@ __pycache__/
 
 
 application_default_credentials_*
-*.sh
+application_default_credentials_gardon.json
 
 #npm library
 node_modules
