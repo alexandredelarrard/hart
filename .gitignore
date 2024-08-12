@@ -170,3 +170,4 @@ art_env/
 *.csv
 
 application_default_credentials_*
+application_default_credentials_gardon.json
