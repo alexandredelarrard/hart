@@ -86,7 +86,7 @@ class StepCrawlingDetails(Crawling):
                 x = str(x).replace("size=small", "size=phare")
                 x = x.split("\n")[0].split(" ")[0]  # sothebys
 
-            if x[0] == "/" and "http" not in x:  # millon
+            if x[0] == "/" and "https" not in x:  # millon
                 x = self.root_url + x
             return x
 
@@ -135,7 +135,7 @@ class StepCrawlingDetails(Crawling):
                     [
                         self.clean_url_pictures(x)
                         for x in row[self.name.url_picture]
-                        if x not in ["", "nan", None, '""'] and "https:" in str(x)
+                        if x not in ["", "nan", None, '""'] and len(str(x)) >= 15
                     ]
                 )
             )

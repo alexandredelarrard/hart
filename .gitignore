@@ -168,3 +168,4 @@ art_env/
 ./api-art-analytics/app/.env
 
 *.csv
+./application_default_credentials_*
